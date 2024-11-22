@@ -1,0 +1,19 @@
+export function setToken(token: string) {
+  return localStorage.setItem('TOKEN', token);
+}
+
+export function getToken() {
+  return localStorage.getItem('TOKEN');
+}
+
+export function clearToken() {
+  return localStorage.clear();
+}
+
+export function setPart(partNumber: string) {
+  return localStorage.setItem('partNumber', partNumber);
+}
+
+export function getPart() {
+  return localStorage.getItem('partNumber');
+}

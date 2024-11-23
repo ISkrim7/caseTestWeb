@@ -7,7 +7,7 @@ import { message } from 'antd';
 const requestInterceptors = async (url: string, options: RequestConfig) => {
   const token = getToken();
   if (token !== null) {
-    const authHeader = { Authorization: 'Basic ' + btoa(token + ':' + '') };
+    const authHeader = { token: token };
     const BaseHeader = {
       'Content-Type': 'application/json',
     };

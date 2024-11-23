@@ -1,3 +1,5 @@
+import { IProject } from '@/api';
+import { newProject, searchUser } from '@/api/base';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   ModalForm,
@@ -6,9 +8,6 @@ import {
 } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
 import React from 'react';
-import { projectOpt } from '@/api/project';
-import { searchUser } from '@/api/user';
-import MohuSearch from '@/components/UserOpt/MohuSearch';
 
 interface SearchUser {
   value: number | undefined;
@@ -21,12 +20,22 @@ interface selfProps {
 
 const Index: React.FC<selfProps> = (props) => {
   let { reload } = props;
+
+  const queryUser: any = async (value: any) => {
+    const { keyWords } = value;
+    if (keyWords) {
+      const { code, data } = await searchUser({ username: keyWords });
+      if (code === 0) {
+        return data.map((item) => ({
+          label: item.username,
+          value: item.id,
+        }));
+      }
+    }
+  };
+
   return (
-    <ModalForm<{
-      name: string;
-      desc: string;
-      adminID: number;
-    }>
+    <ModalForm<IProject>
       title="新建项目"
       trigger={
         <Button type="primary">
@@ -40,14 +49,14 @@ const Index: React.FC<selfProps> = (props) => {
         onCancel: () => console.log('close'),
       }}
       onFinish={async (values) => {
-        const res = await projectOpt(values, 'POST');
+        const res = await newProject({ ...values });
         message.success(res.msg);
         reload!(true);
         return true;
       }}
     >
       <ProFormText
-        name="name"
+        name="title"
         label="项目名称"
         placeholder="input your project name"
         required={true}
@@ -59,14 +68,12 @@ const Index: React.FC<selfProps> = (props) => {
       />
       <ProFormSelect
         showSearch
-        name="adminID"
+        name="chargeId"
         label="项目负责人"
         placeholder="input your admin name to search"
         rules={[{ required: true, message: 'Please select !' }]}
-        debounceTime={2000}
-        request={async (params) => {
-          return await MohuSearch(params);
-        }}
+        debounceTime={1000}
+        request={queryUser}
       />
     </ModalForm>
   );

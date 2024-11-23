@@ -1,5 +1,5 @@
 import { IUser } from '@/api';
-import { currentUser } from '@/api/user';
+import { currentUser } from '@/api/base';
 import RightContent from '@/components/RightContent';
 import { errorConfig } from '@/requestErrorConfig';
 import { RequestConfig } from '@@/plugin-request/request';
@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { history, RunTimeLayoutConfig } from 'umi';
 import defaultSetting from '../config/defaultSetting';
 
-const loginPath = '/login';
+const loginPath = '/userLogin';
 
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;

@@ -1,7 +1,11 @@
-import { IHost } from '@/api';
-import { hostOpt } from '@/api/host';
+import { IEnv } from '@/api';
+import { insertEnv, queryProject } from '@/api/base';
 import { PlusOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormText } from '@ant-design/pro-components';
+import {
+  ModalForm,
+  ProFormSelect,
+  ProFormText,
+} from '@ant-design/pro-components';
 import { Button } from 'antd';
 import React from 'react';
 
@@ -9,15 +13,10 @@ interface selfProps {
   reload?: Function | undefined;
 }
 
-const AddHost: React.FC<selfProps> = (props) => {
-  let { reload } = props;
+const AddEnv: React.FC<selfProps> = ({ reload }) => {
   return (
-    <ModalForm<{
-      name: string;
-      host: string;
-      desc: string;
-    }>
-      title="新建host"
+    <ModalForm<IEnv>
+      title="新建Env"
       trigger={
         <Button type="primary">
           <PlusOutlined />
@@ -25,8 +24,8 @@ const AddHost: React.FC<selfProps> = (props) => {
         </Button>
       }
       autoFocusFirstInput
-      onFinish={async (values: IHost) => {
-        await hostOpt('POST', values);
+      onFinish={async (values: IEnv) => {
+        await insertEnv(values);
         reload!(true);
         return true;
       }}
@@ -37,8 +36,8 @@ const AddHost: React.FC<selfProps> = (props) => {
     >
       <ProFormText
         name="name"
-        label="host name"
-        placeholder="input your host name"
+        label="title"
+        placeholder="input your host title"
         required={true}
       />
       <ProFormText
@@ -58,8 +57,21 @@ const AddHost: React.FC<selfProps> = (props) => {
         label="desc"
         placeholder="input your host desc"
       />
+      <ProFormSelect
+        name="project_id"
+        label="项目"
+        request={async () => {
+          const { code, data } = await queryProject();
+          if (code === 0) {
+            return data.map((item) => ({
+              label: item.title,
+              value: item.id,
+            }));
+          } else return [];
+        }}
+      />
     </ModalForm>
   );
 };
 
-export default AddHost;
+export default AddEnv;

@@ -1,5 +1,5 @@
 import { ILoginParams } from '@/api';
-import { login } from '@/api/user';
+import { login } from '@/api/base';
 import { getToken, setToken } from '@/utils/token';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormText } from '@ant-design/pro-components';
@@ -20,12 +20,11 @@ const Index: React.FC = () => {
   };
 
   const handleSubmit = async (values: ILoginParams) => {
-    const res = await login({ ...values });
-    if (res.code === 0) {
+    const { code, data } = await login({ ...values });
+    if (code === 0) {
       message.success('login success');
-      const { token } = res.data;
-      if (token && token != getToken()) {
-        setToken(token);
+      if (data && data != getToken()) {
+        setToken(data);
       }
       await getCurrentUserInfo();
       const urlParams = new URL(window.location.href).searchParams;
@@ -36,7 +35,7 @@ const Index: React.FC = () => {
 
   return (
     <LoginForm
-      title="爱家测试平台"
+      title="Case Hub"
       initialValues={{ autoLogin: true }}
       onFinish={async (values) => {
         await handleSubmit(values as ILoginParams);
@@ -49,7 +48,6 @@ const Index: React.FC = () => {
           size: 'large',
           prefix: <UserOutlined />,
         }}
-        placeholder="默认邮箱前缀"
         rules={[
           {
             required: true,
@@ -59,7 +57,6 @@ const Index: React.FC = () => {
       />
       <ProFormText.Password
         name="password"
-        placeholder={'默认邮箱前缀'}
         fieldProps={{
           size: 'large',
           prefix: <LockOutlined />,

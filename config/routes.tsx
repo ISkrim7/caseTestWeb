@@ -1,6 +1,6 @@
 export default [
   {
-    path: '/login',
+    path: '/userLogin',
     exact: true,
     component: '@/pages/User/Login',
     layout: false,
@@ -10,76 +10,6 @@ export default [
     name: '首页',
     icon: 'HomeOutlined',
     component: '@/pages/index',
-  },
-  {
-    name: 'CBS数据构造',
-    path: '/CBS',
-    icon: 'EditFilled',
-    routes: [
-      {
-        path: '/CBS/structure/house',
-        name: '房源构造',
-        routes: [
-          {
-            path: '/CBS/structure/house/newHouse',
-            name: '新增房源与楼盘',
-            component: '@/pages/CBS/Structure/House',
-          },
-          {
-            path: '/CBS/structure/house/job',
-            name: '添加房源动作',
-            component: '@/pages/CBS/Structure/House/HouseJob',
-          },
-        ],
-      },
-      {
-        path: '/CBS/structure/custom',
-        name: '客源构造',
-        routes: [
-          {
-            path: '/CBS/structure/custom/job',
-            name: '客源构造',
-            component: '@/pages/CBS/Structure/Custom',
-          },
-        ],
-      },
-      {
-        path: '/CBS/structure/sign',
-        name: '签约构造',
-        routes: [
-          {
-            path: '/CBS/structure/sign/addContract',
-            name: '草签合同',
-            component: '@/pages/CBS/Structure/Sign',
-          },
-          {
-            path: '/CBS/structure/sign/job',
-            name: '签约动作',
-            component: '@/pages/CBS/Structure/Sign/SignJob',
-          },
-        ],
-      },
-      {
-        path: '/CBS/structure/hz/perf',
-        name: '业绩',
-        component: '@/pages/CBS/Structure/Perf',
-      },
-      {
-        path: '/CBS/structure/approve',
-        name: '审批流',
-        component: '@/pages/CBS/Structure/Approve',
-      },
-      {
-        path: '/CBS/structure/baseTurn',
-        name: '基础工具',
-        component: '@/pages/CBS/Structure/Base',
-      },
-      {
-        path: '/CBS/structure/config',
-        name: '构造配置',
-        component: '@/pages/CBS/Structure/Config',
-      },
-    ],
   },
   {
     path: '/',
@@ -131,18 +61,9 @@ export default [
         component: '@/pages/Project',
       },
       {
-        path: '/project/detail/:uid',
-        name: 'projectDetail',
-        component: '@/pages/Project/projectDetail',
-        hideInMenu: true,
-      },
-      {
-        name: '项目环境',
-        path: '/project/host',
-        component: '@/pages/Project/Host',
-      },
-      {
-        component: '@/pages/404',
+        path: '/project/Env',
+        name: '环境',
+        component: '@/pages/Project/Env',
       },
     ],
   },

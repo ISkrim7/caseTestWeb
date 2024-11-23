@@ -21,27 +21,9 @@ interface ITarget {
 const proxy: ITarget = {
   dev: {
     '/api': {
-      // target: 'http://192.168.101.48:5050',
-      target: 'http://10.1.6.39:5050',
-      // target: 'http://10.1.11.172:5050', //xb
-      ws: true,
+      target: 'http://10.1.1.110:5050',
       changeOrigin: true,
-      pathRewrite: { '^': '' },
-    },
-    '/aps': {
-      target: 'http://10.1.6.39:6060',
-      ws: true,
-      changeOrigin: true,
-      pathRewrite: { '^/aps': '' },
-    },
-  },
-
-  pro: {
-    '/api': {
-      target: 'http://10.10.137.210:5050',
-      ws: true,
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
+      pathRewrite: { '^/api': '/api' },
     },
   },
 };

@@ -11,6 +11,17 @@ interface IPageInfo {
   msg: string;
 }
 
+interface IBaseField {
+  id: number;
+  uid: string;
+  creator: number;
+  creatorName: string;
+  updater: number;
+  updaterName: string;
+  create_time: string;
+  update_time: string;
+}
+
 export interface IResponse<T> {
   code: number;
   data: T;
@@ -60,14 +71,23 @@ export interface IMoHuSearchUser {
   value: string;
 }
 
+export interface IEnv extends IBaseField {
+  name: string;
+  host: string;
+  port: string | null;
+  project_id: number;
+}
+
 export interface IProject {
-  adminID: number;
-  adminName: string;
+  chargeId: number;
+  chargeName: string;
+  creatorId: number;
+  creatorName: string;
   create_time: string;
   update_time: string;
   id: number;
   uid: string;
-  name: string;
+  title: string;
   desc?: string | null;
 }
 

@@ -1,8 +1,8 @@
 import { IHost, ISearch } from '@/api';
 import { hostOpt, pageHost } from '@/api/host';
 import MyProTable from '@/components/Table/MyProTable';
+import AddEnv from '@/pages/Project/Env/AddEnv';
 import columns from '@/pages/Project/Host/columns';
-import AddHost from '@/pages/Project/Host/components/AddHost';
 import { ActionType } from '@ant-design/pro-components';
 import { useRef } from 'react';
 
@@ -56,7 +56,7 @@ const Index = () => {
       rowKey={'uid'}
       onSave={OnSave}
       onDelete={OnDelete}
-      toolBarRender={() => [<AddHost reload={isReload} />]}
+      toolBarRender={() => [<AddEnv reload={isReload} />]}
     />
   );
 };

@@ -1,17 +1,21 @@
 import { defineConfig } from 'umi';
 import Settings from './defaultSetting';
-import proxy from './proxy';
 import routes from './routes';
 
-const { APP_ENV } = process.env;
-
+const { APP_ENV = 'dev' } = process.env;
 export default defineConfig({
   esbuildMinifyIIFE: true,
   theme: {
     'root-entry-name': 'variable',
   },
   fastRefresh: true,
-  proxy: proxy[APP_ENV as keyof typeof proxy],
+  proxy: {
+    '/api': {
+      target: 'http://127.0.0.1:5050',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
+  },
   layout: {
     ...Settings,
   },

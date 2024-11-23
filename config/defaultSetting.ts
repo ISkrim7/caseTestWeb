@@ -11,7 +11,7 @@ const Settings: LayoutSettings & {
   colorPrimary: '#1677ff',
   iconfontUrl: '/icons/5i5j.png',
   // 设置标题的 title
-  title: '爱家测试平台',
+  title: 'Case Hub',
   layout: 'side',
   menu: {
     type: 'sub',

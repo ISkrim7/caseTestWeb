@@ -1,8 +1,7 @@
-import { INewOrUpdateProject, IProject } from '@/api';
-import { pageProject, projectOpt } from '@/api/project';
+import { IProject } from '@/api';
+import { pageProject, putProject } from '@/api/base';
 import NewProject from '@/components/NewProject';
 import MyProTable from '@/components/Table/MyProTable';
-import { history } from '@@/core/history';
 import type { ActionType } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-components';
 import React, { useRef } from 'react';
@@ -10,7 +9,6 @@ import { useAccess } from 'umi';
 
 const ProjectList: React.FC = () => {
   const { isAdmin } = useAccess();
-  console.log('====', isAdmin);
   const columns: ProColumns[] = [
     {
       title: 'uid',
@@ -22,7 +20,7 @@ const ProjectList: React.FC = () => {
     },
     {
       title: 'title',
-      dataIndex: 'name',
+      dataIndex: 'title',
       ellipsis: true, //是否自动缩略
       width: '10%',
       formItemProps: {
@@ -41,8 +39,8 @@ const ProjectList: React.FC = () => {
       search: false,
     },
     {
-      title: 'admin',
-      dataIndex: 'adminName',
+      title: 'chargeName',
+      dataIndex: 'chargeName',
       ellipsis: true,
       editable: false,
       search: false,
@@ -80,14 +78,7 @@ const ProjectList: React.FC = () => {
             编辑
           </a>
         ) : null,
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          key="view"
-          onClick={() => {
-            history.push('/project/detail/' + record.uid);
-          }}
-        >
+        <a target="_blank" rel="noopener noreferrer" key="view">
           查看
         </a>,
       ],
@@ -125,20 +116,9 @@ const ProjectList: React.FC = () => {
   };
 
   const OnSave = async (_: any, record: IProject) => {
-    const form = {
-      uid: record.uid,
-      name: record.name,
-      desc: record.desc,
-    };
-    return await projectOpt(form as INewOrUpdateProject, 'PUT');
+    return await putProject(record);
   };
 
-  const OnDelete = async (_: any, record: IProject) => {
-    const form = {
-      uid: record.uid,
-    };
-    return await projectOpt(form as INewOrUpdateProject, 'DELETE');
-  };
   return (
     <MyProTable
       headerTitle={'项目'}
@@ -147,7 +127,6 @@ const ProjectList: React.FC = () => {
       request={fetchPageProjects}
       rowKey={'uid'}
       onSave={OnSave}
-      onDelete={OnDelete}
       toolBarRender={() => [<NewProject reload={isReload} />]}
     />
   );

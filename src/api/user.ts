@@ -2,7 +2,6 @@ import {
   IDepartment,
   IDepartmentPage,
   IDepartmentResponse,
-  ILoginParams,
   IMoHuSearchUser,
   IObjGet,
   IPassword,
@@ -22,26 +21,6 @@ const DepartmentOptURL: string = '/api/user/department/opt';
 const QueryUser: string = '/api/user/query';
 const SearchUser: string = '/api/user/search';
 const CurrentUser: string = '/api/user/current';
-
-/** 登录接口 POST /user/login */
-export async function login(body: ILoginParams, options?: IObjGet) {
-  return request<IResponse<any>>('/api/user/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 获取当前的用户 GET /user/current */
-export async function currentUser(options?: IObjGet) {
-  return request<{ data: IUser }>(CurrentUser, {
-    method: 'GET',
-    ...(options || {}),
-  });
-}
 
 /** 模糊搜索用户 GET /users */
 export async function searchUser(body: IMoHuSearchUser, options?: IObjGet) {

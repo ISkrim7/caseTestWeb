@@ -4,7 +4,6 @@ import {
   IObjGet,
   IPage,
   IResponse,
-  IStructureConfig,
   IUserList,
 } from '@/api';
 import { IPerfInspection } from '@/pages/Report/History/PerfInsp/PerfResultAPI';
@@ -14,10 +13,6 @@ const PerfSettingUrl = '/api/cbs/perfSetting';
 const PagePerfInspection = '/api/cbs/perfInspection/page';
 const PerfInspection = '/api/cbs/perfInspection/handel';
 const PerfInspectionDetail = '/api/cbs/perfInspection/detail';
-const TodayCount = '/api/cbs/structure/today/count';
-const YearCount = '/api/cbs/structure/year/sum';
-const TotalCount = '/api/cbs/structure/sum';
-const MonthCount = '/api/cbs/structure/month/count';
 const CollectInfo = '/api/cbs/collect';
 const PageCollectInfo = '/api/cbs/page/collect';
 const CityList = '/api/cbs/structure/cityList';
@@ -26,21 +21,6 @@ const BuildingConfig = '/api/cbs/structure/buildingConfig';
 const AddUser = '/api/cbs/structure/addUser';
 const ConfigURL = '/api/cbs/structure/configOpt';
 const ConfigInfoURL = '/api/cbs/structure/configInfo';
-export const getConfig = async (params: { city: string }, opt?: IObjGet) => {
-  return request<IResponse<IStructureConfig>>(ConfigInfoURL, {
-    method: 'GET',
-    params,
-    ...opt,
-  });
-};
-
-export const setConfig = async (body: IStructureConfig, opt?: IObjGet) => {
-  return request(ConfigURL, {
-    method: 'POST',
-    data: body,
-    ...opt,
-  });
-};
 
 export const queryCityList = async (opt?: IObjGet) => {
   return request<IResponse<ICityList[]>>(CityList, {

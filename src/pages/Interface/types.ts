@@ -1,4 +1,25 @@
+import { IBaseField } from '@/api';
 import React from 'react';
+
+export interface IInterfaceAPI extends IBaseField {
+  name: string;
+  desc: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  url: string;
+  headers: IHeaders[] | [];
+  params: IParams[] | [];
+  body: any;
+  data: any;
+  asserts: IAsserts[];
+  extracts: IExtracts[];
+  project_id: number;
+  env_id: number;
+  connectTimeout: number;
+  responseTimeout: number;
+  beforeScript: string;
+  afterScript: string;
+  beforeParams: IBeforeParams[] | [];
+}
 
 interface IBase {
   id: React.Key;
@@ -44,10 +65,6 @@ export interface ISteps {
   afterFunc: any;
   bodyType: number;
   body: any;
-}
-
-export interface IStructure {
-  [key: string]: any;
 }
 
 export interface IParams extends IBase {}

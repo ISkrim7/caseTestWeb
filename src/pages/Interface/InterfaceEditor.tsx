@@ -78,7 +78,7 @@ const InterfaceEditor: FC<SelfProps> = (props) => {
     fetchProjects().then((data) => {
       if (data) {
         const proEnum = data.map((item) => {
-          return { label: item.name, value: item.id };
+          return { label: item.title, value: item.id };
         });
         setProjectEnum(proEnum);
       }

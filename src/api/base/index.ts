@@ -106,6 +106,17 @@ export const pageEnv = async (params?: ISearch, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
+/**
+ * env query
+ * @param options
+ */
+export const queryEnv = async (options?: IObjGet) => {
+  return request<IResponse<any>>('/api/project/env/page', {
+    method: 'GET',
+    ...(options || {}),
+  });
+};
 /**
  * env 修改
  * @param envInfo
@@ -137,7 +148,7 @@ export const deleteEnv = async (envInfo: IEnv, options?: IObjGet) => {
  * @param options
  */
 export const queryEnvBy = async (envInfo: IEnv, options?: IObjGet) => {
-  return request<IResponse<any>>('/api/project/env/queryBy', {
+  return request<IResponse<IEnv[]>>('/api/project/env/queryBy', {
     method: 'GET',
     params: envInfo,
     ...(options || {}),

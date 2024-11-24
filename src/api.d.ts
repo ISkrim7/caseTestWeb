@@ -371,12 +371,6 @@ export interface IBuildings {
   builder?: string;
 }
 
-export interface IStructureConfig {
-  city: string;
-  usernames?: IUsername[] | [];
-  buildings?: IBuildings[] | [];
-}
-
 export interface ICityList {
   id: number;
   label: string;

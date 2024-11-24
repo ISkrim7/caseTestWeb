@@ -1,5 +1,4 @@
 import { addApsWsJob } from '@/api/aps';
-import { getNs } from '@/api/cbsAPI/cbs';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import { useModel } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
@@ -53,13 +52,7 @@ function App() {
       setNs(data);
     });
   };
-  const handleClick = async () => {
-    await getNs().then(({ code, data }) => {
-      if (code === 0) {
-        setNs(data);
-      }
-    });
-  };
+  const handleClick = async () => {};
 
   useEffect(() => {
     if (ns) {
@@ -87,7 +80,6 @@ function App() {
         <button
           onClick={() => {
             setAllMessage([]);
-            setNs(null);
           }}
         >
           Clear

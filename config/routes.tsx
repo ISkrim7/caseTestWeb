@@ -150,6 +150,23 @@ export default [
     icon: 'ApiFilled',
     routes: [
       {
+        path: '/interface/interApi',
+        name: '接口API',
+        component: '@/pages/Httpx/Interface',
+      },
+      {
+        path: '/interface/interApi/detail/interId=:interId',
+        name: '接口详情添加',
+        hideInMenu: true,
+        component: '@/pages/Httpx/Interface/InterfaceApiDetail',
+      },
+      {
+        path: '/interface/interApi/detail',
+        name: '接口详情',
+        hideInMenu: true,
+        component: '@/pages/Httpx/Interface/InterfaceApiDetail',
+      },
+      {
         path: '/interface/caseApi',
         name: '接口用例',
         component: '@/pages/Interface',
@@ -205,45 +222,6 @@ export default [
     ],
   },
   {
-    name: 'Jacoco覆盖',
-    path: '/jacoco',
-    icon: 'FundOutlined',
-    routes: [
-      {
-        path: '/jacoco/list',
-        name: '配置列表',
-        component: '@/pages/Jacoco/CocoList',
-      },
-      {
-        path: '/jacoco/report',
-        name: '报告列表',
-        component: '@/pages/Jacoco/CocoReport',
-      },
-      {
-        path: '/jacoco/chart/reportId=:reportId',
-        name: '覆盖率统计',
-        hideInMenu: true,
-        component: '@/pages/Jacoco/CocoChart',
-      },
-      {
-        path: '/jacoco/chart',
-        name: '覆盖率统计',
-        component: '@/pages/Jacoco/CocoChart',
-      },
-      {
-        path: '/jacoco/group_chart',
-        name: '覆盖率汇总',
-        component: '@/pages/Jacoco/CocoChart/Group',
-      },
-      {
-        path: '/jacoco/report/detail/uid=:uid',
-        name: '报告详情',
-        component: '@/pages/Jacoco/CocoReport/Detail',
-        hideInMenu: true,
-      },
-    ],
-  },
-  {
     path: '/report/history',
     name: '巡检',
     icon: 'HistoryOutlined',
@@ -267,18 +245,7 @@ export default [
     hideInMenu: true,
     component: '@/pages/Report/History/UIMultiple/UIDetail',
   },
-  {
-    path: '/statistic',
-    name: '构造统计',
-    icon: 'AreaChartOutlined',
-    component: '@/pages/Statistic',
-  },
-  {
-    path: '/collect',
-    name: '需求&BUG收集',
-    icon: 'BugOutlined',
-    component: '@/pages/CBS/Structure/Collect',
-  },
+
   {
     component: '@/pages/404',
   },

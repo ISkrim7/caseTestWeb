@@ -43,7 +43,7 @@ const AddEnv: React.FC<selfProps> = ({ reload }) => {
       <ProFormText
         name="host"
         label="host"
-        placeholder="input your host"
+        placeholder="input your host or domain"
         required={true}
       />
       <ProFormText

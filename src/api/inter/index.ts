@@ -1,7 +1,19 @@
-import { IObjGet, IResponse } from '@/api';
+import { IObjGet, IPage, IResponse, ISearch } from '@/api';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { request } from '@@/plugin-request/request';
 
+/**
+ * page api
+ * @param data
+ * @param options
+ */
+export const pageInterApi = async (data: ISearch, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/page', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
 /**
  * 接口api详情
  * @param data

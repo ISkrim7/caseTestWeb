@@ -5,6 +5,8 @@ export interface IInterfaceAPI extends IBaseField {
   name: string;
   desc: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  status: string;
+  level: string;
   url: string;
   headers: IHeaders[] | [];
   params: IParams[] | [];

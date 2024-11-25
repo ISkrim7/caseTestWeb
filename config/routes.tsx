@@ -212,12 +212,16 @@ export default [
     name: '调试',
     path: '/debugger',
     icon: 'BugOutlined',
-    access: 'isSuperAdmin',
     routes: [
       {
         path: '/debugger/socket',
         name: 'socket',
         component: '@/pages/DebuggerPage/socket',
+      },
+      {
+        path: '/debugger/drag',
+        name: 'drag',
+        component: '@/pages/DebuggerPage/Drag',
       },
     ],
   },

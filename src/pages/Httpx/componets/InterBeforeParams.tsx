@@ -65,7 +65,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
               editableKeys: beforeParamsEditableKeys,
               onChange: setBeforeParamsEditableRowKeys,
               actionRender: (row, _, dom) => {
-                return [dom.delete, dom.cancel];
+                return [dom.save, dom.delete, dom.cancel];
               },
             }}
           />

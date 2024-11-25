@@ -100,7 +100,7 @@ const InterParam: FC<SelfProps> = ({ form, mode }) => {
             editableKeys: paramsEditableKeys,
             onChange: setParamsEditableRowKeys, // Update editable keys
             actionRender: (_, __, dom) => {
-              return [dom.delete, dom.cancel];
+              return [dom.save, dom.delete, dom.cancel];
             },
           }}
         />

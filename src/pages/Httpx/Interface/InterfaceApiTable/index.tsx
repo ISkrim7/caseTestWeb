@@ -56,10 +56,9 @@ const Index = () => {
         return (
           <>
             <a
-              target="_blank"
-              rel="noopener noreferrer"
-              key="view"
-              onClick={() => {}}
+              onClick={() => {
+                history.push(`/interface/interApi/detail/interId=${record.id}`);
+              }}
             >
               详情
             </a>

@@ -1,9 +1,9 @@
-import { pageInterApi } from '@/api/inter';
+import { asyncTryInterApi, pageInterApi } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { CONFIG } from '@/utils/config';
 import { ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, Popconfirm, Tag } from 'antd';
+import { Button, Divider, message, Popconfirm, Tag } from 'antd';
 import { useCallback } from 'react';
 import { history } from 'umi';
 
@@ -64,7 +64,19 @@ const Index = () => {
               详情
             </a>
             <Divider type={'vertical'} />
-            <a>执行</a>
+            <a
+              onClick={async () => {
+                await asyncTryInterApi({ id: record.id }).then(
+                  ({ code, msg }) => {
+                    if (code === 0) {
+                      message.success(msg);
+                    }
+                  },
+                );
+              }}
+            >
+              执行
+            </a>
             <Divider type={'vertical'} />
             <a>复制</a>
 

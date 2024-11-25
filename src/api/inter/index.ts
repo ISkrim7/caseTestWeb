@@ -14,6 +14,35 @@ export const pageInterApi = async (data: ISearch, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
+/**
+ * try api
+ * @param data
+ * @param options
+ */
+export const tryInterApi = async (data: { id: number }, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/try', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * try api
+ * @param data
+ * @param options
+ */
+export const asyncTryInterApi = async (
+  data: { id: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IPage<number>>>('/api/interface/asyncTry', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
 /**
  * 接口api详情
  * @param data

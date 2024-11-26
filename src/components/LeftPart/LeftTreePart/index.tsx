@@ -1,11 +1,10 @@
 import { ICasePart, IObjGet } from '@/api';
 import {
-  addCasePart,
-  casePartTree,
-  delCasePart,
-  dropCasePart,
+  insertCasePart,
   putCasePart,
-} from '@/api/interface';
+  queryTreePartByProject,
+} from '@/api/base';
+import { delCasePart, dropCasePart } from '@/api/interface';
 import NewDirectoryModal from '@/components/LeftPart/LeftTreePart/newDirectoryModal';
 import { getPart, setPart } from '@/utils/token';
 import { useModel } from '@@/exports';
@@ -35,9 +34,11 @@ const { Search } = Input;
 interface SelfProps {
   currentProjectId?: number;
   setCurrentCasePartId: any;
+  perKey?: string;
 }
 
 const Index: React.FC<SelfProps> = ({
+  perKey,
   currentProjectId,
   setCurrentCasePartId,
 }) => {
@@ -45,7 +46,7 @@ const Index: React.FC<SelfProps> = ({
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-  const [partsData, setPartsData] = useState<ICasePart[]>([]);
+  const [partsData, setPartsData] = useState<any[]>([]);
   const [partDataList, setPartDataList] = useState<any[]>([]); // 使用状态来管理树形数据
   const [nodeKey, setNodeKey] = useState<any>(null);
   const [todo, setTodo] = useState<boolean>(true);
@@ -60,9 +61,9 @@ const Index: React.FC<SelfProps> = ({
   // 获取case part 数据
   useEffect(() => {
     if (currentProjectId) {
-      casePartTree({ projectID: currentProjectId }).then(({ code, data }) => {
+      queryTreePartByProject(currentProjectId).then(({ code, data }) => {
         if (code === 0 || data) {
-          setPartsData(data as ICasePart[]);
+          setPartsData(data);
         }
       });
     }
@@ -74,7 +75,7 @@ const Index: React.FC<SelfProps> = ({
       const generatedTreeData = generatePartList(partsData);
       setPartDataList(generatedTreeData); // 更新树形数据状态
 
-      const TOKEN_PART_NUMBER = getPart();
+      const TOKEN_PART_NUMBER = getPart(perKey);
 
       if (TOKEN_PART_NUMBER) {
         const tokenKey = parseInt(TOKEN_PART_NUMBER);
@@ -135,14 +136,13 @@ const Index: React.FC<SelfProps> = ({
     isRoot: boolean;
   }[] => {
     const partList: any[] = [];
-
     const traverse = (nodes: any[]) => {
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
-        const { id, partName, rootID, isRoot } = node;
+        const { id, title, rootID, isRoot } = node;
         partList.push({
           key: id,
-          title: partName,
+          title: title,
           rootID: rootID,
           isRoot: isRoot,
         });
@@ -151,7 +151,6 @@ const Index: React.FC<SelfProps> = ({
         }
       }
     };
-
     traverse(data);
     return partList;
   };
@@ -159,7 +158,7 @@ const Index: React.FC<SelfProps> = ({
   const treeData = useMemo(() => {
     const loop = (data: ICasePart[]): any =>
       data.map((item) => {
-        const strTitle = item.partName;
+        const strTitle = item.title;
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
@@ -215,7 +214,7 @@ const Index: React.FC<SelfProps> = ({
       1: () => {
         setCurrentNode(node);
         setModalTitle('新增目录');
-        setRecord({ partName: '' });
+        setRecord({ title: '' });
         setOpen(true);
         setTodo(true);
       },
@@ -260,14 +259,16 @@ const Index: React.FC<SelfProps> = ({
     }
   };
 
-  const onCreateOrUpdateCasePart = async (value: { partName: string }) => {
+  const onCreateOrUpdateCasePart = async (value: { title: string }) => {
+    console.log('title', value);
+    console.log('todo', todo);
     // 在root或者子目录上
     const body: any = {};
     if (currentNode) {
       body.projectID = currentProjectId;
       body.parentID = todo ? currentNode.key || undefined : undefined;
       body.id = todo ? undefined : currentNode.key;
-      body.partName = value.partName;
+      body.title = value.title;
       body.isRoot = false;
       // 在root上新增？
       if (currentNode.isRoot === true) {
@@ -277,10 +278,10 @@ const Index: React.FC<SelfProps> = ({
       }
     } else {
       body.projectID = currentProjectId;
-      body.partName = value.partName;
+      body.title = value.title;
       body.isRoot = true;
     }
-    const apiFn = todo ? addCasePart : putCasePart;
+    const apiFn = todo ? insertCasePart : putCasePart;
     const { code, msg } = await apiFn(body);
     if (code === 0) {
       message.success(msg);
@@ -329,7 +330,7 @@ const Index: React.FC<SelfProps> = ({
                   <Button
                     onClick={() => {
                       setOpen(true);
-                      setRecord({ partName: '' });
+                      setRecord({ title: '' });
                       setCurrentNode(null);
                       setTodo(true);
                     }}
@@ -357,7 +358,7 @@ const Index: React.FC<SelfProps> = ({
             defaultExpandAll={true}
             onSelect={(keys: React.Key[], info: any) => {
               if (keys[0] != currentCasePart[0]) {
-                setPart(info.node.key); // set token
+                setPart(info.node.key, perKey); // set token
                 setCurrentCasePartId(info.node.key);
                 setCurrentCasePart([keys[0]]);
               }
@@ -410,7 +411,7 @@ const Index: React.FC<SelfProps> = ({
               <a
                 onClick={() => {
                   setOpen(true);
-                  setRecord({ partName: '' });
+                  setRecord({ title: '' });
                   setModalTitle('新建根目录');
                   setCurrentNode(null);
                 }}

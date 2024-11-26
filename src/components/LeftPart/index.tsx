@@ -1,5 +1,5 @@
 import { IProject } from '@/api';
-import { queryProject } from '@/api/project';
+import { queryProject } from '@/api/base';
 import LeftRootTree from '@/components/LeftPart/LeftRootTree';
 import LeftTreePart from '@/components/LeftPart/LeftTreePart';
 import { ProjectTwoTone } from '@ant-design/icons';
@@ -12,27 +12,23 @@ interface SelfProps {
   setCurrentProjectId: any;
   setCurrentCasePartId: any;
   root?: boolean;
+  perKey?: string;
 }
 
 const Index: FC<SelfProps> = ({
   currentProjectId,
   root,
   setCurrentProjectId,
+  perKey,
   setCurrentCasePartId,
 }) => {
   const [projectArray, setProjectArray] = useState<IProject[]>([]);
+
   // 首次进入 获取project Arr  默认选择第一个
   useEffect(() => {
-    const fetchProjects = async () => {
-      const { code, data } = await queryProject();
-      if (code === 0) {
-        return data;
-      }
-    };
-    fetchProjects().then((data) => {
+    queryProject().then(async ({ data }) => {
       if (data && data.length > 0) {
         setProjectArray(data);
-        // 默认第一个
         setCurrentProjectId(data[0].id);
       }
     });
@@ -56,7 +52,7 @@ const Index: FC<SelfProps> = ({
                 <ProjectTwoTone style={{ marginRight: 10 }} />
                 {
                   projectArray.find((item) => item.id === currentProjectId)
-                    ?.name
+                    ?.title
                 }
               </a>
             </div>
@@ -70,7 +66,7 @@ const Index: FC<SelfProps> = ({
                 autoFocus
                 placeholder={'请选择项目'}
                 options={projectArray?.map((item) => {
-                  return { value: item.id, label: item.name };
+                  return { value: item.id, label: item.title };
                 })}
                 onChange={(value: number) => {
                   setCurrentProjectId(value);
@@ -87,6 +83,7 @@ const Index: FC<SelfProps> = ({
                 />
               ) : (
                 <LeftTreePart
+                  perKey={perKey}
                   currentProjectId={currentProjectId}
                   setCurrentCasePartId={setCurrentCasePartId}
                 />

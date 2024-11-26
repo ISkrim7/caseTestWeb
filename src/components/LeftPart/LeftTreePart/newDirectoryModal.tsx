@@ -15,7 +15,7 @@ const NewDirectoryModal: FC<SelfProps> = ({
   setOpen,
   onFinish,
 }) => {
-  const [form] = Form.useForm<{ partName: string }>();
+  const [form] = Form.useForm<{ title: string }>();
   return (
     <ModalForm
       open={open}
@@ -30,7 +30,7 @@ const NewDirectoryModal: FC<SelfProps> = ({
     >
       <ProFormText
         width="md"
-        name="partName"
+        name="title"
         label="目录名称"
         placeholder="请输入名称"
       />

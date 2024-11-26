@@ -20,7 +20,10 @@ export const pageInterApi = async (data: ISearch, options?: IObjGet) => {
  * @param data
  * @param options
  */
-export const tryInterApi = async (data: { id: number }, options?: IObjGet) => {
+export const tryInterApi = async (
+  data: { interfaceId: string },
+  options?: IObjGet,
+) => {
   return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/try', {
     method: 'POST',
     data: data,
@@ -34,7 +37,7 @@ export const tryInterApi = async (data: { id: number }, options?: IObjGet) => {
  * @param options
  */
 export const asyncTryInterApi = async (
-  data: { id: number },
+  data: { interfaceId: number },
   options?: IObjGet,
 ) => {
   return request<IResponse<IPage<number>>>('/api/interface/asyncTry', {

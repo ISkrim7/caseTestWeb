@@ -1,5 +1,5 @@
 import { IObjGet, IQueryPartTree } from '@/api';
-import { casePartTree } from '@/api/interface';
+import { queryTreePartByProject } from '@/api/base';
 import { queryProject } from '@/api/project';
 import { fetchEnvsOptions, queryMethodOptions } from '@/api/ui';
 import {
@@ -14,12 +14,12 @@ const loopData = (data: IQueryPartTree[]): CasePartEnum[] => {
   return data.map((item) => {
     if (item.children) {
       return {
-        title: item.partName,
+        title: item.title,
         value: item.id,
         children: loopData(item.children),
       };
     }
-    return { title: item.partName, value: item.id };
+    return { title: item.title, value: item.id };
   });
 };
 
@@ -98,7 +98,7 @@ export const fetchCaseParts = async (
   projectId: number,
   setCasePartEnum: React.Dispatch<React.SetStateAction<CasePartEnum[]>>,
 ) => {
-  const { code, data } = await casePartTree({ projectID: projectId });
+  const { code, data } = await queryTreePartByProject(projectId);
   if (code === 0) {
     setCasePartEnum(loopData(data));
   } else {

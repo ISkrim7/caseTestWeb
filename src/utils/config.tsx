@@ -24,8 +24,6 @@ export const CONFIG: IObjGet = {
     '6': { text: 'BeforeStructure' },
     '7': { text: 'AfterStructure' },
   },
-  CASE_LEVEL: ['P1', 'P2', 'P3', 'P4'],
-  UI_CASE_METHOD: ['goto'],
   API_LEVEL_SELECT: [
     {
       label: 'P1',
@@ -45,6 +43,30 @@ export const CONFIG: IObjGet = {
     { label: '正常', value: 'NORMAL' },
     { label: '关闭', value: 'CLOSE' },
   ],
+  API_LEVEL_ENUM: {
+    P1: {
+      text: 'P1',
+      status: 'P1',
+    },
+    P2: {
+      text: 'P2',
+      status: 'P2',
+    },
+    P3: {
+      text: 'P3',
+      status: 'P3',
+    },
+    P0: {
+      text: 'P0',
+      status: 'P0',
+    },
+  },
+
+  API_STATUS_ENUM: {
+    DEBUG: { text: '待调试', tag: <Tag color={'processing'}>待调试</Tag> },
+    NORMAL: { text: '正常', tag: <Tag color={'success'}>正常</Tag> },
+    CLOSE: { text: '关闭', tag: <Tag color={'error'}>关闭</Tag> },
+  },
   API_REQUEST_METHOD: [
     { label: <span style={{ color: 'green' }}>{'GET'}</span>, value: 'GET' },
     { label: <span style={{ color: 'orange' }}>{'POST'}</span>, value: 'POST' },
@@ -66,24 +88,6 @@ export const CONFIG: IObjGet = {
     },
     P4: {
       text: 'P0',
-    },
-  },
-  API_LEVEL_ENUM: {
-    1: {
-      text: 'P1',
-      status: 'P1',
-    },
-    2: {
-      text: 'P2',
-      status: 'P2',
-    },
-    3: {
-      text: 'P3',
-      status: 'P3',
-    },
-    4: {
-      text: 'P0',
-      status: 'P0',
     },
   },
   CASE_LEVEL_ENUM: {
@@ -114,15 +118,15 @@ export const CONFIG: IObjGet = {
     FAIL: { text: 'FAIL', tag: <Tag color={'red'}>FAIL</Tag> },
   },
   CASE_STATUS_ENUM: {
-    1: {
+    DEBUG: {
       text: '待调试',
       status: 'DEBUG',
     },
-    2: {
+    CLOSE: {
       text: '已停用',
       status: 'CLOSE',
     },
-    3: {
+    NORMAL: {
       text: '正常',
       status: 'NORMAL',
     },

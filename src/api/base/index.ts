@@ -1,8 +1,10 @@
 import {
+  ICasePart,
   IEnv,
   ILoginParams,
   IObjGet,
   IProject,
+  IQueryPartTree,
   IResponse,
   ISearch,
   IUser,
@@ -151,6 +153,48 @@ export const queryEnvBy = async (envInfo: IEnv, options?: IObjGet) => {
   return request<IResponse<IEnv[]>>('/api/project/env/queryBy', {
     method: 'GET',
     params: envInfo,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 通过project 获取模块树
+ * @param projectId
+ * @param options
+ */
+export const queryTreePartByProject = async (
+  projectId: number,
+  options?: IObjGet,
+) => {
+  return request<IResponse<IQueryPartTree[]>>('/api/part/queryTreeByProject', {
+    method: 'GET',
+    params: { projectId: projectId },
+    ...(options || {}),
+  });
+};
+
+/**
+ * 添加casePart
+ * @param body
+ * @param options
+ */
+export const insertCasePart = async (body: ICasePart, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/part/insert', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 修改casePart
+ * @param body
+ * @param options
+ */
+export const putCasePart = async (body: ICasePart, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/part/update', {
+    method: 'POST',
+    data: body,
     ...(options || {}),
   });
 };

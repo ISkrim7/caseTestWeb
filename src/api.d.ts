@@ -116,7 +116,7 @@ export interface IHost {
 export interface ICasePart {
   id?: React.Key;
   uid?: string;
-  partName: string;
+  title: string;
   projectID?: number | string;
   create_time?: string;
   update_time?: string | null;
@@ -239,8 +239,9 @@ export interface IHostResponse {
 
 export interface IQueryPartTree {
   id: number;
+
   parentID: number | null;
-  partName: string;
+  title: string;
   projectID: number;
   uid: string;
   create_time: string;

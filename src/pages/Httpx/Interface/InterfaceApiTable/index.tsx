@@ -2,56 +2,99 @@ import { asyncTryInterApi, pageInterApi } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { CONFIG } from '@/utils/config';
-import { ProColumns } from '@ant-design/pro-components';
+import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Popconfirm, Tag } from 'antd';
-import { useCallback } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import { history } from 'umi';
 
-const Index = () => {
+interface SelfProps {
+  currentProjectId?: number;
+  currentPartId?: number;
+  perKey: string;
+}
+
+const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
+  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
+
+  useEffect(() => {
+    actionRef.current?.reload();
+  }, [currentPartId, currentProjectId]);
+
+  const fetchInterface = useCallback(
+    async (params: any, sort: any) => {
+      const searchData = {
+        ...params,
+        part_id: currentPartId,
+        sort: sort,
+      };
+      const { code, data } = await pageInterApi(searchData);
+      if (code === 0) {
+        return {
+          data: data.items,
+          total: data.pageInfo.total,
+          success: true,
+          pageSize: data.pageInfo.page,
+          current: data.pageInfo.limit,
+        };
+      }
+      return {
+        data: [],
+        success: false,
+        total: 0,
+      };
+    },
+    [currentPartId],
+  );
   const columns: ProColumns<IInterfaceAPI>[] = [
     {
       title: '接口编号',
       dataIndex: 'uid',
       key: 'uid',
+      fixed: 'left',
+      width: '10%',
+      copyable: true,
     },
     {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
+      fixed: 'left',
+      width: '15%',
     },
     {
       title: '优先级',
       dataIndex: 'level',
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
-      render: (text, record) => {
-        return <Tag>{record.level}</Tag>;
+      width: '10%',
+      render: (_, record) => {
+        return <Tag color={'blue'}>{record.level}</Tag>;
       },
     },
     {
       title: '状态',
       dataIndex: 'status',
       valueType: 'select',
-      valueEnum: CONFIG.CASE_STATUS_ENUM,
-      render: (text, record) => {
-        return <Tag>{record.status}</Tag>;
+      width: '10%',
+      valueEnum: CONFIG.API_STATUS_ENUM,
+      render: (_, record) => {
+        return CONFIG.API_STATUS_ENUM[record.status].tag;
       },
     },
     {
       title: '创建人',
       dataIndex: 'creatorName',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'create_time',
-      valueType: 'dateTime',
-      sorter: true,
-      search: false,
+      width: '10%',
+      render: (_, record) => {
+        return <Tag>{record.creatorName}</Tag>;
+      },
     },
     {
       title: '操作',
       valueType: 'option',
       key: 'option',
+      fixed: 'right',
+      width: '15%',
       render: (text, record, _) => {
         return (
           <>
@@ -65,7 +108,7 @@ const Index = () => {
             <Divider type={'vertical'} />
             <a
               onClick={async () => {
-                await asyncTryInterApi({ id: record.id }).then(
+                await asyncTryInterApi({ interfaceId: record.id }).then(
                   ({ code, msg }) => {
                     if (code === 0) {
                       message.success(msg);
@@ -95,32 +138,18 @@ const Index = () => {
     },
   ];
 
-  const fetchInterface = useCallback(async (params: any, sort: any) => {
-    const searchData = { ...params, sort: sort };
-    const { code, data } = await pageInterApi(searchData);
-    if (code === 0) {
-      return {
-        data: data.items,
-        total: data.pageInfo.total,
-        success: true,
-        pageSize: data.pageInfo.page,
-        current: data.pageInfo.limit,
-      };
-    }
-    return {
-      data: [],
-      success: false,
-      total: 0,
-    };
-  }, []);
   return (
     <>
       <MyProTable
+        persistenceKey={perKey}
         columns={columns}
         rowKey={'id'}
+        x={1000}
+        actionRef={actionRef}
         request={fetchInterface}
         toolBarRender={() => [
           <Button
+            type={'primary'}
             onClick={() => {
               history.push('/interface/interApi/detail');
             }}

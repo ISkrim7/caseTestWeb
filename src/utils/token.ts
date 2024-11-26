@@ -10,10 +10,18 @@ export function clearToken() {
   return localStorage.clear();
 }
 
-export function setPart(partNumber: string) {
-  return localStorage.setItem('partNumber', partNumber);
+export function setPart(partNumber: string, key?: string) {
+  if (key) {
+    return localStorage.setItem(key, partNumber);
+  } else {
+    return localStorage.setItem('pro-table', partNumber);
+  }
 }
 
-export function getPart() {
-  return localStorage.getItem('partNumber');
+export function getPart(key?: string) {
+  if (key) {
+    return localStorage.getItem(key);
+  } else {
+    return localStorage.getItem('pro-table');
+  }
 }

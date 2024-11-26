@@ -20,7 +20,7 @@ const Index: FC<SelfProps> = ({ currentProjectId, setCurrentCasePartId }) => {
                 key: items.id,
                 label: (
                   <a onClick={() => setCurrentCasePartId(items.id as number)}>
-                    {items.partName}
+                    {items.title}
                   </a>
                 ),
               };

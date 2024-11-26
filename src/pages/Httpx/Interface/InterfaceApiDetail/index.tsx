@@ -3,6 +3,7 @@ import { queryEnvBy, queryProject } from '@/api/base';
 import {
   detailInterApiById,
   insertInterApi,
+  tryInterApi,
   updateInterApiById,
 } from '@/api/inter';
 import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
@@ -13,6 +14,8 @@ import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterHeader from '@/pages/Httpx/componets/InterHeader';
 import InterParam from '@/pages/Httpx/componets/InterParam';
 import { IInterfaceAPI } from '@/pages/Interface/types';
+import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
+import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import {
   ProCard,
@@ -20,14 +23,15 @@ import {
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
+  ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Form, message, Tabs } from 'antd';
+import { Button, Form, message, Spin, Tabs } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { useParams } from 'umi';
 
 const Index: FC = () => {
   const { interId } = useParams<{ interId: string }>();
-  const { API_REQUEST_METHOD } = CONFIG;
+  const { API_LEVEL_SELECT, API_STATUS_SELECT, API_REQUEST_METHOD } = CONFIG;
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
@@ -36,13 +40,14 @@ const Index: FC = () => {
   );
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [envs, setEnvs] = useState<{ label: string; value: number }[]>([]);
+  const [tryLoading, setTryLoading] = useState(false);
+  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
 
   useEffect(() => {
     if (interId) {
       setCurrentMode(1);
       detailInterApiById({ interfaceId: interId }).then(({ code, data }) => {
         if (code === 0) {
-          console.log(data);
           interApiForm.setFieldsValue(data);
           setCurrentProjectId(data.project_id);
         }
@@ -74,8 +79,21 @@ const Index: FC = () => {
           }
         },
       );
+      fetchCaseParts(currentProjectId, setCasePartEnum).then();
     }
   }, [currentProjectId]);
+
+  const TryClick = async () => {
+    setTryLoading(true);
+    if (interId) {
+      tryInterApi({ interfaceId: interId }).then(({ code, data }) => {
+        if (code === 0) {
+          setTryLoading(false);
+        }
+      });
+    }
+  };
+
   const addonBefore = (
     <>
       <ProFormSelect
@@ -104,8 +122,10 @@ const Index: FC = () => {
         rules={[{ required: true, message: 'method 不能为空' }]}
       />
       <Button
+        loading={tryLoading}
+        disabled={currentMode !== 1}
         type={'primary'}
-        onClick={() => {}}
+        onClick={TryClick}
         style={{ borderRadius: '10px', marginLeft: 40 }}
       >
         Try
@@ -165,90 +185,142 @@ const Index: FC = () => {
     }
   };
   return (
-    <ProCard extra={<DetailExtra currentMode={currentMode} />}>
+    <ProCard
+      split={'horizontal'}
+      extra={<DetailExtra currentMode={currentMode} />}
+    >
       <ProForm
         form={interApiForm}
         disabled={currentMode === 1}
         submitter={false}
       >
-        <Tabs defaultActiveKey={'2'} size={'large'}>
-          <Tabs.TabPane key={'1'} tab={'前置操作'}>
-            <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
-              <Tabs tabPosition={'left'}>
-                <Tabs.TabPane key={'1'} tab={'设置变量'}>
-                  <InterBeforeParams form={interApiForm} mode={currentMode} />
-                </Tabs.TabPane>
-                <Tabs.TabPane key={'2'} tab={'添加脚本'}>
-                  <InterBeforeScript form={interApiForm} mode={currentMode} />
-                </Tabs.TabPane>
-              </Tabs>
-            </ProCard>
-          </Tabs.TabPane>
-          <Tabs.TabPane key={'2'} tab={'接口基础'}>
-            <ProForm.Group>
-              <ProFormSelect
-                width={'md'}
-                options={projects}
-                label={'所属项目'}
-                name={'project_id'}
-                required={true}
-                onChange={(value) => {
-                  setCurrentProjectId(value as number);
-                }}
-              />
-            </ProForm.Group>
-            <ProForm.Group>
-              <ProFormText
-                label={'接口名称'}
-                name={'name'}
-                width={'md'}
-                required={true}
-                rules={[{ required: true, message: '步骤名称不能为空' }]}
-              />
-              <ProFormText
-                label={'URL'}
-                addonBefore={addonBefore}
-                name={'url'}
-                width={'md'}
-                rules={[
-                  { required: true, message: '请输入请求url' },
-                  { pattern: new RegExp('^\\/.*'), message: 'url 格式错误' },
-                ]}
-                addonAfter={addonAfter}
-              />
-            </ProForm.Group>
-            <ProForm.Group>
-              <ProFormTextArea label={'步骤描述'} name={'desc'} width={'lg'} />
-            </ProForm.Group>
-            <ProCard bodyStyle={{ padding: 0 }}>
-              <Tabs defaultActiveKey={'1'}>
-                <Tabs.TabPane key={'1'} tab={'Params'}>
-                  <InterParam form={interApiForm} mode={currentMode} />
-                </Tabs.TabPane>
-                <Tabs.TabPane key={'2'} tab={'Headers'}>
-                  <InterHeader form={interApiForm} />
-                </Tabs.TabPane>
-                <Tabs.TabPane key={'3'} tab={'Body'}></Tabs.TabPane>
-              </Tabs>
-            </ProCard>
-          </Tabs.TabPane>
-          <Tabs.TabPane key={'3'} tab={'出参提取'}>
-            <InterExtracts form={interApiForm} mode={currentMode} />
-          </Tabs.TabPane>
-          <Tabs.TabPane key={'4'} tab={'相应断言'}>
-            <InterAsserts form={interApiForm} mode={currentMode} />
-          </Tabs.TabPane>
-          <Tabs.TabPane key={'5'} tab={'后置动作'}>
-            <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
-              <Tabs tabPosition={'left'}>
-                <Tabs.TabPane key={'1'} tab={'添加脚本'}>
-                  <InterAfterScript form={interApiForm} mode={currentMode} />
-                </Tabs.TabPane>
-              </Tabs>
-            </ProCard>
-          </Tabs.TabPane>
-        </Tabs>
+        <ProCard>
+          <ProForm.Group>
+            <ProFormSelect
+              width={'md'}
+              options={projects}
+              label={'所属项目'}
+              name={'project_id'}
+              required={true}
+              onChange={(value) => {
+                setCurrentProjectId(value as number);
+              }}
+            />
+            <ProFormTreeSelect
+              required
+              name="part_id"
+              label="所属模块"
+              allowClear
+              rules={[{ required: true, message: '所属模块必选' }]}
+              fieldProps={{
+                treeData: casePartEnum,
+                fieldNames: {
+                  label: 'title',
+                },
+                filterTreeNode: true,
+              }}
+              width={'md'}
+            />
+          </ProForm.Group>
+          <ProForm.Group>
+            <ProFormSelect
+              name="level"
+              label="优先级"
+              width={'md'}
+              initialValue={'P1'}
+              options={API_LEVEL_SELECT}
+              required={true}
+              rules={[{ required: true, message: '用例优先级必选' }]}
+            />
+            <ProFormSelect
+              name="status"
+              label="用例状态"
+              initialValue={'DEBUG'}
+              width={'md'}
+              options={API_STATUS_SELECT}
+              required={true}
+              rules={[{ required: true, message: '用例状态必须选' }]}
+            />
+          </ProForm.Group>
+        </ProCard>
+        <ProCard>
+          <Tabs defaultActiveKey={'2'} size={'large'}>
+            <Tabs.TabPane key={'1'} tab={'前置操作'}>
+              <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
+                <Tabs tabPosition={'left'}>
+                  <Tabs.TabPane key={'1'} tab={'设置变量'}>
+                    <InterBeforeParams form={interApiForm} mode={currentMode} />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane key={'2'} tab={'添加脚本'}>
+                    <InterBeforeScript form={interApiForm} mode={currentMode} />
+                  </Tabs.TabPane>
+                </Tabs>
+              </ProCard>
+            </Tabs.TabPane>
+            <Tabs.TabPane key={'2'} tab={'接口基础'}>
+              <ProForm.Group>
+                <ProFormText
+                  label={'接口名称'}
+                  name={'name'}
+                  width={'md'}
+                  required={true}
+                  rules={[{ required: true, message: '步骤名称不能为空' }]}
+                />
+                <ProFormText
+                  label={'URL'}
+                  addonBefore={addonBefore}
+                  name={'url'}
+                  width={'md'}
+                  rules={[
+                    { required: true, message: '请输入请求url' },
+                    { pattern: new RegExp('^\\/.*'), message: 'url 格式错误' },
+                  ]}
+                  addonAfter={addonAfter}
+                />
+              </ProForm.Group>
+              <ProForm.Group>
+                <ProFormTextArea
+                  label={'步骤描述'}
+                  name={'desc'}
+                  width={'lg'}
+                />
+              </ProForm.Group>
+              <ProCard bodyStyle={{ padding: 0 }}>
+                <Tabs defaultActiveKey={'1'}>
+                  <Tabs.TabPane key={'1'} tab={'Params'}>
+                    <InterParam form={interApiForm} mode={currentMode} />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane key={'2'} tab={'Headers'}>
+                    <InterHeader form={interApiForm} />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane key={'3'} tab={'Body'}></Tabs.TabPane>
+                </Tabs>
+              </ProCard>
+            </Tabs.TabPane>
+            <Tabs.TabPane key={'3'} tab={'出参提取'}>
+              <InterExtracts form={interApiForm} mode={currentMode} />
+            </Tabs.TabPane>
+            <Tabs.TabPane key={'4'} tab={'相应断言'}>
+              <InterAsserts form={interApiForm} mode={currentMode} />
+            </Tabs.TabPane>
+            <Tabs.TabPane key={'5'} tab={'后置动作'}>
+              <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
+                <Tabs tabPosition={'left'}>
+                  <Tabs.TabPane key={'1'} tab={'添加脚本'}>
+                    <InterAfterScript form={interApiForm} mode={currentMode} />
+                  </Tabs.TabPane>
+                </Tabs>
+              </ProCard>
+            </Tabs.TabPane>
+          </Tabs>
+        </ProCard>
       </ProForm>
+
+      <ProCard>
+        <Spin tip={'接口请求中。。'} size={'large'} spinning={tryLoading}>
+          {/*{tryResponse ? <TryResponse responseInfos={tryResponse} /> : null}.*/}
+        </Spin>
+      </ProCard>
     </ProCard>
   );
 };

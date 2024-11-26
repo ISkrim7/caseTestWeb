@@ -1,6 +1,6 @@
 import { getResultByUid } from '@/api/ui';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import RespProTable from '@/pages/Interface/InterResponse/component/RespProTable';
+import RespProTable from '@/pages/Httpx/InterfaceApiResponse/RespProTable';
 import { IAsserts } from '@/pages/Interface/types';
 import UILogs from '@/pages/Report/History/UISingle/UILogs';
 import UiSingleDetail from '@/pages/Report/History/UISingle/UISingleDetail';

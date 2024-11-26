@@ -13,7 +13,8 @@ import InterBeforeScript from '@/pages/Httpx/componets/InterBeforeScript';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterHeader from '@/pages/Httpx/componets/InterHeader';
 import InterParam from '@/pages/Httpx/componets/InterParam';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
+import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Interface/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
@@ -42,7 +43,7 @@ const Index: FC = () => {
   const [envs, setEnvs] = useState<{ label: string; value: number }[]>([]);
   const [tryLoading, setTryLoading] = useState(false);
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
-
+  const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
   useEffect(() => {
     if (interId) {
       setCurrentMode(1);
@@ -88,6 +89,7 @@ const Index: FC = () => {
     if (interId) {
       tryInterApi({ interfaceId: interId }).then(({ code, data }) => {
         if (code === 0) {
+          setResponseInfo(data);
           setTryLoading(false);
         }
       });
@@ -300,7 +302,7 @@ const Index: FC = () => {
             <Tabs.TabPane key={'3'} tab={'出参提取'}>
               <InterExtracts form={interApiForm} mode={currentMode} />
             </Tabs.TabPane>
-            <Tabs.TabPane key={'4'} tab={'相应断言'}>
+            <Tabs.TabPane key={'4'} tab={'断言'}>
               <InterAsserts form={interApiForm} mode={currentMode} />
             </Tabs.TabPane>
             <Tabs.TabPane key={'5'} tab={'后置动作'}>
@@ -318,7 +320,9 @@ const Index: FC = () => {
 
       <ProCard>
         <Spin tip={'接口请求中。。'} size={'large'} spinning={tryLoading}>
-          {/*{tryResponse ? <TryResponse responseInfos={tryResponse} /> : null}.*/}
+          {responseInfo ? (
+            <InterfaceApiResponseDetail responses={responseInfo} />
+          ) : null}
         </Spin>
       </ProCard>
     </ProCard>

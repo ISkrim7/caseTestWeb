@@ -21,8 +21,6 @@ export const CONFIG: IObjGet = {
     '3': { text: 'AfterFunc' },
     '4': { text: 'BeforeFunc' },
     '5': { text: 'BeforeParams' },
-    '6': { text: 'BeforeStructure' },
-    '7': { text: 'AfterStructure' },
   },
   API_LEVEL_SELECT: [
     {

@@ -1,7 +1,7 @@
 import { IObjGet } from '@/api';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
+import RespProTable from '@/pages/Httpx/InterfaceApiResponse/RespProTable';
 import AssertColumns from '@/pages/Interface/InterResponse/AssertInfo/AssertColumns';
-import RespProTable from '@/pages/Interface/InterResponse/component/RespProTable';
 import { IExtracts, ITryResponse } from '@/pages/Interface/types';
 import { CONFIG } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';

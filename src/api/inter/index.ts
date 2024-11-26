@@ -1,5 +1,5 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Interface/types';
 import { request } from '@@/plugin-request/request';
 
 /**
@@ -24,7 +24,7 @@ export const tryInterApi = async (
   data: { interfaceId: string },
   options?: IObjGet,
 ) => {
-  return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/try', {
+  return request<IResponse<ITryResponseInfo[]>>('/api/interface/try', {
     method: 'POST',
     data: data,
     ...(options || {}),

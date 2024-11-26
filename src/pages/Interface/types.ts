@@ -1,4 +1,4 @@
-import { IBaseField } from '@/api';
+import { IBaseField, IExtract, IObjGet } from '@/api';
 import React from 'react';
 
 export interface IInterfaceAPI extends IBaseField {
@@ -21,6 +21,22 @@ export interface IInterfaceAPI extends IBaseField {
   beforeScript: string;
   afterScript: string;
   beforeParams: IBeforeParams[] | [];
+}
+
+export interface ITryResponseInfo extends IBaseField {
+  interfaceID: number;
+  interfaceName: string;
+  interfaceDesc: string;
+  response_txt: string;
+  response_status: number;
+  response_head: IObjGet;
+  request_head: IObjGet;
+  startId: number;
+  starterName: string;
+  useTime: string;
+  result: 'SUCCESS' | 'FAIL';
+  extracts: IExtract[];
+  asserts: any;
 }
 
 interface IBase {
@@ -62,7 +78,6 @@ export interface ISteps {
   extracts: IExtracts[] | [];
   beforeParams: IBeforeParams[] | [];
   beforeVariable: IBeforeVariable[] | [];
-  beforeStructure: IStructure[];
   beforeFunc: any;
   afterFunc: any;
   bodyType: number;

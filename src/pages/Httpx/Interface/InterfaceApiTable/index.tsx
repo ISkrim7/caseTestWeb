@@ -1,9 +1,9 @@
-import { asyncTryInterApi, pageInterApi } from '@/api/inter';
+import { pageInterApi } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { CONFIG } from '@/utils/config';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, message, Popconfirm, Tag } from 'antd';
+import { Button, Divider, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { history } from 'umi';
 
@@ -105,20 +105,20 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
             >
               详情
             </a>
-            <Divider type={'vertical'} />
-            <a
-              onClick={async () => {
-                await asyncTryInterApi({ interfaceId: record.id }).then(
-                  ({ code, msg }) => {
-                    if (code === 0) {
-                      message.success(msg);
-                    }
-                  },
-                );
-              }}
-            >
-              执行
-            </a>
+            {/*<Divider type={'vertical'} />*/}
+            {/*<a*/}
+            {/*  onClick={async () => {*/}
+            {/*    await asyncTryInterApi({ interfaceId: record.id }).then(*/}
+            {/*      ({ code, msg }) => {*/}
+            {/*        if (code === 0) {*/}
+            {/*          message.success(msg);*/}
+            {/*        }*/}
+            {/*      },*/}
+            {/*    );*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  执行*/}
+            {/*</a>*/}
             <Divider type={'vertical'} />
             <a>复制</a>
 

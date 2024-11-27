@@ -10,6 +10,7 @@ import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterBeforeParams from '@/pages/Httpx/componets/InterBeforeParams';
 import InterBeforeScript from '@/pages/Httpx/componets/InterBeforeScript';
+import InterBody from '@/pages/Httpx/componets/InterBody';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterHeader from '@/pages/Httpx/componets/InterHeader';
 import InterParam from '@/pages/Httpx/componets/InterParam';
@@ -295,7 +296,9 @@ const Index: FC = () => {
                   <Tabs.TabPane key={'2'} tab={'Headers'}>
                     <InterHeader form={interApiForm} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane key={'3'} tab={'Body'}></Tabs.TabPane>
+                  <Tabs.TabPane key={'3'} tab={'Body'}>
+                    <InterBody form={interApiForm} mode={currentMode} />
+                  </Tabs.TabPane>
                 </Tabs>
               </ProCard>
             </Tabs.TabPane>

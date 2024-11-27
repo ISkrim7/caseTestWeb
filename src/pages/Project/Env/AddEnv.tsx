@@ -45,6 +45,13 @@ const AddEnv: React.FC<selfProps> = ({ reload }) => {
         label="host"
         placeholder="input your host or domain"
         required={true}
+        rules={[
+          {
+            pattern:
+              /^(http|https):\/\/([\w\-.,@?^=%&:/~+#]*[\w\-@?^=%&/~+#])?$/,
+            message: '请输入正确的host',
+          },
+        ]}
       />
       <ProFormText
         name="port"

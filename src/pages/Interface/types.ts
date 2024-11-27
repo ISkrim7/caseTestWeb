@@ -8,6 +8,7 @@ export interface IInterfaceAPI extends IBaseField {
   status: string;
   level: string;
   url: string;
+  bodyType: number;
   headers: IHeaders[] | [];
   params: IParams[] | [];
   body: any;
@@ -34,7 +35,7 @@ export interface ITryResponseInfo extends IBaseField {
   startId: number;
   starterName: string;
   useTime: string;
-  result: 'SUCCESS' | 'FAIL';
+  result: 'SUCCESS' | 'ERROR';
   extracts: IExtract[];
   asserts: any;
 }

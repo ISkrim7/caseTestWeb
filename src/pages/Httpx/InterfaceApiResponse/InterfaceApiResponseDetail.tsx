@@ -125,7 +125,7 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
             style={{ borderRadius: '5px', marginTop: 5 }}
             title={
               <>
-                <Tag color={item.result?.toLowerCase()}>
+                <Tag color={item.result.toLowerCase()}>
                   {item.interfaceName}
                 </Tag>
                 <span>{item.interfaceDesc}</span>
@@ -147,7 +147,7 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                 <RequestHeaders header={item.request_head} />
               </Tabs.TabPane>
               <Tabs.TabPane tab={TabTitle('响应头')} key={'2'}>
-                <RequestHeaders header={item.request_head} />
+                <RequestHeaders header={item.response_head} />
               </Tabs.TabPane>
               <Tabs.TabPane tab={TabTitle('响应体')} key={'3'}>
                 {renderResponseBody(item)}

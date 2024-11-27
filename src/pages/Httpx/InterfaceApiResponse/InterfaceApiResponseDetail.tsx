@@ -75,21 +75,15 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
       text: '',
     };
     return (
-      <div className="tab-extra">
+      <div>
         <span>
           Method:
-          <span
-            className={'status'}
-            style={{ color: color, marginLeft: 8, marginRight: 8 }}
-          >
+          <span style={{ color: color, marginLeft: 8, marginRight: 8 }}>
             {/*{response.request.method}*/}
             GET
           </span>
           Status_Code:
-          <span
-            className="status"
-            style={{ color, marginLeft: 8, marginRight: 8 }}
-          >
+          <span style={{ color, marginLeft: 8, marginRight: 8 }}>
             {response_status}
             <span> {text}</span>
           </span>

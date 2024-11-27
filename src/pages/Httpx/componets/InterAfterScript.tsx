@@ -39,7 +39,7 @@ const InterAfterScript: FC<SelfProps> = ({ form, mode }) => {
       <AceCodeEditor
         value={scriptData}
         onChange={handleOnChange}
-        height={'70vh'}
+        height={'40vh'}
         readonly={readonly}
         _mode={'python'}
       />

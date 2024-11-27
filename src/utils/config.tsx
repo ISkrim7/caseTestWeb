@@ -12,15 +12,17 @@ if (process.env.NODE_ENV === 'development') {
 export { socketUrl };
 export const CONFIG: IObjGet = {
   EXTRACT_TARGET_ENUM: {
-    '1': { text: 'Response.json' },
-    '2': { text: 'Response.header' },
+    6: { text: 'Response.json' },
+    7: { text: 'Response.header' },
   },
   EXTRACT_RESPONSE_TARGET_ENUM: {
-    '1': { text: 'Response.json' },
-    '2': { text: 'Response.header' },
-    '3': { text: 'AfterFunc' },
-    '4': { text: 'BeforeFunc' },
-    '5': { text: 'BeforeParams' },
+    1: { text: 'ResponseJson' },
+    2: { text: 'ResponseHeader' },
+    3: { text: 'BeforeScript' },
+    4: { text: 'BeforeParams' },
+    5: { text: 'AfterScript' },
+    6: { text: 'ResponseJsonExtract' },
+    7: { text: 'ResponseHeadExtract' },
   },
   API_LEVEL_SELECT: [
     {

@@ -20,6 +20,15 @@ import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import {
+  ApiOutlined,
+  CheckCircleOutlined,
+  EditOutlined,
+  FormOutlined,
+  PythonOutlined,
+  SettingOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons';
+import {
   ProCard,
   ProForm,
   ProFormSelect,
@@ -248,19 +257,27 @@ const Index: FC = () => {
         </ProCard>
         <ProCard>
           <Tabs defaultActiveKey={'2'} size={'large'}>
-            <Tabs.TabPane key={'1'} tab={'前置操作'}>
+            <Tabs.TabPane key={'1'} icon={<SettingOutlined />} tab={'前置操作'}>
               <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
                 <Tabs tabPosition={'left'}>
-                  <Tabs.TabPane key={'1'} tab={'设置变量'}>
+                  <Tabs.TabPane
+                    key={'1'}
+                    icon={<UnorderedListOutlined />}
+                    tab={'设置变量'}
+                  >
                     <InterBeforeParams form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane key={'2'} tab={'添加脚本'}>
+                  <Tabs.TabPane
+                    key={'2'}
+                    icon={<PythonOutlined />}
+                    tab={'添加脚本'}
+                  >
                     <InterBeforeScript form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
                 </Tabs>
               </ProCard>
             </Tabs.TabPane>
-            <Tabs.TabPane key={'2'} tab={'接口基础'}>
+            <Tabs.TabPane key={'2'} icon={<ApiOutlined />} tab={'接口基础'}>
               <ProForm.Group>
                 <ProFormText
                   label={'接口名称'}
@@ -302,16 +319,20 @@ const Index: FC = () => {
                 </Tabs>
               </ProCard>
             </Tabs.TabPane>
-            <Tabs.TabPane key={'3'} tab={'出参提取'}>
+            <Tabs.TabPane key={'3'} icon={<EditOutlined />} tab={'出参提取'}>
               <InterExtracts form={interApiForm} mode={currentMode} />
             </Tabs.TabPane>
-            <Tabs.TabPane key={'4'} tab={'断言'}>
+            <Tabs.TabPane key={'4'} icon={<CheckCircleOutlined />} tab={'断言'}>
               <InterAsserts form={interApiForm} mode={currentMode} />
             </Tabs.TabPane>
-            <Tabs.TabPane key={'5'} tab={'后置动作'}>
+            <Tabs.TabPane key={'5'} icon={<FormOutlined />} tab={'后置动作'}>
               <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
                 <Tabs tabPosition={'left'}>
-                  <Tabs.TabPane key={'1'} tab={'添加脚本'}>
+                  <Tabs.TabPane
+                    key={'1'}
+                    icon={<PythonOutlined />}
+                    tab={'添加脚本'}
+                  >
                     <InterAfterScript form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
                 </Tabs>

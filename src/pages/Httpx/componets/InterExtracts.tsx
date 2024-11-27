@@ -81,7 +81,7 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
             editableKeys: extractsEditableKeys,
             onChange: setExtractsEditableRowKeys,
             actionRender: (row, _, dom) => {
-              return [dom.delete];
+              return [dom.delete, dom.save, dom.cancel];
             },
           }}
         />

@@ -1,5 +1,10 @@
 import { Card } from '@/pages/DebuggerPage/Drag/Card';
-import { ProCard } from '@ant-design/pro-components';
+import {
+  ProCard,
+  ProForm,
+  ProFormList,
+  ProFormText,
+} from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { useCallback, useState } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -55,7 +60,12 @@ const Index = () => {
           </>
         }
       >
-        {data.map((card, i) => renderData(card, i))}
+        <ProForm.Group>
+          <ProFormText name="name" label="姓名" />
+          <ProFormList name="steps" label="用户信息">
+            {data.map((card, i) => renderData(card, i))}
+          </ProFormList>
+        </ProForm.Group>
       </ProCard>
     </DndProvider>
   );

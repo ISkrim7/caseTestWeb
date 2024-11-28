@@ -17,9 +17,9 @@ const style = {
 };
 
 export interface CardProps {
-  text: string;
+  content: React.ReactElement;
   index: number;
-  title: string;
+  title: any;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
 }
 
@@ -28,7 +28,7 @@ interface DragItem {
   type: string;
 }
 
-export const Card: FC<CardProps> = ({ text, title, index, moveCard }) => {
+export const Card: FC<CardProps> = ({ content, title, index, moveCard }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop<
     DragItem,
@@ -105,7 +105,7 @@ export const Card: FC<CardProps> = ({ text, title, index, moveCard }) => {
   drag(drop(ref));
   return (
     <ProCard collapsible title={title} ref={ref} style={{ ...style, opacity }}>
-      {text}
+      {content}
     </ProCard>
   );
 };

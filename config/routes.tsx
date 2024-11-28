@@ -223,6 +223,11 @@ export default [
         name: 'drag',
         component: '@/pages/DebuggerPage/Drag',
       },
+      {
+        path: '/debugger/drag2',
+        name: 'drag2',
+        component: '@/pages/DebuggerPage/Drag2',
+      },
     ],
   },
   {

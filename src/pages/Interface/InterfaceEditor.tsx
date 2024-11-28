@@ -46,12 +46,12 @@ const InterfaceEditor: FC<SelfProps> = (props) => {
       return data.map((item) => {
         if (item.children) {
           return {
-            title: item.partName,
+            title: item.title,
             value: item.id,
             children: loopData(item.children),
           };
         }
-        return { title: item.partName, value: item.id };
+        return { title: item.title, value: item.id };
       });
     };
 

@@ -22,6 +22,7 @@ export interface IInterfaceAPI extends IBaseField {
   beforeScript: string;
   afterScript: string;
   beforeParams: IBeforeParams[] | [];
+  follow_redirects: boolean;
 }
 
 export interface ITryResponseInfo extends IBaseField {
@@ -35,7 +36,7 @@ export interface ITryResponseInfo extends IBaseField {
   startId: number;
   starterName: string;
   useTime: string;
-  result: 'SUCCESS' | 'ERROR';
+  result?: 'SUCCESS' | 'ERROR';
   extracts: IExtract[];
   asserts: any;
 }

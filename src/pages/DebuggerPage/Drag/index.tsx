@@ -5,12 +5,8 @@ import { useCallback, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-type IData = {
-  title: string;
-  text: string;
-};
 const Index = () => {
-  const [data, setData] = useState<IData[]>([]);
+  const [data, setData] = useState<any[]>([]);
 
   const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
     setData((prevData) => {
@@ -22,7 +18,7 @@ const Index = () => {
     });
   }, []);
 
-  const renderData = useCallback((data: IData, index: number) => {
+  const renderData = useCallback((data: any, index: number) => {
     return (
       <Card
         text={data.text}

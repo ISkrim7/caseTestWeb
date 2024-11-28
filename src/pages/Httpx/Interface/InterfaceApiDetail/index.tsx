@@ -299,6 +299,30 @@ const Index: FC = () => {
                 />
               </ProForm.Group>
               <ProForm.Group>
+                <ProFormSelect
+                  width={'sm'}
+                  label={'是否重定向'}
+                  name={'follow_redirects'}
+                  initialValue={0}
+                  options={[
+                    { label: '是', value: 1 },
+                    { label: '否', value: 0 },
+                  ]}
+                />
+                <ProFormText
+                  width={'sm'}
+                  label={'请求超时(s)'}
+                  name={'connectTimeout'}
+                  initialValue={6}
+                />
+                <ProFormText
+                  width={'sm'}
+                  label={'响应超时(s)'}
+                  initialValue={6}
+                  name={'responseTimeout'}
+                />
+              </ProForm.Group>
+              <ProForm.Group>
                 <ProFormTextArea
                   label={'步骤描述'}
                   name={'desc'}

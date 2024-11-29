@@ -167,10 +167,23 @@ export default [
         component: '@/pages/Httpx/Interface/InterfaceApiDetail',
       },
       {
-        path: '/interface/caseApi',
+        path: '/interface/caseApi/cases',
         name: '接口用例',
-        component: '@/pages/Interface',
+        component: '@/pages/Httpx/InterfaceApiCase',
       },
+      {
+        path: '/interface/caseApi/detail',
+        name: '接口用例详情',
+        hideInMenu: true,
+        component: '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail',
+      },
+      {
+        path: '/interface/caseApi/detail/caseApiId=:caseApiId',
+        name: '接口用例',
+        hideInMenu: true,
+        component: '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail',
+      },
+
       {
         path: '/interface/tasks',
         name: '接口任务',

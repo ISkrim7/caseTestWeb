@@ -6,6 +6,7 @@ import {
   tryInterApi,
   updateInterApiById,
 } from '@/api/inter';
+import { addApi2Case } from '@/api/inter/interCase';
 import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterBeforeParams from '@/pages/Httpx/componets/InterBeforeParams';
@@ -37,10 +38,28 @@ import {
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
 import { Button, Form, message, Spin, Tabs } from 'antd';
-import { FC, useEffect, useState } from 'react';
-import { useParams } from 'umi';
+import React, { Dispatch, FC, useEffect, useState } from 'react';
+import { history, useParams } from 'umi';
 
-const Index: FC = () => {
+interface SelfProps {
+  addFromCase: boolean;
+  projectId?: number;
+  partId?: number;
+  setTitle?: Dispatch<React.SetStateAction<string>>;
+  setSubCardTitle?: Dispatch<React.SetStateAction<string>>;
+  caseApiId?: string;
+  interfaceApiInfo?: IInterfaceAPI;
+}
+
+const Index: FC<SelfProps> = ({
+  addFromCase,
+  projectId,
+  setTitle,
+  setSubCardTitle,
+  partId,
+  caseApiId,
+  interfaceApiInfo,
+}) => {
   const { interId } = useParams<{ interId: string }>();
   const { API_LEVEL_SELECT, API_STATUS_SELECT, API_REQUEST_METHOD } = CONFIG;
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
@@ -76,7 +95,6 @@ const Index: FC = () => {
       }
     });
   }, []);
-
   useEffect(() => {
     if (currentProjectId) {
       queryEnvBy({ project_id: currentProjectId } as IEnv).then(
@@ -93,7 +111,21 @@ const Index: FC = () => {
       fetchCaseParts(currentProjectId, setCasePartEnum).then();
     }
   }, [currentProjectId]);
-
+  useEffect(() => {
+    if (projectId) {
+      setCurrentProjectId(projectId);
+      interApiForm.setFieldValue('project_id', projectId);
+    }
+    if (partId) {
+      interApiForm.setFieldValue('part_id', partId);
+    }
+  }, [projectId, partId]);
+  useEffect(() => {
+    if (interfaceApiInfo) {
+      setCurrentMode(1);
+      interApiForm.setFieldsValue(interfaceApiInfo);
+    }
+  }, [interfaceApiInfo]);
   const TryClick = async () => {
     setTryLoading(true);
     if (interId) {
@@ -145,10 +177,16 @@ const Index: FC = () => {
     </>
   );
 
+  /**
+   * 对用例的新增与修改
+   * 区别 公共新增修改 与 从用例新增与修改
+   * addFromCase 从用例新增与修改
+   */
   const SaveOrUpdate = async () => {
     const values = interApiForm.getFieldsValue(true);
-    console.log(values);
-    if (interId) {
+    // 从用例中新增私有的API
+    values.is_common = addFromCase ? 0 : 1;
+    if (interId || values.id) {
       //修改
       updateInterApiById(values).then(({ code, msg }) => {
         if (code === 0) {
@@ -158,10 +196,16 @@ const Index: FC = () => {
       });
     } else {
       //新增
-      insertInterApi(values).then(({ code, msg }) => {
+      insertInterApi(values).then(async ({ code, data, msg }) => {
         if (code === 0) {
           message.success(msg);
           setCurrentMode(1);
+          // 添加到Case中
+          if (caseApiId && data) {
+            await addApi2Case({ caseId: caseApiId, apiId: data.id });
+          } else {
+            history.push(`/interface/interApi/detail/interId=${data.id}`);
+          }
         }
       });
     }
@@ -210,6 +254,7 @@ const Index: FC = () => {
           <ProForm.Group>
             <ProFormSelect
               width={'md'}
+              hidden={addFromCase}
               options={projects}
               label={'所属项目'}
               name={'project_id'}
@@ -222,6 +267,7 @@ const Index: FC = () => {
               required
               name="part_id"
               label="所属模块"
+              hidden={addFromCase}
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
@@ -234,6 +280,7 @@ const Index: FC = () => {
               width={'md'}
             />
           </ProForm.Group>
+
           <ProForm.Group>
             <ProFormSelect
               name="level"
@@ -242,6 +289,7 @@ const Index: FC = () => {
               initialValue={'P1'}
               options={API_LEVEL_SELECT}
               required={true}
+              hidden={addFromCase}
               rules={[{ required: true, message: '用例优先级必选' }]}
             />
             <ProFormSelect
@@ -251,6 +299,7 @@ const Index: FC = () => {
               width={'md'}
               options={API_STATUS_SELECT}
               required={true}
+              hidden={addFromCase}
               rules={[{ required: true, message: '用例状态必须选' }]}
             />
           </ProForm.Group>
@@ -285,6 +334,11 @@ const Index: FC = () => {
                   width={'md'}
                   required={true}
                   rules={[{ required: true, message: '步骤名称不能为空' }]}
+                  fieldProps={{
+                    onChange: (e) => {
+                      if (setTitle) setTitle(e.target.value);
+                    },
+                  }}
                 />
                 <ProFormText
                   label={'URL'}
@@ -327,6 +381,12 @@ const Index: FC = () => {
                   label={'步骤描述'}
                   name={'desc'}
                   width={'lg'}
+                  required={true}
+                  fieldProps={{
+                    onChange: (e) => {
+                      if (setSubCardTitle) setSubCardTitle(e.target.value);
+                    },
+                  }}
                 />
               </ProForm.Group>
               <ProCard bodyStyle={{ padding: 0 }}>
@@ -365,7 +425,6 @@ const Index: FC = () => {
           </Tabs>
         </ProCard>
       </ProForm>
-
       <ProCard>
         <Spin tip={'接口请求中。。'} size={'large'} spinning={tryLoading}>
           {responseInfo ? (

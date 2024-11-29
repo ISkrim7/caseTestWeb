@@ -71,7 +71,7 @@ export const insertInterApi = async (
   data?: IInterfaceAPI,
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/insert', {
+  return request<IResponse<IInterfaceAPI>>('/api/interface/insert', {
     method: 'POST',
     data: data,
     ...(options || {}),

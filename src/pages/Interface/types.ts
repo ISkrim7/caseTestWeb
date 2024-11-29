@@ -16,6 +16,7 @@ export interface IInterfaceAPI extends IBaseField {
   asserts: IAsserts[];
   extracts: IExtracts[];
   project_id: number;
+  part_id: number;
   env_id: number;
   connectTimeout: number;
   responseTimeout: number;
@@ -23,6 +24,17 @@ export interface IInterfaceAPI extends IBaseField {
   afterScript: string;
   beforeParams: IBeforeParams[] | [];
   follow_redirects: boolean;
+  is_common: number;
+}
+
+export interface IInterfaceAPICase extends IBaseField {
+  title: string;
+  desc: string;
+  level: string;
+  status: string;
+  part_id: number;
+  apiNum: number;
+  project_id: number;
 }
 
 export interface ITryResponseInfo extends IBaseField {

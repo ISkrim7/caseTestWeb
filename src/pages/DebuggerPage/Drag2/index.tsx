@@ -11,7 +11,7 @@ const B = ({ index, onFormChange }) => {
         form={f}
         onFinish={() => {
           const data = f.getFieldValue('name');
-          onFormChange(index, data);
+          onFormChange(index, { name: data });
         }}
       >
         <ProFormText name={'name'} label={'name'} />
@@ -24,13 +24,10 @@ const App = () => {
   const [items, setItems] = useState<any[]>([]);
   const [length, setLength] = useState(0); // 使用 useState 管理 length
   // 保存每个表单的值
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<any[]>([]);
 
   const onFormChange = (index, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [index]: value, // 根据 index 保存每个组件的表单数据
-    }));
+    setFormData((prev) => [...prev, value]);
   };
   // a little function to help us with reordering the result
   const reorder = (list, startIndex, endIndex) => {
@@ -41,6 +38,7 @@ const App = () => {
   };
 
   const onDragEnd = (result) => {
+    console.log('onDragEnd', result);
     if (!result.destination) return; // 拖拽没有放置，退出
 
     // 重新排序 items 和 formData
@@ -52,18 +50,17 @@ const App = () => {
     setItems(reorderedItems);
 
     const reorderedFormData = reorder(
-      Object.entries(formData),
+      formData,
       result.source.index,
       result.destination.index,
     );
-    const updatedFormData = Object.fromEntries(reorderedFormData);
-    setFormData(updatedFormData);
+    setFormData(reorderedFormData);
   };
 
   useEffect(() => {
     const item = {
-      id: length,
-      content: <B index={length} onFormChange={onFormChange} />,
+      id: length.toString(),
+      content: <B index={length.toString()} onFormChange={onFormChange} />,
     };
     setItems([item]);
   }, []);
@@ -73,8 +70,8 @@ const App = () => {
     setItems((prevState) => [
       ...prevState,
       {
-        id: newLength,
-        content: <B index={newLength} onFormChange={onFormChange} />,
+        id: newLength.toString(),
+        content: <B index={newLength.toString()} onFormChange={onFormChange} />,
       },
     ]);
   };

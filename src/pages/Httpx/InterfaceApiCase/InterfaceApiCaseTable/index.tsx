@@ -1,11 +1,11 @@
-import { pageInterApi } from '@/api/inter';
+import { pageInterApiCase } from '@/api/inter/interCase';
 import MyProTable from '@/components/Table/MyProTable';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPICase } from '@/pages/Interface/types';
 import { CONFIG } from '@/utils/config';
+import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef } from 'react';
-import { history } from 'umi';
 
 interface SelfProps {
   currentProjectId?: number;
@@ -19,17 +19,14 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
   useEffect(() => {
     actionRef.current?.reload();
   }, [currentPartId, currentProjectId]);
-
-  const fetchInterface = useCallback(
+  const fetchInterfaceCase = useCallback(
     async (params: any, sort: any) => {
       const searchData = {
         ...params,
         part_id: currentPartId,
-        //只查询公共api
-        is_common: 1,
         sort: sort,
       };
-      const { code, data } = await pageInterApi(searchData);
+      const { code, data } = await pageInterApiCase(searchData);
       if (code === 0) {
         return {
           data: data.items,
@@ -47,7 +44,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
     },
     [currentPartId],
   );
-  const columns: ProColumns<IInterfaceAPI>[] = [
+  const columns: ProColumns<IInterfaceAPICase>[] = [
     {
       title: '接口编号',
       dataIndex: 'uid',
@@ -58,10 +55,19 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
     },
     {
       title: '名称',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'title',
+      key: 'title',
       fixed: 'left',
       width: '15%',
+    },
+    {
+      title: 'API数量',
+      dataIndex: 'apiNum',
+      valueType: 'text',
+      width: '10%',
+      render: (_, record) => {
+        return <Tag color={'blue'}>{record.apiNum}</Tag>;
+      },
     },
     {
       title: '优先级',
@@ -77,7 +83,6 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       title: '状态',
       dataIndex: 'status',
       valueType: 'select',
-      width: '10%',
       valueEnum: CONFIG.API_STATUS_ENUM,
       render: (_, record) => {
         return CONFIG.API_STATUS_ENUM[record.status].tag;
@@ -92,46 +97,43 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       },
     },
     {
+      title: '创建时间',
+      dataIndex: 'create_time',
+      valueType: 'dateTime',
+      sorter: true,
+      search: false,
+    },
+    {
       title: '操作',
       valueType: 'option',
       key: 'option',
       fixed: 'right',
-      width: '15%',
+      width: '18%',
       render: (text, record, _) => {
         return (
           <>
             <a
               onClick={() => {
-                history.push(`/interface/interApi/detail/interId=${record.id}`);
+                history.push(
+                  `/interface/caseApi/detail/caseApiId=${record.id}`,
+                );
               }}
             >
               详情
             </a>
-            {/*<Divider type={'vertical'} />*/}
-            {/*<a*/}
-            {/*  onClick={async () => {*/}
-            {/*    await asyncTryInterApi({ interfaceId: record.id }).then(*/}
-            {/*      ({ code, msg }) => {*/}
-            {/*        if (code === 0) {*/}
-            {/*          message.success(msg);*/}
-            {/*        }*/}
-            {/*      },*/}
-            {/*    );*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  执行*/}
-            {/*</a>*/}
+            <Divider type={'vertical'} />
+            <a>执行</a>
             <Divider type={'vertical'} />
             <a>复制</a>
-
             <Popconfirm
               title={'确认删除？'}
               okText={'确认'}
               cancelText={'点错了'}
-              onConfirm={async () => {}}
+              onConfirm={async () => {
+                // await delCaseApi(record.uid);
+              }}
             >
               <Divider type={'vertical'} />
-
               <a>删除</a>
             </Popconfirm>
           </>
@@ -141,26 +143,24 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
   ];
 
   return (
-    <>
-      <MyProTable
-        persistenceKey={perKey}
-        columns={columns}
-        rowKey={'id'}
-        x={1000}
-        actionRef={actionRef}
-        request={fetchInterface}
-        toolBarRender={() => [
-          <Button
-            type={'primary'}
-            onClick={() => {
-              history.push('/interface/interApi/detail');
-            }}
-          >
-            添加
-          </Button>,
-        ]}
-      />
-    </>
+    <MyProTable
+      key={'id'}
+      rowKey={perKey}
+      actionRef={actionRef}
+      x={1000}
+      columns={columns}
+      request={fetchInterfaceCase}
+      toolBarRender={() => [
+        <Button
+          type={'primary'}
+          onClick={() => {
+            history.push('/interface/caseApi/detail');
+          }}
+        >
+          添加
+        </Button>,
+      ]}
+    />
   );
 };
 

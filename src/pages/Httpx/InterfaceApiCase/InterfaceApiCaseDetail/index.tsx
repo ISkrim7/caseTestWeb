@@ -40,7 +40,7 @@ const Index = () => {
   const [currentPartId, setCurrentPartId] = useState<number>();
   const [currentStatus, setCurrentStatus] = useState(1);
   const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
-
+  const [editCase, setEditCase] = useState<number>(0);
   useEffect(() => {
     if (caseApiId) {
       baseInfoApiCase(caseApiId).then(({ code, data }) => {
@@ -68,7 +68,7 @@ const Index = () => {
         setProjects(projects);
       }
     });
-  }, []);
+  }, [editCase]);
 
   useEffect(() => {
     if (currentProjectId) {
@@ -84,6 +84,8 @@ const Index = () => {
         api_Id: item.id,
         content: (
           <CollapsibleApiCard
+            collapsible={true}
+            refresh={refresh}
             interfaceApiInfo={item}
             caseApiId={caseApiId}
             partId={currentPartId}
@@ -94,6 +96,10 @@ const Index = () => {
       setApis(init);
     }
   }, [queryApis]);
+
+  const refresh = async () => {
+    setEditCase(editCase + 1);
+  };
 
   /**
    * 保存基本信息
@@ -202,6 +208,8 @@ const Index = () => {
         id: currStep.toString(),
         content: (
           <CollapsibleApiCard
+            collapsible={false}
+            refresh={refresh}
             caseApiId={caseApiId}
             partId={currentPartId}
             projectId={currentProjectId}

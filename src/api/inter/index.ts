@@ -21,7 +21,7 @@ export const pageInterApi = async (data: ISearch, options?: IObjGet) => {
  * @param options
  */
 export const tryInterApi = async (
-  data: { interfaceId: string },
+  data: { interfaceId: string | number },
   options?: IObjGet,
 ) => {
   return request<IResponse<ITryResponseInfo[]>>('/api/interface/try', {

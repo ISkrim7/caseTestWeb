@@ -49,6 +49,7 @@ interface SelfProps {
   setSubCardTitle?: Dispatch<React.SetStateAction<string>>;
   caseApiId?: string;
   interfaceApiInfo?: IInterfaceAPI;
+  refresh: () => void;
 }
 
 const Index: FC<SelfProps> = ({
@@ -58,6 +59,7 @@ const Index: FC<SelfProps> = ({
   setSubCardTitle,
   partId,
   caseApiId,
+  refresh,
   interfaceApiInfo,
 }) => {
   const { interId } = useParams<{ interId: string }>();
@@ -73,12 +75,14 @@ const Index: FC<SelfProps> = ({
   const [tryLoading, setTryLoading] = useState(false);
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
+  const [currentInterAPIId, setCurrentInterAPIId] = useState<number>();
   useEffect(() => {
     if (interId) {
       setCurrentMode(1);
       detailInterApiById({ interfaceId: interId }).then(({ code, data }) => {
         if (code === 0) {
           interApiForm.setFieldsValue(data);
+          console.log('set', data.project_id);
           setCurrentProjectId(data.project_id);
         }
       });
@@ -124,12 +128,20 @@ const Index: FC<SelfProps> = ({
     if (interfaceApiInfo) {
       setCurrentMode(1);
       interApiForm.setFieldsValue(interfaceApiInfo);
+      setCurrentInterAPIId(interfaceApiInfo.id);
     }
   }, [interfaceApiInfo]);
   const TryClick = async () => {
     setTryLoading(true);
     if (interId) {
       tryInterApi({ interfaceId: interId }).then(({ code, data }) => {
+        if (code === 0) {
+          setResponseInfo(data);
+          setTryLoading(false);
+        }
+      });
+    } else if (currentInterAPIId) {
+      tryInterApi({ interfaceId: currentInterAPIId }).then(({ code, data }) => {
         if (code === 0) {
           setResponseInfo(data);
           setTryLoading(false);
@@ -203,6 +215,7 @@ const Index: FC<SelfProps> = ({
           // 添加到Case中
           if (caseApiId && data) {
             await addApi2Case({ caseId: caseApiId, apiId: data.id });
+            refresh();
           } else {
             history.push(`/interface/interApi/detail/interId=${data.id}`);
           }
@@ -221,9 +234,20 @@ const Index: FC<SelfProps> = ({
         );
       case 2:
         return (
-          <Button onClick={SaveOrUpdate} type={'primary'}>
-            Save
-          </Button>
+          <>
+            {caseApiId && (
+              <Button onClick={refresh} type={'primary'}>
+                Cancel
+              </Button>
+            )}
+            <Button
+              onClick={SaveOrUpdate}
+              style={{ marginLeft: 10 }}
+              type={'primary'}
+            >
+              Save
+            </Button>
+          </>
         );
       case 3:
         return (

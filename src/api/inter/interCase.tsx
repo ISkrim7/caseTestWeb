@@ -113,7 +113,7 @@ export const reorderApis2Case = async (
 };
 
 /**
- * 删除用例
+ * 删除用例api
  */
 export const removeApi2Case = async (
   data: { caseId: number | string; apiId?: number },
@@ -132,6 +132,42 @@ export const runApiCase = async (data: string | number, opt?: IObjGet) => {
   return request<IResponse<null>>('/api/interface/case/execute', {
     method: 'POST',
     data: { caseId: data },
+    ...(opt || {}),
+  });
+};
+
+/**
+ * 删除用例
+ */
+export const removeApiCase = async (data: string | number, opt?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/case/remove', {
+    method: 'POST',
+    data: { id: data },
+    ...(opt || {}),
+  });
+};
+
+/**
+ * 复制用例
+ */
+export const copyApiCase = async (data: string | number, opt?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/case/copy', {
+    method: 'POST',
+    data: { id: data },
+    ...(opt || {}),
+  });
+};
+
+/**
+ * 复制用例中api
+ */
+export const copyApi2Case = async (
+  data: { caseId: number | string; apiId: number | string },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interface/case/copyApi', {
+    method: 'POST',
+    data: data,
     ...(opt || {}),
   });
 };

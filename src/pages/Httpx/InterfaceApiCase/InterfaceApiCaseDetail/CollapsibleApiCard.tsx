@@ -1,8 +1,8 @@
-import { removeApi2Case } from '@/api/inter/interCase';
+import { copyApi2Case, removeApi2Case } from '@/api/inter/interCase';
 import InterfaceApiDetail from '@/pages/Httpx/Interface/InterfaceApiDetail';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, Popconfirm, Tag } from 'antd';
+import { Button, message, Popconfirm, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
@@ -25,12 +25,19 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
   }, [props.interfaceApiInfo]);
 
   const copyApi = async () => {
-    //todo copy
-    console.log(props.caseApiId);
-    console.log(props.interfaceApiInfo);
+    if (props.caseApiId && props.interfaceApiInfo) {
+      const { code } = await copyApi2Case({
+        caseId: props.caseApiId,
+        apiId: props.interfaceApiInfo?.id,
+      });
+      if (code === 0) {
+        message.success('添加成功！');
+        props.refresh();
+      }
+    }
   };
 
-  const deleteButton = (
+  const extraButton = (
     <>
       {props.interfaceApiInfo && (
         <>
@@ -70,7 +77,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
       style={{ borderRadius: '5px', marginTop: 10 }}
       collapsible={true}
       defaultCollapsed={props.collapsible}
-      extra={deleteButton}
+      extra={extraButton}
     >
       <InterfaceApiDetail
         {...props}

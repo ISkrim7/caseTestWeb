@@ -1,4 +1,8 @@
-import { pageInterApiCase } from '@/api/inter/interCase';
+import {
+  copyApiCase,
+  pageInterApiCase,
+  removeApiCase,
+} from '@/api/inter/interCase';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPICase } from '@/pages/Interface/types';
 import { CONFIG } from '@/utils/config';
@@ -124,13 +128,26 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
             <Divider type={'vertical'} />
             <a>执行</a>
             <Divider type={'vertical'} />
-            <a>复制</a>
+            <a
+              onClick={async () => {
+                const { code } = await copyApiCase(record.id);
+                if (code === 0) {
+                  actionRef.current?.reload();
+                }
+              }}
+            >
+              复制
+            </a>
             <Popconfirm
               title={'确认删除？'}
               okText={'确认'}
               cancelText={'点错了'}
               onConfirm={async () => {
-                // await delCaseApi(record.uid);
+                await removeApiCase(record.id).then(async ({ code }) => {
+                  if (code === 0) {
+                    actionRef.current?.reload();
+                  }
+                });
               }}
             >
               <Divider type={'vertical'} />

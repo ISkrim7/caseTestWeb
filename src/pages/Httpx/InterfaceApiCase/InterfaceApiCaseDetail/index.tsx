@@ -21,7 +21,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, Form, message } from 'antd';
+import { Button, Divider, FloatButton, Form, message } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { history } from 'umi';
@@ -225,6 +225,10 @@ const Index = () => {
         return (
           <>
             <Button type={'primary'} onClick={AddEmptyApiForm}>
+              Choice API
+            </Button>
+            <Divider type={'vertical'} />
+            <Button type={'primary'} onClick={AddEmptyApiForm}>
               Add API
             </Button>
           </>
@@ -344,6 +348,7 @@ const Index = () => {
           </Droppable>
         </DragDropContext>
       </ProCard>
+      <FloatButton.BackTop />
     </ProCard>
   );
 };

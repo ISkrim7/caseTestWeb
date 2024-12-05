@@ -39,11 +39,7 @@ const Avatar = () => {
   return (
     <>
       <div>
-        <Image
-          src={currentUser?.avatar}
-          alt="avatar"
-          fallback="/icons/5i5j.png"
-        />
+        <Image src={currentUser?.avatar} alt="avatar" />
       </div>
       <Upload {...upload}>
         <div style={{ textAlign: 'center', marginTop: 10 }}>

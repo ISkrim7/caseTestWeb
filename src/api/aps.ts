@@ -326,7 +326,7 @@ export const addApsWsJob = async (
   data: { task_id: string },
   options?: IObjGet,
 ) => {
-  return request<IResponse<any>>('/aps/task/job1', {
+  return request<IResponse<any>>('/api/task/job1', {
     method: 'POST',
     data: data,
     ...(options || {}),

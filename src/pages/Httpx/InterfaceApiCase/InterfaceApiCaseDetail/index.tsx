@@ -8,6 +8,7 @@ import {
   setApiCase,
 } from '@/api/inter/interCase';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
+import InterfaceApiCaseResult from '@/pages/Httpx/InterfaceApiCaseResult';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
@@ -349,6 +350,7 @@ const Index = () => {
           </Droppable>
         </DragDropContext>
       </ProCard>
+      <InterfaceApiCaseResult />
       <FloatButton.BackTop />
     </ProCard>
   );

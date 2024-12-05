@@ -53,6 +53,18 @@ export interface ITryResponseInfo extends IBaseField {
   asserts: any;
 }
 
+export interface IInterfaceCaseResult extends IBaseField {
+  interfaceCaseID: number;
+  interfaceCaseName: string;
+  interfaceCaseUid: string;
+  interfaceCaseProjectId: number;
+  interfaceCasePartId: number;
+  starterId: number;
+  starterName: string;
+  status: string;
+  result?: 'SUCCESS' | 'ERROR';
+}
+
 interface IBase {
   id: React.Key;
   key?: string;

@@ -130,6 +130,8 @@ const Index = () => {
     if (caseApiId) {
       const { code } = await runApiCase(caseApiId);
       if (code === 0) {
+        message.success('运行成功');
+        await refresh();
       }
     }
   };
@@ -314,7 +316,6 @@ const Index = () => {
           </ProForm.Group>
         </ProForm>
       </ProCard>
-
       <ProCard extra={<ApisCardExtra current={currentStatus} />}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="droppable" direction="vertical">

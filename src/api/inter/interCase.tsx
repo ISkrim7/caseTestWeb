@@ -1,5 +1,9 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IInterfaceAPI, IInterfaceAPICase } from '@/pages/Interface/types';
+import {
+  IInterfaceAPI,
+  IInterfaceAPICase,
+  IInterfaceCaseResult,
+} from '@/pages/Interface/types';
 import { request } from '@@/plugin-request/request';
 
 /**
@@ -170,4 +174,17 @@ export const copyApi2Case = async (
     data: data,
     ...(opt || {}),
   });
+};
+
+/**
+ * 查询case result
+ */
+export const caseAPIResultDetail = async (data: string, opt?: IObjGet) => {
+  return request<IResponse<IInterfaceCaseResult>>(
+    `/api/interface/result/case/detail/${data}`,
+    {
+      method: 'GET',
+      ...(opt || {}),
+    },
+  );
 };

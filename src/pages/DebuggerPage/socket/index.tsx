@@ -28,6 +28,7 @@ function App() {
   // }, []);
   useEffect(() => {
     const socket = io('ws://localhost:5050/ws', {
+      query: { clientId: initialState?.currentUser?.uid },
       transports: ['websocket'],
       path: '/ws/socket.io',
     });
@@ -46,9 +47,7 @@ function App() {
     return () => socket.disconnect();
   }, []);
   const click = async () => {
-    if (clientId) {
-      await addApsWsJob({ task_id: clientId });
-    }
+    await addApsWsJob({ task_id: clientId });
   };
 
   return (

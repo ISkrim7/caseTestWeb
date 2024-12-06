@@ -8,7 +8,7 @@ interface SelfProps {
   apiCaseId?: number;
 }
 
-const Index: FC<SelfProps> = (props) => {
+const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
   const { apiCaseId } = props;
 
   const columns: ProColumns<IInterfaceCaseResult>[] = [
@@ -46,4 +46,4 @@ const Index: FC<SelfProps> = (props) => {
   );
 };
 
-export default Index;
+export default InterfaceApiCaseResultTable;

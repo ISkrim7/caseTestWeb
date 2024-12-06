@@ -7,8 +7,9 @@ import {
   runApiCase,
   setApiCase,
 } from '@/api/inter/interCase';
+import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
-import InterfaceApiCaseResult from '@/pages/Httpx/InterfaceApiCaseResult';
+import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
@@ -42,6 +43,7 @@ const Index = () => {
   const [currentStatus, setCurrentStatus] = useState(1);
   const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
   const [editCase, setEditCase] = useState<number>(0);
+  const [runOpen, setRunOpen] = useState(false);
   useEffect(() => {
     if (caseApiId) {
       baseInfoApiCase(caseApiId).then(({ code, data }) => {
@@ -129,7 +131,9 @@ const Index = () => {
    */
   const run = async () => {
     if (caseApiId) {
-      const { code } = await runApiCase(caseApiId);
+      setRunOpen(true);
+
+      const { code, data } = await runApiCase(caseApiId);
       if (code === 0) {
         message.success('运行成功');
         await refresh();
@@ -246,6 +250,9 @@ const Index = () => {
       split={'horizontal'}
       extra={<DetailExtra currentStatus={currentStatus} />}
     >
+      <MyDrawer name={''} open={runOpen} setOpen={setRunOpen}>
+        <InterfaceApiCaseResultDrawer openStatus={runOpen} />
+      </MyDrawer>
       <ProCard>
         <ProForm
           disabled={currentStatus === 1}
@@ -350,7 +357,6 @@ const Index = () => {
           </Droppable>
         </DragDropContext>
       </ProCard>
-      <InterfaceApiCaseResult />
       <FloatButton.BackTop />
     </ProCard>
   );

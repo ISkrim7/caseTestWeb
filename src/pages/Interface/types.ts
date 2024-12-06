@@ -57,11 +57,14 @@ export interface IInterfaceCaseResult extends IBaseField {
   interfaceCaseID: number;
   interfaceCaseName: string;
   interfaceCaseUid: string;
+  interfaceCaseDesc: string;
   interfaceCaseProjectId: number;
   interfaceCasePartId: number;
   starterId: number;
   starterName: string;
-  status: string;
+  total_num: number;
+  useTime: string;
+  startTime: string;
   result?: 'SUCCESS' | 'ERROR';
 }
 

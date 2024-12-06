@@ -323,7 +323,7 @@ export const putUIVariableById = async (
 };
 
 export const addApsWsJob = async (
-  data: { task_id: string },
+  data: { task_id?: string },
   options?: IObjGet,
 ) => {
   return request<IResponse<any>>('/api/task/job1', {

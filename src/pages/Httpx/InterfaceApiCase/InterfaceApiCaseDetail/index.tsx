@@ -4,7 +4,6 @@ import {
   insertApiCase,
   queryApisByCaseId,
   reorderApis2Case,
-  runApiCase,
   setApiCase,
 } from '@/api/inter/interCase';
 import MyDrawer from '@/components/MyDrawer';
@@ -44,6 +43,7 @@ const Index = () => {
   const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
   const [editCase, setEditCase] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
+
   useEffect(() => {
     if (caseApiId) {
       baseInfoApiCase(caseApiId).then(({ code, data }) => {
@@ -133,11 +133,11 @@ const Index = () => {
     if (caseApiId) {
       setRunOpen(true);
 
-      const { code, data } = await runApiCase(caseApiId);
-      if (code === 0) {
-        message.success('运行成功');
-        await refresh();
-      }
+      // const { code } = await runApiCase(caseApiId);
+      // if (code === 0) {
+      //   message.success('运行成功');
+      //   await refresh();
+      // }
     }
   };
 
@@ -251,7 +251,10 @@ const Index = () => {
       extra={<DetailExtra currentStatus={currentStatus} />}
     >
       <MyDrawer name={''} open={runOpen} setOpen={setRunOpen}>
-        <InterfaceApiCaseResultDrawer openStatus={runOpen} />
+        <InterfaceApiCaseResultDrawer
+          openStatus={runOpen}
+          caseApiId={caseApiId!}
+        />
       </MyDrawer>
       <ProCard>
         <ProForm

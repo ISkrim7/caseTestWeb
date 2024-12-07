@@ -1,13 +1,31 @@
+import { caseAPIResultDetail } from '@/api/inter/interCase';
 import { IInterfaceCaseResult } from '@/pages/Interface/types';
 import { ProDescriptions } from '@ant-design/pro-components';
 import { Tag } from 'antd';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
-  resultBaseInfo?: IInterfaceCaseResult;
+  resultId?: string;
 }
 
-const InterfaceApiCaseResultBaseInfo: FC<SelfProps> = ({ resultBaseInfo }) => {
+const InterfaceApiCaseResultBaseInfo: FC<SelfProps> = ({ resultId }) => {
+  const [caseResultInfo, setCaseResultInfo] = useState<IInterfaceCaseResult>();
+
+  useEffect(() => {
+    let isCancelled = false;
+    const fetchData = async () => {
+      if (resultId) {
+        const { code, data } = await caseAPIResultDetail(resultId);
+        if (code === 0 && !isCancelled) {
+          setCaseResultInfo(data);
+        }
+      }
+    };
+    fetchData();
+    return () => {
+      isCancelled = true;
+    };
+  }, [resultId]);
   return (
     <ProDescriptions column={2} bordered style={{ marginTop: 10 }}>
       <ProDescriptions.Item
@@ -18,8 +36,8 @@ const InterfaceApiCaseResultBaseInfo: FC<SelfProps> = ({ resultBaseInfo }) => {
           maxWidth: '80%',
         }}
       >
-        {resultBaseInfo?.interfaceCaseName +
-          `【${resultBaseInfo?.interfaceCaseUid}】`}
+        {caseResultInfo?.interfaceCaseName +
+          `【${caseResultInfo?.interfaceCaseUid}】`}
       </ProDescriptions.Item>
       <ProDescriptions.Item
         span={2}
@@ -30,36 +48,36 @@ const InterfaceApiCaseResultBaseInfo: FC<SelfProps> = ({ resultBaseInfo }) => {
         }}
         ellipsis
       >
-        {resultBaseInfo?.uid}
+        {caseResultInfo?.uid}
       </ProDescriptions.Item>
       <ProDescriptions.Item span={2} valueType="textarea" label={'用例描述'}>
-        {resultBaseInfo?.interfaceCaseDesc}
+        {caseResultInfo?.interfaceCaseDesc}
       </ProDescriptions.Item>
 
       <ProDescriptions.Item valueType="text" span={2} label={'执行人'}>
-        {resultBaseInfo?.starterName}
+        {caseResultInfo?.starterName}
       </ProDescriptions.Item>
       <ProDescriptions.Item valueType="time" label={'用例创建时间'}>
-        {resultBaseInfo?.create_time}
+        {caseResultInfo?.create_time}
       </ProDescriptions.Item>
       <ProDescriptions.Item valueType="time" label={'用例更新时间'}>
-        {resultBaseInfo?.update_time}
+        {caseResultInfo?.update_time}
       </ProDescriptions.Item>
       <ProDescriptions.Item valueType="text" label={'执行时间'}>
-        {resultBaseInfo?.startTime}
+        {caseResultInfo?.startTime}
       </ProDescriptions.Item>
       <ProDescriptions.Item valueType="text" label={'总用时'}>
-        {resultBaseInfo?.useTime}
+        {caseResultInfo?.useTime}
       </ProDescriptions.Item>
       <ProDescriptions.Item label={'总步长'}>
-        {resultBaseInfo?.total_num}
+        {caseResultInfo?.total_num}
       </ProDescriptions.Item>
       {/*<ProDescriptions.Item label={'错误步骤'}>*/}
-      {/*  <Tag color={'red'}>{resultBaseInfo?.interfaceErrorStep || ''}</Tag>*/}
+      {/*  <Tag color={'red'}>{caseResultInfo?.interfaceErrorStep || ''}</Tag>*/}
       {/*</ProDescriptions.Item>*/}
       <ProDescriptions.Item label="测试结果" span={2}>
-        <Tag color={resultBaseInfo?.result === 'SUCCESS' ? 'green' : 'red'}>
-          {resultBaseInfo?.result}
+        <Tag color={caseResultInfo?.result === 'SUCCESS' ? 'green' : 'red'}>
+          {caseResultInfo?.result}
         </Tag>
       </ProDescriptions.Item>
     </ProDescriptions>

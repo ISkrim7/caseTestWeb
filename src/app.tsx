@@ -48,6 +48,7 @@ export const layout: RunTimeLayoutConfig = ({
   setInitialState,
 }) => {
   console.log('==user==', initialState?.currentUser?.username);
+
   const [coll, setColl] = useState(false);
   return {
     disableContentMargin: true,
@@ -69,7 +70,6 @@ export const layout: RunTimeLayoutConfig = ({
     },
     // 自定义 403 页面
     unAccessible: <div>unAccessible</div>,
-
     childrenRender: (children) => {
       if (initialState?.loading) return <PageLoading />;
       return <ConfigProvider>{children}</ConfigProvider>;

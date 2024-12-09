@@ -141,26 +141,24 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
   ];
 
   return (
-    <>
-      <MyProTable
-        persistenceKey={perKey}
-        columns={columns}
-        rowKey={'id'}
-        x={1000}
-        actionRef={actionRef}
-        request={fetchInterface}
-        toolBarRender={() => [
-          <Button
-            type={'primary'}
-            onClick={() => {
-              history.push('/interface/interApi/detail');
-            }}
-          >
-            添加
-          </Button>,
-        ]}
-      />
-    </>
+    <MyProTable
+      persistenceKey={perKey}
+      columns={columns}
+      rowKey={'id'}
+      x={1000}
+      actionRef={actionRef}
+      request={fetchInterface}
+      toolBarRender={() => [
+        <Button
+          type={'primary'}
+          onClick={() => {
+            history.push('/interface/interApi/detail');
+          }}
+        >
+          添加
+        </Button>,
+      ]}
+    />
   );
 };
 

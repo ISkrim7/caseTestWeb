@@ -7,9 +7,10 @@ import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import { IInterfaceCaseResult } from '@/pages/Interface/types';
+import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
-import { FC, useCallback, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   apiCaseId?: number | string;
@@ -20,6 +21,15 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
   const [open, setOpen] = useState(false);
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [currentCaseResultId, setCurrentCaseResultId] = useState<number>();
+  const [polling, setPolling] = useState<number>(0);
+  useEffect(() => {
+    if (apiCaseId) {
+      setPolling(2000);
+    } else {
+      setPolling(0);
+    }
+    return () => setPolling(0);
+  }, [apiCaseId]);
   const fetchResults = useCallback(
     async (params: any, sort: any) => {
       const searchData = {
@@ -50,22 +60,47 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     {
       title: '用例ID',
       dataIndex: 'interfaceCaseUid',
-      hidden: true,
+      width: '6%',
+      render: (_, record) => (
+        <Tag color={'blue'}>{record.interfaceCaseUid}</Tag>
+      ),
     },
     {
       title: '执行用例',
       dataIndex: 'interfaceCaseName',
-      search: false,
+      render: (_, record) => (
+        <Tag color={'blue'}>{record.interfaceCaseName}</Tag>
+      ),
     },
-    {
-      title: '状态',
-      dataIndex: 'status',
-    },
+
     {
       title: '测试结果',
       dataIndex: 'result',
       valueType: 'select',
       valueEnum: { SUCCESS: { text: '成功' }, ERROR: { text: '失败' } },
+      render: (_, record) => (
+        <Tag color={record.result === 'SUCCESS' ? 'green' : 'warning'}>
+          {record.result}
+        </Tag>
+      ),
+    },
+
+    {
+      title: '进度',
+      key: 'progress',
+      dataIndex: 'progress',
+      valueType: (item) => ({
+        type: 'progress',
+        status: item.status !== 'OVER' ? 'active' : 'success',
+      }),
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      valueEnum: {
+        RUNNING: { text: '运行中', status: 'Processing' },
+        OVER: { text: '完成', status: 'Success' },
+      },
     },
     {
       title: '执行人',
@@ -74,25 +109,24 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
       render: (_, record) => <Tag color={'blue'}>{record.starterName}</Tag>,
     },
     {
-      title: '执行时间',
-      dataIndex: 'create_time',
-      render: (_, record) => <Tag color={'blue'}>{record.create_time}</Tag>,
-    },
-    {
       title: '操作',
       valueType: 'option',
       render: (_, record) => (
         <>
-          <a
-            onClick={() => {
-              setCurrentCaseResultId(record.id);
-              setOpen(true);
-            }}
-          >
-            详情
-          </a>
-          <Divider type={'vertical'} />
-          <a onClick={async () => removeCaseResult(record.uid)}>删除</a>
+          {record.status === 'OVER' ? (
+            <>
+              <a
+                onClick={() => {
+                  setCurrentCaseResultId(record.id);
+                  setOpen(true);
+                }}
+              >
+                详情
+              </a>
+              <Divider type={'vertical'} />
+              <a onClick={async () => removeCaseResult(record.uid)}>删除</a>
+            </>
+          ) : null}
         </>
       ),
     },
@@ -121,6 +155,22 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
       </Button>
     </>
   );
+
+  const GetButton = (
+    <Button
+      type="primary"
+      onClick={() => {
+        if (polling) {
+          setPolling(0);
+          return;
+        }
+        setPolling(2000);
+      }}
+    >
+      {polling ? <LoadingOutlined /> : <ReloadOutlined />}
+      {polling ? '停止轮询' : '开始轮询'}
+    </Button>
+  );
   return (
     <div style={{ marginTop: 20 }}>
       <MyDrawer name={''} open={open} setOpen={setOpen}>
@@ -129,11 +179,13 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         />
       </MyDrawer>
       <MyProTable
+        // @ts-ignore
+        polling={polling}
         rowKey={'uid'}
         actionRef={actionRef}
         request={fetchResults}
         search={false}
-        toolBarRender={() => [RemoveAllButton]}
+        toolBarRender={() => [GetButton, RemoveAllButton]}
         pagination={{
           showQuickJumper: true,
           defaultPageSize: 6,

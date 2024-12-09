@@ -15,6 +15,11 @@ export const CONFIG: IObjGet = {
     6: { text: 'Response.json' },
     7: { text: 'Response.header' },
   },
+  API_STATUS: {
+    200: { color: '#67C23A', text: 'OK' },
+    401: { color: '#F56C6C', text: 'unauthorized' },
+    400: { color: '#F56C6C', text: 'Bad Request' },
+  },
   EXTRACT_RESPONSE_TARGET_ENUM: {
     1: { text: 'ResponseJson' },
     2: { text: 'ResponseHeader' },

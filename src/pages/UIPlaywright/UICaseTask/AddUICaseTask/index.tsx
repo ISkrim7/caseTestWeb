@@ -159,7 +159,7 @@ const Index = () => {
           if (code === 0 || data) {
             const partArr = data.map((items) => {
               return {
-                label: items.partName,
+                label: items.title,
                 value: items.id as number,
               };
             });

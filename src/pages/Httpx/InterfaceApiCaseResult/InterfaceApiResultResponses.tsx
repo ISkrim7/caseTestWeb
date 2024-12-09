@@ -9,25 +9,25 @@ interface SelfProps {
 }
 
 const InterfaceApiResultResponses: FC<SelfProps> = ({ caseResultId }) => {
-  const [apiReponses, setApiReponses] = useState<ITryResponseInfo[]>();
+  const [apiResponses, setApiResponses] = useState<ITryResponseInfo[]>();
   useEffect(() => {
     if (caseResultId) {
       caseAPIResults({ interface_case_result_Id: caseResultId }).then(
         ({ code, data }) => {
           if (code === 0) {
             console.log(data);
-            setApiReponses(data);
+            setApiResponses(data);
           }
         },
       );
     }
     return () => {
-      setApiReponses([]);
+      setApiResponses([]);
     };
   }, [caseResultId]);
   return (
-    <ProCard loading={apiReponses?.length === 0}>
-      {apiReponses && <InterfaceApiResponseDetail responses={apiReponses} />}
+    <ProCard loading={apiResponses?.length === 0}>
+      {apiResponses && <InterfaceApiResponseDetail responses={apiResponses} />}
     </ProCard>
   );
 };

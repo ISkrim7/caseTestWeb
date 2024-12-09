@@ -11,6 +11,7 @@ import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
+import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
@@ -47,6 +48,7 @@ const Index = () => {
   const [projects, setProjects] = useState<{ label: string; value: number }[]>(
     [],
   );
+
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentPartId, setCurrentPartId] = useState<number>();
@@ -54,7 +56,7 @@ const Index = () => {
   const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
   const [editCase, setEditCase] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
-
+  const [choiceOpen, setChoiceOpen] = useState(false);
   useEffect(() => {
     if (caseApiId) {
       baseInfoApiCase(caseApiId).then(({ code, data }) => {
@@ -121,7 +123,7 @@ const Index = () => {
   const saveBaseInfo = async () => {
     const values = await baseForm.getFieldsValue(true);
     if (caseApiId) {
-      await setApiCase(values).then(async ({ code, data }) => {
+      await setApiCase(values).then(async ({ code }) => {
         if (code === 0) {
           setCurrentStatus(1);
           await message.success('添加成功');
@@ -137,22 +139,7 @@ const Index = () => {
     }
   };
 
-  /**
-   * RUN
-   */
-  const run = async () => {
-    if (caseApiId) {
-      setRunOpen(true);
-
-      // const { code } = await runApiCase(caseApiId);
-      // if (code === 0) {
-      //   message.success('运行成功');
-      //   await refresh();
-      // }
-    }
-  };
   const onMenuClick: MenuProps['onClick'] = (e) => {
-    console.log('click', e);
     const { key } = e;
     if (caseApiId) {
       if (key === '1') {
@@ -190,7 +177,7 @@ const Index = () => {
             >
               Run By
             </Dropdown.Button>
-
+            <Divider type={'vertical'} />
             <Button
               type={'primary'}
               style={{ marginLeft: 10 }}
@@ -198,10 +185,6 @@ const Index = () => {
             >
               Edit
             </Button>
-            <Divider type={'vertical'} />
-            {/*<Button type={'primary'} icon={<PlayCircleOutlined />} onClick={run}>*/}
-            {/*  Run*/}
-            {/*</Button>*/}
           </div>
         );
       case 2:
@@ -280,7 +263,7 @@ const Index = () => {
       case 1:
         return (
           <>
-            <Button type={'primary'} onClick={AddEmptyApiForm}>
+            <Button type={'primary'} onClick={() => setChoiceOpen(true)}>
               Choice API
             </Button>
             <Divider type={'vertical'} />
@@ -304,6 +287,9 @@ const Index = () => {
           openStatus={runOpen}
           caseApiId={caseApiId!}
         />
+      </MyDrawer>
+      <MyDrawer name={''} open={choiceOpen} setOpen={setChoiceOpen}>
+        <InterfaceCaseChoiceApiTable />
       </MyDrawer>
       <ProCard>
         <ProForm
@@ -379,20 +365,20 @@ const Index = () => {
       <ProCard extra={<ApisCardExtra current={currentStatus} />}>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="droppable" direction="vertical">
-            {(provided, snapshot) => (
+            {(provided) => (
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
                 style={{
                   // Adjust this to control the look of the droppable area
-                  background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
+                  // background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
                   padding: '8px',
                   borderRadius: '8px',
                 }}
               >
                 {apis.map((item, index) => (
                   <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided, snapshot) => (
+                    {(provided) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}

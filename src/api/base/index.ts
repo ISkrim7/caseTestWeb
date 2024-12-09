@@ -163,9 +163,9 @@ export const queryEnvBy = async (envInfo: IEnv, options?: IObjGet) => {
  * @param options
  */
 export const getEnvById = async (envInfo: number, options?: IObjGet) => {
-  return request<IResponse<IEnv>>('/api/project/env/detail}', {
+  return request<IResponse<IEnv>>('/api/project/env/detail', {
     method: 'GET',
-    params: { envId: envInfo },
+    params: { id: envInfo },
     ...(options || {}),
   });
 };

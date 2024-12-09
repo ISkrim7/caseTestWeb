@@ -133,14 +133,23 @@ export const removeApi2Case = async (
 /**
  * 执行用例
  */
-export const runApiCase = async (data: string | number, opt?: IObjGet) => {
-  return request<IResponse<null>>('/api/interface/case/execute', {
+export const runApiCaseIo = async (data: string | number, opt?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/case/execute/io', {
     method: 'POST',
     data: { caseId: data },
     ...(opt || {}),
   });
 };
-
+/**
+ * 执行用例
+ */
+export const runApiCaseBack = async (data: string | number, opt?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/case/execute/back', {
+    method: 'POST',
+    data: { caseId: data },
+    ...(opt || {}),
+  });
+};
 /**
  * 删除用例
  */
@@ -191,6 +200,35 @@ export const caseAPIResultDetail = async (data: string, opt?: IObjGet) => {
 };
 
 /**
+ * 删除case result
+ */
+export const removeCaseAPIResult = async (data: string, opt?: IObjGet) => {
+  return request<IResponse<IInterfaceCaseResult>>(
+    `/api/interface/result/case/remove`,
+    {
+      method: 'POST',
+      data: { uid: data },
+      ...(opt || {}),
+    },
+  );
+};
+/**
+ * 删除case result
+ */
+export const removeCaseAPIResults = async (
+  data: number | string,
+  opt?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceCaseResult>>(
+    `/api/interface/result/case/removeAll`,
+    {
+      method: 'POST',
+      data: { interfaceCaseID: data },
+      ...(opt || {}),
+    },
+  );
+};
+/**
  * 查询case result 关联的api result
  */
 export const caseAPIResults = async (
@@ -205,6 +243,17 @@ export const caseAPIResults = async (
       method: 'POST',
       data: data,
       ...(opt || {}),
+    },
+  );
+};
+
+export const pageInterCaseResult = async (data: ISearch, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceAPI>>>(
+    '/api/interface/result/case/page',
+    {
+      method: 'POST',
+      data: data,
+      ...(options || {}),
     },
   );
 };

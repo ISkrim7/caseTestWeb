@@ -65,6 +65,7 @@ export interface IInterfaceCaseResult extends IBaseField {
   total_num: number;
   useTime: string;
   startTime: string;
+  interfaceLog?: string;
   result?: 'SUCCESS' | 'ERROR';
 }
 

@@ -1,31 +1,13 @@
-import { caseAPIResultDetail } from '@/api/inter/interCase';
 import { IInterfaceCaseResult } from '@/pages/Interface/types';
 import { ProDescriptions } from '@ant-design/pro-components';
 import { Tag } from 'antd';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 
 interface SelfProps {
-  resultId?: string;
+  caseResultInfo?: IInterfaceCaseResult;
 }
 
-const InterfaceApiCaseResultBaseInfo: FC<SelfProps> = ({ resultId }) => {
-  const [caseResultInfo, setCaseResultInfo] = useState<IInterfaceCaseResult>();
-
-  useEffect(() => {
-    let isCancelled = false;
-    const fetchData = async () => {
-      if (resultId) {
-        const { code, data } = await caseAPIResultDetail(resultId);
-        if (code === 0 && !isCancelled) {
-          setCaseResultInfo(data);
-        }
-      }
-    };
-    fetchData();
-    return () => {
-      isCancelled = true;
-    };
-  }, [resultId]);
+const InterfaceApiCaseResultBaseInfo: FC<SelfProps> = ({ caseResultInfo }) => {
   return (
     <ProDescriptions column={2} bordered style={{ marginTop: 10 }}>
       <ProDescriptions.Item

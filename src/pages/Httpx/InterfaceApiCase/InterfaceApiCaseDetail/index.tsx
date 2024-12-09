@@ -4,16 +4,19 @@ import {
   insertApiCase,
   queryApisByCaseId,
   reorderApis2Case,
+  runApiCaseBack,
   setApiCase,
 } from '@/api/inter/interCase';
 import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
+import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { useParams } from '@@/exports';
+import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -22,7 +25,15 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, FloatButton, Form, message } from 'antd';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  FloatButton,
+  Form,
+  MenuProps,
+  message,
+} from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { history } from 'umi';
@@ -140,20 +151,58 @@ const Index = () => {
       // }
     }
   };
+  const onMenuClick: MenuProps['onClick'] = (e) => {
+    console.log('click', e);
+    const { key } = e;
+    if (caseApiId) {
+      if (key === '1') {
+        runApiCaseBack(caseApiId).then(async ({ code }) => {
+          if (code === 0) {
+            message.success('后台运行中。。');
+          }
+        });
+      } else {
+        setRunOpen(true);
+      }
+    }
+  };
 
+  const items = [
+    {
+      key: '1',
+      label: '后台运行',
+      icon: <ArrowRightOutlined />,
+    },
+    {
+      key: '2',
+      label: '实时日志运行',
+      icon: <ArrowRightOutlined />,
+    },
+  ];
   const DetailExtra: FC<{ currentStatus: number }> = ({ currentStatus }) => {
     switch (currentStatus) {
       case 1:
         return (
-          <>
-            <Button type={'primary'} onClick={() => setCurrentStatus(3)}>
+          <div style={{ display: 'flex' }}>
+            <Dropdown.Button
+              menu={{ items, onClick: onMenuClick }}
+              icon={<PlayCircleOutlined />}
+            >
+              Run By
+            </Dropdown.Button>
+
+            <Button
+              type={'primary'}
+              style={{ marginLeft: 10 }}
+              onClick={() => setCurrentStatus(3)}
+            >
               Edit
             </Button>
             <Divider type={'vertical'} />
-            <Button type={'primary'} onClick={run}>
-              Run
-            </Button>
-          </>
+            {/*<Button type={'primary'} icon={<PlayCircleOutlined />} onClick={run}>*/}
+            {/*  Run*/}
+            {/*</Button>*/}
+          </div>
         );
       case 2:
         return (
@@ -360,6 +409,7 @@ const Index = () => {
           </Droppable>
         </DragDropContext>
       </ProCard>
+      <InterfaceApiCaseResultTable apiCaseId={caseApiId} />
       <FloatButton.BackTop />
     </ProCard>
   );

@@ -1,7 +1,8 @@
-import { runApiCase } from '@/api/inter/interCase';
+import { caseAPIResultDetail, runApiCaseIo } from '@/api/inter/interCase';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import InterfaceApiCaseResultBaseInfo from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultBaseInfo';
 import InterfaceApiResultResponses from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiResultResponses';
+import { IInterfaceCaseResult } from '@/pages/Interface/types';
 import { useModel } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
 import { Tabs } from 'antd';
@@ -9,11 +10,13 @@ import { FC, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
 interface SelfProps {
-  openStatus: boolean;
-  caseApiId: string;
+  openStatus?: boolean;
+  caseApiId?: string;
+  currentCaseResultId?: string | number;
 }
 
 const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
+  currentCaseResultId,
   openStatus,
   caseApiId,
 }) => {
@@ -22,7 +25,13 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
   const [tabDisabled, setTabDisabled] = useState(true);
   const { initialState } = useModel('@@initialState');
   const [defaultActiveKey, setDefaultActiveKey] = useState('2');
+  const [caseResultInfo, setCaseResultInfo] = useState<IInterfaceCaseResult>();
 
+  useEffect(() => {
+    if (currentCaseResultId) {
+      setCaseResultId(currentCaseResultId as string);
+    }
+  }, [currentCaseResultId]);
   useEffect(() => {
     if (caseResultId) {
       setTabDisabled(false);
@@ -41,7 +50,9 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
 
       socket.on('connect', () => {
         console.log('connect socket');
-        runApiCase(caseApiId).then();
+        if (caseApiId) {
+          runApiCaseIo(caseApiId).then();
+        }
       });
 
       socket.on('message', ({ code, data }) => {
@@ -79,7 +90,27 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
       cleanSocket();
     };
   }, [openStatus, caseApiId]);
-
+  useEffect(() => {
+    let isCancelled = false;
+    const fetchData = async () => {
+      if (caseResultId) {
+        const { code, data } = await caseAPIResultDetail(caseResultId);
+        if (code === 0 && !isCancelled) {
+          setCaseResultInfo(data);
+          const { interfaceLog } = data;
+          if (interfaceLog) {
+            setLogMessage(interfaceLog.split('\n'));
+          } else {
+            setLogMessage([]);
+          }
+        }
+      }
+    };
+    fetchData();
+    return () => {
+      isCancelled = true;
+    };
+  }, [caseResultId]);
   return (
     <ProCard>
       <Tabs
@@ -90,7 +121,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
         defaultActiveKey={defaultActiveKey}
       >
         <Tabs.TabPane tab={'基本信息'} key={'1'} disabled={tabDisabled}>
-          <InterfaceApiCaseResultBaseInfo resultId={caseResultId} />
+          <InterfaceApiCaseResultBaseInfo caseResultInfo={caseResultInfo} />
         </Tabs.TabPane>
         <Tabs.TabPane tab={'请求日志'} key={'2'}>
           <AceCodeEditor

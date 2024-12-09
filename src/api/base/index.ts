@@ -158,6 +158,19 @@ export const queryEnvBy = async (envInfo: IEnv, options?: IObjGet) => {
 };
 
 /**
+ * env 查询
+ * @param envInfo
+ * @param options
+ */
+export const getEnvById = async (envInfo: number, options?: IObjGet) => {
+  return request<IResponse<IEnv>>('/api/project/env/detail}', {
+    method: 'GET',
+    params: { envId: envInfo },
+    ...(options || {}),
+  });
+};
+
+/**
  * 通过project 获取模块树
  * @param projectId
  * @param options

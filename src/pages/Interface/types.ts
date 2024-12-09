@@ -41,6 +41,7 @@ export interface ITryResponseInfo extends IBaseField {
   interfaceID: number;
   interfaceName: string;
   interfaceDesc: string;
+  interfaceEnvId: number;
   response_txt: string;
   response_status: number;
   response_head: IObjGet;

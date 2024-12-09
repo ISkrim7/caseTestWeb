@@ -1,4 +1,5 @@
 import { IObjGet } from '@/api';
+import { getEnvById } from '@/api/base';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import AssertColumns from '@/pages/Httpx/componets/AssertColumns';
 import RequestHeaders from '@/pages/Httpx/InterfaceApiResponse/RequestHeaders';
@@ -124,7 +125,12 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
       return <AceCodeEditor value={response_txt} readonly={true} />;
     }
   };
-
+  const fetchEnvName = async (envId: number) => {
+    const { code, data } = await getEnvById(envId);
+    if (code === 0) {
+      return data.name;
+    }
+  };
   return (
     <div>
       {responses?.map((item: ITryResponseInfo, index: number) => {
@@ -135,10 +141,11 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
             style={{ borderRadius: '5px', marginTop: 5 }}
             title={
               <>
+                <Tag>{async () => getEnvById(item.interfaceEnvId)}</Tag>
                 <Tag color={item.result?.toLowerCase()}>
                   {item.interfaceName}
                 </Tag>
-                <span>{item.interfaceDesc}</span>
+                <span style={{ color: 'gray' }}>{item.interfaceDesc}</span>
               </>
             }
             headerBordered

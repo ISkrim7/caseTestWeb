@@ -26,6 +26,7 @@ function App() {
   //   }
   //
   // }, []);
+  // @ts-ignore
   useEffect(() => {
     const socket = io('ws://localhost:5050/ws', {
       query: { clientId: initialState?.currentUser?.uid },

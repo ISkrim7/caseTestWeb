@@ -25,6 +25,7 @@ export interface IInterfaceAPI extends IBaseField {
   beforeParams: IBeforeParams[] | [];
   follow_redirects: boolean;
   is_common: number;
+  enable: boolean;
 }
 
 export interface IInterfaceAPICase extends IBaseField {

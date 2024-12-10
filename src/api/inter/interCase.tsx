@@ -88,6 +88,22 @@ export const addApi2Case = async (
 };
 
 /**
+ * 选择公共apis 给 case
+ * @param data
+ * @param opt
+ */
+export const selectCommonApis2Case = async (
+  data: { caseId: number | string; commonApis: number[] },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interface/case/selectApis', {
+    method: 'POST',
+    data: data,
+    ...(opt || {}),
+  });
+};
+
+/**
  * 获取apis
  * @param data
  * @param opt
@@ -246,7 +262,11 @@ export const caseAPIResults = async (
     },
   );
 };
-
+/**
+ * 查询用例结果分页
+ * @param data
+ * @param options
+ */
 export const pageInterCaseResult = async (data: ISearch, options?: IObjGet) => {
   return request<IResponse<IPage<IInterfaceAPI>>>(
     '/api/interface/result/case/page',

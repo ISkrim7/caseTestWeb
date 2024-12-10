@@ -1,8 +1,10 @@
+import { updateInterApiById } from '@/api/inter';
 import { copyApi2Case, removeApi2Case } from '@/api/inter/interCase';
 import InterfaceApiDetail from '@/pages/Httpx/Interface/InterfaceApiDetail';
 import { IInterfaceAPI } from '@/pages/Interface/types';
+import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Tag } from 'antd';
+import { Button, message, Popconfirm, Switch, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
@@ -15,32 +17,36 @@ interface SelfProps {
 }
 
 const CollapsibleApiCard: FC<SelfProps> = (props) => {
+  const { interfaceApiInfo, caseApiId, refresh } = props;
   const [cardTitle, setCardTitle] = useState('');
   const [cardSubTitle, setSubCardTitle] = useState('');
   useEffect(() => {
-    if (props.interfaceApiInfo) {
-      setCardTitle(props.interfaceApiInfo.name);
-      setSubCardTitle(props.interfaceApiInfo.desc);
+    if (interfaceApiInfo) {
+      setCardTitle(interfaceApiInfo.name);
+      setSubCardTitle(interfaceApiInfo.desc);
     }
-  }, [props.interfaceApiInfo]);
+  }, [interfaceApiInfo]);
 
   const copyApi = async () => {
-    if (props.caseApiId && props.interfaceApiInfo) {
+    if (caseApiId && interfaceApiInfo) {
       const { code } = await copyApi2Case({
-        caseId: props.caseApiId,
-        apiId: props.interfaceApiInfo?.id,
+        caseId: caseApiId,
+        apiId: interfaceApiInfo?.id,
       });
       if (code === 0) {
         message.success('添加成功！');
-        props.refresh();
+        refresh();
       }
     }
   };
 
   const extraButton = (
     <>
-      {props.interfaceApiInfo && (
+      {interfaceApiInfo && (
         <>
+          {interfaceApiInfo.is_common ? (
+            <Tag color={'green-inverse'}>公</Tag>
+          ) : null}
           <Button type={'link'} onClick={copyApi}>
             Copy To Bottom
           </Button>
@@ -52,8 +58,8 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
             style={{ marginLeft: 10 }}
             onConfirm={async () => {
               await removeApi2Case({
-                caseId: props.caseApiId!,
-                apiId: props.interfaceApiInfo?.id,
+                caseId: caseApiId!,
+                apiId: interfaceApiInfo?.id,
               }).then(async ({ code }) => {
                 if (code === 0) {
                   props.refresh();
@@ -63,6 +69,22 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
           >
             <Button type={'link'}>Del</Button>
           </Popconfirm>
+          <Switch
+            style={{ marginLeft: 10 }}
+            checkedChildren={<CheckCircleTwoTone />}
+            unCheckedChildren={<CloseCircleTwoTone />}
+            value={interfaceApiInfo.enable}
+            onClick={async (checked, _) => {
+              // @ts-ignore
+              const { code } = await updateInterApiById({
+                id: interfaceApiInfo?.id,
+                enable: checked,
+              });
+              if (code === 0) {
+                refresh();
+              }
+            }}
+          />
         </>
       )}
     </>
@@ -72,7 +94,12 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
     <ProCard
       bordered
       boxShadow={true}
-      title={<Tag color={'blue'}>{cardTitle}</Tag>}
+      title={
+        <>
+          {' '}
+          <Tag color={'blue'}>{cardTitle}</Tag>
+        </>
+      }
       subTitle={cardSubTitle}
       style={{ borderRadius: '5px', marginTop: 10 }}
       collapsible={true}

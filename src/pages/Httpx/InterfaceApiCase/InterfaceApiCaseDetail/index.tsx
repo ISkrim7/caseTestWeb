@@ -289,7 +289,11 @@ const Index = () => {
         />
       </MyDrawer>
       <MyDrawer name={''} open={choiceOpen} setOpen={setChoiceOpen}>
-        <InterfaceCaseChoiceApiTable />
+        <InterfaceCaseChoiceApiTable
+          currentCaseApiId={caseApiId}
+          refresh={refresh}
+          currentProjectId={currentProjectId}
+        />
       </MyDrawer>
       <ProCard>
         <ProForm

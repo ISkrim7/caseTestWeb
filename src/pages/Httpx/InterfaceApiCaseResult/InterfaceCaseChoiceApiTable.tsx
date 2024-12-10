@@ -1,22 +1,35 @@
 import { IObjGet } from '@/api';
 import { queryProject } from '@/api/base';
 import { pageInterApi } from '@/api/inter';
+import { selectCommonApis2Case } from '@/api/inter/interCase';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
+import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
+import { CasePartEnum, IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Tag } from 'antd';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { Button, message, Tag } from 'antd';
+import { TableRowSelection } from 'antd/es/table/interface';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
+  currentCaseApiId?: string;
+  refresh?: () => void;
 }
 
-const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
+const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
+  currentCaseApiId,
+  refresh,
+  currentProjectId,
+}) => {
+  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number>();
   const [selectPartId, setSelectPartId] = useState<number>();
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [partEnumMap, setPartEnumMap] = useState<IObjGet>({});
+  const [partEnumMap, setPartEnumMap] = useState<CasePartEnum[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
   // 查询所有project 设置枚举
   useEffect(() => {
     queryProject().then(({ code, data }) => {
@@ -25,6 +38,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
           acc[obj.id] = { text: obj.title };
           return acc;
         }, {});
+        console.log(mapData);
         setProjectEnumMap(mapData);
       }
     });
@@ -32,11 +46,13 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
   useEffect(() => {
     if (currentProjectId) {
       setSelectProjectId(currentProjectId);
-      // fetchCaseParts(currentProjectId, setProjectEnumMap)
     }
   }, [currentProjectId]);
-  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-
+  useEffect(() => {
+    if (selectProjectId) {
+      fetchCaseParts(selectProjectId, setPartEnumMap).then();
+    }
+  }, [selectProjectId]);
   const fetchInterface = useCallback(async (params: any, sort: any) => {
     const searchData = {
       ...params,
@@ -63,32 +79,18 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
 
   const columns: ProColumns<IInterfaceAPI>[] = [
     {
-      title: '接口编号',
-      dataIndex: 'uid',
-      key: 'uid',
-      fixed: 'left',
-      width: '10%',
-      copyable: true,
-    },
-    {
-      title: '名称',
-      dataIndex: 'name',
-      key: 'name',
-      fixed: 'left',
-      width: '15%',
-    },
-    {
       title: '项目',
       dataIndex: 'project_id',
       hideInTable: true,
+      filters: true,
+      onFilter: true,
       valueType: 'select',
       valueEnum: projectEnumMap,
       initialValue: selectProjectId,
       fieldProps: {
-        defaultValue: selectProjectId,
-        onSelect: (value) => {
-          setSelectProjectId(parseInt(value));
-          setSelectPartId(null);
+        onSelect: (value: number) => {
+          setSelectProjectId(value);
+          setSelectPartId(undefined);
         },
       },
     },
@@ -100,7 +102,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
       initialValue: selectPartId,
       fieldProps: {
         value: selectPartId,
-        onSelect: (value) => {
+        onSelect: (value: number) => {
           setSelectPartId(value);
         },
         treeData: partEnumMap,
@@ -109,6 +111,18 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
         },
       },
     },
+    {
+      title: '接口编号',
+      dataIndex: 'uid',
+      key: 'uid',
+      copyable: true,
+    },
+    {
+      title: '名称',
+      dataIndex: 'name',
+      key: 'name',
+    },
+
     {
       title: '优先级',
       dataIndex: 'level',
@@ -123,7 +137,6 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
       title: '状态',
       dataIndex: 'status',
       valueType: 'select',
-      width: '10%',
       valueEnum: CONFIG.API_STATUS_ENUM,
       render: (_, record) => {
         return CONFIG.API_STATUS_ENUM[record.status].tag;
@@ -132,15 +145,45 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({ currentProjectId }) => {
     {
       title: '创建人',
       dataIndex: 'creatorName',
-      width: '10%',
       render: (_, record) => {
         return <Tag>{record.creatorName}</Tag>;
       },
     },
   ];
 
+  const rowSelection: TableRowSelection<IUICase> = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      console.log('newSelectedRowKeys', newSelectedRowKeys);
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
+
   return (
     <MyProTable
+      // @ts-ignore
+      tableAlertOptionRender={() => {
+        return (
+          <Button
+            type={'primary'}
+            onClick={async () => {
+              if (currentCaseApiId) {
+                const { code, msg } = await selectCommonApis2Case({
+                  caseId: currentCaseApiId,
+                  commonApis: selectedRowKeys as number[],
+                });
+                if (code === 0) {
+                  message.success(msg);
+                  refresh?.();
+                }
+              }
+            }}
+          >
+            确认添加
+          </Button>
+        );
+      }}
+      rowSelection={rowSelection}
       columns={columns}
       rowKey={'id'}
       x={1000}

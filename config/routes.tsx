@@ -187,12 +187,13 @@ export default [
       {
         path: '/interface/tasks',
         name: '接口任务',
-        component: '@/pages/Interface/InterfaceTask',
+        component: '@/pages/Httpx/InterfaceApiCaseTask',
       },
       {
-        path: '/interface/addTasks',
+        path: '/interface/task/detail',
         name: '添加任务',
-        component: '@/pages/Interface/InterfaceTask/AddInterfaceTask',
+        component:
+          '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail',
         hideInMenu: true,
       },
       {

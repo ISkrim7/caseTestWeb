@@ -38,6 +38,18 @@ export interface IInterfaceAPICase extends IBaseField {
   project_id: number;
 }
 
+export interface IInterfaceAPITask extends IBaseField {
+  title: string;
+  desc: string;
+  level: string;
+  cron: string;
+  switch: number | boolean;
+  status: string;
+  total_cases_num: number;
+  part_id: number;
+  project_id: number;
+}
+
 export interface ITryResponseInfo extends IBaseField {
   interfaceID: number;
   interfaceName: string;

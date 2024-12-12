@@ -10,7 +10,7 @@ import { IInterfaceCaseResult } from '@/pages/Interface/types';
 import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useRef, useState } from 'react';
 
 interface SelfProps {
   apiCaseId?: number | string;
@@ -22,14 +22,14 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [currentCaseResultId, setCurrentCaseResultId] = useState<number>();
   const [polling, setPolling] = useState<number>(0);
-  useEffect(() => {
-    if (apiCaseId) {
-      setPolling(2000);
-    } else {
-      setPolling(0);
-    }
-    return () => setPolling(0);
-  }, [apiCaseId]);
+  // useEffect(() => {
+  //   if (apiCaseId) {
+  //     setPolling(2000);
+  //   } else {
+  //     setPolling(0);
+  //   }
+  //   return () => setPolling(0);
+  // }, [apiCaseId]);
   const fetchResults = useCallback(
     async (params: any, sort: any) => {
       const searchData = {

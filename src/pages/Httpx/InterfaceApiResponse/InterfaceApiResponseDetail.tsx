@@ -75,7 +75,9 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
       const value = JSON.stringify(jsonValue, null, 2);
       return <AceCodeEditor value={value} readonly={true} />;
     } catch (e) {
-      return <AceCodeEditor value={response_txt} readonly={true} />;
+      return (
+        <AceCodeEditor value={response_txt} _mode={'html'} readonly={true} />
+      );
     }
   };
   const fetchEnvName = async (envId: number) => {

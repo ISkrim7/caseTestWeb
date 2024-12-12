@@ -107,23 +107,8 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
             >
               详情
             </a>
-            {/*<Divider type={'vertical'} />*/}
-            {/*<a*/}
-            {/*  onClick={async () => {*/}
-            {/*    await asyncTryInterApi({ interfaceId: record.id }).then(*/}
-            {/*      ({ code, msg }) => {*/}
-            {/*        if (code === 0) {*/}
-            {/*          message.success(msg);*/}
-            {/*        }*/}
-            {/*      },*/}
-            {/*    );*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  执行*/}
-            {/*</a>*/}
             <Divider type={'vertical'} />
             <a>复制</a>
-
             <Popconfirm
               title={'确认删除？'}
               okText={'确认'}

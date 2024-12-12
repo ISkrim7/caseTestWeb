@@ -1,4 +1,4 @@
-import HeadersEnum from '@/pages/Interface/Postman/component/HeadersTable/HeadersEnum';
+import { HeadersEnum } from '@/pages/Interface/Postman/component/HeadersTable/HeadersEnum';
 import { IHeaders, ISteps } from '@/pages/Interface/types';
 import { EditableProTable, ProForm } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';

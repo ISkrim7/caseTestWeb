@@ -59,6 +59,7 @@ export interface ITryResponseInfo extends IBaseField {
   response_status: number;
   response_head: IObjGet;
   request_head: IObjGet;
+  request_method: string;
   startId: number;
   starterName: string;
   useTime: string;

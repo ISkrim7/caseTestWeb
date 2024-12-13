@@ -99,13 +99,23 @@ export const updateInterApiById = async (
  * @param data
  * @param options
  */
-export const removeInterApiById = async (
-  data?: IInterfaceAPI,
-  options?: IObjGet,
-) => {
+export const removeInterApiById = async (data: number, options?: IObjGet) => {
   return request<IResponse<null>>('/api/interface/remove', {
     method: 'POST',
-    data: data,
+    data: { id: data },
+    ...(options || {}),
+  });
+};
+
+/**
+ * 复制api
+ * @param data
+ * @param options
+ */
+export const copyInterApiById = async (data: number, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/copy', {
+    method: 'POST',
+    data: { id: data },
     ...(options || {}),
   });
 };

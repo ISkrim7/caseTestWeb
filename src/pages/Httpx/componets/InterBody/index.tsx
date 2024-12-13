@@ -49,7 +49,7 @@ const Index: FC<SelfProps> = (props) => {
       >
         <Radio value={0}>none</Radio>
         <Radio value={2}>form-data</Radio>
-        <Radio value={3}>urlencoded</Radio>
+        {/*<Radio value={3}>urlencoded</Radio>*/}
         <Radio value={1}>json</Radio>
       </Radio.Group>
       {BodyMap()}

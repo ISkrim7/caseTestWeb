@@ -49,8 +49,7 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
         <span>
           Method:
           <span style={{ color: color, marginLeft: 8, marginRight: 8 }}>
-            {/*{response.request.method}*/}
-            GET
+            {response.request_method}
           </span>
           Status_Code:
           <span style={{ color, marginLeft: 8, marginRight: 8 }}>
@@ -101,7 +100,11 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
             title={
               <>
                 <Tag color={'blue'}>{envNames[index]}</Tag>
-                <Tag color={item.result?.toLowerCase()}>
+                <Tag
+                  color={
+                    item.result?.toLowerCase() === 'error' ? '#f50' : '#87d068'
+                  }
+                >
                   {item.interfaceName}
                 </Tag>
                 <span style={{ color: 'gray' }}>

@@ -20,7 +20,11 @@ const extractColumns: ProColumns<IExtracts>[] = [
     copyable: true,
     dataIndex: 'key',
     render: (text) => {
-      return <Tag color={'green'}>{text}</Tag>;
+      return (
+        <Tag bordered={false} color={'green'}>
+          {text}
+        </Tag>
+      );
     },
   },
   {
@@ -28,7 +32,7 @@ const extractColumns: ProColumns<IExtracts>[] = [
     dataIndex: 'target',
     render: (text) => {
       return (
-        <Tag color={'blue'}>
+        <Tag bordered={false} color={'blue'}>
           {/*// @ts-ignore*/}
           {CONFIG.EXTRACT_RESPONSE_TARGET_ENUM[text]?.text}
         </Tag>

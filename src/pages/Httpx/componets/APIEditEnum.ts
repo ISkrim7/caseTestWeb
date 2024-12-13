@@ -11,9 +11,12 @@ export const HeadersEnum: IObjGet = {
   UserAgent: { text: 'User-Agent', label: 'User-Agent' },
 };
 export const FormDataTypeEnum: IObjGet = {
-  1: { text: 'application/octet-stream', label: 'application/octet-stream' },
-  2: { text: 'application/json', label: 'application/json' },
-  3: { text: 'application/xml', label: 'application/xml' },
-  4: { text: 'text/plain', label: 'text/plain' },
-  5: { text: 'text/html', label: 'text/html' },
+  'application/octet-stream': {
+    text: 'application/octet-stream',
+    label: 'application/octet-stream',
+  },
+  'application/json': { text: 'application/json', label: 'application/json' },
+  'application/xml': { text: 'application/xml', label: 'application/xml' },
+  'text/plain': { text: 'text/plain', label: 'text/plain' },
+  'text/html': { text: 'text/html', label: 'text/html' },
 };

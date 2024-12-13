@@ -76,13 +76,16 @@ const Index: FC<SelfProps> = ({
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
   const [currentInterAPIId, setCurrentInterAPIId] = useState<number>();
+  const [headersLength, setHeadersLength] = useState<number>();
+  const [queryLength, setQueryLength] = useState<number>();
+  const [bodyLength, setBodyLength] = useState<number>();
   useEffect(() => {
     if (interId) {
       setCurrentMode(1);
       detailInterApiById({ interfaceId: interId }).then(({ code, data }) => {
         if (code === 0) {
           interApiForm.setFieldsValue(data);
-          console.log('set', data.project_id);
+          setDataLength(data);
           setCurrentProjectId(data.project_id);
         }
       });
@@ -128,9 +131,22 @@ const Index: FC<SelfProps> = ({
     if (interfaceApiInfo) {
       setCurrentMode(1);
       interApiForm.setFieldsValue(interfaceApiInfo);
+      setDataLength(interfaceApiInfo);
       setCurrentInterAPIId(interfaceApiInfo.id);
     }
   }, [interfaceApiInfo]);
+
+  const setDataLength = (data: IInterfaceAPI) => {
+    setHeadersLength(data?.headers?.length || 0);
+    setQueryLength(data?.params?.length || 0);
+    if (data.bodyType === 1) {
+      setBodyLength(1);
+    } else if (data.bodyType === 2) {
+      setBodyLength(data?.data?.length || 0);
+    } else {
+      setBodyLength(0);
+    }
+  };
   const TryClick = async () => {
     setTryLoading(true);
     if (interId) {
@@ -224,6 +240,38 @@ const Index: FC<SelfProps> = ({
     }
   };
 
+  const renderTab = (type: number) => {
+    switch (type) {
+      case 1:
+        if (headersLength && headersLength > 0) {
+          return (
+            <span>
+              Headers <span style={{ color: 'green' }}>({headersLength})</span>
+            </span>
+          );
+        }
+        return <span>Headers</span>;
+
+      case 2:
+        if (queryLength && queryLength > 0) {
+          return (
+            <span>
+              Query <span style={{ color: 'green' }}>({queryLength})</span>
+            </span>
+          );
+        }
+        return <span>Query</span>;
+      case 3:
+        if (bodyLength && bodyLength > 0) {
+          return (
+            <span>
+              Body <span style={{ color: 'green' }}>({bodyLength})</span>
+            </span>
+          );
+        }
+        return <span>Body</span>;
+    }
+  };
   const DetailExtra: FC<{ currentMode: number }> = ({ currentMode }) => {
     switch (currentMode) {
       case 1:
@@ -414,14 +462,14 @@ const Index: FC<SelfProps> = ({
                 />
               </ProForm.Group>
               <ProCard bodyStyle={{ padding: 0 }}>
-                <Tabs defaultActiveKey={'1'}>
-                  <Tabs.TabPane key={'1'} tab={'Params'}>
-                    <InterParam form={interApiForm} mode={currentMode} />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane key={'2'} tab={'Headers'}>
+                <Tabs defaultActiveKey={'1'} type="card">
+                  <Tabs.TabPane key={'2'} tab={renderTab(1)}>
                     <InterHeader form={interApiForm} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane key={'3'} tab={'Body'}>
+                  <Tabs.TabPane key={'1'} tab={renderTab(2)}>
+                    <InterParam form={interApiForm} mode={currentMode} />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane key={'3'} tab={renderTab(3)}>
                     <InterBody form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
                 </Tabs>

@@ -1,4 +1,3 @@
-import { FormDataTypeEnum } from '@/pages/Httpx/componets/APIEditEnum';
 import { IFromData, IInterfaceAPI } from '@/pages/Interface/types';
 import {
   EditableProTable,
@@ -16,30 +15,6 @@ interface SelfProps {
 
 const FormData: FC<SelfProps> = ({ form, mode }) => {
   const [dataEditableKeys, setDataEditableRowKeys] = useState<React.Key[]>();
-  const [formDataType, setFormDataType] = useState<
-    {
-      value: string;
-      text: any;
-    }[]
-  >([]);
-  const handleHeaderSearch = (newValue: string) => {
-    if (newValue) {
-      const filteredOptions = Object.keys(FormDataTypeEnum)
-        .filter((item) =>
-          FormDataTypeEnum[item].text
-            .toLowerCase()
-            .includes(newValue.toLowerCase()),
-        )
-        .map((key) => ({ value: key, text: FormDataTypeEnum[key].text }));
-      setFormDataType(
-        filteredOptions.length > 0
-          ? filteredOptions
-          : [{ value: newValue, text: newValue }],
-      );
-    } else {
-      setFormDataType([]);
-    }
-  };
   const columns: ProColumns<IFromData>[] = [
     {
       title: 'key',
@@ -62,29 +37,14 @@ const FormData: FC<SelfProps> = ({ form, mode }) => {
       dataIndex: 'value',
       width: '30%',
     },
-    {
-      title: 'content-type',
-      key: 'content_type',
-      dataIndex: 'content_type',
-      width: '30%',
-      valueType: 'select',
-      valueEnum: FormDataTypeEnum,
-      // renderFormItem: () => {
-      //   return (
-      //     <Select
-      //       showSearch
-      //       defaultActiveFirstOption={false}
-      //       filterOption={true}
-      //       onSearch={handleHeaderSearch}
-      //       notFoundContent={null}
-      //       options={(formDataType).map((d) => ({
-      //         value: d.value,
-      //         label: d.text,
-      //       }))}
-      //     />
-      //   );
-      // }
-    },
+    // {
+    //   title: 'content-type',
+    //   key: 'content_type',
+    //   dataIndex: 'content_type',
+    //   width: '30%',
+    //   valueType: 'select',
+    //   valueEnum: FormDataTypeEnum,
+    // },
     {
       title: 'desc',
       key: 'desc',
@@ -113,27 +73,29 @@ const FormData: FC<SelfProps> = ({ form, mode }) => {
   ];
 
   return (
-    <ProForm.Item name={'params'} trigger={'onValuesChange'}>
-      <EditableProTable<IFromData>
-        rowKey={'id'}
-        toolBarRender={false}
-        columns={columns}
-        recordCreatorProps={{
-          newRecordType: 'dataSource',
-          record: () => ({
-            id: Date.now(),
-          }),
-        }}
-        editable={{
-          type: 'multiple',
-          editableKeys: dataEditableKeys,
-          onChange: setDataEditableRowKeys, // Update editable keys
-          actionRender: (_, __, dom) => {
-            return [dom.save, dom.delete, dom.cancel];
-          },
-        }}
-      />
-    </ProForm.Item>
+    <ProForm form={form} submitter={false}>
+      <ProForm.Item name={'data'} trigger={'onValuesChange'}>
+        <EditableProTable<IFromData>
+          rowKey={'id'}
+          toolBarRender={false}
+          columns={columns}
+          recordCreatorProps={{
+            newRecordType: 'dataSource',
+            record: () => ({
+              id: Date.now(),
+            }),
+          }}
+          editable={{
+            type: 'multiple',
+            editableKeys: dataEditableKeys,
+            onChange: setDataEditableRowKeys, // Update editable keys
+            actionRender: (_, __, dom) => {
+              return [dom.save, dom.delete, dom.cancel];
+            },
+          }}
+        />
+      </ProForm.Item>
+    </ProForm>
   );
 };
 

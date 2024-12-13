@@ -1,4 +1,8 @@
-import { pageInterApi } from '@/api/inter';
+import {
+  copyInterApiById,
+  pageInterApi,
+  removeInterApiById,
+} from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { CONFIG } from '@/utils/config';
@@ -97,7 +101,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       key: 'option',
       fixed: 'right',
       width: '15%',
-      render: (text, record, _) => {
+      render: (_, record) => {
         return (
           <>
             <a
@@ -108,15 +112,28 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
               详情
             </a>
             <Divider type={'vertical'} />
-            <a>复制</a>
+            <a
+              onClick={async () => {
+                const { code } = await copyInterApiById(record.id);
+                if (code === 0) {
+                  actionRef.current?.reload();
+                }
+              }}
+            >
+              复制
+            </a>
             <Popconfirm
               title={'确认删除？'}
               okText={'确认'}
               cancelText={'点错了'}
-              onConfirm={async () => {}}
+              onConfirm={async () => {
+                const { code } = await removeInterApiById(record.id);
+                if (code === 0) {
+                  actionRef.current?.reload();
+                }
+              }}
             >
               <Divider type={'vertical'} />
-
               <a>删除</a>
             </Popconfirm>
           </>

@@ -1,5 +1,6 @@
+import { getThem, setThem } from '@/utils/token';
 import { Space, Switch } from 'antd';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Avatar from './AvatarDropdown';
 
 interface SelfProps {
@@ -13,7 +14,23 @@ const GlobalHeaderRight: FC<SelfProps> = ({
   initialState,
   setInitialState,
 }) => {
+  const [defaultChecked, setDefaultChecked] = useState<boolean>(false); // true light false dark
+  useEffect(() => {
+    const them = getThem();
+    console.log('====right========', them);
+    if (them && them === 'realDark') {
+      setDefaultChecked(true);
+    } else {
+      setDefaultChecked(false);
+    }
+  }, []);
   const onChange = (checked: boolean) => {
+    console.log('====', checked);
+    if (checked) {
+      setThem('realDark');
+    } else {
+      setThem('light');
+    }
     const newSettings = {
       ...initialState.settings,
       navTheme: checked ? 'realDark' : 'light',
@@ -24,6 +41,7 @@ const GlobalHeaderRight: FC<SelfProps> = ({
     <Space direction={!coll ? 'horizontal' : 'vertical'}>
       <Avatar coll={coll} />
       <Switch
+        defaultChecked={defaultChecked}
         style={{ marginLeft: 10 }}
         checkedChildren={'🌛'}
         unCheckedChildren={'🌞'}

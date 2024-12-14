@@ -2,11 +2,12 @@ import { IUser } from '@/api';
 import { currentUser } from '@/api/base';
 import RightContent from '@/components/RightContent';
 import { errorConfig } from '@/requestErrorConfig';
+import { getThem } from '@/utils/token';
 import { RequestConfig } from '@@/plugin-request/request';
 import { PageLoading } from '@ant-design/pro-components';
 import { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { ConfigProvider } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { history, RunTimeLayoutConfig } from 'umi';
 import defaultSetting from '../config/defaultSetting';
 
@@ -47,10 +48,18 @@ export const layout: RunTimeLayoutConfig = ({
   initialState,
   setInitialState,
 }) => {
-  console.log('==user==', initialState?.currentUser?.username);
-
   const [coll, setColl] = useState(false);
+  const [currentThem, setCurrentThem] = useState<any>();
+  console.log('==current_user==', initialState?.currentUser?.username);
+
+  useEffect(() => {
+    const them = getThem();
+    if (them) {
+      setCurrentThem(them);
+    }
+  }, []);
   return {
+    navTheme: currentThem,
     disableContentMargin: true,
     defaultCollapsed: coll,
     onCollapse: (collapsed) => {

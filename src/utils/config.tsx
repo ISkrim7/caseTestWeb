@@ -15,6 +15,10 @@ export const CONFIG: IObjGet = {
     6: { text: 'Response.json' },
     7: { text: 'Response.header' },
   },
+  API_CASE_ERROR_STOP_OPT: [
+    { label: '是', value: 1 },
+    { label: '否', value: 0 },
+  ],
   API_STATUS: {
     200: { color: '#67C23A', text: 'OK' },
     401: { color: '#F56C6C', text: 'unauthorized' },

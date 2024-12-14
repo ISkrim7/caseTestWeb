@@ -119,3 +119,15 @@ export const copyInterApiById = async (data: number, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
+/**
+ * 查询script
+ * @param data
+ * @param options
+ */
+export const queryScripts = async (options?: IObjGet) => {
+  return request<IResponse<any>>('/api/interface/query/script_doc', {
+    method: 'GET',
+    ...(options || {}),
+  });
+};

@@ -199,7 +199,9 @@ export default [
       {
         path: '/interface/task/detail/taskId=:taskId',
         name: '任务详情',
-        component: '@/pages/Interface/InterfaceTask/AddInterfaceTask',
+        component:
+          '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail',
+
         hideInMenu: true,
       },
       {

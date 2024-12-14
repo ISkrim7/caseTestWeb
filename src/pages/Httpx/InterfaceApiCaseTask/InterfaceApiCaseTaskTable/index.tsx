@@ -80,9 +80,9 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       valueType: 'select',
       width: '10%',
       valueEnum: CONFIG.API_STATUS_ENUM,
-      render: (_, record) => {
-        return CONFIG.API_STATUS_ENUM[record.status].tag;
-      },
+      // render: (_, record) => {
+      //  return
+      // },
     },
     {
       title: '创建人',

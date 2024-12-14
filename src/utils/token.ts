@@ -25,3 +25,10 @@ export function getPart(key?: string) {
     return localStorage.getItem('pro-table');
   }
 }
+
+export const setThem = (t: string) => {
+  return localStorage.setItem('them', t);
+};
+export const getThem = () => {
+  return localStorage.getItem('them');
+};

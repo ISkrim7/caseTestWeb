@@ -96,8 +96,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
       boxShadow={true}
       title={
         <>
-          {' '}
-          <Tag color={'blue'}>{cardTitle}</Tag>
+          <Tag color={'#108ee9'}>{cardTitle}</Tag>
         </>
       }
       subTitle={cardSubTitle}

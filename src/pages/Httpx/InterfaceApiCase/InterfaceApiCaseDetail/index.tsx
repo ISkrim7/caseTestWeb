@@ -41,7 +41,8 @@ import { history } from 'umi';
 
 const Index = () => {
   const { caseApiId } = useParams<{ caseApiId: string }>();
-  const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
+  const { API_LEVEL_SELECT, API_STATUS_SELECT, API_CASE_ERROR_STOP_OPT } =
+    CONFIG;
   const [baseForm] = Form.useForm();
   const [apis, setApis] = useState<any[]>([]);
   const [step, setStep] = useState<number>(0);
@@ -362,6 +363,14 @@ const Index = () => {
               label="用例描述"
               required={true}
               rules={[{ required: true, message: '用例描述必填' }]}
+            />
+            <ProFormSelect
+              width={'md'}
+              name="error_stop"
+              label="错误停止"
+              initialValue={0}
+              required={true}
+              options={API_CASE_ERROR_STOP_OPT}
             />
           </ProForm.Group>
         </ProForm>

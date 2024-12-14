@@ -7,7 +7,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { FormInstance, Modal } from 'antd';
+import { Button, FormInstance, Modal } from 'antd';
 import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -127,9 +127,9 @@ const InterParam: FC<SelfProps> = ({ form, mode }) => {
       </Modal>
       <span>
         <CodeOutlined style={{ color: 'gray' }} />
-        <a style={{ color: 'gray' }} onClick={inputParams}>
+        <Button type={'link'} style={{ color: 'gray' }} onClick={inputParams}>
           导入参数
-        </a>{' '}
+        </Button>
       </span>
       <ProForm.Item name={'params'} trigger={'onValuesChange'}>
         <EditableProTable<IParams>

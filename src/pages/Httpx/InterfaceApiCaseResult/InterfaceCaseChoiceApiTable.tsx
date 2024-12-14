@@ -2,6 +2,7 @@ import { IObjGet } from '@/api';
 import { queryProject } from '@/api/base';
 import { pageInterApi } from '@/api/inter';
 import { selectCommonApis2Case } from '@/api/inter/interCase';
+import { associationApisByTaskId } from '@/api/inter/interTask';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Interface/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
@@ -15,6 +16,7 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 interface SelfProps {
   currentProjectId?: number;
   currentCaseApiId?: string;
+  currentTaskId?: string;
   refresh?: () => void;
 }
 
@@ -22,6 +24,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
   currentCaseApiId,
   refresh,
   currentProjectId,
+  currentTaskId,
 }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number>();
@@ -38,7 +41,6 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
           acc[obj.id] = { text: obj.title };
           return acc;
         }, {});
-        console.log(mapData);
         setProjectEnumMap(mapData);
       }
     });
@@ -154,7 +156,6 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
   const rowSelection: TableRowSelection<IUICase> = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys: React.Key[]) => {
-      console.log('newSelectedRowKeys', newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
@@ -171,6 +172,16 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
                 const { code, msg } = await selectCommonApis2Case({
                   caseId: currentCaseApiId,
                   commonApis: selectedRowKeys as number[],
+                });
+                if (code === 0) {
+                  message.success(msg);
+                  refresh?.();
+                }
+              }
+              if (currentTaskId) {
+                const { code, msg } = await associationApisByTaskId({
+                  taskId: currentTaskId,
+                  apiIds: selectedRowKeys as number[],
                 });
                 if (code === 0) {
                   message.success(msg);

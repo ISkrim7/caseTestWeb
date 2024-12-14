@@ -48,6 +48,10 @@ export interface IInterfaceAPITask extends IBaseField {
   total_cases_num: number;
   part_id: number;
   project_id: number;
+  is_send: boolean | number;
+  is_auto: boolean | number;
+  send_type: number;
+  send_key: string;
 }
 
 export interface ITryResponseInfo extends IBaseField {

@@ -6,6 +6,7 @@ import {
 } from '@/api/inter/interTask';
 import MyDrawer from '@/components/MyDrawer';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
+import AssociationCases from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationCases';
 import { IInterfaceAPI, IInterfaceAPITask } from '@/pages/Interface/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
@@ -342,10 +343,10 @@ const Index = () => {
               <ProList<IInterfaceAPI>
                 bordered={true}
                 rowKey="id"
-                expandable={{
-                  expandedApiRowKeys,
-                  onExpandedRowsChange: setExpandedApiRowKeys,
-                }}
+                // expandable={{
+                //   expandedApiRowKeys,
+                //   onExpandedRowsChange: setExpandedApiRowKeys,
+                // }}
                 pagination={{
                   defaultPageSize: 5,
                   showSizeChanger: true,
@@ -378,7 +379,7 @@ const Index = () => {
                   type: {},
                   content: {},
                   actions: {
-                    render: () => {
+                    render: (_, record) => {
                       return (
                         <>
                           <a
@@ -402,22 +403,8 @@ const Index = () => {
             </ProCard>
           </Tabs.TabPane>
           <Tabs.TabPane tab={'API业务流用例'} key="2">
-            <ProCard extra={AddCaseExtra()}>
-              <ProList<any>
-                pagination={{
-                  defaultPageSize: 5,
-                  showSizeChanger: true,
-                }}
-                metas={{
-                  title: {},
-                  subTitle: {},
-                  type: {},
-                  avatar: {},
-                  content: {},
-                  actions: {},
-                }}
-                dataSource={[]}
-              />
+            <ProCard>
+              <AssociationCases currentTaskId={taskId} reload={refresh} />
             </ProCard>
           </Tabs.TabPane>
         </Tabs>

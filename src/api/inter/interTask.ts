@@ -1,5 +1,9 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IInterfaceAPI, IInterfaceAPITask } from '@/pages/Interface/types';
+import {
+  IInterfaceAPI,
+  IInterfaceAPICase,
+  IInterfaceAPITask,
+} from '@/pages/Interface/types';
 import { request } from '@@/plugin-request/request';
 
 /**
@@ -77,7 +81,7 @@ export const associationCasesByTaskId = async (
   data: { taskId: string; caseIds: number[] },
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/task/association/cases', {
+  return request<IResponse<boolean>>('/api/interface/task/association/cases', {
     method: 'POST',
     data: data,
     ...(options || {}),
@@ -107,11 +111,14 @@ export const removeAssociationCasesByTaskId = async (
   data: { taskId: string; caseId: number },
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/task/remove/association', {
-    method: 'POST',
-    data: data,
-    ...(options || {}),
-  });
+  return request<IResponse<null>>(
+    '/api/interface/task/remove/association/cases',
+    {
+      method: 'POST',
+      data: data,
+      ...(options || {}),
+    },
+  );
 };
 /**
  * 查询关联用例
@@ -122,11 +129,14 @@ export const queryAssociationCasesByTaskId = async (
   data: { taskId: string | number },
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/task/query/cases', {
-    method: 'GET',
-    params: data,
-    ...(options || {}),
-  });
+  return request<IResponse<IInterfaceAPICase[]>>(
+    '/api/interface/task/query/cases',
+    {
+      method: 'GET',
+      params: data,
+      ...(options || {}),
+    },
+  );
 };
 /**
  * 查询关联API
@@ -149,7 +159,7 @@ export const queryAssociationApisByTaskId = async (
  * @param options
  */
 export const reorderAssociationCasesByTaskId = async (
-  data: { taskId: string | number },
+  data: { taskId: string | number; caseIds: number[] },
   options?: IObjGet,
 ) => {
   return request<IResponse<null>>('/api/interface/task/reorder/cases', {

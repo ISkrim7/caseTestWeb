@@ -4,7 +4,7 @@ import {
   removeApiCase,
 } from '@/api/inter/interCase';
 import MyProTable from '@/components/Table/MyProTable';
-import { IInterfaceAPICase } from '@/pages/Interface/types';
+import { IInterfaceAPICase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';

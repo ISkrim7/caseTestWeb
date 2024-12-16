@@ -41,7 +41,8 @@ const GlobalHeaderRight: FC<SelfProps> = ({
     <Space direction={!coll ? 'horizontal' : 'vertical'}>
       <Avatar coll={coll} />
       <Switch
-        defaultChecked={defaultChecked}
+        value={defaultChecked}
+        // defaultChecked={defaultChecked}
         style={{ marginLeft: 10 }}
         checkedChildren={'🌛'}
         unCheckedChildren={'🌞'}

@@ -1,5 +1,5 @@
-import { assertColumns } from '@/pages/Interface/Postman/component/AssertsTable/assertColumn';
-import { IAsserts } from '@/pages/Interface/types';
+import assertColumns from '@/pages/Httpx/componets/AssertColumns';
+import { IAsserts } from '@/pages/Httpx/types';
 import { IUICaseStepAPI } from '@/pages/UIPlaywright/uiTypes';
 import {
   EditableFormInstance,

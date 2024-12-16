@@ -1,5 +1,5 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import { IInterfaceAPI, IParams } from '@/pages/Interface/types';
+import { IInterfaceAPI, IParams } from '@/pages/Httpx/types';
 import { CodeOutlined } from '@ant-design/icons';
 import {
   EditableProTable,

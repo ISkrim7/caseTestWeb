@@ -4,14 +4,14 @@ import AssertColumns from '@/pages/Httpx/componets/AssertColumns';
 import RequestHeaders from '@/pages/Httpx/InterfaceApiResponse/RequestHeaders';
 import ResponseExtractColumns from '@/pages/Httpx/InterfaceApiResponse/ResponseExtract';
 import RespProTable from '@/pages/Httpx/InterfaceApiResponse/RespProTable';
-import { ITryResponseInfo } from '@/pages/Interface/types';
+import { ITryResponseInfo } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
 import { Tabs, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
-  responses: ITryResponseInfo[];
+  responses?: ITryResponseInfo[];
 }
 
 const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {

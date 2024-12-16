@@ -1,4 +1,3 @@
-import NoBody from '@/pages/Interface/Postman/component/BodyTable/NoBody';
 import JsonBody from '@/pages/UIPlaywright/UICase/EditCase/StepFunc/API/Body/JsonBody';
 import { FormInstance, Radio } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
@@ -19,7 +18,7 @@ const Index: FC<SelfProps> = ({ apiForm, read }) => {
   const BodyMap = () => {
     switch (bodyType) {
       case 0:
-        return <NoBody />;
+        return null;
       case 1:
         return <JsonBody apiForm={apiForm} read={read} />;
     }

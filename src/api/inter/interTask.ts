@@ -3,7 +3,8 @@ import {
   IInterfaceAPI,
   IInterfaceAPICase,
   IInterfaceAPITask,
-} from '@/pages/Interface/types';
+  IInterfaceTaskResult,
+} from '@/pages/Httpx/types';
 import { request } from '@@/plugin-request/request';
 
 /**
@@ -120,6 +121,25 @@ export const removeAssociationCasesByTaskId = async (
     },
   );
 };
+
+/**
+ * 移除关联API
+ * @param data
+ * @param options
+ */
+export const removeAssociationApisByTaskId = async (
+  data: { taskId: string; apiId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(
+    '/api/interface/task/remove/association/apis',
+    {
+      method: 'POST',
+      data: data,
+      ...(options || {}),
+    },
+  );
+};
 /**
  * 查询关联用例
  * @param data
@@ -168,6 +188,22 @@ export const reorderAssociationCasesByTaskId = async (
     ...(options || {}),
   });
 };
+
+/**
+ * 重新排序关联api
+ * @param data
+ * @param options
+ */
+export const reorderAssociationApisByTaskId = async (
+  data: { taskId: string | number; apiIds: number[] },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interface/task/reorder/apis', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
 /**
  * 任务基本信息
  * @param data
@@ -182,4 +218,52 @@ export const getApiTaskBaseDetail = async (
     params: { id: data },
     ...(options || {}),
   });
+};
+
+/**
+ * 手动运行
+ * @param data
+ * @param options
+ */
+export const executeTask = async (data: string | number, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/task/execute', {
+    method: 'POST',
+    data: { taskId: data },
+    ...(options || {}),
+  });
+};
+
+/**
+ * 查询用例结果分页
+ * @param data
+ * @param options
+ */
+export const pageInterTaskResult = async (data: ISearch, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceTaskResult>>>(
+    '/api/interface/task/queryResults',
+    {
+      method: 'POST',
+      data: data,
+      ...(options || {}),
+    },
+  );
+};
+
+/**
+ * 查询任务结果详情
+ * @param data
+ * @param options
+ */
+export const getInterTaskResultDetail = async (
+  data: string | number,
+  options?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceTaskResult>>(
+    '/api/interface/result/task/resultDetail',
+    {
+      method: 'GET',
+      params: { resultId: data },
+      ...(options || {}),
+    },
+  );
 };

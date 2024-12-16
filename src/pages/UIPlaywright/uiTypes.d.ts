@@ -1,5 +1,5 @@
 import { IObjGet } from '@/api';
-import { IParams } from '@/pages/Interface/types';
+import { IParams } from '@/pages/Httpx/types';
 
 export interface IUICase {
   id: number;

@@ -1,6 +1,6 @@
 import FormData from '@/pages/Httpx/componets/InterBody/FormData';
 import JsonBody from '@/pages/Httpx/componets/InterBody/JsonBody';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { ProCard } from '@ant-design/pro-components';
 import { FormInstance, Radio } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';

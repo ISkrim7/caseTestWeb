@@ -16,7 +16,7 @@ import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterHeader from '@/pages/Httpx/componets/InterHeader';
 import InterParam from '@/pages/Httpx/componets/InterParam';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
-import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Interface/types';
+import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';

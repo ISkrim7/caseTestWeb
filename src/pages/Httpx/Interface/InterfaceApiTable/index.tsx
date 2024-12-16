@@ -4,7 +4,7 @@ import {
   removeInterApiById,
 } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Tag } from 'antd';

@@ -47,6 +47,7 @@ export interface IInterfaceAPITask extends IBaseField {
   status: string;
   total_cases_num: number;
   part_id: number;
+  total_apis_num: number;
   project_id: number;
   is_send: boolean | number;
   is_auto: boolean | number;
@@ -86,8 +87,30 @@ export interface IInterfaceCaseResult extends IBaseField {
   startTime: string;
   interfaceLog?: string;
   progress: number;
+  interface_task_result_Id?: number;
   result?: 'SUCCESS' | 'ERROR';
   status: 'RUNNING' | 'OVER' | 'ERROR';
+}
+
+export interface IInterfaceTaskResult extends IBaseField {
+  interfaceProjectId: number;
+  interfacePartId: number;
+  startBy: number;
+  starterId: number;
+  starterName: string;
+  totalNumber: number;
+  successNumber: number;
+  failNumber: number;
+  totalUseTime: string;
+  start_time: string;
+  end_time: string;
+  taskId: number;
+  taskUid: string;
+  taskName: string;
+  runDay: string;
+  result?: 'SUCCESS' | 'FAIL';
+  progress: number;
+  status: 'RUNNING' | 'OVER';
 }
 
 interface IBase {

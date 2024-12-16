@@ -1,6 +1,6 @@
 import { pageApiTask } from '@/api/inter/interTask';
 import MyProTable from '@/components/Table/MyProTable';
-import { IInterfaceAPITask } from '@/pages/Interface/types';
+import { IInterfaceAPITask } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -57,19 +57,35 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       width: '10%',
       copyable: true,
     },
+
     {
       title: '名称',
       dataIndex: 'title',
       key: 'title',
-      fixed: 'left',
-      width: '15%',
+    },
+    {
+      title: '业务用例数',
+      dataIndex: 'total_cases_num',
+      key: 'total_cases_num',
+      hideInSearch: true,
+      render: (text) => {
+        return <Tag color={'green'}>{text}</Tag>;
+      },
+    },
+    {
+      title: 'API数',
+      dataIndex: 'total_apis_num',
+      key: 'total_apis_num',
+      hideInSearch: true,
+      render: (text) => {
+        return <Tag color={'green'}>{text}</Tag>;
+      },
     },
     {
       title: '优先级',
       dataIndex: 'level',
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
-      width: '10%',
       render: (_, record) => {
         return <Tag color={'blue'}>{record.level}</Tag>;
       },
@@ -78,16 +94,14 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       title: '状态',
       dataIndex: 'status',
       valueType: 'select',
-      width: '10%',
       valueEnum: CONFIG.API_STATUS_ENUM,
-      // render: (_, record) => {
-      //  return
-      // },
+      render: (text) => {
+        return <Tag color={'warning'}>{text}</Tag>;
+      },
     },
     {
       title: '创建人',
       dataIndex: 'creatorName',
-      width: '10%',
       render: (_, record) => {
         return <Tag>{record.creatorName}</Tag>;
       },
@@ -97,7 +111,6 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       valueType: 'option',
       key: 'option',
       fixed: 'right',
-      width: '15%',
       render: (text, record, _) => {
         return (
           <>
@@ -108,20 +121,6 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
             >
               详情
             </a>
-            {/*<Divider type={'vertical'} />*/}
-            {/*<a*/}
-            {/*  onClick={async () => {*/}
-            {/*    await asyncTryInterApi({ interfaceId: record.id }).then(*/}
-            {/*      ({ code, msg }) => {*/}
-            {/*        if (code === 0) {*/}
-            {/*          message.success(msg);*/}
-            {/*        }*/}
-            {/*      },*/}
-            {/*    );*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  执行*/}
-            {/*</a>*/}
             <Popconfirm
               title={'确认删除？'}
               okText={'确认'}

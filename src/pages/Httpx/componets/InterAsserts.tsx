@@ -3,7 +3,7 @@ import {
   ExtraOpt,
   TYPE_ENUM,
 } from '@/pages/Httpx/componets/assertEnum';
-import { IAsserts, IInterfaceAPI } from '@/pages/Interface/types';
+import { IAsserts, IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   EditableProTable,
   ProColumns,

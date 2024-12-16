@@ -1,4 +1,4 @@
-import { IInterfaceCaseResult } from '@/pages/Interface/types';
+import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { ProDescriptions } from '@ant-design/pro-components';
 import { Tag } from 'antd';
 import { FC } from 'react';

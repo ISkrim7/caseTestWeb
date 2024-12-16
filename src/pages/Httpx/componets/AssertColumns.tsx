@@ -1,5 +1,5 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import { IAsserts } from '@/pages/Interface/types';
+import { IAsserts } from '@/pages/Httpx/types';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { Tag } from 'antd';
 

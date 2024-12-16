@@ -1,4 +1,4 @@
-import { IBeforeParams, IInterfaceAPI } from '@/pages/Interface/types';
+import { IBeforeParams, IInterfaceAPI } from '@/pages/Httpx/types';
 import { EditableProTable, ProCard, ProForm } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance } from 'antd';

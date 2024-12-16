@@ -3,7 +3,7 @@ import { queryProject } from '@/api/base';
 import { pageInterApiCase } from '@/api/inter/interCase';
 import { associationCasesByTaskId } from '@/api/inter/interTask';
 import MyProTable from '@/components/Table/MyProTable';
-import { IInterfaceAPICase } from '@/pages/Interface/types';
+import { IInterfaceAPICase } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum, IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';

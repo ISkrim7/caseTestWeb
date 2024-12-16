@@ -1,22 +1,18 @@
 import { queryProject } from '@/api/base';
 import {
+  executeTask,
   getApiTaskBaseDetail,
   insertApiTask,
-  queryAssociationApisByTaskId,
 } from '@/api/inter/interTask';
-import MyDrawer from '@/components/MyDrawer';
-import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
+import AssociationApis from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationApis';
 import AssociationCases from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationCases';
-import { IInterfaceAPI, IInterfaceAPITask } from '@/pages/Interface/types';
+import InterfaceApiTaskResultTable from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultTable';
+import { IInterfaceAPITask } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { useParams } from '@@/exports';
-import {
-  ApiOutlined,
-  MailOutlined,
-  WechatWorkOutlined,
-} from '@ant-design/icons';
+import { MailOutlined, WechatWorkOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -26,13 +22,11 @@ import {
   ProFormText,
   ProFormTextArea,
   ProFormTreeSelect,
-  ProList,
 } from '@ant-design/pro-components';
-import { Button, Divider, Form, message, Tabs, Tag, Typography } from 'antd';
-import { FC, Key, useEffect, useState } from 'react';
+import { Button, FloatButton, Form, message, Tabs } from 'antd';
+import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
 
-const { Paragraph, Title } = Typography;
 const Index = () => {
   const { taskId } = useParams<{ taskId: string }>();
   const [taskForm] = Form.useForm<IInterfaceAPITask>();
@@ -47,12 +41,6 @@ const Index = () => {
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
   const [isAuto, setIsAuto] = useState<boolean>(false);
   const [isSend, setIsSend] = useState<boolean>(false);
-  const [choiceApiOpen, setChoiceApiOpen] = useState(false);
-  const [choiceCaseOpen, setChoiceCaseOpen] = useState(false);
-  const [associationApis, setAssociationApis] = useState<IInterfaceAPI[]>([]);
-  const [expandedApiRowKeys, setExpandedApiRowKeys] = useState<readonly Key[]>(
-    [],
-  );
 
   useEffect(() => {
     if (taskId) {
@@ -63,12 +51,6 @@ const Index = () => {
           setCurrentPartId(data.part_id);
           setIsSend(data.is_send as boolean);
           setIsSend(data.is_auto as boolean);
-        }
-      });
-      queryAssociationApisByTaskId(taskId).then(async ({ code, data }) => {
-        if (code === 0) {
-          console.log(data);
-          setAssociationApis(data);
         }
       });
     } else {
@@ -106,13 +88,21 @@ const Index = () => {
       }
     }
   };
+
+  const runTask = async () => {
+    if (taskId) {
+      const { code, msg } = await executeTask(taskId);
+      if (code === 0) {
+        message.success(msg);
+      }
+    }
+  };
   const DetailExtra: FC<{ currentStatus: number }> = ({ currentStatus }) => {
     switch (currentStatus) {
       case 1:
         return (
           <div style={{ display: 'flex' }}>
-            <Button>Run</Button>
-            <Divider type={'vertical'} />
+            <Button onClick={runTask}>Run</Button>
             <Button
               type={'primary'}
               style={{ marginLeft: 10 }}
@@ -147,46 +137,11 @@ const Index = () => {
     }
   };
 
-  const AddApiExtra = () => {
-    switch (currentStatus) {
-      case 1:
-        return (
-          <>
-            <Button type={'primary'} onClick={() => setChoiceApiOpen(true)}>
-              Choice API
-            </Button>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
-  const AddCaseExtra = () => {
-    switch (currentStatus) {
-      case 1:
-        return (
-          <>
-            <Button type={'primary'} onClick={() => setChoiceCaseOpen(true)}>
-              Choice API
-            </Button>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
   return (
     <ProCard
       split={'horizontal'}
       extra={<DetailExtra currentStatus={currentStatus} />}
     >
-      <MyDrawer name={''} open={choiceApiOpen} setOpen={setChoiceApiOpen}>
-        <InterfaceCaseChoiceApiTable
-          currentTaskId={taskId}
-          refresh={refresh}
-          currentProjectId={currentProjectId}
-        />
-      </MyDrawer>
       <ProCard>
         <ProForm
           layout={'horizontal'}
@@ -339,67 +294,8 @@ const Index = () => {
       <ProCard>
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane tab={'API'} key="1">
-            <ProCard extra={AddApiExtra()}>
-              <ProList<IInterfaceAPI>
-                bordered={true}
-                rowKey="id"
-                // expandable={{
-                //   expandedApiRowKeys,
-                //   onExpandedRowsChange: setExpandedApiRowKeys,
-                // }}
-                pagination={{
-                  defaultPageSize: 5,
-                  showSizeChanger: true,
-                }}
-                metas={{
-                  title: {
-                    dataIndex: 'name',
-                    render: (_, record) => {
-                      return (
-                        <>
-                          <Title level={5}>
-                            <ApiOutlined
-                              style={{ marginRight: 10, color: 'green' }}
-                            />
-                            {record.name}
-                            <Tag color={'#2db7f5'} style={{ marginLeft: 10 }}>
-                              {record.method}
-                            </Tag>
-                          </Title>
-                        </>
-                      );
-                    },
-                  },
-                  description: {
-                    render: (_, record) => {
-                      return <Paragraph> {record.desc}</Paragraph>;
-                    },
-                  },
-                  subTitle: {},
-                  type: {},
-                  content: {},
-                  actions: {
-                    render: (_, record) => {
-                      return (
-                        <>
-                          <a
-                            onClick={() => {
-                              history.push(
-                                `/interface/interApi/detail/interId=${record.id}`,
-                              );
-                            }}
-                          >
-                            详情
-                          </a>
-                          <Divider type="vertical" />
-                          <a key="invite">删除</a>;
-                        </>
-                      );
-                    },
-                  },
-                }}
-                dataSource={associationApis}
-              />
+            <ProCard>
+              <AssociationApis currentTaskId={taskId} reload={refresh} />
             </ProCard>
           </Tabs.TabPane>
           <Tabs.TabPane tab={'API业务流用例'} key="2">
@@ -409,6 +305,8 @@ const Index = () => {
           </Tabs.TabPane>
         </Tabs>
       </ProCard>
+      <InterfaceApiTaskResultTable apiCaseTaskId={taskId} />
+      <FloatButton.BackTop />
     </ProCard>
   );
 };

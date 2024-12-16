@@ -1,4 +1,4 @@
-import { IExtracts, IInterfaceAPI } from '@/pages/Interface/types';
+import { IExtracts, IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import {
   EditableProTable,

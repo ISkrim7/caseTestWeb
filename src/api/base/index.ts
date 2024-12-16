@@ -211,3 +211,24 @@ export const putCasePart = async (body: ICasePart, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
+/**
+ * page user
+ * @param options
+ */
+export const pageUsers = async (searchInfo: ISearch, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/user/pageUser', {
+    method: 'POST',
+    data: searchInfo,
+    ...(options || {}),
+  });
+};
+
+export const uploadAvatar = async (file: any, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/user/uploadAvatar', {
+    method: 'POST',
+    data: file,
+    requestType: 'form',
+    ...(options || {}),
+  });
+};

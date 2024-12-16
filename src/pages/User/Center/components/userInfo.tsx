@@ -1,4 +1,4 @@
-import { uploadAvatar } from '@/api/user';
+import { uploadAvatar } from '@/api/base';
 import { UploadOutlined } from '@ant-design/icons';
 import { ProCard, ProDescriptions } from '@ant-design/pro-components';
 import { Button, Image, message, Upload, UploadProps } from 'antd';
@@ -23,7 +23,7 @@ const Avatar = () => {
     },
     customRequest: async (fileData) => {
       const form = new FormData();
-      form.append('file', fileData.file);
+      form.append('avatar', fileData.file);
       const res = await uploadAvatar(form);
       if (res.code === 0) {
         message.success(res.msg);

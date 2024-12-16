@@ -1,7 +1,7 @@
 import { updateInterApiById } from '@/api/inter';
 import { copyApi2Case, removeApi2Case } from '@/api/inter/interCase';
 import InterfaceApiDetail from '@/pages/Httpx/Interface/InterfaceApiDetail';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Switch, Tag } from 'antd';

@@ -15,7 +15,7 @@ interface SelfProps extends ProTableProps<any> {
   onSave?: (_: any, record: any) => Promise<any>;
   onDelete?: (_: any, record: any) => Promise<any>;
   rowKey: string;
-  toolBarRender?: () => any;
+  toolBarRender?: () => any | boolean;
   actionRef?: MutableRefObject<ActionType | undefined>;
   height?: string;
   rowSelection?: TableProps<any>['rowSelection']; // 添加rowSelection属性

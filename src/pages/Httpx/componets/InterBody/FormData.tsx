@@ -1,4 +1,4 @@
-import { IFromData, IInterfaceAPI } from '@/pages/Interface/types';
+import { IFromData, IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   EditableProTable,
   ProForm,

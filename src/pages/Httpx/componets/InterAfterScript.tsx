@@ -1,7 +1,7 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import MyDrawer from '@/components/MyDrawer';
 import FuncScriptDesc from '@/pages/Httpx/componets/funcScriptDesc';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, FormInstance } from 'antd';
 import { FC, useEffect, useState } from 'react';

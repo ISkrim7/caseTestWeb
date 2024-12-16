@@ -4,7 +4,7 @@ import { pageInterApi } from '@/api/inter';
 import { selectCommonApis2Case } from '@/api/inter/interCase';
 import { associationApisByTaskId } from '@/api/inter/interTask';
 import MyProTable from '@/components/Table/MyProTable';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum, IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';

@@ -28,12 +28,12 @@ export default [
         access: 'isAdmin',
         component: '@/pages/User/Admin',
       },
-      {
-        path: '/user/department',
-        name: '部门列表',
-        access: 'isAdmin',
-        component: '@/pages/User/Admin/DepartmentTable',
-      },
+      // {
+      //   path: '/user/department',
+      //   name: '部门列表',
+      //   access: 'isAdmin',
+      //   component: '@/pages/User/Admin/DepartmentTable',
+      // },
       {
         path: '/user/center',
         name: 'current',
@@ -198,28 +198,10 @@ export default [
       },
       {
         path: '/interface/task/detail/taskId=:taskId',
-        name: '任务详情',
+        name: '添加任务',
         component:
           '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail',
-
         hideInMenu: true,
-      },
-      {
-        path: '/interface/task/detail/projectId=:projectId&casePartId=:casePartId',
-        name: '增加任务',
-        component: '@/pages/Interface/InterfaceTask/AddInterfaceTask',
-        hideInMenu: true,
-      },
-      {
-        path: '/interface/caseApi/detail/projectID=:projectID&casePartID=:casePartID&uid=:uid',
-        name: '接口详情',
-        hideInMenu: true,
-        component: '@/pages/Interface/InterfaceDetail',
-      },
-      {
-        path: '/interface/variables',
-        name: '全局变量',
-        component: '@/pages/Interface/Variable',
       },
       { component: '@/pages/404' },
     ],
@@ -236,31 +218,6 @@ export default [
       },
     ],
   },
-  {
-    path: '/report/history',
-    name: '巡检',
-    icon: 'HistoryOutlined',
-    component: '@/pages/Report/History',
-  },
-  {
-    path: '/report/history/tagId=:tagId',
-    name: '巡检',
-    hideInMenu: true,
-    component: '@/pages/Report/History',
-  },
-  {
-    path: '/report/history/detail/uid=:uid',
-    name: '接口批量构建详情',
-    hideInMenu: true,
-    component: '@/pages/Report/History/Multiple/Detail',
-  },
-  {
-    path: '/report/history/uiTask/detail/uid=:uid',
-    name: 'UI批量构建详情',
-    hideInMenu: true,
-    component: '@/pages/Report/History/UIMultiple/UIDetail',
-  },
-
   {
     component: '@/pages/404',
   },

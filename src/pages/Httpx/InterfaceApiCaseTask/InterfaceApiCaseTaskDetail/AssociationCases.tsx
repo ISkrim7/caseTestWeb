@@ -5,7 +5,7 @@ import {
 } from '@/api/inter/interTask';
 import MyDrawer from '@/components/MyDrawer';
 import ChoiceApiCasesTable from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/ChoiceApiCasesTable';
-import { IInterfaceAPICase } from '@/pages/Interface/types';
+import { IInterfaceAPICase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { history } from '@@/core/history';
 import {
@@ -13,7 +13,7 @@ import {
   DragSortTable,
   ProColumns,
 } from '@ant-design/pro-components';
-import { Avatar, Button, Divider, message, Popconfirm, Tag } from 'antd';
+import { Button, Divider, message, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useRef, useState } from 'react';
 
 interface IInterfaceApiCaseTaskDetailProps {
@@ -83,7 +83,7 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
       dataIndex: 'title',
       key: 'title',
       width: '15%',
-      render: (text, record) => <Avatar src={'/icon/case.png'}></Avatar>,
+      render: (_, record) => <Tag color={'success'}>{record.title}</Tag>,
     },
     {
       title: 'API数量',

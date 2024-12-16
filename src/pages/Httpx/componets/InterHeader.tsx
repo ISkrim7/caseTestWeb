@@ -1,5 +1,5 @@
 import { HeadersEnum } from '@/pages/Httpx/componets/APIEditEnum';
-import { IHeaders, IInterfaceAPI } from '@/pages/Interface/types';
+import { IHeaders, IInterfaceAPI } from '@/pages/Httpx/types';
 import { EditableProTable, ProForm } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Mentions, Select } from 'antd';

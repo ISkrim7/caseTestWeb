@@ -1,5 +1,4 @@
-import ExtractColumns from '@/pages/Interface/Postman/component/ExtractTable/extractColumns';
-import { IExtracts } from '@/pages/Interface/types';
+import { IExtracts } from '@/pages/Httpx/types';
 import { IUICaseStepAPI } from '@/pages/UIPlaywright/uiTypes';
 import { EditableProTable, ProForm } from '@ant-design/pro-components';
 import { FormInstance } from 'antd';
@@ -10,7 +9,7 @@ interface SelfProps {
 }
 const Index: FC<SelfProps> = ({ apiForm, apiData }) => {
   const [extractsDataSource, setExtractsDataSource] = useState<IExtracts[]>([]);
-  const { extractColumns } = ExtractColumns();
+  // const { extractColumns } = ExtractColumns();
   const [extractsEditableKeys, setExtractsEditableRowKeys] = useState<
     React.Key[]
   >(extractsDataSource.map((item) => item.id));
@@ -30,7 +29,7 @@ const Index: FC<SelfProps> = ({ apiForm, apiData }) => {
           rowKey={'id'}
           dataSource={extractsDataSource}
           toolBarRender={false}
-          columns={extractColumns}
+          columns={[]}
           recordCreatorProps={{
             newRecordType: 'dataSource',
             record: () => ({

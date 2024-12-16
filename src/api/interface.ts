@@ -13,7 +13,7 @@ import {
   IInterface,
   IInterfaceTask,
   InterfaceResponse,
-} from '@/pages/Interface/types';
+} from '@/pages/Httpx/types';
 import { request } from '@@/plugin-request/request';
 import React from 'react';
 

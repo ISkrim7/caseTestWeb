@@ -1,6 +1,6 @@
 import { caseAPIResults } from '@/api/inter/interCase';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
-import { ITryResponseInfo } from '@/pages/Interface/types';
+import { ITryResponseInfo } from '@/pages/Httpx/types';
 import { ProCard } from '@ant-design/pro-components';
 import { FC, useEffect, useState } from 'react';
 

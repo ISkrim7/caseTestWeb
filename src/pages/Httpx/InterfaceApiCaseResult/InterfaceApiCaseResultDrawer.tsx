@@ -2,7 +2,7 @@ import { caseAPIResultDetail, runApiCaseIo } from '@/api/inter/interCase';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import InterfaceApiCaseResultBaseInfo from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultBaseInfo';
 import InterfaceApiResultResponses from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiResultResponses';
-import { IInterfaceCaseResult } from '@/pages/Interface/types';
+import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { useModel } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
 import { Tabs } from 'antd';

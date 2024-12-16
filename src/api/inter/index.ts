@@ -1,5 +1,5 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Interface/types';
+import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Httpx/types';
 import { request } from '@@/plugin-request/request';
 
 /**

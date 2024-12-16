@@ -6,7 +6,7 @@ import {
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
-import { IInterfaceCaseResult } from '@/pages/Interface/types';
+import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
@@ -14,10 +14,11 @@ import { FC, useCallback, useRef, useState } from 'react';
 
 interface SelfProps {
   apiCaseId?: number | string;
+  taskResultId?: number | string;
 }
 
 const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
-  const { apiCaseId } = props;
+  const { apiCaseId, taskResultId } = props;
   const [open, setOpen] = useState(false);
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [currentCaseResultId, setCurrentCaseResultId] = useState<number>();
@@ -36,6 +37,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         ...params,
         //只查询公共api
         interfaceCaseID: apiCaseId,
+        interface_task_result_Id: taskResultId,
         sort: sort,
       };
       const { code, data } = await pageInterCaseResult(searchData);
@@ -54,7 +56,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         total: 0,
       };
     },
-    [apiCaseId],
+    [apiCaseId, taskResultId],
   );
   const columns: ProColumns<IInterfaceCaseResult>[] = [
     {
@@ -171,6 +173,11 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
       {polling ? '停止轮询' : '开始轮询'}
     </Button>
   );
+  const toolBar = () => {
+    if (!taskResultId) {
+      return [GetButton, RemoveAllButton];
+    }
+  };
   return (
     <div style={{ marginTop: 20 }}>
       <MyDrawer name={''} open={open} setOpen={setOpen}>
@@ -185,7 +192,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         actionRef={actionRef}
         request={fetchResults}
         search={false}
-        toolBarRender={() => [GetButton, RemoveAllButton]}
+        toolBarRender={toolBar}
         pagination={{
           showQuickJumper: true,
           defaultPageSize: 6,

@@ -4,7 +4,7 @@ import {
   IInterfaceAPICase,
   IInterfaceCaseResult,
   ITryResponseInfo,
-} from '@/pages/Interface/types';
+} from '@/pages/Httpx/types';
 import { request } from '@@/plugin-request/request';
 
 /**
@@ -244,6 +244,21 @@ export const removeCaseAPIResults = async (
     },
   );
 };
+
+/**
+ * 删除task result
+ */
+export const removeAllTaskResults = async (
+  data: number | string,
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/interface/result/task/removeAll`, {
+    method: 'POST',
+    data: { taskId: data },
+    ...(opt || {}),
+  });
+};
+
 /**
  * 查询case result 关联的api result
  */
@@ -270,6 +285,22 @@ export const caseAPIResults = async (
 export const pageInterCaseResult = async (data: ISearch, options?: IObjGet) => {
   return request<IResponse<IPage<IInterfaceAPI>>>(
     '/api/interface/result/case/page',
+    {
+      method: 'POST',
+      data: data,
+      ...(options || {}),
+    },
+  );
+};
+
+/**
+ * 查询用例结果分页
+ * @param data
+ * @param options
+ */
+export const pageInterApiResult = async (data: ISearch, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceAPI>>>(
+    '/api/interface/result/inter/page',
     {
       method: 'POST',
       data: data,

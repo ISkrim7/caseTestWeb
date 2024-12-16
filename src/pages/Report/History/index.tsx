@@ -1,17 +1,7 @@
-import Base from '@/pages/Report/History/Base';
-import Multiple from '@/pages/Report/History/Multiple';
-import PerfInsp from '@/pages/Report/History/PerfInsp';
-import Single from '@/pages/Report/History/Single';
 import UIMultiple from '@/pages/Report/History/UIMultiple';
 import UISingle from '@/pages/Report/History/UISingle';
 import { useParams } from '@@/exports';
-import {
-  ApiOutlined,
-  DatabaseOutlined,
-  MoneyCollectOutlined,
-  PieChartOutlined,
-  RobotOutlined,
-} from '@ant-design/icons';
+import { PieChartOutlined, RobotOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { Tabs } from 'antd';
 import { FC, useEffect, useState } from 'react';
@@ -46,26 +36,6 @@ const Index: FC = () => {
         <TabPane
           tab={
             <>
-              <MoneyCollectOutlined style={{ color: 'orange' }} /> 业绩巡检
-            </>
-          }
-          key={'0'}
-        >
-          <PerfInsp />
-        </TabPane>
-        <TabPane
-          tab={
-            <>
-              <DatabaseOutlined style={{ color: 'orange' }} /> 基础异动
-            </>
-          }
-          key={'3'}
-        >
-          <Base />
-        </TabPane>
-        <TabPane
-          tab={
-            <>
               <RobotOutlined style={{ color: 'orange' }} /> UI 单个运行历史
             </>
           }
@@ -83,32 +53,6 @@ const Index: FC = () => {
         >
           <UIMultiple />
         </TabPane>
-
-        {isAdmin ? (
-          <>
-            <TabPane
-              tab={
-                <>
-                  <ApiOutlined style={{ color: 'orange' }} /> API 单个构建历史
-                </>
-              }
-              key={'1'}
-            >
-              <Single />
-            </TabPane>
-            <TabPane
-              tab={
-                <>
-                  <PieChartOutlined style={{ color: 'orange' }} />
-                  API 批量构建历史
-                </>
-              }
-              key={'2'}
-            >
-              <Multiple />
-            </TabPane>
-          </>
-        ) : null}
       </Tabs>
     </ProCard>
   );

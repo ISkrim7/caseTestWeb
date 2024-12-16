@@ -1,5 +1,5 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import { IInterfaceAPI } from '@/pages/Interface/types';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { ProCard } from '@ant-design/pro-components';
 import { FormInstance } from 'antd';
 import { FC, useEffect, useRef, useState } from 'react';

@@ -18,12 +18,10 @@ import { FC, useCallback, useRef, useState } from 'react';
 
 interface IInterfaceApiCaseTaskDetailProps {
   currentTaskId?: string;
-  reload: () => void;
 }
 
 const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
   currentTaskId,
-  reload,
 }) => {
   const actionRef = useRef<ActionType>();
   const [choiceApiCaseOpen, setChoiceApiCaseOpen] = useState<boolean>(false);
@@ -75,21 +73,18 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
       title: '接口编号',
       dataIndex: 'uid',
       key: 'uid',
-      width: '10%',
       copyable: true,
     },
     {
       title: '名称',
       dataIndex: 'title',
       key: 'title',
-      width: '15%',
       render: (_, record) => <Tag color={'success'}>{record.title}</Tag>,
     },
     {
       title: 'API数量',
       dataIndex: 'apiNum',
       valueType: 'text',
-      width: '10%',
       render: (_, record) => {
         return <Tag color={'blue'}>{record.apiNum}</Tag>;
       },
@@ -99,7 +94,6 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
       dataIndex: 'level',
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
-      width: '10%',
       render: (_, record) => {
         return <Tag color={'blue'}>{record.level}</Tag>;
       },
@@ -116,24 +110,15 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
     {
       title: '创建人',
       dataIndex: 'creatorName',
-      width: '10%',
       render: (_, record) => {
         return <Tag>{record.creatorName}</Tag>;
       },
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'create_time',
-      valueType: 'dateTime',
-      sorter: true,
-      search: false,
     },
     {
       title: '操作',
       valueType: 'option',
       key: 'option',
       fixed: 'right',
-      width: '18%',
       render: (_, record) => {
         return (
           <>
@@ -178,7 +163,10 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
         open={choiceApiCaseOpen}
         setOpen={setChoiceApiCaseOpen}
       >
-        <ChoiceApiCasesTable currentTaskId={currentTaskId} reload={reload} />
+        <ChoiceApiCasesTable
+          currentTaskId={currentTaskId}
+          reload={actionRef.current?.reload}
+        />
       </MyDrawer>
       <DragSortTable
         toolBarRender={() => [
@@ -190,7 +178,11 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
         columns={columns}
         rowKey="id"
         search={false}
-        pagination={false}
+        pagination={{
+          showQuickJumper: true,
+          defaultPageSize: 10,
+          showSizeChanger: true,
+        }}
         // @ts-ignore
         request={queryCasesByTask}
         dragSortKey="sort"

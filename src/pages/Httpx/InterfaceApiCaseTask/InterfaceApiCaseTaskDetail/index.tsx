@@ -3,6 +3,7 @@ import {
   executeTask,
   getApiTaskBaseDetail,
   insertApiTask,
+  updateApiTaskBaseInfo,
 } from '@/api/inter/interTask';
 import AssociationApis from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationApis';
 import AssociationCases from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationCases';
@@ -76,9 +77,15 @@ const Index = () => {
     setEditTask(editTsk + 1);
   };
   const saveTaskBase = async () => {
-    const values = await taskForm.validateFields();
+    await taskForm.validateFields();
+    const values = await taskForm.getFieldsValue(true);
     if (taskId) {
       //回显
+      const { code, msg } = await updateApiTaskBaseInfo(values);
+      if (code === 0) {
+        setCurrentStatus(1);
+        message.success(msg);
+      }
     } else {
       //新增
       const { code, data } = await insertApiTask(values);
@@ -305,7 +312,7 @@ const Index = () => {
             <Tabs defaultActiveKey="1" size={'large'}>
               <Tabs.TabPane tab={'单API用例表'} key="1">
                 <ProCard>
-                  <AssociationApis currentTaskId={taskId} reload={refresh} />
+                  <AssociationApis currentTaskId={taskId} />
                 </ProCard>
               </Tabs.TabPane>
               <Tabs.TabPane tab={'业务流用例表'} key="2">

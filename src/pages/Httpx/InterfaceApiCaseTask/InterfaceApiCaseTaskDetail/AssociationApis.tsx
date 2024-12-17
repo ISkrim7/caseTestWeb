@@ -18,13 +18,9 @@ import { FC, useCallback, useRef, useState } from 'react';
 
 interface IAssociationApisProps {
   currentTaskId?: string;
-  reload: () => void;
 }
 
-const AssociationApis: FC<IAssociationApisProps> = ({
-  currentTaskId,
-  reload,
-}) => {
+const AssociationApis: FC<IAssociationApisProps> = ({ currentTaskId }) => {
   const actionRef = useRef<ActionType>();
   const [choiceApiOpen, setChoiceApiOpen] = useState<boolean>(false);
   const queryApisByTask = useCallback(async () => {
@@ -79,6 +75,7 @@ const AssociationApis: FC<IAssociationApisProps> = ({
       title: '名称',
       dataIndex: 'name',
       key: 'name',
+      render: (_, record) => <Tag color={'success'}>{record.name}</Tag>,
     },
     {
       title: '优先级',
@@ -144,12 +141,13 @@ const AssociationApis: FC<IAssociationApisProps> = ({
       },
     },
   ];
+
   return (
     <>
       <MyDrawer name={''} open={choiceApiOpen} setOpen={setChoiceApiOpen}>
         <InterfaceCaseChoiceApiTable
           currentTaskId={currentTaskId}
-          refresh={reload}
+          refresh={actionRef.current?.reload}
         />
       </MyDrawer>
       <DragSortTable
@@ -163,8 +161,11 @@ const AssociationApis: FC<IAssociationApisProps> = ({
         columns={columns}
         rowKey="id"
         search={false}
-        // pagination={false}
-        // @ts-ignore
+        pagination={{
+          showQuickJumper: true,
+          defaultPageSize: 10,
+          showSizeChanger: true,
+        }} // @ts-ignore
         request={queryApisByTask}
         dragSortKey="sort"
         onDragSortEnd={handleDragSortEnd}

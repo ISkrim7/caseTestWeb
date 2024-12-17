@@ -138,11 +138,14 @@ const Index = () => {
   };
 
   return (
-    <ProCard
-      split={'horizontal'}
-      extra={<DetailExtra currentStatus={currentStatus} />}
-    >
-      <ProCard>
+    <ProCard split={'horizontal'}>
+      <ProCard
+        boxShadow
+        headerBordered
+        subTitle={''}
+        title={'项目基本信息'}
+        extra={<DetailExtra currentStatus={currentStatus} />}
+      >
         <ProForm
           layout={'horizontal'}
           disabled={currentStatus === 1}
@@ -291,21 +294,38 @@ const Index = () => {
           </ProForm.Group>
         </ProForm>
       </ProCard>
-      <ProCard>
-        <Tabs defaultActiveKey="1">
-          <Tabs.TabPane tab={'API'} key="1">
-            <ProCard>
-              <AssociationApis currentTaskId={taskId} reload={refresh} />
-            </ProCard>
-          </Tabs.TabPane>
-          <Tabs.TabPane tab={'API业务流用例'} key="2">
-            <ProCard>
-              <AssociationCases currentTaskId={taskId} reload={refresh} />
-            </ProCard>
-          </Tabs.TabPane>
-        </Tabs>
-      </ProCard>
-      <InterfaceApiTaskResultTable apiCaseTaskId={taskId} />
+      {taskId ? (
+        <>
+          <ProCard
+            title={'关联APIS'}
+            headerBordered
+            boxShadow
+            style={{ marginTop: 20 }}
+          >
+            <Tabs defaultActiveKey="1" size={'large'}>
+              <Tabs.TabPane tab={'单API用例表'} key="1">
+                <ProCard>
+                  <AssociationApis currentTaskId={taskId} reload={refresh} />
+                </ProCard>
+              </Tabs.TabPane>
+              <Tabs.TabPane tab={'业务流用例表'} key="2">
+                <ProCard>
+                  <AssociationCases currentTaskId={taskId} reload={refresh} />
+                </ProCard>
+              </Tabs.TabPane>
+            </Tabs>
+          </ProCard>
+          <ProCard
+            title={'调试历史'}
+            headerBordered
+            boxShadow
+            style={{ marginTop: 20 }}
+          >
+            <InterfaceApiTaskResultTable apiCaseTaskId={taskId} />
+          </ProCard>
+        </>
+      ) : null}
+
       <FloatButton.BackTop />
     </ProCard>
   );

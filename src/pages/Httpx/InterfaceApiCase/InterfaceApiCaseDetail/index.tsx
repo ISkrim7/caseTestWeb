@@ -408,7 +408,11 @@ const Index = () => {
           </Droppable>
         </DragDropContext>
       </ProCard>
-      <InterfaceApiCaseResultTable apiCaseId={caseApiId} />
+      <ProCard bodyStyle={{ padding: 0 }} style={{ marginTop: 30 }}>
+        {currentStatus !== 2 ? (
+          <InterfaceApiCaseResultTable apiCaseId={caseApiId} />
+        ) : null}
+      </ProCard>
       <FloatButton.BackTop />
     </ProCard>
   );

@@ -186,6 +186,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         />
       </MyDrawer>
       <MyProTable
+        headerTitle={'调试历史'}
         // @ts-ignore
         polling={polling}
         rowKey={'uid'}

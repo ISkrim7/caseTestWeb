@@ -26,6 +26,7 @@ const GlobalHeaderRight: FC<SelfProps> = ({
   }, []);
   const onChange = (checked: boolean) => {
     console.log('====', checked);
+    setDefaultChecked(checked);
     if (checked) {
       setThem('realDark');
     } else {
@@ -40,14 +41,16 @@ const GlobalHeaderRight: FC<SelfProps> = ({
   return (
     <Space direction={!coll ? 'horizontal' : 'vertical'}>
       <Avatar coll={coll} />
-      <Switch
-        value={defaultChecked}
-        // defaultChecked={defaultChecked}
-        style={{ marginLeft: 10 }}
-        checkedChildren={'🌛'}
-        unCheckedChildren={'🌞'}
-        onChange={onChange}
-      />
+      {!coll && (
+        <Switch
+          value={defaultChecked}
+          defaultChecked={defaultChecked}
+          style={{ marginLeft: 10 }}
+          checkedChildren={'🌛'}
+          unCheckedChildren={'🌞'}
+          onChange={onChange}
+        />
+      )}
     </Space>
   );
 };

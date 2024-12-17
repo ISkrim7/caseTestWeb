@@ -4,7 +4,7 @@ import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiTaskResultDetail from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultDetail';
 import { IInterfaceTaskResult } from '@/pages/Httpx/types';
-import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
+import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
 import { FC, useCallback, useRef, useState } from 'react';
 
@@ -132,12 +132,16 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
   );
 
   return (
-    <ProCard>
-      <MyDrawer setOpen={setOpenDetail} open={openDetail} name={''}>
+    <>
+      <MyDrawer
+        setOpen={setOpenDetail}
+        open={openDetail}
+        name={''}
+        width={'80%'}
+      >
         <InterfaceApiTaskResultDetail taskResultId={currentResultId} />
       </MyDrawer>
       <MyProTable
-        headerTitle={'运行历史'}
         // @ts-ignore
         // polling={polling}
         rowKey={'uid'}
@@ -153,7 +157,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
         columns={columns}
         x={1000}
       />
-    </ProCard>
+    </>
   );
 };
 

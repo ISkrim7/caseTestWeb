@@ -1,8 +1,8 @@
+import { ILoginParams } from '@/api';
 import { useCallback, useState } from 'react';
-import { API } from '@/api';
 
 export default function () {
-  const [user, setUser] = useState<API.ILoginParams>();
+  const [user, setUser] = useState<ILoginParams>();
 
   const login = useCallback((username: string, password: string) => {
     setUser({
@@ -12,7 +12,7 @@ export default function () {
   }, []);
 
   const logout = useCallback(() => {
-    setUser({} as API.ILoginParams);
+    setUser({} as ILoginParams);
   }, []);
 
   return {

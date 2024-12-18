@@ -12,9 +12,10 @@ interface SelfProps {
 }
 
 const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
-  const [open, setOpen] = useState(false);
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
+  const [open, setOpen] = useState(false);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
+
   const fetchResults = useCallback(
     async (params: any, sort: any) => {
       const searchData = {
@@ -65,6 +66,7 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
         </Tag>
       ),
     },
+
     {
       title: '执行人',
       dataIndex: 'starterName',

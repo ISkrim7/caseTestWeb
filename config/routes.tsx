@@ -190,6 +190,12 @@ export default [
         component: '@/pages/Httpx/InterfaceApiCaseTask',
       },
       {
+        path: '/interface/task/history',
+        name: '任务执行历史',
+        component:
+          '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultTable.tsx',
+      },
+      {
         path: '/interface/task/detail',
         name: '添加任务',
         component:

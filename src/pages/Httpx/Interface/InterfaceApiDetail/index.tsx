@@ -71,7 +71,10 @@ const Index: FC<SelfProps> = ({
     [],
   );
   const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const [envs, setEnvs] = useState<{ label: string; value: number }[]>([]);
+  const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
+    [],
+  );
+  const [currentEnvId, setCurrentEnvId] = useState<number>();
   const [tryLoading, setTryLoading] = useState(false);
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
@@ -111,7 +114,8 @@ const Index: FC<SelfProps> = ({
               label: item.name,
               value: item.id,
             }));
-            setEnvs(envs);
+            const noEnv = { label: '自定义', value: -1 };
+            setEnvs([noEnv, ...envs]);
           }
         },
       );
@@ -169,14 +173,15 @@ const Index: FC<SelfProps> = ({
   const addonBefore = (
     <>
       <ProFormSelect
-        style={{ color: 'burlywood' }}
         noStyle
         name={'env_id'}
         options={envs}
         required={true}
         placeholder={'环境选择'}
-        rules={[{ required: true, message: 'host 不能为空' }]}
         label={'Env'}
+        fieldProps={{
+          onChange: (value: number) => setCurrentEnvId(value),
+        }}
       />
     </>
   );
@@ -216,6 +221,7 @@ const Index: FC<SelfProps> = ({
     values.is_common = addFromCase ? 0 : 1;
     if (interId || values.id) {
       //修改
+      console.log(values);
       updateInterApiById(values).then(({ code, msg }) => {
         if (code === 0) {
           message.success(msg);
@@ -352,7 +358,6 @@ const Index: FC<SelfProps> = ({
               width={'md'}
             />
           </ProForm.Group>
-
           <ProForm.Group>
             <ProFormSelect
               name="level"
@@ -419,7 +424,13 @@ const Index: FC<SelfProps> = ({
                   width={'md'}
                   rules={[
                     { required: true, message: '请输入请求url' },
-                    { pattern: new RegExp('^\\/.*'), message: 'url 格式错误' },
+                    {
+                      pattern:
+                        currentEnvId === -1
+                          ? new RegExp('/^(http://|https://).+/;')
+                          : new RegExp('^\\/.*'),
+                      message: 'url 格式错误',
+                    },
                   ]}
                   addonAfter={addonAfter}
                 />

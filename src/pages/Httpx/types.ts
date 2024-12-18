@@ -50,7 +50,7 @@ export interface IInterfaceAPITask extends IBaseField {
   total_apis_num: number;
   project_id: number;
   is_send: boolean | number;
-  is_auto: boolean | number;
+  is_auto: boolean;
   send_type: number;
   send_key: string;
 }

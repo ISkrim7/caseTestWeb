@@ -18,10 +18,12 @@ import { FC, useCallback, useRef, useState } from 'react';
 
 interface IInterfaceApiCaseTaskDetailProps {
   currentTaskId?: string;
+  reload: () => void;
 }
 
 const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
   currentTaskId,
+  reload,
 }) => {
   const actionRef = useRef<ActionType>();
   const [choiceApiCaseOpen, setChoiceApiCaseOpen] = useState<boolean>(false);
@@ -59,6 +61,7 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
       });
       if (code === 0) {
         // 请求成功之后刷新列表
+        reload();
         actionRef.current?.reload();
         message.success(msg);
       }

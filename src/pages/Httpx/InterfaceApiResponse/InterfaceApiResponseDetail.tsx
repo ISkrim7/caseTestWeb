@@ -20,17 +20,16 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   useEffect(() => {
     if (responses) {
       const fetchAllEnvNames = async () => {
-        const newEnvNames = [];
-        for (const item of responses) {
-          const name = await fetchEnvName(item.interfaceEnvId);
-          newEnvNames.push(name);
-        }
-        setEnvNames(newEnvNames);
+        const newEnvNames = responses.map(async (item) => {
+          return item.interfaceEnvId !== -1
+            ? await fetchEnvName(item.interfaceEnvId)
+            : '自定义URL';
+        });
+        // 由于map返回的是一个Promise数组，需要使用Promise.all来等待所有异步操作完成
+        const resolvedEnvNames = await Promise.all(newEnvNames);
+        setEnvNames(resolvedEnvNames);
       };
-
-      if (responses) {
-        fetchAllEnvNames();
-      }
+      fetchAllEnvNames();
     }
   }, [responses]);
   const [activeKeys, setActiveKeys] = useState(

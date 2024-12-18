@@ -13,7 +13,6 @@ const Avatar = () => {
 
   const upload: UploadProps = {
     name: 'file',
-
     showUploadList: false,
     onRemove: (file: any) => {
       const index = fileList.indexOf(file as never);
@@ -38,9 +37,7 @@ const Avatar = () => {
 
   return (
     <>
-      <div>
-        <Image src={currentUser?.avatar} alt="avatar" />
-      </div>
+      <Image src={currentUser?.avatar} alt="avatar" />
       <Upload {...upload}>
         <div style={{ textAlign: 'center', marginTop: 10 }}>
           <Button>

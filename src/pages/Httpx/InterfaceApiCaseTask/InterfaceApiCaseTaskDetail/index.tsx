@@ -73,7 +73,7 @@ const Index = () => {
       fetchCaseParts(currentProjectId, setCasePartEnum).then();
     }
   }, [currentProjectId]);
-  const refresh = async () => {
+  const refresh = () => {
     setEditTask(editTsk + 1);
   };
   const saveTaskBase = async () => {
@@ -216,20 +216,19 @@ const Index = () => {
               rules={[{ required: true, message: '用例描述必填' }]}
             />
           </ProForm.Group>
-          <ProForm.Group>
-            <ProFormDigit
-              label={'重试次数'}
-              name={'retry'}
-              width={'lg'}
-              required={true}
-              initialValue={0}
-              max={5}
-              min={0}
-            />
-          </ProForm.Group>
+          <ProFormDigit
+            label={'重试次数'}
+            name={'retry'}
+            width={'lg'}
+            required={true}
+            hidden={true}
+            initialValue={0}
+            max={5}
+            min={0}
+          />
           <ProForm.Group>
             <ProFormSwitch
-              name={'isAuto'}
+              name={'is_auto'}
               label={'自动化运行'}
               checkedChildren="开"
               unCheckedChildren="关"
@@ -254,7 +253,7 @@ const Index = () => {
           </ProForm.Group>
           <ProForm.Group>
             <ProFormSwitch
-              name={'isSend'}
+              name={'is_send'}
               label={'是否推送'}
               checkedChildren="开"
               unCheckedChildren="关"

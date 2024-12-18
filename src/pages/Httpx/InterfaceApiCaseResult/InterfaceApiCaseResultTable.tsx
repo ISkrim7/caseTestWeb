@@ -35,11 +35,12 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     async (params: any, sort: any) => {
       const searchData = {
         ...params,
-        //只查询公共api
-        interfaceCaseID: apiCaseId,
-        interface_task_result_Id: taskResultId,
         sort: sort,
       };
+      searchData.interfaceCaseID = apiCaseId ? apiCaseId : undefined;
+      searchData.interface_task_result_Id = taskResultId
+        ? taskResultId
+        : undefined;
       const { code, data } = await pageInterCaseResult(searchData);
       if (code === 0) {
         return {
@@ -60,12 +61,10 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
   );
   const columns: ProColumns<IInterfaceCaseResult>[] = [
     {
-      title: '用例ID',
-      dataIndex: 'interfaceCaseUid',
+      title: '结果ID',
+      dataIndex: 'uid',
       width: '6%',
-      render: (_, record) => (
-        <Tag color={'blue'}>{record.interfaceCaseUid}</Tag>
-      ),
+      render: (_, record) => <Tag color={'blue'}>{record.uid}</Tag>,
     },
     {
       title: '执行用例',

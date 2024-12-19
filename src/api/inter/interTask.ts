@@ -56,6 +56,34 @@ export const removeApiTaskBaseInfo = async (
     ...(options || {}),
   });
 };
+/**
+ * switch task auto
+ * @param data
+ * @param options
+ */
+export const setApiTaskAuto = async (
+  data: { is_auto: boolean; taskId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interface/task/setAuto', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * switch task auto
+ * @param data
+ * @param options
+ */
+export const getNextTaskRunTime = async (data: string, options?: IObjGet) => {
+  return request<IResponse<string>>('/api/interface/task/nextRunTime', {
+    method: 'GET',
+    params: { taskUid: data },
+    ...(options || {}),
+  });
+};
 
 /**
  * 分页任务
@@ -263,6 +291,25 @@ export const getInterTaskResultDetail = async (
     {
       method: 'GET',
       params: { resultId: data },
+      ...(options || {}),
+    },
+  );
+};
+
+/**
+ * 移除任务结果详情
+ * @param data
+ * @param options
+ */
+export const removeInterTaskResultDetail = async (
+  data: string | number,
+  options?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceTaskResult>>(
+    '/api/interface/task/removeResult',
+    {
+      method: 'POST',
+      data: { resultId: data },
       ...(options || {}),
     },
   );

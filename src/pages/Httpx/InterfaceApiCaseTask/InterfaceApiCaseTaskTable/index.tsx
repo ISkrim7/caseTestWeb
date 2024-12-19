@@ -1,10 +1,15 @@
-import { pageApiTask } from '@/api/inter/interTask';
+import {
+  getNextTaskRunTime,
+  pageApiTask,
+  removeApiTaskBaseInfo,
+  setApiTaskAuto,
+} from '@/api/inter/interTask';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPITask } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, Popconfirm, Tag } from 'antd';
+import { Button, Divider, message, Popconfirm, Switch, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
@@ -48,6 +53,13 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
     [currentPartId],
   );
 
+  const setTaskAuto = async (auto: boolean, taskId: number) => {
+    const { code } = await setApiTaskAuto({ is_auto: auto, taskId: taskId });
+    if (code === 0) {
+      message.success(auto ? '已开启任务' : '已暂暂停任务');
+      actionRef.current?.reload();
+    }
+  };
   const taskColumns: ProColumns<IInterfaceAPITask>[] = [
     {
       title: '任务编号',
@@ -57,7 +69,6 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       width: '10%',
       copyable: true,
     },
-
     {
       title: '名称',
       dataIndex: 'title',
@@ -80,6 +91,20 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       render: (text) => {
         return <Tag color={'green'}>{text}</Tag>;
       },
+    },
+    {
+      title: '自动执行',
+      dataIndex: 'is_auto',
+      key: 'is_auto',
+      valueType: 'switch',
+      render: (_, record) => (
+        <Switch
+          value={record.is_auto}
+          onChange={async (checked) => {
+            return await setTaskAuto(checked, record.id);
+          }}
+        />
+      ),
     },
     {
       title: '优先级',
@@ -115,6 +140,17 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
         return (
           <>
             <a
+              onClick={async () => {
+                const { code, data } = await getNextTaskRunTime(record.uid);
+                if (code === 0) {
+                  message.success(data);
+                }
+              }}
+            >
+              下次运行时间
+            </a>
+            <Divider type="vertical" />
+            <a
               onClick={() => {
                 history.push(`/interface/task/detail/taskId=${record.id}`);
               }}
@@ -128,8 +164,17 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
               onConfirm={async () => {}}
             >
               <Divider type={'vertical'} />
-
-              <a>删除</a>
+              <a
+                onClick={async () => {
+                  const { code, msg } = await removeApiTaskBaseInfo(record.id);
+                  if (code === 0) {
+                    message.success(msg);
+                    actionRef.current?.reload();
+                  }
+                }}
+              >
+                删除
+              </a>
             </Popconfirm>
           </>
         );

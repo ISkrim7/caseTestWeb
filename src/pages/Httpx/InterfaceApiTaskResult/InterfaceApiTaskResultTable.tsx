@@ -1,7 +1,10 @@
 import { IObjGet } from '@/api';
 import { queryProject } from '@/api/base';
 import { removeAllTaskResults } from '@/api/inter/interCase';
-import { pageInterTaskResult } from '@/api/inter/interTask';
+import {
+  pageInterTaskResult,
+  removeInterTaskResultDetail,
+} from '@/api/inter/interTask';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiTaskResultDetail from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultDetail';
@@ -185,14 +188,22 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
                 详情
               </a>
               <Divider type={'vertical'} />
-              <a>删除</a>
+              <a onClick={async () => await removeTaskResult(record.id)}>
+                删除
+              </a>
             </>
           ) : null}
         </>
       ),
     },
   ];
-
+  const removeTaskResult = async (resultId: number) => {
+    const { code, msg } = await removeInterTaskResultDetail(resultId);
+    if (code === 0) {
+      message.success(msg);
+      actionRef.current?.reload();
+    }
+  };
   const removeTaskResults = async () => {
     if (apiCaseTaskId) {
       const { code, msg } = await removeAllTaskResults(apiCaseTaskId);

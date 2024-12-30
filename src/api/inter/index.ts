@@ -131,3 +131,24 @@ export const queryScripts = async (options?: IObjGet) => {
     ...(options || {}),
   });
 };
+/**
+ * 开始录制
+ * @param options
+ */
+export const startApiRecord = async (options?: IObjGet) => {
+  return request<IResponse<any>>('/api/interface/start/recording', {
+    method: 'POST',
+    ...(options || {}),
+  });
+};
+
+/**
+ * 获取录制信息
+ * @param options
+ */
+export const queryApiRecord = async (options?: IObjGet) => {
+  return request<IResponse<any[]>>('/api/interface/query/record', {
+    method: 'GET',
+    ...(options || {}),
+  });
+};

@@ -150,9 +150,14 @@ export default [
     icon: 'ApiFilled',
     routes: [
       {
-        path: '/interface/interApi',
+        path: '/interface/interApi/api',
         name: '接口API',
         component: '@/pages/Httpx/Interface',
+      },
+      {
+        path: '/interface/interApi/record',
+        name: '接口录制',
+        component: '@/pages/Httpx/InterfaceApiRecord',
       },
       {
         path: '/interface/interApi/detail/interId=:interId',

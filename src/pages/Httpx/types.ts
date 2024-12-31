@@ -1,6 +1,16 @@
 import { IBaseField, IExtract, IObjGet } from '@/api';
 import React from 'react';
 
+export interface IInterfaceAPIRecord extends IBaseField {
+  url: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  headers: IHeaders[] | [];
+  params: IParams[] | [];
+  body: any;
+  data: any;
+  bodyType: number;
+  response: any;
+}
 export interface IInterfaceAPI extends IBaseField {
   name: string;
   desc: string;

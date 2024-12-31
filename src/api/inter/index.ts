@@ -1,5 +1,9 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Httpx/types';
+import {
+  IInterfaceAPI,
+  IInterfaceAPIRecord,
+  ITryResponseInfo,
+} from '@/pages/Httpx/types';
 import { request } from '@@/plugin-request/request';
 
 /**
@@ -135,9 +139,22 @@ export const queryScripts = async (options?: IObjGet) => {
  * 开始录制
  * @param options
  */
-export const startApiRecord = async (options?: IObjGet) => {
+export const startApiRecord = async (values: any, options?: IObjGet) => {
   return request<IResponse<any>>('/api/interface/start/recording', {
     method: 'POST',
+    data: values,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 停止录制
+ * @param options
+ */
+export const clearApiRecord = async (options?: IObjGet) => {
+  return request<IResponse<any>>('/api/interface/clear/recording', {
+    method: 'POST',
+    data: {},
     ...(options || {}),
   });
 };
@@ -147,8 +164,11 @@ export const startApiRecord = async (options?: IObjGet) => {
  * @param options
  */
 export const queryApiRecord = async (options?: IObjGet) => {
-  return request<IResponse<any[]>>('/api/interface/query/record', {
-    method: 'GET',
-    ...(options || {}),
-  });
+  return request<IResponse<IInterfaceAPIRecord[]>>(
+    '/api/interface/query/record',
+    {
+      method: 'GET',
+      ...(options || {}),
+    },
+  );
 };

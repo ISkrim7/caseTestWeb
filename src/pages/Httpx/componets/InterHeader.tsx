@@ -39,6 +39,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
       title: 'key',
       key: 'key',
       dataIndex: 'key',
+      fixed: 'left',
       renderFormItem: () => {
         return (
           <Select

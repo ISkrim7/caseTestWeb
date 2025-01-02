@@ -1,5 +1,11 @@
-import { clearApiRecord, queryApiRecord, startApiRecord } from '@/api/inter';
+import {
+  clearApiRecord,
+  deduplicationRecord,
+  queryApiRecord,
+  startApiRecord,
+} from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
+import AddToApi from '@/pages/Httpx/InterfaceApiRecord/AddToApi';
 import RecordDetail from '@/pages/Httpx/InterfaceApiRecord/RecordDetail';
 import { IInterfaceAPIRecord } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
@@ -12,7 +18,7 @@ import {
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Button, message, Tag } from 'antd';
+import { Button, message, Tabs, Tag } from 'antd';
 import { useRef, useState } from 'react';
 
 const Index = () => {
@@ -24,6 +30,8 @@ const Index = () => {
     useState<IInterfaceAPIRecord[]>();
   const [polling, setPolling] = useState(0);
   const [openModal, setOpenModal] = useState(false);
+  const [addOpenModal, setAddOpenModal] = useState(false);
+  const [currentRecordId, setCurrentRecordId] = useState<string>();
   const StartRecord = async (values: any) => {
     setRecordStatus(true);
     setPolling(3000);
@@ -69,8 +77,17 @@ const Index = () => {
     {
       title: 'Option',
       dataIndex: 'options',
-      render: (text, record) => {
-        return <a>详情</a>;
+      render: (_, record) => {
+        return (
+          <a
+            onClick={() => {
+              setCurrentRecordId(record.uid);
+              setAddOpenModal(true);
+            }}
+          >
+            添加
+          </a>
+        );
       },
     },
   ];
@@ -91,18 +108,30 @@ const Index = () => {
         </Button>
       )}
       {recordDataSource && recordDataSource?.length > 0 && (
-        <Button
-          type={'primary'}
-          onClick={async () => {
-            const { code } = await clearApiRecord();
-            if (code === 0) {
-              setRecordDataSource([]);
-              actionRef.current?.reload();
-            }
-          }}
-        >
-          清空
-        </Button>
+        <>
+          <Button
+            type={'primary'}
+            onClick={async () => {
+              const { code } = await clearApiRecord();
+              if (code === 0) {
+                setRecordDataSource([]);
+                actionRef.current?.reload();
+              }
+            }}
+          >
+            清空
+          </Button>
+          <Button
+            onClick={async () => {
+              const { code } = await deduplicationRecord();
+              if (code === 0) {
+                actionRef.current?.reload();
+              }
+            }}
+          >
+            去重
+          </Button>
+        </>
       )}
     </>
   );
@@ -112,6 +141,21 @@ const Index = () => {
   };
   return (
     <ProCard>
+      <ModalForm
+        open={addOpenModal}
+        submitter={false}
+        onOpenChange={setAddOpenModal}
+      >
+        <Tabs>
+          <Tabs.TabPane key={'1'} tab={'API'}>
+            <AddToApi
+              currentRecordId={currentRecordId}
+              setCloseModal={setAddOpenModal}
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane key={'2'} tab={'API用例'}></Tabs.TabPane>
+        </Tabs>
+      </ModalForm>
       <ModalForm
         open={openModal}
         onOpenChange={setOpenModal}

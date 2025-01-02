@@ -140,7 +140,7 @@ export const queryScripts = async (options?: IObjGet) => {
  * @param options
  */
 export const startApiRecord = async (values: any, options?: IObjGet) => {
-  return request<IResponse<any>>('/api/interface/start/recording', {
+  return request<IResponse<any>>('/api/interfaceRecord/start/recording', {
     method: 'POST',
     data: values,
     ...(options || {}),
@@ -152,7 +152,7 @@ export const startApiRecord = async (values: any, options?: IObjGet) => {
  * @param options
  */
 export const clearApiRecord = async (options?: IObjGet) => {
-  return request<IResponse<any>>('/api/interface/clear/recording', {
+  return request<IResponse<any>>('/api/interfaceRecord/clear/recording', {
     method: 'POST',
     data: {},
     ...(options || {}),
@@ -165,10 +165,34 @@ export const clearApiRecord = async (options?: IObjGet) => {
  */
 export const queryApiRecord = async (options?: IObjGet) => {
   return request<IResponse<IInterfaceAPIRecord[]>>(
-    '/api/interface/query/record',
+    '/api/interfaceRecord/query/record',
     {
       method: 'GET',
       ...(options || {}),
     },
   );
+};
+
+/**
+ * 保存录制到api
+ * @param options
+ */
+export const saveRecord2Api = async (data: any, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/interfaceRecord/record/save', {
+    method: 'post',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 去重
+ * @param options
+ */
+export const deduplicationRecord = async (options?: IObjGet) => {
+  return request<IResponse<null>>('/api/interfaceRecord/record/deduplication', {
+    method: 'post',
+    data: {},
+    ...(options || {}),
+  });
 };

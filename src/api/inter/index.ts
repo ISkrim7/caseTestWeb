@@ -178,13 +178,29 @@ export const queryApiRecord = async (options?: IObjGet) => {
  * @param options
  */
 export const saveRecord2Api = async (data: any, options?: IObjGet) => {
-  return request<IResponse<null>>('/api/interfaceRecord/record/save', {
+  return request<IResponse<null>>('/api/interfaceRecord/record/save2api', {
     method: 'post',
     data: data,
     ...(options || {}),
   });
 };
-
+/**
+ * 保存录制到case
+ * @param options
+ */
+export const appendRecord2Case = async (
+  data: {
+    recordId: string;
+    caseId: string;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interfaceRecord/record/save2case', {
+    method: 'post',
+    data: data,
+    ...(options || {}),
+  });
+};
 /**
  * 去重
  * @param options

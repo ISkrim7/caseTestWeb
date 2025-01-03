@@ -6,6 +6,7 @@ import {
 } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import AddToApi from '@/pages/Httpx/InterfaceApiRecord/AddToApi';
+import AddToCase from '@/pages/Httpx/InterfaceApiRecord/AddToCase';
 import RecordDetail from '@/pages/Httpx/InterfaceApiRecord/RecordDetail';
 import { IInterfaceAPIRecord } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
@@ -35,7 +36,7 @@ const Index = () => {
   const StartRecord = async (values: any) => {
     setRecordStatus(true);
     setPolling(3000);
-    const { code, data } = await startApiRecord(values);
+    const { code } = await startApiRecord(values);
     if (code === 0) {
       setOpenModal(false);
       message.success('开始录制');
@@ -153,7 +154,12 @@ const Index = () => {
               setCloseModal={setAddOpenModal}
             />
           </Tabs.TabPane>
-          <Tabs.TabPane key={'2'} tab={'API用例'}></Tabs.TabPane>
+          <Tabs.TabPane key={'2'} tab={'API用例'}>
+            <AddToCase
+              currentRecordId={currentRecordId}
+              setCloseModal={setAddOpenModal}
+            />
+          </Tabs.TabPane>
         </Tabs>
       </ModalForm>
       <ModalForm

@@ -161,8 +161,8 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
 
   return (
     <MyProTable
-      key={'id'}
-      rowKey={perKey}
+      key={perKey}
+      rowKey={'id'}
       actionRef={actionRef}
       x={1000}
       columns={columns}

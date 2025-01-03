@@ -82,6 +82,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
     {
       title: 'opt',
       valueType: 'option',
+      fixed: 'right',
       render: (_: any, record: any) => {
         return (
           <a

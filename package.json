@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "start": "cross-env APP_ENV=dev max dev",
+    "start hb": "cross-env APP_ENV=hb max hb",
     "build": "cross-env APP_ENV=pro max build",
     "postinstall": "max setup",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",

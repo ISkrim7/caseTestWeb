@@ -18,8 +18,6 @@ export interface IUICase {
   updaterName?: string;
   updaterId?: number;
   envId: string;
-  username: string;
-  password: string;
 }
 
 export interface CasePartEnum {
@@ -96,8 +94,8 @@ export interface IUICaseSteps {
   locator: string;
   value?: string;
   api_url?: string | null;
-  iframeName?: string | null;
-  isCommonStep: boolean;
+  iframe_name?: string | null;
+  is_common_step: boolean;
   new_page: boolean;
   is_ignore: boolean;
   creator: number | undefined;
@@ -112,14 +110,18 @@ export interface IUICaseSteps {
 
 export interface IUIMethod {
   id: number;
+  uid: string;
+  creator: number;
+  creatorName: string;
   label: string;
   value: string;
-  desc?: string;
+  description?: string;
   need_locator: number;
   need_value: number;
 }
 
 export interface IUIEnv {
+  id: number;
   uid: string;
   name: string;
   domain: string;

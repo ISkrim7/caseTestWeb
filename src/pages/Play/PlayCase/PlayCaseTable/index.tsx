@@ -1,30 +1,46 @@
-import { IObjGet } from '@/api';
-import { handelAPSRunCase, pageUICase } from '@/api/aps';
+import { IEnv, IObjGet } from '@/api';
+import { handelAPSRunCase } from '@/api/aps';
+import { queryEnvBy } from '@/api/base';
+import { pageUICase } from '@/api/play';
 import { copyCase, delUICase } from '@/api/ui';
 import MyProTable from '@/components/Table/MyProTable';
-import { fetchQueryEnv2Obj } from '@/pages/UIPlaywright/someFetch';
 import { IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
-import { history } from '@@/core/history';
-import { useModel } from '@@/exports';
+import { history, useModel } from '@@/exports';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
-  currentProject?: number;
-  currentCasePart?: number;
+  currentProjectId?: number;
+  currentPartId?: number;
+  perKey: string;
 }
 
-const Index: FC<SelfProps> = ({ currentProject, currentCasePart }) => {
+const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
   const { initialState } = useModel('@@initialState');
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [envOptions, setEnvOptions] = useState<IObjGet>({});
-
+  useEffect(() => {
+    if (currentProjectId) {
+      queryEnvBy({ project_id: currentProjectId } as IEnv).then(
+        ({ code, data }) => {
+          if (code === 0) {
+            const envs = data.map((item) => ({
+              label: item.name,
+              value: item.id,
+            }));
+            const noEnv = { label: '自定义', value: -1 };
+            setEnvOptions([noEnv, ...envs]);
+          }
+        },
+      );
+    }
+  }, [currentProjectId]);
   const fetchUICase = useCallback(
     async (params: any, sort: any) => {
       const searchData: any = {
-        casePartId: currentCasePart,
+        casePartId: currentPartId,
         ...params,
         sort: sort,
       };
@@ -44,15 +60,8 @@ const Index: FC<SelfProps> = ({ currentProject, currentCasePart }) => {
         total: 0,
       };
     },
-    [currentCasePart],
+    [currentPartId],
   );
-  useEffect(() => {
-    actionRef.current?.reload();
-  }, [currentCasePart, currentProject]);
-
-  useEffect(() => {
-    Promise.all([fetchQueryEnv2Obj(setEnvOptions)]).then((r) => r.reverse());
-  }, []);
 
   const columns: ProColumns<IUICase>[] = [
     {
@@ -73,9 +82,6 @@ const Index: FC<SelfProps> = ({ currentProject, currentCasePart }) => {
       fixed: 'left',
       key: 'title',
       width: 250,
-      // render: (text) => {
-      //   return <Tag color={'blue'}>{text}</Tag>;
-      // },
     },
     {
       title: '运行环境',
@@ -213,40 +219,22 @@ const Index: FC<SelfProps> = ({ currentProject, currentCasePart }) => {
     <Button
       type={'primary'}
       onClick={() => {
-        history.push(`/ui/addCase/projectId=${currentProject}`);
+        history.push(`/ui/addCase`);
       }}
     >
       添加用例
     </Button>
   );
-
   return (
     <MyProTable
+      persistenceKey={perKey}
       columns={columns}
       rowKey={'id'}
+      x={1000}
       request={fetchUICase}
       actionRef={actionRef}
       toolBarRender={() => [AddCaseButton]}
     />
-    // <ProTable
-    //   actionRef={actionRef}
-    //   columns={columns}
-    //   request={fetchUICase}
-    //   scroll={{x: 1000}}
-    //   toolBarRender={() => [AddCaseButton]}
-    //   rowKey={"uid"}
-    //   search={{
-    //     labelWidth: 'auto',
-    //     defaultCollapsed: false,
-    //   }}
-    //   pagination={
-    //     {
-    //       showQuickJumper: true,
-    //       defaultPageSize: 20,
-    //       showSizeChanger: true,
-    //     }
-    //   }
-    // />
   );
 };
 

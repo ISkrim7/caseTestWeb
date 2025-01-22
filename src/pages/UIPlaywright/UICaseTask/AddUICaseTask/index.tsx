@@ -2,7 +2,6 @@ import { IObjGet, ISearch } from '@/api';
 import {
   addTaskJob,
   handelAPSRunTask,
-  pageUICase,
   queryRootPartsByProjectId,
 } from '@/api/aps';
 import {
@@ -177,16 +176,16 @@ const Index = () => {
    */
   const fetchUICases = async (params: any, sort: any) => {
     const value = { ...params, sort: sort };
-    const { code, data } = await pageUICase(value);
-    if (code === 0) {
-      return {
-        data: data.items,
-        total: data.pageInfo.total,
-        success: true,
-        pageSize: data.pageInfo.page,
-        current: data.pageInfo.limit,
-      };
-    }
+    // const { code, data } = await pageUICase(value);
+    // if (code === 0) {
+    //   return {
+    //     data: data.items,
+    //     total: data.pageInfo.total,
+    //     success: true,
+    //     pageSize: data.pageInfo.page,
+    //     current: data.pageInfo.limit,
+    //   };
+    // }
     return {
       data: [],
       success: false,

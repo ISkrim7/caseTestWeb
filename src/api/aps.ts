@@ -1,40 +1,34 @@
-import { ICasePart, IObjGet, IPage, IResponse, ISearch } from '@/api';
-import {
-  IUICase,
-  IUICaseStepAPI,
-  IUIExtract,
-} from '@/pages/UIPlaywright/uiTypes';
+import { ICasePart, IObjGet, IPage, IResponse } from '@/api';
+import { IUICaseStepAPI, IUIExtract } from '@/pages/UIPlaywright/uiTypes';
 import { request } from '@@/plugin-request/request';
 
-const QueryProjects = '/aps/project/query';
-const QueryRootCasePartByProjectId = '/aps/part/queryRootPartByProjectId';
-const CountByProjectID = '/aps/ui/case/countByProjectId';
-const QueryVariablesByCaseID = '/aps/ui/case/variable/page';
-const DeleteVariableByCaseID = '/aps/ui/case/variable/delete';
-const AddVariableByID = '/aps/ui/case/variable/add';
-const PutVariableByID = '/aps/ui/case/variable/update';
-const CountByDate = '/aps/ui/case/countByDate';
-const QueryRootParts = '/aps/part/queryRootPartByProjectId';
-const GetTaskStatusByRootPartId = '/aps/ui/task/getTaskStatusByPart';
-const HandelRunCase = '/aps/ui/case/executeCaseById';
-const HandelRunTask = '/aps/ui/task/runTask';
-const AddTaskAPSJOB = '/aps/ui/task/addJob';
-const UpdateTaskAPSJOB = '/aps/ui/task/updateJob';
-const RemoveTaskAPSJOB = '/aps/ui/task/removeJob';
-const APSNextRunTime = '/aps/ui/task/job/nextRunTime';
-const SetAPSJobSwitch = '/aps/ui/task/job/setSwitch';
+const QueryProjects = '/api/project/query';
+const QueryRootCasePartByProjectId = '/api/part/queryRootPartByProjectId';
+const CountByProjectID = '/api/ui/case/countByProjectId';
+const QueryVariablesByCaseID = '/api/ui/case/variable/page';
+const DeleteVariableByCaseID = '/api/ui/case/variable/delete';
+const AddVariableByID = '/api/ui/case/variable/add';
+const PutVariableByID = '/api/ui/case/variable/update';
+const CountByDate = '/api/ui/case/countByDate';
+const QueryRootParts = '/api/part/queryRootPartByProjectId';
+const GetTaskStatusByRootPartId = '/api/ui/task/getTaskStatusByPart';
+const HandelRunCase = '/api/ui/case/executeCaseById';
+const HandelRunTask = '/api/ui/task/runTask';
+const AddTaskAPSJOB = '/api/ui/task/addJob';
+const UpdateTaskAPSJOB = '/api/ui/task/updateJob';
+const RemoveTaskAPSJOB = '/api/ui/task/removeJob';
+const APSNextRunTime = '/api/ui/task/job/nextRunTime';
+const SetAPSJobSwitch = '/api/ui/task/job/setSwitch';
 
-const PageUICase = '/aps/ui/case/page';
-
-const AddUICaseStepApi = '/aps/ui/case/add/stepApi';
-const AddUICaseStepSQL = '/aps/ui/case/add/stepSQL';
-const UpdateUICaseStepApi = '/aps/ui/case/update/stepApi';
-const UpdateUICaseStepSql = '/aps/ui/case/update/stepSql';
-const DeleteUICaseStepApi = '/aps/ui/case/delete/stepApi';
-const DeleteUICaseStepSQL = '/aps/ui/case/delete/stepSql';
-const GetUICaseStepApiInfo = '/aps/ui/case/stepAPIInfo';
-const GetUICaseStepSQLInfo = '/aps/ui/case/stepSQLInfo';
-const ClearUIResult = '/aps/ui/case/clear_result';
+const AddUICaseStepApi = '/api/ui/case/add/stepApi';
+const AddUICaseStepSQL = '/api/ui/case/add/stepSQL';
+const UpdateUICaseStepApi = '/api/ui/case/update/stepApi';
+const UpdateUICaseStepSql = '/api/ui/case/update/stepSql';
+const DeleteUICaseStepApi = '/api/ui/case/delete/stepApi';
+const DeleteUICaseStepSQL = '/api/ui/case/delete/stepSql';
+const GetUICaseStepApiInfo = '/api/ui/case/stepAPIInfo';
+const GetUICaseStepSQLInfo = '/api/ui/case/stepSQLInfo';
+const ClearUIResult = '/api/ui/case/clear_result';
 
 export const clearUICaseResult = async (
   data: { caseId: number },
@@ -121,14 +115,6 @@ export const updateUICaseStepSQL = async (data: any, options?: IObjGet) => {
   return request(UpdateUICaseStepSql, {
     method: 'POST',
     data,
-    ...(options || {}),
-  });
-};
-
-export const pageUICase = async (params: ISearch, options?: IObjGet) => {
-  return request<IResponse<IPage<IUICase>>>(PageUICase, {
-    method: 'POST',
-    data: params,
     ...(options || {}),
   });
 };

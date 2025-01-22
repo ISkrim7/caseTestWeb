@@ -60,7 +60,7 @@ const AddEnv: React.FC<selfProps> = ({ reload }) => {
         required={false}
       />
       <ProFormText
-        name="desc"
+        name="description"
         label="desc"
         placeholder="input your host desc"
       />

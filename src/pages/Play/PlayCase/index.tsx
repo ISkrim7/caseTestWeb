@@ -1,5 +1,5 @@
 import LeftPart from '@/components/LeftPart';
-import InterfaceApiTable from '@/pages/Httpx/Interface/InterfaceApiTable';
+import PlayCaseTable from '@/pages/Play/PlayCase/PlayCaseTable';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
 import { useState } from 'react';
@@ -7,7 +7,8 @@ import { useState } from 'react';
 const Index = () => {
   const [currentCasePartId, setCurrentCasePartId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const PerKey = 'InterfaceApi';
+  const PerKey = 'PlayCase';
+
   return (
     <ProCard
       bordered={true}
@@ -23,17 +24,16 @@ const Index = () => {
           style={{ height: '100vh' }}
         >
           <LeftPart
-            perKey={PerKey}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
             setCurrentCasePartId={setCurrentCasePartId}
           />
         </Splitter.Panel>
         <Splitter.Panel>
-          <InterfaceApiTable
+          <PlayCaseTable
+            perKey={PerKey}
             currentProjectId={currentProjectId}
             currentPartId={currentCasePartId}
-            perKey={PerKey}
           />
         </Splitter.Panel>
       </Splitter>

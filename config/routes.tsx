@@ -90,8 +90,14 @@ export default [
       {
         path: '/ui/cases',
         name: '自动化用例',
-        component: '@/pages/UIPlaywright/UICase',
+        component: '@/pages/Play/PlayCase',
         icon: 'DatabaseOutlined',
+      },
+      {
+        path: '/ui/case/step',
+        name: '自动化用例',
+        component: '@/pages/Play/PlayCase/PlayStepDetail',
+        showInMenu: false,
       },
       {
         path: '/ui/caseTaskList',
@@ -108,12 +114,18 @@ export default [
       {
         path: '/ui/config',
         name: '自动化配置',
-        component: '@/pages/UIPlaywright/Config',
+        component: '@/pages/Play/PlayConfig',
         icon: 'ToolOutlined',
       },
       {
-        path: '/ui/addCase/projectId=:projectId',
+        path: '/ui/addCase',
         name: '添加用例',
+        hideInMenu: true,
+        component: '@/pages/Play/PlayCase/PlayCaseDetail',
+      },
+      {
+        path: '/ui/case/detail/caseId=:caseId',
+        name: '用例详情',
         hideInMenu: true,
         component: '@/pages/UIPlaywright/UICase/EditCase',
       },
@@ -123,12 +135,7 @@ export default [
         hideInMenu: true,
         component: '@/pages/UIPlaywright/UICaseTask/AddUICaseTask',
       },
-      {
-        path: '/ui/case/detail/caseId=:caseId',
-        name: '用例详情',
-        hideInMenu: true,
-        component: '@/pages/UIPlaywright/UICase/EditCase',
-      },
+
       {
         path: '/ui/case/stepGroup/detail/groupId=:groupId',
         name: '用例组详情',

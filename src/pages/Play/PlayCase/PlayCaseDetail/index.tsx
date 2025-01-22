@@ -1,7 +1,14 @@
 import { queryProject } from '@/api/base';
-import { reorderApis2Case } from '@/api/inter/interCase';
-import { queryStepByCaseId, uiCaseDetailById } from '@/api/play';
+import {
+  addUICaseBaseInfo,
+  putUICaseBaseInfo,
+  queryStepByCaseId,
+  uiCaseDetailById,
+} from '@/api/play';
 import { queryUIEnvs } from '@/api/play/env';
+import { reOrderStep } from '@/api/play/step';
+import MyDrawer from '@/components/MyDrawer';
+import AddStep from '@/pages/Play/componets/AddStep';
 import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import {
@@ -11,7 +18,8 @@ import {
   IUIEnv,
 } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
-import { useModel, useParams } from '@@/exports';
+import { useParams } from '@@/exports';
+import { PlayCircleOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -20,13 +28,13 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Form, message } from 'antd';
-import { useEffect, useState } from 'react';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { Button, Divider, Form, message } from 'antd';
+import { FC, useEffect, useState } from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { history } from 'umi';
 
 const Index = () => {
   const { caseId } = useParams<{ caseId: string }>();
-  const { initialState } = useModel('@@initialState');
   const [projects, setProjects] = useState<{ label: string; value: number }[]>(
     [],
   );
@@ -44,79 +52,103 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [uiStepsContent, setUIStepsContent] = useState<any[]>([]);
   const [uiSteps, setUISteps] = useState<IUICaseSteps[]>([]);
-  const [uiStepsLength, setUIStepsLegnth] = useState<number>(0);
+  const [uiStepsLength, setUIStepsLength] = useState<number>(0);
+  const [stepIndex, setStepIndex] = useState<number>(0);
+  const [openAddStepDrawer, setOpenAddStepDrawer] = useState(false);
+  const [refresh, setRefresh] = useState<number>(0);
+
+  /*
+  查询project && env
+   */
   useEffect(() => {
-    if (caseId) {
-      setCurrentMode(1);
-      uiCaseDetailById({ id: caseId }).then(async ({ code, data, msg }) => {
-        if (code === 0 && data) {
-          form.setFieldsValue(data);
-          setCurrentProjectId(data.projectId);
-        } else {
-          message.error(msg);
+    Promise.all([queryProject(), queryUIEnvs()]).then(
+      ([projectRes, envRes]) => {
+        if (projectRes.code === 0) {
+          const pros = projectRes.data.map((item) => ({
+            label: item.title,
+            value: item.id,
+          }));
+          setProjects(pros);
         }
-      });
-      queryStepByCaseId({ id: caseId }).then(async ({ code, data, msg }) => {
-        if (code === 0 && data) {
-          setLoading(false);
-          setUISteps(data);
-        } else {
-          message.error(msg);
+        if (envRes.code === 0) {
+          const envs = envRes.data.map((item: IUIEnv) => ({
+            label: item.name,
+            value: item.id,
+          }));
+          setEnvs(envs);
         }
-      });
-    } else {
-      setCurrentMode(2);
-      setLoading(false);
-    }
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const projects = data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-        setProjects(projects);
-      }
-    });
-    queryUIEnvs().then(async ({ code, data }) => {
-      if (code === 0) {
-        const envs = data.map((item: IUIEnv) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        setEnvs(envs);
-      }
-    });
+      },
+    );
   }, []);
+
+  /**
+   * 修改project 对应请求casePart
+   */
   useEffect(() => {
     if (currentProjectId) {
       fetchCaseParts(currentProjectId, setCasePartEnum).then();
     }
   }, [currentProjectId]);
 
+  /**
+   * 如果是caseId 传递 这个证明是case 详情页
+   */
+  useEffect(() => {
+    if (caseId) {
+      uiCaseDetailById(caseId).then(async ({ code, data }) => {
+        form.setFieldsValue(data);
+        setCurrentProjectId(data.project_id);
+      });
+      queryStepByCaseId(caseId).then(async ({ code, data }) => {
+        if (code === 0 && data) {
+          setLoading(false);
+          setUISteps(data);
+        }
+      });
+      setCurrentMode(1);
+    } else {
+      setCurrentMode(2);
+      setLoading(false);
+    }
+  }, [refresh, caseId]);
+
   useEffect(() => {
     if (uiSteps) {
-      setUIStepsLegnth(uiSteps.length);
+      setUIStepsLength(uiSteps.length);
       const init_data = uiSteps.map((item, index) => ({
         id: index.toString(),
         step_id: item.id,
-        content: <CollapsibleUIStepCard />,
+        content: (
+          <CollapsibleUIStepCard
+            caseId={caseId!}
+            callBackFunc={handelRefresh}
+            collapsible={true} // 默认折叠
+            uiStepInfo={item}
+          />
+        ),
       }));
       setUIStepsContent(init_data);
     }
-  }, [uiSteps]);
+  }, [refresh, uiSteps]);
+
+  const handelRefresh = () => {
+    setOpenAddStepDrawer(false);
+    setRefresh(refresh + 1);
+  };
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return; // 拖拽没有放置，退出
     // 重新排序 items 和 formData
-    const reorderedApis = reorder(
+    const reorderedUIContents = reorder(
       uiStepsContent,
       result.source.index,
       result.destination.index,
     );
-    setUIStepsContent(reorderedApis);
+    setUIStepsContent(reorderedUIContents);
     if (caseId) {
-      const reorderData = reorderedApis.map((item) => item.api_Id);
-      reorderApis2Case({ caseId: caseId, apiIds: reorderData }).then(
+      const reorderData = reorderedUIContents.map((item) => item.step_id);
+      console.log('====', reorderData);
+      reOrderStep({ caseId: caseId, stepIds: reorderData }).then(
         async ({ code }) => {
           if (code === 0) {
             console.log('reorder success');
@@ -133,9 +165,116 @@ const Index = () => {
     return result;
   };
 
+  const SaveOrUpdateCaseInfo = async () => {
+    const values = form.getFieldsValue(true);
+    console.log(values);
+    if (caseId) {
+      putUICaseBaseInfo(values).then(async ({ code, msg }) => {
+        if (code === 0) {
+          message.success(msg);
+          setCurrentMode(1);
+        }
+      });
+    } else {
+      addUICaseBaseInfo(values).then(async ({ code, data, msg }) => {
+        if (code === 0) {
+          message.success(msg);
+          history.push(`/ui/case/detail/caseId=${data.id}`);
+        }
+      });
+    }
+  };
+
+  const CaseButtonExtra: FC<{ currentStatus: number }> = ({
+    currentStatus,
+  }) => {
+    switch (currentStatus) {
+      case 1:
+        return (
+          <div style={{ display: 'flex' }}>
+            <Button icon={<PlayCircleOutlined />}>Try</Button>
+            <Divider type={'vertical'} />
+            <Button
+              type={'primary'}
+              style={{ marginLeft: 10 }}
+              onClick={() => setCurrentMode(3)}
+            >
+              Edit
+            </Button>
+          </div>
+        );
+      case 2:
+        return (
+          <Button onClick={SaveOrUpdateCaseInfo} type={'primary'}>
+            Save
+          </Button>
+        );
+      case 3:
+        return (
+          <>
+            <Button onClick={SaveOrUpdateCaseInfo} type={'primary'}>
+              Save
+            </Button>
+            <Button style={{ marginLeft: 5 }} onClick={() => setCurrentMode(1)}>
+              Cancel
+            </Button>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+  const AddStepExtra: FC<{ currentStatus: number }> = ({ currentStatus }) => {
+    switch (currentStatus) {
+      case 1:
+        return (
+          <>
+            {/*<Button type={'primary'} onClick={() => setChoiceOpen(true)}>*/}
+            {/*  Choice API*/}
+            {/*</Button>*/}
+            {/*<Divider type={'vertical'} />*/}
+            <Button type={'primary'} onClick={AddUIStep}>
+              Add Step
+            </Button>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const AddUIStep = () => {
+    setOpenAddStepDrawer(true);
+    const currStepIndex = stepIndex + 1;
+    setStepIndex(currStepIndex);
+    // setUIStepsContent((prev) => [
+    //   ...prev,
+    //   {
+    //     id: currStepIndex.toString(),
+    //     content: (
+    //       <CollapsibleUIStepCard
+    //         collapsible={false}
+    //         callBackFunc={handelRefresh} />
+    //     ),
+    //   },
+    // ]);
+  };
   return (
     <ProCard split={'horizontal'}>
-      <ProCard>
+      <MyDrawer
+        name={'Add Step'}
+        width={'auto'}
+        open={openAddStepDrawer}
+        setOpen={setOpenAddStepDrawer}
+      >
+        <AddStep
+          caseId={caseId}
+          func={() => {
+            handelRefresh();
+          }}
+        />
+      </MyDrawer>
+      <ProCard extra={<CaseButtonExtra currentStatus={currentMode} />}>
         <ProForm
           disabled={currentMode === 1}
           layout={'horizontal'}
@@ -173,7 +312,7 @@ const Index = () => {
             <ProFormSelect
               required
               options={projects}
-              name="projectId"
+              name="project_id"
               label="所属项目"
               width={'md'}
               initialValue={currentProjectId}
@@ -181,13 +320,13 @@ const Index = () => {
               fieldProps={{
                 onChange: (value: number) => {
                   setCurrentProjectId(value);
-                  form.setFieldsValue({ casePartId: undefined });
+                  form.setFieldsValue({ case_part_id: undefined });
                 },
               }}
             />
             <ProFormTreeSelect
               required
-              name="casePartId"
+              name="case_part_id"
               label="所属模块"
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
@@ -206,7 +345,7 @@ const Index = () => {
               required
               showSearch={true}
               options={envs}
-              name="envId"
+              name="env_id"
               label="运行环境"
               width={'md'}
               rules={[{ required: true, message: '运行环境必填' }]}
@@ -215,7 +354,7 @@ const Index = () => {
           <ProForm.Group>
             <ProFormTextArea
               width={'md'}
-              name="desc"
+              name="description"
               label="用例描述"
               required={true}
               rules={[{ required: true, message: '用例描述必填' }]}
@@ -223,8 +362,38 @@ const Index = () => {
           </ProForm.Group>
         </ProForm>
       </ProCard>
-      <ProCard>
-        <DragDropContext onDragEnd={onDragEnd}></DragDropContext>
+      <ProCard extra={<AddStepExtra currentStatus={currentMode} />}>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="droppable" direction="vertical">
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                style={{
+                  // Adjust this to control the look of the droppable area
+                  // background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
+                  padding: '8px',
+                  borderRadius: '8px',
+                }}
+              >
+                {uiStepsContent.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        {item.content}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </ProCard>
     </ProCard>
   );

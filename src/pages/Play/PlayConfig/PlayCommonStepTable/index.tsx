@@ -4,8 +4,8 @@ import { pageSteps } from '@/api/play/step';
 import { delCommonStep } from '@/api/ui';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
+import AddStep from '@/pages/Play/componets/AddStep';
 import PlayStepDetail from '@/pages/Play/PlayCase/PlayStepDetail';
-import AddCommonStep from '@/pages/Play/PlayConfig/PlayCommonStepTable/AddCommonStep';
 import { IUICaseSteps } from '@/pages/UIPlaywright/uiTypes';
 import { pageData } from '@/utils/somefunc';
 import { PlusOutlined } from '@ant-design/icons';
@@ -149,7 +149,7 @@ const Index = () => {
         open={addStepOpen}
         setOpen={setAddStepOpen}
       >
-        <AddCommonStep func={closeDrawer} />
+        <AddStep func={closeDrawer} />
       </MyDrawer>
       <MyProTable
         actionRef={actionRef}

@@ -5,19 +5,19 @@ export interface IUICase {
   id: number;
   uid: string;
   title: string;
-  desc?: string;
+  description?: string;
   level: string;
   status: string;
   steps: IUICaseSteps[];
-  projectId: number;
-  casePartId: number;
+  project_id: number;
+  case_part_id: number;
   create_time: string;
   update_time: string;
   creatorName: string;
   creator: number;
   updaterName?: string;
   updaterId?: number;
-  envId: string;
+  env_id: string;
 }
 
 export interface CasePartEnum {
@@ -87,7 +87,7 @@ export interface IUICaseSteps {
   id: number;
   uid: string;
   name: string;
-  desc: string;
+  description: string;
   method: string;
   has_api: number | null;
   has_sql: number | null;
@@ -106,6 +106,7 @@ export interface IUICaseSteps {
   update_time: string | null;
   is_group: boolean;
   group_Id: number;
+  case_id: number | string;
 }
 
 export interface IUIMethod {

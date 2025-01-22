@@ -15,9 +15,10 @@ import { FC, useEffect, useState } from 'react';
 
 interface ISelfProps {
   func: () => void;
+  caseId?: string;
 }
 
-const Index: FC<ISelfProps> = ({ func }) => {
+const Index: FC<ISelfProps> = ({ func, caseId }) => {
   const [form] = Form.useForm<IUICaseSteps>();
   const [methods, setMethods] = useState<IUIMethod[]>([]);
   const [methodEnum, setMethodEnum] = useState<any>();
@@ -37,8 +38,14 @@ const Index: FC<ISelfProps> = ({ func }) => {
 
   const Save = async () => {
     const values = form.getFieldsValue(true);
-    // 如果是公共step
-    values.is_common_step = true;
+    // 用例关联step
+    if (caseId) {
+      values.case_id = caseId;
+      values.is_common_step = false;
+    } else {
+      // 如果是公共step
+      values.is_common_step = true;
+    }
     addStep(values).then(async ({ code, msg }) => {
       if (code === 0) {
         message.success(msg);

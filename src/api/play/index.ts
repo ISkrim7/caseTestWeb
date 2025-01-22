@@ -14,6 +14,44 @@ export const pageUICase = async (params: ISearch, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+/**
+ * 添加用例
+ * @param data
+ * @param opt
+ */
+export const addUICaseBaseInfo = async (data: IUICase, opt?: IObjGet) => {
+  return request<IResponse<IUICase>>('/api/ui/case/add', {
+    method: 'POST',
+    data,
+    ...(opt || {}),
+  });
+};
+
+/**
+ * 修改
+ * @param data
+ * @param opt
+ */
+export const putUICaseBaseInfo = async (data: IUICase, opt?: IObjGet) => {
+  return request<IResponse<null>>('/api/ui/case/edit', {
+    method: 'POST',
+    data,
+    ...(opt || {}),
+  });
+};
+
+/**
+ * 删除
+ * @param data
+ * @param opt
+ */
+export const removeUICaseBaseInfo = async (data: IUICase, opt?: IObjGet) => {
+  return request<IResponse<null>>('/api/ui/case/remove', {
+    method: 'POST',
+    data,
+    ...(opt || {}),
+  });
+};
 
 /**
  * ui 用例详情
@@ -21,27 +59,27 @@ export const pageUICase = async (params: ISearch, options?: IObjGet) => {
  * @param options
  */
 export const uiCaseDetailById = async (
-  params: { id: string },
+  params: string | number,
   options?: IObjGet,
 ) => {
   return request<IResponse<IUICase>>('/api/ui/case/detail', {
     method: 'GET',
-    params,
+    params: { caseId: params },
     ...(options || {}),
   });
 };
 /**
  * 用例步骤详情
- * @param params
+ * @param ident
  * @param options
  */
 export const queryStepByCaseId = async (
-  params: { id: string },
+  ident: string,
   options?: IObjGet,
 ): Promise<IResponse<IUICaseSteps[]>> => {
   return request<IResponse<IUICaseSteps[]>>('/api/ui/case/step/query', {
     method: 'GET',
-    params,
+    params: { id: ident },
     ...(options || {}),
   });
 };
@@ -54,10 +92,23 @@ export const queryStepByCaseId = async (
 export const getUICaseStepInfo = async (
   params: { id: string },
   options?: IObjGet,
-): Promise<IResponse<IUICaseSteps[]>> => {
+) => {
   return request<IResponse<IUICaseSteps[]>>('/api/ui/case/step/detail', {
     method: 'GET',
     params,
+    ...(options || {}),
+  });
+};
+
+/**
+ * Case add UI STEP
+ * @param data
+ * @param options
+ */
+export const caseAddUIStep = async (data: IUICaseSteps, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/ui/case/add/step', {
+    method: 'POST',
+    data: data,
     ...(options || {}),
   });
 };

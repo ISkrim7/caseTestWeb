@@ -72,6 +72,14 @@ export interface IUIExtract {
   update_time: string | null;
 }
 
+export interface IUIVars {
+  id: number;
+  uid: string;
+  key: string;
+  value: string;
+  case_id: number;
+}
+
 export interface IUIStepGroup {
   id: number;
   uid: string;
@@ -160,7 +168,7 @@ export interface IUICaseStepAPI {
   update_time: string | null;
   stepId: number;
   name: string;
-  desc?: string;
+  description?: string;
   url: string;
   creator: number;
   creatorName: string;
@@ -170,4 +178,17 @@ export interface IUICaseStepAPI {
   body: IObjGet | null;
   extracts: any[] | [];
   asserts: any[] | [];
+}
+
+export interface IUICaseStepSQL {
+  id: number;
+  uid: string;
+  sql_str: string;
+  b_or_a: number;
+  description: string;
+  create_time: string;
+  update_time: string | null;
+  stepId: number;
+  creator: number;
+  creatorName: string;
 }

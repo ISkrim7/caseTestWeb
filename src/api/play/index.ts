@@ -101,12 +101,37 @@ export const getUICaseStepInfo = async (
 };
 
 /**
- * Case add UI STEP
+ * Case choice UI STEP
  * @param data
  * @param options
  */
-export const caseAddUIStep = async (data: IUICaseSteps, options?: IObjGet) => {
-  return request<IResponse<null>>('/api/ui/case/add/step', {
+export const choiceAddUIStep = async (
+  data: {
+    caseId: string;
+    choices: number[];
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/choice/common/steps', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * Case choice UI STEP
+ * @param data
+ * @param options
+ */
+export const choiceAddUIStepWithCopy = async (
+  data: {
+    caseId: string;
+    choices: number[];
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/copy/common/steps', {
     method: 'POST',
     data: data,
     ...(options || {}),

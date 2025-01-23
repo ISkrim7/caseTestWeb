@@ -27,12 +27,15 @@ const Index: FC<ISelfProps> = ({ stepId, func }) => {
   //1 详情  2 编辑
   const [mode, setMode] = useState<number>(1);
   const [currentStepId, setCurrentStepId] = useState<number>();
+
+  const [isCommonStep, setIsCommonStep] = useState(false);
   useEffect(() => {
     // 详情模式
     if (currentStepId) {
       getStepInfo(currentStepId).then(async ({ code, data }) => {
         if (code === 0) {
           form.setFieldsValue(data);
+          setIsCommonStep(data.is_common_step);
         }
       });
     } else {
@@ -82,14 +85,7 @@ const Index: FC<ISelfProps> = ({ stepId, func }) => {
       case 2:
         return (
           <>
-            {stepId && (
-              <Button
-                // onClick={refresh}
-                type={'primary'}
-              >
-                Cancel
-              </Button>
-            )}
+            {stepId && <Button type={'primary'}>Cancel</Button>}
             <Button
               onClick={UpdateStep}
               style={{ marginLeft: 10 }}
@@ -104,7 +100,7 @@ const Index: FC<ISelfProps> = ({ stepId, func }) => {
     }
   };
   return (
-    <ProCard extra={<DetailExtra currentMode={mode} />}>
+    <ProCard extra={!isCommonStep ? <DetailExtra currentMode={mode} /> : null}>
       <ProForm
         disabled={mode === 1}
         layout={'vertical'}

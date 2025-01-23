@@ -1,7 +1,16 @@
 import { copyStep, removeStep } from '@/api/play/step';
 import MyDrawer from '@/components/MyDrawer';
+import StepAPI from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI';
+import StepIF from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepIF';
+import StepSQL from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepSQL';
 import PlayStepDetail from '@/pages/Play/PlayCase/PlayStepDetail';
 import { IUICaseSteps } from '@/pages/UIPlaywright/uiTypes';
+import {
+  ApiFilled,
+  ApiOutlined,
+  ConsoleSqlOutlined,
+  QuestionOutlined,
+} from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Tabs, Tag } from 'antd';
 import { FC, useState } from 'react';
@@ -42,9 +51,21 @@ const Index: FC<ISelfProps> = ({
   };
   const CardExtra = (
     <>
+      {uiStepInfo?.has_api ? (
+        <Tag color={'green'}>
+          <ApiFilled />
+        </Tag>
+      ) : null}
+      {uiStepInfo?.has_sql ? (
+        <Tag color={'green'}>
+          <ConsoleSqlOutlined />
+        </Tag>
+      ) : null}
       {uiStepInfo?.is_common_step ? (
         <Tag color={'green-inverse'}>公</Tag>
-      ) : null}
+      ) : (
+        <Tag color={'blue-inverse'}>私</Tag>
+      )}
       <Button type={'link'} onClick={copyUIStep}>
         Copy To Bottom
       </Button>
@@ -97,13 +118,20 @@ const Index: FC<ISelfProps> = ({
           </>
         }
       >
-        <ProCard>
+        <ProCard headerBordered>
           <Tabs tabPosition={'left'} size={'small'}>
-            <Tabs.TabPane key={'1'} tab={'接口请求'}>
-              {/*<API {...props} />*/}
+            <Tabs.TabPane key={'1'} icon={<ApiOutlined />} tab={'接口请求'}>
+              <StepAPI stepId={uiStepInfo?.id} callBackFunc={callBackFunc} />
             </Tabs.TabPane>
-            <Tabs.TabPane key={'2'} tab={'执行SQL'}>
-              {/*<SQL {...props} />*/}
+            <Tabs.TabPane
+              key={'2'}
+              icon={<ConsoleSqlOutlined />}
+              tab={'执行SQL'}
+            >
+              <StepSQL stepId={uiStepInfo?.id} callBackFunc={callBackFunc} />
+            </Tabs.TabPane>
+            <Tabs.TabPane key={'3'} icon={<QuestionOutlined />} tab={'IF条件'}>
+              <StepIF stepId={uiStepInfo?.id} callBackFunc={callBackFunc} />
             </Tabs.TabPane>
           </Tabs>
         </ProCard>

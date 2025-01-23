@@ -10,6 +10,8 @@ import { reOrderStep } from '@/api/play/step';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
 import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard';
+import PlayCaseVars from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseVars';
+import PlayCommonChoiceTable from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCommonChoiceTable';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import {
   CasePartEnum,
@@ -28,7 +30,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, Form, message } from 'antd';
+import { Button, Divider, FloatButton, Form, message, Tabs } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { history } from 'umi';
@@ -45,7 +47,6 @@ const Index = () => {
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
     [],
   );
-  const [currentEnvId, setCurrentEnvId] = useState<number>();
   const [tryLoading, setTryLoading] = useState(false);
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
   const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
@@ -55,6 +56,7 @@ const Index = () => {
   const [uiStepsLength, setUIStepsLength] = useState<number>(0);
   const [stepIndex, setStepIndex] = useState<number>(0);
   const [openAddStepDrawer, setOpenAddStepDrawer] = useState(false);
+  const [openChoiceStepDrawer, setOpenChoiceStepDrawer] = useState(false);
   const [refresh, setRefresh] = useState<number>(0);
 
   /*
@@ -133,6 +135,7 @@ const Index = () => {
 
   const handelRefresh = () => {
     setOpenAddStepDrawer(false);
+    setOpenChoiceStepDrawer(false);
     setRefresh(refresh + 1);
   };
 
@@ -229,10 +232,13 @@ const Index = () => {
       case 1:
         return (
           <>
-            {/*<Button type={'primary'} onClick={() => setChoiceOpen(true)}>*/}
-            {/*  Choice API*/}
-            {/*</Button>*/}
-            {/*<Divider type={'vertical'} />*/}
+            <Button
+              type={'primary'}
+              onClick={() => setOpenChoiceStepDrawer(true)}
+            >
+              Choice Step
+            </Button>
+            <Divider type={'vertical'} />
             <Button type={'primary'} onClick={AddUIStep}>
               Add Step
             </Button>
@@ -267,12 +273,14 @@ const Index = () => {
         open={openAddStepDrawer}
         setOpen={setOpenAddStepDrawer}
       >
-        <AddStep
-          caseId={caseId}
-          func={() => {
-            handelRefresh();
-          }}
-        />
+        <AddStep caseId={caseId} func={handelRefresh} />
+      </MyDrawer>
+      <MyDrawer
+        name={'Choice Api'}
+        open={openChoiceStepDrawer}
+        setOpen={setOpenChoiceStepDrawer}
+      >
+        <PlayCommonChoiceTable caseId={caseId} callBackFunc={handelRefresh} />
       </MyDrawer>
       <ProCard extra={<CaseButtonExtra currentStatus={currentMode} />}>
         <ProForm
@@ -363,38 +371,50 @@ const Index = () => {
         </ProForm>
       </ProCard>
       <ProCard extra={<AddStepExtra currentStatus={currentMode} />}>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable" direction="vertical">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                style={{
-                  // Adjust this to control the look of the droppable area
-                  // background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
-                  padding: '8px',
-                  borderRadius: '8px',
-                }}
-              >
-                {uiStepsContent.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
+        <Tabs size={'large'} defaultActiveKey={'2'}>
+          <Tabs.TabPane tab={'Vars'} key={'1'}>
+            <PlayCaseVars currentCaseId={caseId!} />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab={'Steps'} key={'2'}>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="droppable" direction="vertical">
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    style={{
+                      // Adjust this to control the look of the droppable area
+                      // background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
+                      padding: '8px',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    {uiStepsContent.map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={index}
                       >
-                        {item.content}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            {item.content}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </Tabs.TabPane>
+        </Tabs>
       </ProCard>
+      <FloatButton.BackTop />
     </ProCard>
   );
 };

@@ -8,6 +8,7 @@ import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import { CasePartEnum, IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, message, Tag } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
@@ -63,20 +64,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       sort: sort,
     };
     const { code, data } = await pageInterApi(searchData);
-    if (code === 0) {
-      return {
-        data: data.items,
-        total: data.pageInfo.total,
-        success: true,
-        pageSize: data.pageInfo.page,
-        current: data.pageInfo.limit,
-      };
-    }
-    return {
-      data: [],
-      success: false,
-      total: 0,
-    };
+    return pageData(code, data);
   }, []);
 
   const columns: ProColumns<IInterfaceAPI>[] = [

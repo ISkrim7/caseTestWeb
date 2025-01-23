@@ -1,7 +1,7 @@
-import { IEnv, IObjGet } from '@/api';
+import { IObjGet } from '@/api';
 import { handelAPSRunCase } from '@/api/aps';
-import { queryEnvBy } from '@/api/base';
 import { pageUICase } from '@/api/play';
+import { queryUIEnvs } from '@/api/play/env';
 import { copyCase, delUICase } from '@/api/ui';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUICase } from '@/pages/UIPlaywright/uiTypes';
@@ -22,21 +22,16 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [envOptions, setEnvOptions] = useState<IObjGet>({});
   useEffect(() => {
-    if (currentProjectId) {
-      queryEnvBy({ project_id: currentProjectId } as IEnv).then(
-        ({ code, data }) => {
-          if (code === 0) {
-            const envs = data.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }));
-            const noEnv = { label: '自定义', value: -1 };
-            setEnvOptions([noEnv, ...envs]);
-          }
-        },
-      );
-    }
-  }, [currentProjectId]);
+    queryUIEnvs().then(async ({ code, data }) => {
+      if (code === 0) {
+        const envOptions = Object.create(null);
+        for (const item of data) {
+          envOptions[item.id] = item.name;
+        }
+        setEnvOptions(envOptions);
+      }
+    });
+  }, []);
   const fetchUICase = useCallback(
     async (params: any, sort: any) => {
       const searchData: any = {
@@ -65,40 +60,36 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
 
   const columns: ProColumns<IUICase>[] = [
     {
-      title: '用例ID',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'UID',
+      dataIndex: 'uid',
+      key: 'uid',
       fixed: 'left',
       copyable: true,
-      width: 100,
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
     },
     {
-      title: '名称',
+      title: 'name',
       dataIndex: 'title',
       sorter: true,
       fixed: 'left',
       key: 'title',
-      width: 250,
     },
     {
-      title: '运行环境',
-      dataIndex: 'envName',
+      title: 'env',
+      dataIndex: 'env_id',
       valueType: 'select',
-      key: 'envId',
-      width: 100,
+      key: 'env_id',
       valueEnum: { ...envOptions },
-      render: (text) => {
+      render: (text, record) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
     },
     {
-      title: '优先级',
+      title: 'level',
       dataIndex: 'level',
       valueType: 'select',
-      width: 50,
       valueEnum: CONFIG.API_LEVEL_ENUM,
       render: (_, record) => {
         return (
@@ -109,21 +100,19 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       },
     },
     {
-      title: '步骤数量',
+      title: 'step num',
       dataIndex: 'step_num',
       hideInSearch: true,
       key: 'title',
-      width: 50,
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
     },
     {
-      title: '状态',
+      title: 'status',
       dataIndex: 'status',
       valueType: 'select',
       valueEnum: CONFIG.CASE_STATUS_ENUM,
-      width: 100,
       render: (_, record) => {
         return (
           <Tag color={CONFIG.RENDER_CASE_STATUS[record.status].color}>
@@ -133,25 +122,22 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       },
     },
     {
-      title: '创建人',
+      title: 'creator',
       dataIndex: 'creatorName',
-      width: 100,
       render: (text) => <Tag>{text}</Tag>,
     },
     {
-      title: '创建时间',
+      title: 'create time',
       dataIndex: 'create_time',
       valueType: 'dateTime',
       sorter: true,
       search: false,
-      width: 120,
     },
     {
-      title: '操作',
+      title: 'opt',
       valueType: 'option',
       key: 'option',
       fixed: 'right',
-      width: 150,
       render: (_, record, __) => {
         return (
           <>

@@ -94,12 +94,6 @@ export default [
         icon: 'DatabaseOutlined',
       },
       {
-        path: '/ui/case/step',
-        name: '自动化用例',
-        component: '@/pages/Play/PlayCase/PlayStepDetail',
-        showInMenu: false,
-      },
-      {
         path: '/ui/caseTaskList',
         name: '自动化任务',
         component: '@/pages/UIPlaywright/UICaseTask',

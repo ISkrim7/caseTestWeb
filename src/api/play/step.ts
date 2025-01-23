@@ -1,5 +1,9 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IUICaseSteps } from '@/pages/UIPlaywright/uiTypes';
+import {
+  IUICaseStepAPI,
+  IUICaseSteps,
+  IUICaseStepSQL,
+} from '@/pages/UIPlaywright/uiTypes';
 import { request } from '@@/plugin-request';
 
 export const pageSteps = async (params: ISearch, options?: IObjGet) => {
@@ -102,6 +106,128 @@ export const copyStep = async (
   return request<IResponse<IUICaseSteps>>('/api/ui/case/step/copy', {
     method: 'POST',
     data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置APi 添加
+ * @param data
+ * @param options
+ */
+export const addUIStepApi = async (data: IUICaseStepAPI, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/ui/case/step/api/add', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置APi 修改
+ * @param data
+ * @param options
+ */
+export const editUIStepApi = async (
+  data: IUICaseStepAPI,
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/api/update', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置APi 删除
+ * @param data
+ * @param options
+ */
+export const removeUIStepApi = async (
+  data: { uid: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/api/remove', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置APi 查询
+ * @param data
+ * @param options
+ */
+export const detailUIStepApi = async (
+  data: { stepId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IUICaseStepAPI>>('/api/ui/case/step/api/detail', {
+    method: 'GET',
+    params: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置SQL 添加
+ * @param data
+ * @param options
+ */
+export const addUIStepSql = async (data: IUICaseStepSQL, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/ui/case/step/sql/add', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置SQL 添加
+ * @param data
+ * @param options
+ */
+export const editUIStepSql = async (
+  data: IUICaseStepSQL,
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/sql/update', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置SQL 删除
+ * @param data
+ * @param options
+ */
+export const removeUIStepSql = async (
+  data: { uid: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/sql/remove', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 前后置SQL 详情
+ * @param params
+ * @param options
+ */
+export const detailUIStepSql = async (
+  params: { stepId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IUICaseStepSQL>>('/api/ui/case/step/sql/detail', {
+    method: 'GET',
+    params,
     ...(options || {}),
   });
 };

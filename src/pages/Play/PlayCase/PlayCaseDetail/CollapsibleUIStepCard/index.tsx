@@ -17,6 +17,7 @@ import { FC, useState } from 'react';
 
 interface ISelfProps {
   caseId: string;
+  currentProjectId?: number;
   uiStepInfo?: IUICaseSteps;
   collapsible?: boolean;
   callBackFunc: () => void;
@@ -27,9 +28,9 @@ const Index: FC<ISelfProps> = ({
   uiStepInfo,
   callBackFunc,
   collapsible,
+  currentProjectId,
 }) => {
   const [openStepDrawer, setOpenStepDrawer] = useState(false);
-
   const copyUIStep = async () => {
     const { code } = await copyStep({
       caseId: caseId,
@@ -56,6 +57,7 @@ const Index: FC<ISelfProps> = ({
           <ApiFilled />
         </Tag>
       ) : null}
+      {uiStepInfo?.has_condition ? <Tag color={'green'}>IF</Tag> : null}
       {uiStepInfo?.has_sql ? (
         <Tag color={'green'}>
           <ConsoleSqlOutlined />
@@ -102,6 +104,7 @@ const Index: FC<ISelfProps> = ({
           stepId={uiStepInfo?.id!}
           func={() => {
             setOpenStepDrawer(false);
+            callBackFunc();
           }}
         />
       </MyDrawer>
@@ -121,7 +124,11 @@ const Index: FC<ISelfProps> = ({
         <ProCard headerBordered>
           <Tabs tabPosition={'left'} size={'small'}>
             <Tabs.TabPane key={'1'} icon={<ApiOutlined />} tab={'接口请求'}>
-              <StepAPI stepId={uiStepInfo?.id} callBackFunc={callBackFunc} />
+              <StepAPI
+                stepId={uiStepInfo?.id}
+                currentProjectId={currentProjectId}
+                callBackFunc={callBackFunc}
+              />
             </Tabs.TabPane>
             <Tabs.TabPane
               key={'2'}
@@ -131,7 +138,7 @@ const Index: FC<ISelfProps> = ({
               <StepSQL stepId={uiStepInfo?.id} callBackFunc={callBackFunc} />
             </Tabs.TabPane>
             <Tabs.TabPane key={'3'} icon={<QuestionOutlined />} tab={'IF条件'}>
-              <StepIF stepId={uiStepInfo?.id} callBackFunc={callBackFunc} />
+              <StepIF uiStepInfo={uiStepInfo} callBackFunc={callBackFunc} />
             </Tabs.TabPane>
           </Tabs>
         </ProCard>

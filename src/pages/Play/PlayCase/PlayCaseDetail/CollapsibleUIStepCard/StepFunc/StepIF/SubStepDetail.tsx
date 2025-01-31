@@ -1,7 +1,11 @@
 import { queryMethods } from '@/api/play/method';
-import { addStep, addSubStep } from '@/api/play/step';
+import { updateSubStep } from '@/api/play/step';
 import { methodToEnum } from '@/pages/Play/componets/methodToEnum';
-import { IUICaseSteps, IUIMethod } from '@/pages/UIPlaywright/uiTypes';
+import {
+  IUICaseSteps,
+  IUICaseSubStep,
+  IUIMethod,
+} from '@/pages/UIPlaywright/uiTypes';
 import {
   ProCard,
   ProForm,
@@ -10,24 +14,24 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { Button, Form, message } from 'antd';
+import { Button, Form } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 interface ISelfProps {
+  subStep?: IUICaseSubStep;
   func: () => void;
-  caseId?: string;
-  stepId?: number;
 }
 
-const Index: FC<ISelfProps> = ({ func, caseId, stepId }) => {
+const SubStepDetail: FC<ISelfProps> = ({ subStep, func }) => {
   const [form] = Form.useForm<IUICaseSteps>();
   const [methods, setMethods] = useState<IUIMethod[]>([]);
   const [methodEnum, setMethodEnum] = useState<any>();
   const [currentMethod, setCurrentMethod] = useState<IUIMethod>();
   const [readOnly, setReadOnly] = useState(false);
+  //1 详情  2 编辑
+  const [mode, setMode] = useState<number>(1);
 
   useEffect(() => {
-    form.resetFields();
     queryMethods().then(async ({ code, data }) => {
       if (code === 0) {
         setMethods(data);
@@ -36,47 +40,58 @@ const Index: FC<ISelfProps> = ({ func, caseId, stepId }) => {
       }
     });
   }, []);
-
-  const Save = async () => {
-    const values = form.getFieldsValue(true);
-    console.log(values);
-    if (stepId) {
-      values.stepId = stepId;
-      addSubStep(values).then(async ({ code, msg }) => {
-        if (code === 0) {
-          message.success(msg);
-          form.resetFields();
-          func();
-        }
-      });
-      return;
-    }
-    // 用例关联step
-    if (caseId) {
-      values.case_id = caseId;
-      values.is_common_step = false;
+  useEffect(() => {
+    // 详情模式
+    if (subStep) {
+      setMode(1);
+      form.setFieldsValue(subStep);
     } else {
-      // 如果是公共step
-      values.is_common_step = true;
+      setMode(2);
     }
-    addStep(values).then(async ({ code, msg }) => {
-      if (code === 0) {
-        message.success(msg);
-        form.resetFields();
-        func();
-      }
-    });
+    return;
+  }, [subStep]);
+
+  const UpdateStep = async () => {
+    const values = form.getFieldsValue(true);
+    const { code } = await updateSubStep(values);
+    if (code === 0) {
+      func();
+    }
+  };
+  const DetailExtra: FC<{ currentMode: number }> = ({ currentMode }) => {
+    switch (currentMode) {
+      case 1:
+        return (
+          <Button type={'primary'} onClick={() => setMode(2)}>
+            Edit
+          </Button>
+        );
+      case 2:
+        return (
+          <>
+            {subStep && (
+              <Button type={'primary'} onClick={() => setMode(1)}>
+                Cancel
+              </Button>
+            )}
+            <Button
+              onClick={UpdateStep}
+              style={{ marginLeft: 10 }}
+              type={'primary'}
+            >
+              Save
+            </Button>
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
-    <ProCard
-      extra={
-        <Button onClick={Save} style={{ marginLeft: 10 }} type={'primary'}>
-          Save
-        </Button>
-      }
-    >
+    <ProCard extra={<DetailExtra currentMode={mode} />}>
       <ProForm
+        disabled={mode === 1}
         layout={'vertical'}
         form={form}
         submitter={false}
@@ -186,7 +201,7 @@ const Index: FC<ISelfProps> = ({ func, caseId, stepId }) => {
         <ProForm.Group>
           <ProFormTextArea
             width={'lg'}
-            name="iframe_name"
+            name="iframeName"
             label="IFrame"
             tooltip={'如果是iframe上操作、请输入iframe 元素'}
           />
@@ -207,4 +222,5 @@ const Index: FC<ISelfProps> = ({ func, caseId, stepId }) => {
     </ProCard>
   );
 };
-export default Index;
+
+export default SubStepDetail;

@@ -69,7 +69,7 @@ const Index: FC<ISelfProps> = ({ currentCaseId }) => {
         <a
           key="editable"
           onClick={() => {
-            action?.startEditable?.(record.uid);
+            action?.startEditable?.(record.id);
           }}
         >
           编辑

@@ -1,8 +1,10 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
 import {
   IUICaseStepAPI,
+  IUICaseStepCondition,
   IUICaseSteps,
   IUICaseStepSQL,
+  IUICaseSubStep,
 } from '@/pages/UIPlaywright/uiTypes';
 import { request } from '@@/plugin-request';
 
@@ -228,6 +230,95 @@ export const detailUIStepSql = async (
   return request<IResponse<IUICaseStepSQL>>('/api/ui/case/step/sql/detail', {
     method: 'GET',
     params,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件判断
+ * @param data
+ * @param options
+ */
+export const addStepCondition = async (
+  data: IUICaseStepCondition,
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/condition/add', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件详情
+ */
+export const detailStepCondition = async (
+  stepId: number,
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/condition/add', {
+    method: 'GET',
+    params: { stepId: stepId },
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件添加子步骤
+ * @param data
+ * @param options
+ */
+export const addSubStep = async (data: IUICaseSubStep, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/ui/case/step/sub/add', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件添加子步骤
+ * @param data
+ * @param options
+ */
+export const updateSubStep = async (
+  data: IUICaseSubStep,
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/sub/update', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件查询步骤
+ */
+
+export const querySubSteps = async (
+  params: { stepId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IUICaseSubStep[]>>('/api/ui/case/step/sub/list', {
+    method: 'GET',
+    params,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件步骤排序
+ */
+
+export const orderSubSteps = async (
+  data: { stepId: number; subIds: number[] },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IUICaseSubStep[]>>('/api/ui/case/step/sub/reorder', {
+    method: 'post',
+    data,
     ...(options || {}),
   });
 };

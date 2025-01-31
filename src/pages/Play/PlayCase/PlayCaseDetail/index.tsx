@@ -1,6 +1,7 @@
 import { queryProject } from '@/api/base';
 import {
   addUICaseBaseInfo,
+  executeCaseByBack,
   putUICaseBaseInfo,
   queryStepByCaseId,
   uiCaseDetailById,
@@ -10,6 +11,7 @@ import { reOrderStep } from '@/api/play/step';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
 import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard';
+import PlayCaseRunningDetail from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseRunningDetail';
 import PlayCaseVars from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseVars';
 import PlayCommonChoiceTable from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCommonChoiceTable';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
@@ -21,7 +23,7 @@ import {
 } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { useParams } from '@@/exports';
-import { PlayCircleOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -30,7 +32,16 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, FloatButton, Form, message, Tabs } from 'antd';
+import {
+  Button,
+  Divider,
+  Dropdown,
+  FloatButton,
+  Form,
+  MenuProps,
+  message,
+  Tabs,
+} from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { history } from 'umi';
@@ -58,6 +69,7 @@ const Index = () => {
   const [openAddStepDrawer, setOpenAddStepDrawer] = useState(false);
   const [openChoiceStepDrawer, setOpenChoiceStepDrawer] = useState(false);
   const [refresh, setRefresh] = useState<number>(0);
+  const [runOpen, setRunOpen] = useState(false);
 
   /*
   查询project && env
@@ -98,8 +110,10 @@ const Index = () => {
   useEffect(() => {
     if (caseId) {
       uiCaseDetailById(caseId).then(async ({ code, data }) => {
-        form.setFieldsValue(data);
-        setCurrentProjectId(data.project_id);
+        if (code === 0) {
+          form.setFieldsValue(data);
+          setCurrentProjectId(data.project_id);
+        }
       });
       queryStepByCaseId(caseId).then(async ({ code, data }) => {
         if (code === 0 && data) {
@@ -123,6 +137,7 @@ const Index = () => {
         content: (
           <CollapsibleUIStepCard
             caseId={caseId!}
+            currentProjectId={currentProjectId}
             callBackFunc={handelRefresh}
             collapsible={true} // 默认折叠
             uiStepInfo={item}
@@ -134,6 +149,7 @@ const Index = () => {
   }, [refresh, uiSteps]);
 
   const handelRefresh = () => {
+    console.log('===handelRefresh');
     setOpenAddStepDrawer(false);
     setOpenChoiceStepDrawer(false);
     setRefresh(refresh + 1);
@@ -150,14 +166,7 @@ const Index = () => {
     setUIStepsContent(reorderedUIContents);
     if (caseId) {
       const reorderData = reorderedUIContents.map((item) => item.step_id);
-      console.log('====', reorderData);
-      reOrderStep({ caseId: caseId, stepIds: reorderData }).then(
-        async ({ code }) => {
-          if (code === 0) {
-            console.log('reorder success');
-          }
-        },
-      );
+      reOrderStep({ caseId: caseId, stepIds: reorderData }).then();
     }
   };
 
@@ -187,7 +196,32 @@ const Index = () => {
       });
     }
   };
-
+  const onMenuClick: MenuProps['onClick'] = (e) => {
+    const { key } = e;
+    if (caseId) {
+      if (key === '1') {
+        executeCaseByBack({ caseId: caseId }).then(async ({ code }) => {
+          if (code === 0) {
+            message.success('后台运行中。。');
+          }
+        });
+      } else {
+        setRunOpen(true);
+      }
+    }
+  };
+  const items = [
+    {
+      key: '1',
+      label: '后台运行',
+      icon: <ArrowRightOutlined />,
+    },
+    {
+      key: '2',
+      label: '实时日志运行',
+      icon: <ArrowRightOutlined />,
+    },
+  ];
   const CaseButtonExtra: FC<{ currentStatus: number }> = ({
     currentStatus,
   }) => {
@@ -195,7 +229,12 @@ const Index = () => {
       case 1:
         return (
           <div style={{ display: 'flex' }}>
-            <Button icon={<PlayCircleOutlined />}>Try</Button>
+            <Dropdown.Button
+              menu={{ items, onClick: onMenuClick }}
+              icon={<PlayCircleOutlined />}
+            >
+              Run By
+            </Dropdown.Button>
             <Divider type={'vertical'} />
             <Button
               type={'primary'}
@@ -253,17 +292,6 @@ const Index = () => {
     setOpenAddStepDrawer(true);
     const currStepIndex = stepIndex + 1;
     setStepIndex(currStepIndex);
-    // setUIStepsContent((prev) => [
-    //   ...prev,
-    //   {
-    //     id: currStepIndex.toString(),
-    //     content: (
-    //       <CollapsibleUIStepCard
-    //         collapsible={false}
-    //         callBackFunc={handelRefresh} />
-    //     ),
-    //   },
-    // ]);
   };
   return (
     <ProCard split={'horizontal'}>
@@ -281,6 +309,9 @@ const Index = () => {
         setOpen={setOpenChoiceStepDrawer}
       >
         <PlayCommonChoiceTable caseId={caseId} callBackFunc={handelRefresh} />
+      </MyDrawer>
+      <MyDrawer name={'UI Case Logs'} open={runOpen} setOpen={setRunOpen}>
+        <PlayCaseRunningDetail caseId={caseId} openStatus={runOpen} />
       </MyDrawer>
       <ProCard extra={<CaseButtonExtra currentStatus={currentMode} />}>
         <ProForm

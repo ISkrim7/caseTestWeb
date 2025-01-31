@@ -99,6 +99,12 @@ export interface IUICaseSteps {
   method: string;
   has_api: number | null;
   has_sql: number | null;
+  has_condition: number | null;
+  condition: {
+    key: string;
+    value: string;
+    operator: number;
+  };
   locator: string;
   value?: string;
   api_url?: string | null;
@@ -191,4 +197,27 @@ export interface IUICaseStepSQL {
   stepId: number;
   creator: number;
   creatorName: string;
+}
+
+export interface IUICaseStepCondition {
+  stepId: number;
+  key: string;
+  value: string;
+  operator: number;
+}
+
+export interface IUICaseSubStep {
+  id: number;
+  uid: string;
+  name: string;
+  description: string;
+  method: string;
+  locator: string;
+  value?: string;
+  iframe_name?: string | null;
+  new_page: boolean;
+  is_ignore: boolean;
+  creator: number | undefined;
+  creatorName: string | undefined;
+  stepId: number | string;
 }

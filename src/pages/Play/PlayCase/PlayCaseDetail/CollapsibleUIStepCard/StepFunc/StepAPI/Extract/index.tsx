@@ -1,7 +1,12 @@
 import { IExtracts } from '@/pages/Httpx/types';
 import { IUICaseStepAPI } from '@/pages/UIPlaywright/uiTypes';
-import { EditableProTable, ProForm } from '@ant-design/pro-components';
-import { FormInstance } from 'antd';
+import { CONFIG } from '@/utils/config';
+import {
+  EditableProTable,
+  ProColumns,
+  ProForm,
+} from '@ant-design/pro-components';
+import { FormInstance, Tag } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 interface SelfProps {
   apiForm: FormInstance<any>;
@@ -9,7 +14,6 @@ interface SelfProps {
 }
 const Index: FC<SelfProps> = ({ apiForm, apiData }) => {
   const [extractsDataSource, setExtractsDataSource] = useState<IExtracts[]>([]);
-  // const { extractColumns } = ExtractColumns();
   const [extractsEditableKeys, setExtractsEditableRowKeys] = useState<
     React.Key[]
   >(extractsDataSource.map((item) => item.id));
@@ -21,6 +25,50 @@ const Index: FC<SelfProps> = ({ apiForm, apiData }) => {
       );
     }
   }, [apiData]);
+  const extractColumns: ProColumns<IExtracts>[] = [
+    {
+      title: '变量名',
+      dataIndex: 'key',
+      width: '30%',
+    },
+    {
+      title: '提取目标',
+      dataIndex: 'target',
+      valueType: 'select',
+      width: '20%',
+      valueEnum: CONFIG.EXTRACT_TARGET_ENUM,
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
+    },
+    {
+      title: '提取语法',
+      dataIndex: 'value',
+      valueType: 'textarea',
+      width: '50%',
+      fieldProps: {
+        rows: 1,
+      },
+    },
+    {
+      title: 'Opt',
+      valueType: 'option',
+      width: '10%',
+      render: (_: any, record: any) => {
+        return (
+          <>
+            <a
+              onClick={() => {
+                setExtractsEditableRowKeys([record.id]);
+              }}
+            >
+              编辑
+            </a>
+          </>
+        );
+      },
+    },
+  ];
 
   return (
     <ProForm form={apiForm} submitter={false}>
@@ -29,7 +77,7 @@ const Index: FC<SelfProps> = ({ apiForm, apiData }) => {
           rowKey={'id'}
           dataSource={extractsDataSource}
           toolBarRender={false}
-          columns={[]}
+          columns={extractColumns}
           recordCreatorProps={{
             newRecordType: 'dataSource',
             record: () => ({

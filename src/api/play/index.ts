@@ -137,3 +137,39 @@ export const choiceAddUIStepWithCopy = async (
     ...(options || {}),
   });
 };
+
+/**
+ * Case choice UI STEP
+ * @param data
+ * @param options
+ */
+export const executeCaseByIO = async (
+  data: {
+    caseId: string;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/execute/io', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * Case choice UI STEP
+ * @param data
+ * @param options
+ */
+export const executeCaseByBack = async (
+  data: {
+    caseId: string;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/execute/back', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};

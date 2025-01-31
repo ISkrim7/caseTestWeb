@@ -6,6 +6,7 @@ import { copyCase, delUICase } from '@/api/ui';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import { history, useModel } from '@@/exports';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Popconfirm, Tag } from 'antd';
@@ -34,26 +35,12 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
   }, []);
   const fetchUICase = useCallback(
     async (params: any, sort: any) => {
-      const searchData: any = {
+      const { code, data } = await pageUICase({
         casePartId: currentPartId,
         ...params,
         sort: sort,
-      };
-      const { code, data } = await pageUICase(searchData);
-      if (code === 0) {
-        return {
-          data: data.items,
-          total: data.pageInfo.total,
-          success: true,
-          pageSize: data.pageInfo.page,
-          current: data.pageInfo.limit,
-        };
-      }
-      return {
-        data: [],
-        success: false,
-        total: 0,
-      };
+      });
+      return pageData(code, data);
     },
     [currentPartId],
   );

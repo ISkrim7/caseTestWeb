@@ -1,3 +1,5 @@
+import { IEnv } from '@/api';
+import { queryEnvBy } from '@/api/base';
 import {
   addUIStepApi,
   detailUIStepApi,
@@ -24,15 +26,22 @@ import { FC, useEffect, useState } from 'react';
 interface ISelfProps {
   stepId?: number;
   callBackFunc: () => void;
+  currentProjectId?: number;
 }
 
-const StepApi: FC<ISelfProps> = ({ stepId, callBackFunc }) => {
+const StepApi: FC<ISelfProps> = ({
+  stepId,
+  currentProjectId,
+  callBackFunc,
+}) => {
   const [apiForm] = Form.useForm<IUICaseStepAPI>();
   const { API_REQUEST_METHOD } = CONFIG;
   const [apiData, setApiData] = useState<IUICaseStepAPI>();
   const [disable, setDisable] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
+    [],
+  );
   useEffect(() => {
     if (stepId) {
       detailUIStepApi({ stepId: stepId }).then(({ code, data }) => {
@@ -43,6 +52,24 @@ const StepApi: FC<ISelfProps> = ({ stepId, callBackFunc }) => {
       });
     }
   }, [stepId]);
+
+  useEffect(() => {
+    if (currentProjectId) {
+      queryEnvBy({ project_id: currentProjectId } as IEnv).then(
+        ({ code, data }) => {
+          if (code === 0) {
+            const envs = data.map((item) => ({
+              label: item.name,
+              value: item.id,
+            }));
+            console.log('-----', envs);
+            const noEnv = { label: '自定义', value: -1 };
+            setEnvs([noEnv, ...envs]);
+          }
+        },
+      );
+    }
+  }, [currentProjectId]);
   useEffect(() => {
     if (apiData) {
       setDisable(true);
@@ -166,6 +193,15 @@ const StepApi: FC<ISelfProps> = ({ stepId, callBackFunc }) => {
                   rules={[{ required: true, message: '步骤名称不能为空' }]}
                 />
                 <ProFormText
+                  addonBefore={
+                    <ProFormSelect
+                      noStyle
+                      name={'env_id'}
+                      options={envs}
+                      required={true}
+                      placeholder={'环境选择'}
+                    />
+                  }
                   label={'URL'}
                   name={'url'}
                   width={'md'}

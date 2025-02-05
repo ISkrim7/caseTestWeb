@@ -118,7 +118,6 @@ export const CONFIG: IObjGet = {
     },
   },
   UI_STATUS_ENUM: {
-    WAIT: { text: '等待运行', tag: <Tag color={'green'}>WAIT</Tag> },
     RUNNING: { text: '运行中', tag: <Tag color={'orange'}>RUNNING</Tag> },
     DONE: { text: '测试完成', tag: <Tag color={'blue'}>DONE</Tag> },
   },

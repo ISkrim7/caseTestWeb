@@ -30,17 +30,6 @@ const GetUICaseStepApiInfo = '/api/ui/case/stepAPIInfo';
 const GetUICaseStepSQLInfo = '/api/ui/case/stepSQLInfo';
 const ClearUIResult = '/api/ui/case/clear_result';
 
-export const clearUICaseResult = async (
-  data: { caseId: number },
-  options?: IObjGet,
-) => {
-  return request(ClearUIResult, {
-    method: 'GET',
-    params: data,
-    ...(options || {}),
-  });
-};
-
 export const deleteUICaseStepApi = async (
   data: { uid: string },
   options?: IObjGet,

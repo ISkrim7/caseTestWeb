@@ -111,11 +111,14 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
           }}
         />
       </MyDrawer>
-      <ProCard>
+      <ProCard
+        headerBordered={true}
+        title={'IF'}
+        subTitle={<span>若条件符合、子步骤将在该父步骤执行完成后依次执行</span>}
+      >
         <ProForm form={form} submitter={false}>
           <ProForm.Group>
             <ProFormText
-              width={'md'}
               addonBefore={<Tag color={'green'}>IF</Tag>}
               name={'key'}
               placeholder={'{{变量名}}'}
@@ -123,7 +126,6 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
               required={true}
             />
             <ProFormSelect
-              width={'sm'}
               noStyle
               initialValue={1}
               name={'operator'}
@@ -136,7 +138,6 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
             />
             <ProFormText
               name={'value'}
-              width={'md'}
               rules={[{ required: true, message: '对比不能为空 !' }]}
               required={true}
               placeholder={'{{变量名}}'}

@@ -14,6 +14,7 @@ import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/Collapsi
 import PlayCaseRunningDetail from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseRunningDetail';
 import PlayCaseVars from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseVars';
 import PlayCommonChoiceTable from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCommonChoiceTable';
+import PlayDebugResult from '@/pages/Play/PlayResult/PlayDebugResult';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import {
   CasePartEnum,
@@ -130,6 +131,7 @@ const Index = () => {
 
   useEffect(() => {
     if (uiSteps) {
+      console.log('=====+', currentProjectId);
       setUIStepsLength(uiSteps.length);
       const init_data = uiSteps.map((item, index) => ({
         id: index.toString(),
@@ -146,7 +148,7 @@ const Index = () => {
       }));
       setUIStepsContent(init_data);
     }
-  }, [refresh, uiSteps]);
+  }, [refresh, uiSteps, currentProjectId]);
 
   const handelRefresh = () => {
     console.log('===handelRefresh');
@@ -445,6 +447,8 @@ const Index = () => {
           </Tabs.TabPane>
         </Tabs>
       </ProCard>
+
+      {caseId ? <PlayDebugResult caseId={parseInt(caseId)} /> : null}
       <FloatButton.BackTop />
     </ProCard>
   );

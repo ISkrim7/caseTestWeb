@@ -1,4 +1,3 @@
-import { UIMultipleDetailReport } from '@/pages/Report/uiReport';
 import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
 import { ProCard, ProDescriptions } from '@ant-design/pro-components';
 import { Badge, Image } from 'antd';
@@ -7,7 +6,7 @@ import { FC } from 'react';
 const ProDescriptionsItem = ProDescriptions.Item;
 
 interface ISelfProps {
-  resultDetail?: IUIResult | UIMultipleDetailReport;
+  resultDetail?: IUIResult;
 }
 
 const PlayCaseResultInfo: FC<ISelfProps> = ({ resultDetail }) => {
@@ -18,19 +17,19 @@ const PlayCaseResultInfo: FC<ISelfProps> = ({ resultDetail }) => {
           {resultDetail?.ui_case_name}
         </ProDescriptionsItem>
         <ProDescriptionsItem span={3} valueType="textarea" label="测试描述">
-          {resultDetail?.ui_case_desc}
+          {resultDetail?.ui_case_description}
         </ProDescriptionsItem>
         <ProDescriptionsItem span={1} valueType="text" label="开始时间">
-          {resultDetail?.startTime}
+          {resultDetail?.start_time}
         </ProDescriptionsItem>
         <ProDescriptionsItem span={1} valueType="text" label="用时">
-          {resultDetail?.useTime}
+          {resultDetail?.use_time}
         </ProDescriptionsItem>
         <ProDescriptionsItem span={1} valueType="text" label="结束时间">
-          {resultDetail?.endTime}
+          {resultDetail?.end_time}
         </ProDescriptionsItem>
         <ProDescriptionsItem span={1} valueType="text" ellipsis label="执行人">
-          {resultDetail?.starterName}
+          {resultDetail?.starter_name}
         </ProDescriptionsItem>
         <ProDescriptionsItem span={1} valueType="text" label="用例步长">
           {resultDetail?.ui_case_step_num}

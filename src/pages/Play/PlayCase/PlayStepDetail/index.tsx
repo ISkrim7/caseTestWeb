@@ -36,6 +36,9 @@ const Index: FC<ISelfProps> = ({ stepId, func }) => {
         if (code === 0) {
           form.setFieldsValue(data);
           setIsCommonStep(data.is_common_step);
+          setCurrentMethod(
+            methods.find((item: any) => item.value === data.method),
+          );
         }
       });
     } else {
@@ -212,7 +215,7 @@ const Index: FC<ISelfProps> = ({ stepId, func }) => {
         <ProForm.Group>
           <ProFormTextArea
             width={'lg'}
-            name="iframeName"
+            name="iframe_name"
             label="IFrame"
             tooltip={'如果是iframe上操作、请输入iframe 元素'}
           />

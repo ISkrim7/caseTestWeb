@@ -1,5 +1,4 @@
-import { IEnv } from '@/api';
-import { queryEnvBy } from '@/api/base';
+import { queryEnv } from '@/api/base';
 import {
   addUIStepApi,
   detailUIStepApi,
@@ -54,22 +53,18 @@ const StepApi: FC<ISelfProps> = ({
   }, [stepId]);
 
   useEffect(() => {
-    if (currentProjectId) {
-      queryEnvBy({ project_id: currentProjectId } as IEnv).then(
-        ({ code, data }) => {
-          if (code === 0) {
-            const envs = data.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }));
-            console.log('-----', envs);
-            const noEnv = { label: '自定义', value: -1 };
-            setEnvs([noEnv, ...envs]);
-          }
-        },
-      );
-    }
-  }, [currentProjectId]);
+    queryEnv().then(({ code, data }) => {
+      if (code === 0) {
+        const envs = data.map((item) => ({
+          label: item.name,
+          value: item.id,
+        }));
+        console.log('-----', envs);
+        const noEnv = { label: '自定义', value: -1 };
+        setEnvs([noEnv, ...envs]);
+      }
+    });
+  }, []);
   useEffect(() => {
     if (apiData) {
       setDisable(true);
@@ -188,7 +183,6 @@ const StepApi: FC<ISelfProps> = ({
                 <ProFormText
                   label={'步骤名称'}
                   name={'name'}
-                  width={'md'}
                   required={true}
                   rules={[{ required: true, message: '步骤名称不能为空' }]}
                 />
@@ -198,6 +192,7 @@ const StepApi: FC<ISelfProps> = ({
                       noStyle
                       name={'env_id'}
                       options={envs}
+                      showSearch={true}
                       required={true}
                       placeholder={'环境选择'}
                     />

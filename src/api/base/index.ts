@@ -114,7 +114,7 @@ export const pageEnv = async (params?: ISearch, options?: IObjGet) => {
  * @param options
  */
 export const queryEnv = async (options?: IObjGet) => {
-  return request<IResponse<any>>('/api/project/env/page', {
+  return request<IResponse<IEnv[]>>('/api/project/env/query', {
     method: 'GET',
     ...(options || {}),
   });

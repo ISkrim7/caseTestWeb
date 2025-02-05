@@ -150,21 +150,21 @@ export interface IUIResult {
   update_time: string | null;
   ui_case_Id: number;
   ui_case_name: string;
-  ui_case_desc: string;
+  ui_case_description: string;
   ui_case_step_num: number;
   ui_case_err_step?: number | null;
   ui_case_err_step_title?: string | null;
   ui_case_err_step_msg?: string | null;
   ui_case_err_step_pic_path?: string | null;
-  startTime: string;
-  useTime: string;
-  endTime: string;
-  startId: number;
-  starterName: string;
+  start_time: string;
+  use_time: string;
+  end_time: string;
+  starter_id: number;
+  starter_name: string;
   status: string;
   result: string;
-  runningLogs: string;
-  assertsInfo: any[];
+  running_logs: string;
+  asserts_info: any[];
 }
 
 export interface IUICaseStepAPI {

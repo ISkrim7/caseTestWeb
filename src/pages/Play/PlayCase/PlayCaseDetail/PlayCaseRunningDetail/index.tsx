@@ -1,7 +1,9 @@
 import { executeCaseByIO } from '@/api/play';
+import { getDebugResultDetail } from '@/api/play/result';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import { IAsserts } from '@/pages/Httpx/types';
 import PlayCaseResultInfo from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseRunningDetail/PlayCaseResultInfo';
+import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
 import { useModel } from '@@/exports';
 import { ProTable } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
@@ -12,15 +14,18 @@ import io, { Socket } from 'socket.io-client';
 interface SelfProps {
   openStatus?: boolean;
   caseId?: string;
+  resultId?: string;
 }
 
 const Index: FC<SelfProps> = (props) => {
-  const { openStatus, caseId } = props;
+  const { openStatus, caseId, resultId } = props;
   const { initialState } = useModel('@@initialState');
   const [logMessage, setLogMessage] = useState<string[]>([]);
   const [caseResultId, setCaseResultId] = useState<string>();
   const [defaultActiveKey, setDefaultActiveKey] = useState('2');
   const [asserts, setAsserts] = useState<any[]>([]);
+  const [currentResultDetail, setCurrentResultDetail] = useState<IUIResult>();
+  const [tabDisabled, setTabDisabled] = useState(true);
 
   useEffect(() => {
     let socket: Socket | undefined;
@@ -74,6 +79,28 @@ const Index: FC<SelfProps> = (props) => {
     };
   }, [openStatus, caseId]);
 
+  useEffect(() => {
+    if (resultId) {
+      setCaseResultId(resultId);
+    }
+  }, [resultId]);
+
+  useEffect(() => {
+    if (caseResultId) {
+      setTabDisabled(false);
+      getDebugResultDetail(caseResultId).then(async ({ code, data }) => {
+        if (code === 0) {
+          setCurrentResultDetail(data);
+          if (data.running_logs) {
+            setLogMessage(data.running_logs.split(''));
+          }
+          if (data.asserts_info) {
+            setAsserts(data.asserts_info);
+          }
+        }
+      });
+    }
+  }, [caseResultId]);
   const typeContent = (T: any) => {
     if (typeof T === 'object') {
       return (
@@ -186,17 +213,17 @@ const Index: FC<SelfProps> = (props) => {
   return (
     <div>
       <Tabs tabPosition="left" size="large" defaultActiveKey={defaultActiveKey}>
-        <Tabs.TabPane key="1" tab={'基本信息'}>
-          <PlayCaseResultInfo />
+        <Tabs.TabPane key="1" tab={'基本信息'} disabled={tabDisabled}>
+          <PlayCaseResultInfo resultDetail={currentResultDetail} />
         </Tabs.TabPane>
-        <Tabs.TabPane key="2">
+        <Tabs.TabPane key="2" tab={'日志信息'}>
           <AceCodeEditor
-            value={logMessage.join('\n')}
+            value={logMessage.join('')}
             height="100vh"
             readonly={true}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane key="3" tab={'断言信息'}>
+        <Tabs.TabPane key="3" tab={'断言信息'} disabled={tabDisabled}>
           <ProTable
             search={false}
             toolBarRender={false}

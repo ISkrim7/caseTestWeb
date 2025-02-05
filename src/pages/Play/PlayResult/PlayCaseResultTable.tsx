@@ -1,7 +1,7 @@
 import { clearUICaseResult, pageDebugResult } from '@/api/play/result';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
-import PlayCaseRunningDetail from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseRunningDetail';
+import PlayCaseResultDetail from '@/pages/Play/PlayResult/PlayCaseResultDetail';
 import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
@@ -14,7 +14,7 @@ interface PlayDebugResultProps {
   caseId?: number;
 }
 
-const PlayDebugResult: FC<PlayDebugResultProps> = ({ caseId }) => {
+const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
   const [currentUid, setCurrentUid] = useState<string>();
   const [open, setOpen] = useState(false);
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
@@ -138,7 +138,7 @@ const PlayDebugResult: FC<PlayDebugResultProps> = ({ caseId }) => {
       }
     >
       <MyDrawer name={'测试详情'} open={open} width={'80%'} setOpen={setOpen}>
-        <PlayCaseRunningDetail resultId={currentUid} />
+        <PlayCaseResultDetail resultId={currentUid} />
       </MyDrawer>
       <MyProTable
         rowKey={'uid'}
@@ -151,4 +151,4 @@ const PlayDebugResult: FC<PlayDebugResultProps> = ({ caseId }) => {
   );
 };
 
-export default PlayDebugResult;
+export default PlayCaseResultTable;

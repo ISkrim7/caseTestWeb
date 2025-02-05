@@ -117,9 +117,9 @@ export const fetchUIMethodOptions = async (
       if (a.label > b.label) return 1;
     });
     const methodEnum = data.reduce((acc, item) => {
-      const { value, label, desc } = item;
+      const { value, label, description } = item;
       const text = (
-        <Tooltip title={desc}>
+        <Tooltip title={description}>
           <span>{label}</span>
         </Tooltip>
       );
@@ -146,7 +146,7 @@ export const fetchUIMethodOptionsToFrom = async (
       if (!item.value.startsWith('expect.')) {
         groupedData['常规'].push({
           label: (
-            <Tooltip title={item.desc}>
+            <Tooltip title={item.description}>
               <span>{item.label}</span>
             </Tooltip>
           ),
@@ -157,7 +157,7 @@ export const fetchUIMethodOptionsToFrom = async (
       } else {
         groupedData['断言'].push({
           label: (
-            <Tooltip title={item.desc}>
+            <Tooltip title={item.description}>
               <span>{item.label}</span>
             </Tooltip>
           ),

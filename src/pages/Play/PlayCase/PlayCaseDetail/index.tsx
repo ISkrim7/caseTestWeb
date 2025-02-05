@@ -11,10 +11,10 @@ import { reOrderStep } from '@/api/play/step';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
 import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard';
-import PlayCaseRunningDetail from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseRunningDetail';
 import PlayCaseVars from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseVars';
 import PlayCommonChoiceTable from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCommonChoiceTable';
-import PlayDebugResult from '@/pages/Play/PlayResult/PlayDebugResult';
+import PlayCaseResultDetail from '@/pages/Play/PlayResult/PlayCaseResultDetail';
+import PlayCaseResultTable from '@/pages/Play/PlayResult/PlayCaseResultTable';
 import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 import {
   CasePartEnum,
@@ -313,7 +313,7 @@ const Index = () => {
         <PlayCommonChoiceTable caseId={caseId} callBackFunc={handelRefresh} />
       </MyDrawer>
       <MyDrawer name={'UI Case Logs'} open={runOpen} setOpen={setRunOpen}>
-        <PlayCaseRunningDetail caseId={caseId} openStatus={runOpen} />
+        <PlayCaseResultDetail caseId={caseId} openStatus={runOpen} />
       </MyDrawer>
       <ProCard extra={<CaseButtonExtra currentStatus={currentMode} />}>
         <ProForm
@@ -448,7 +448,7 @@ const Index = () => {
         </Tabs>
       </ProCard>
 
-      {caseId ? <PlayDebugResult caseId={parseInt(caseId)} /> : null}
+      {caseId ? <PlayCaseResultTable caseId={parseInt(caseId)} /> : null}
       <FloatButton.BackTop />
     </ProCard>
   );

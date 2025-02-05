@@ -94,9 +94,9 @@ export default [
         icon: 'DatabaseOutlined',
       },
       {
-        path: '/ui/caseTaskList',
+        path: '/ui/task',
         name: '自动化任务',
-        component: '@/pages/UIPlaywright/UICaseTask',
+        component: '@/pages/Play/PlayTask',
         icon: 'ImportOutlined',
       },
 
@@ -124,24 +124,23 @@ export default [
         component: '@/pages/Play/PlayCase/PlayCaseDetail',
       },
       {
-        path: '/ui/addUITask/projectId=:projectId',
+        path: '/ui/addTask',
         name: '添加任务',
         hideInMenu: true,
-        component: '@/pages/UIPlaywright/UICaseTask/AddUICaseTask',
+        component: '@/pages/Play/PlayTask/PlayTaskDetail',
       },
-
+      {
+        path: '/ui/task/detail/taskId=:taskId',
+        name: '任务详情',
+        hideInMenu: true,
+        component: '@/pages/Play/PlayTask/PlayTaskDetail',
+      },
       {
         path: '/ui/case/stepGroup/detail/groupId=:groupId',
         name: '用例组详情',
         hideInMenu: true,
         component:
           '@/pages/UIPlaywright/Config/CommonStepsGroup/StepGroupDetail',
-      },
-      {
-        path: '/ui/task/detail/taskId=:taskId',
-        name: '任务详情',
-        hideInMenu: true,
-        component: '@/pages/UIPlaywright/UICaseTask/AddUICaseTask',
       },
     ],
   },

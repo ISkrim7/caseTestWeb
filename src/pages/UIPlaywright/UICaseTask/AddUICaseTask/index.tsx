@@ -69,7 +69,6 @@ const Index = () => {
   const [projectEnum, setProjectEnum] = useState<ProjectEnum[]>([]);
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
   const [partEnumMap, setPartEnumMap] = useState<CasePartEnum[]>([]);
-  const [cornDate, setCronDate] = useState<string | null>(null);
   const [envOptions, setEnvOptions] = useState<IObjGet>({});
   const [tryButtonStatus, setTryButtonStatus] = useState(false);
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发

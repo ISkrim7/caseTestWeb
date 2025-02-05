@@ -2,7 +2,7 @@ import { executeCaseByIO } from '@/api/play';
 import { getDebugResultDetail } from '@/api/play/result';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import { IAsserts } from '@/pages/Httpx/types';
-import PlayCaseResultInfo from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseRunningDetail/PlayCaseResultInfo';
+import PlayCaseResultInfo from '@/pages/Play/PlayResult/PlayCaseResultDetail/PlayCaseResultInfo';
 import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
 import { useModel } from '@@/exports';
 import { ProTable } from '@ant-design/pro-components';

@@ -173,3 +173,19 @@ export const executeCaseByBack = async (
     ...(options || {}),
   });
 };
+
+/**
+ * 复制
+ * @param body
+ * @param options
+ */
+export const copyUICase = async (
+  body: { caseId: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IUICase>>('/api/ui/case/copy', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+};

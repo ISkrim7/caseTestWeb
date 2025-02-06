@@ -7,7 +7,7 @@ import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
 import { useModel } from '@@/exports';
 import { ProTable } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { Tabs, Tag } from 'antd';
+import { Tabs, Tag, Tooltip } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
@@ -115,6 +115,13 @@ const Index: FC<SelfProps> = (props) => {
     } else if (typeof T === 'boolean') {
       return <Tag color={T ? 'green' : 'red'}>{T.toString()}</Tag>;
     } else {
+      if (T.length > 20) {
+        return (
+          <Tooltip title={T}>
+            <span>{T.substring(0, 20) + '...'}</span>
+          </Tooltip>
+        );
+      }
       return <span>{T}</span>;
     }
   };

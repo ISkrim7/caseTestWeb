@@ -23,7 +23,7 @@ const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
     async (params: any) => {
       const { code, data } = await pageDebugResult({
         ...params,
-        caseId: caseId,
+        ui_case_Id: caseId,
       });
       return pageData(code, data);
     },

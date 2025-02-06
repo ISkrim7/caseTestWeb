@@ -43,7 +43,7 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
     if (currentTaskId) {
       const { code, msg } = await reorderAssociationUICasesByTaskId({
         taskId: currentTaskId,
-        caseIds: reorderCaseIds,
+        caseIdList: reorderCaseIds,
       });
       if (code === 0) {
         // 请求成功之后刷新列表
@@ -131,6 +131,7 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
 
   const handelRefresh = () => {
     setChoiceUICaseOpen(false);
+    actionRef.current?.reload();
     setRefresh(refresh + 1);
   };
   return (

@@ -122,7 +122,7 @@ const Index: FC<SelfProps> = (props) => {
     {
       title: '创建时间',
       dataIndex: 'create_time',
-      valueType: 'dateTime',
+      valueType: 'date',
       sorter: true,
       search: false,
     },

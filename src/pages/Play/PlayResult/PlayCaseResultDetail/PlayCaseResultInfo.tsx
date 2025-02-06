@@ -52,7 +52,12 @@ const PlayCaseResultInfo: FC<ISelfProps> = ({ resultDetail }) => {
             <ProDescriptionsItem
               span={3}
               valueType="code"
-              style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+              style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+                maxWidth: '300px',
+                overflowX: 'auto',
+              }}
               ellipsis={false}
               label="错误步骤原因"
             >

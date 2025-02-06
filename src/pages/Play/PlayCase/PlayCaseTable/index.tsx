@@ -1,8 +1,8 @@
 import { IObjGet } from '@/api';
 import { handelAPSRunCase } from '@/api/aps';
-import { pageUICase } from '@/api/play';
+import { copyUICase, pageUICase } from '@/api/play';
 import { queryUIEnvs } from '@/api/play/env';
-import { copyCase, delUICase } from '@/api/ui';
+import { delUICase } from '@/api/ui';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
@@ -116,7 +116,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
     {
       title: 'create time',
       dataIndex: 'create_time',
-      valueType: 'dateTime',
+      valueType: 'date',
       sorter: true,
       search: false,
     },
@@ -155,9 +155,11 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
             <Divider type={'vertical'} />
             <a
               onClick={async () => {
-                const { code, data, msg } = await copyCase({ uid: record.uid });
+                const { code, data, msg } = await copyUICase({
+                  caseId: record.uid,
+                });
                 if (code === 0) {
-                  history.push(`/ui/case/detail/caseId=${data}`);
+                  history.push(`/ui/case/detail/caseId=${data.id}`);
                   message.success(msg);
                 }
               }}

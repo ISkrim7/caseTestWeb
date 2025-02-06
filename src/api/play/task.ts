@@ -94,10 +94,10 @@ export const updateUITask = async (body: IUITask, options?: IObjGet) => {
  * @param options
  */
 export const reorderAssociationUICasesByTaskId = async (
-  data: { taskId: string | number; caseIds: number[] },
+  data: { taskId: string | number; caseIdList: number[] },
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/ui/task/reorder/cases', {
+  return request<IResponse<null>>('/api/ui/task/association/reorder', {
     method: 'POST',
     data: data,
     ...(options || {}),

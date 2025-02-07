@@ -1,5 +1,5 @@
 import { addVars, pageVars, removeVars, updateVars } from '@/api/play/vars';
-import { IUIVars } from '@/pages/UIPlaywright/uiTypes';
+import { IUIVars } from '@/pages/Play/componets/uiTypes';
 import { pageData } from '@/utils/somefunc';
 import {
   ActionType,

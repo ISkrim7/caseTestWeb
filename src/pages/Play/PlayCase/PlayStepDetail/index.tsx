@@ -1,7 +1,7 @@
 import { queryMethods } from '@/api/play/method';
 import { getStepInfo, updateStep } from '@/api/play/step';
 import { methodToEnum } from '@/pages/Play/componets/methodToEnum';
-import { IUICaseSteps, IUIMethod } from '@/pages/UIPlaywright/uiTypes';
+import { IUICaseSteps, IUIMethod } from '@/pages/Play/componets/uiTypes';
 import {
   ProCard,
   ProForm,

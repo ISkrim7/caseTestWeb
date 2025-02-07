@@ -1,4 +1,4 @@
-import JsonBody from '@/pages/UIPlaywright/UICase/EditCase/StepFunc/API/Body/JsonBody';
+import JsonBody from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Body/JsonBody';
 import { FormInstance, Radio } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import { FC, useEffect, useState } from 'react';

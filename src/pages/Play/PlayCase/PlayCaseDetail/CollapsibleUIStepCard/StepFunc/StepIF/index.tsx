@@ -2,24 +2,26 @@ import {
   addStepCondition,
   orderSubSteps,
   querySubSteps,
+  removeStepCondition,
+  updateStepCondition,
 } from '@/api/play/step';
+import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
-import CollapsibleSubStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepIF/CollapsibleSubStepCard';
 import {
   IUICaseStepCondition,
   IUICaseSteps,
   IUICaseSubStep,
-} from '@/pages/UIPlaywright/uiTypes';
+} from '@/pages/Play/componets/uiTypes';
+import CollapsibleSubStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepIF/CollapsibleSubStepCard';
 import {
   ProCard,
   ProForm,
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Button, Form, Tag } from 'antd';
+import { Button, Form, Popconfirm, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 interface ISelfProps {
   uiStepInfo?: IUICaseSteps;
@@ -32,19 +34,29 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
   const [openAddSubStepDrawer, setOpenAddSubStepDrawer] = useState(false);
   const [subSteps, setSubSteps] = useState<IUICaseSubStep[]>([]);
   const [edit, setEdit] = useState(0);
-
+  // 1详情 2新增 3 修改
+  const [mode, setMode] = useState(1);
   const refrash = () => {
     setEdit(edit + 1);
   };
+
   useEffect(() => {
     if (uiStepInfo) {
-      form.setFieldsValue(uiStepInfo.condition);
-      querySubSteps({ stepId: uiStepInfo.id }).then(async ({ code, data }) => {
-        if (code === 0) {
-          setSubSteps(data);
-        }
-      });
-    } else {
+      //详情模式
+      if (uiStepInfo.condition) {
+        setMode(1);
+        form.setFieldsValue(uiStepInfo.condition);
+        querySubSteps({ stepId: uiStepInfo.id }).then(
+          async ({ code, data }) => {
+            if (code === 0) {
+              setSubSteps(data);
+            }
+          },
+        );
+      } else {
+        //空
+        setMode(2);
+      }
     }
   }, [uiStepInfo, edit]);
 
@@ -60,26 +72,12 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
     }
   }, [subSteps]);
 
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return; // 拖拽没有放置，退出
-    // 重新排序 items 和 formData
-    const reorderedUIContents = reorder(
-      ifStepsContent,
-      result.source.index,
-      result.destination.index,
-    );
+  const onDragEnd = (reorderedUIContents: any[]) => {
     setIfStepsContent(reorderedUIContents);
     if (uiStepInfo) {
       const reorderData = reorderedUIContents.map((item) => item.sub_id);
-      console.log('====', reorderData);
       orderSubSteps({ stepId: uiStepInfo.id, subIds: reorderData }).then();
     }
-  };
-  const reorder = (list: any[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
   };
 
   const saveConditionThenOpenAddSubStep = async () => {
@@ -90,8 +88,80 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
         stepId: uiStepInfo.id,
       });
       if (code === 0) {
-        setOpenAddSubStepDrawer(true);
+        setMode(1);
       }
+    }
+  };
+
+  const updateCondition = async () => {
+    const values = await form.validateFields();
+    if (values && uiStepInfo?.id) {
+      const { code } = await updateStepCondition({
+        ...values,
+        stepId: uiStepInfo?.id,
+      });
+      if (code === 0) {
+        setMode(1);
+        callBackFunc();
+        refrash();
+      }
+    }
+  };
+  const ButtonExtra: FC<{ currentMode: number }> = ({ currentMode }) => {
+    switch (currentMode) {
+      case 1:
+        return (
+          <>
+            <Button
+              type={'primary'}
+              style={{ marginLeft: 10 }}
+              onClick={() => setMode(3)}
+            >
+              Edit
+            </Button>
+            <Popconfirm
+              title={'确认删除？子步骤将全部删除'}
+              okText={'确认'}
+              cancelText={'点错了'}
+              onConfirm={async () => {
+                if (uiStepInfo?.id) {
+                  const { code } = await removeStepCondition({
+                    stepId: uiStepInfo?.id,
+                  });
+                  if (code === 0) {
+                    form.resetFields();
+                    setMode(2);
+                    refrash();
+                    callBackFunc();
+                  }
+                }
+              }}
+            >
+              <Button type={'primary'} style={{ marginLeft: 20 }}>
+                Remove{' '}
+              </Button>
+            </Popconfirm>
+          </>
+        );
+      case 2:
+        return (
+          <Button onClick={saveConditionThenOpenAddSubStep} type={'primary'}>
+            Save
+          </Button>
+        );
+      case 3:
+        return (
+          <>
+            <Button onClick={updateCondition} type={'primary'}>
+              Save
+            </Button>
+            <Button style={{ marginLeft: 5 }} onClick={() => setMode(1)}>
+              Cancel
+            </Button>
+          </>
+        );
+      default:
+        return null;
     }
   };
   return (
@@ -107,7 +177,7 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
           func={() => {
             setOpenAddSubStepDrawer(false);
             refrash();
-            // callBackFunc();
+            callBackFunc();
           }}
         />
       </MyDrawer>
@@ -115,8 +185,9 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
         headerBordered={true}
         title={'IF'}
         subTitle={<span>若条件符合、子步骤将在该父步骤执行完成后依次执行</span>}
+        extra={<ButtonExtra currentMode={mode} />}
       >
-        <ProForm form={form} submitter={false}>
+        <ProForm form={form} disabled={mode === 1} submitter={false}>
           <ProForm.Group>
             <ProFormText
               addonBefore={<Tag color={'green'}>IF</Tag>}
@@ -148,40 +219,25 @@ const Index: FC<ISelfProps> = ({ uiStepInfo, callBackFunc }) => {
       <ProCard
         title={<Tag color={'green'}> Execute ({subSteps.length})</Tag>}
         extra={
-          <Button type={'primary'} onClick={saveConditionThenOpenAddSubStep}>
-            add sub step
-          </Button>
-        }
-      >
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable" direction="vertical">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                style={{
-                  padding: '8px',
-                  borderRadius: '8px',
+          <>
+            {mode === 1 && (
+              <Button
+                type={'primary'}
+                onClick={() => {
+                  setOpenAddSubStepDrawer(true);
                 }}
               >
-                {ifStepsContent.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        {item.content}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
+                add sub step
+              </Button>
             )}
-          </Droppable>
-        </DragDropContext>
+          </>
+        }
+      >
+        <MyDraggable
+          dragEndFunc={onDragEnd}
+          items={ifStepsContent}
+          setItems={setIfStepsContent}
+        />
       </ProCard>
     </ProCard>
   );

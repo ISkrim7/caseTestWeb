@@ -8,20 +8,21 @@ import {
 } from '@/api/play';
 import { queryUIEnvs } from '@/api/play/env';
 import { reOrderStep } from '@/api/play/step';
+import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
-import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard';
-import PlayCaseVars from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseVars';
-import PlayCommonChoiceTable from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCommonChoiceTable';
-import PlayCaseResultDetail from '@/pages/Play/PlayResult/PlayCaseResultDetail';
-import PlayCaseResultTable from '@/pages/Play/PlayResult/PlayCaseResultTable';
-import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
+import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
 import {
   CasePartEnum,
   IUICase,
   IUICaseSteps,
   IUIEnv,
-} from '@/pages/UIPlaywright/uiTypes';
+} from '@/pages/Play/componets/uiTypes';
+import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard';
+import PlayCaseVars from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseVars';
+import PlayCommonChoiceTable from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCommonChoiceTable';
+import PlayCaseResultDetail from '@/pages/Play/PlayResult/PlayCaseResultDetail';
+import PlayCaseResultTable from '@/pages/Play/PlayResult/PlayCaseResultTable';
 import { CONFIG } from '@/utils/config';
 import { useParams } from '@@/exports';
 import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
@@ -44,7 +45,6 @@ import {
   Tabs,
 } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { history } from 'umi';
 
 const Index = () => {
@@ -129,9 +129,9 @@ const Index = () => {
     }
   }, [refresh, caseId]);
 
+  //set case steps content
   useEffect(() => {
     if (uiSteps) {
-      console.log('=====+', currentProjectId);
       setUIStepsLength(uiSteps.length);
       const init_data = uiSteps.map((item, index) => ({
         id: index.toString(),
@@ -149,27 +149,16 @@ const Index = () => {
       setUIStepsContent(init_data);
     }
   }, [refresh, uiSteps, currentProjectId]);
-
-  const handelRefresh = () => {
-    console.log('===handelRefresh');
-    setOpenAddStepDrawer(false);
-    setOpenChoiceStepDrawer(false);
-    setRefresh(refresh + 1);
-  };
-
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return; // 拖拽没有放置，退出
-    // 重新排序 items 和 formData
-    const reorderedUIContents = reorder(
-      uiStepsContent,
-      result.source.index,
-      result.destination.index,
-    );
-    setUIStepsContent(reorderedUIContents);
+  const onDragEnd = async (reorderedUIContents: any[]) => {
     if (caseId) {
       const reorderData = reorderedUIContents.map((item) => item.step_id);
       reOrderStep({ caseId: caseId, stepIds: reorderData }).then();
     }
+  };
+  const handelRefresh = () => {
+    setOpenAddStepDrawer(false);
+    setOpenChoiceStepDrawer(false);
+    setRefresh(refresh + 1);
   };
 
   const reorder = (list: any[], startIndex: number, endIndex: number) => {
@@ -409,41 +398,11 @@ const Index = () => {
             <PlayCaseVars currentCaseId={caseId!} />
           </Tabs.TabPane>
           <Tabs.TabPane tab={'Steps'} key={'2'}>
-            <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="droppable" direction="vertical">
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    style={{
-                      // Adjust this to control the look of the droppable area
-                      // background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
-                      padding: '8px',
-                      borderRadius: '8px',
-                    }}
-                  >
-                    {uiStepsContent.map((item, index) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            {item.content}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            <MyDraggable
+              items={uiStepsContent}
+              setItems={setUIStepsContent}
+              dragEndFunc={onDragEnd}
+            />
           </Tabs.TabPane>
         </Tabs>
       </ProCard>

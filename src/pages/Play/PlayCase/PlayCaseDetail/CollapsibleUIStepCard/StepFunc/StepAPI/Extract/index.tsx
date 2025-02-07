@@ -1,5 +1,5 @@
 import { IExtracts } from '@/pages/Httpx/types';
-import { IUICaseStepAPI } from '@/pages/UIPlaywright/uiTypes';
+import { IUICaseStepAPI } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import {
   EditableProTable,

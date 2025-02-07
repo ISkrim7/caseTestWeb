@@ -5,7 +5,7 @@ import {
   updateMethod,
 } from '@/api/play/method';
 import MyProTable from '@/components/Table/MyProTable';
-import { IUIMethod } from '@/pages/UIPlaywright/uiTypes';
+import { IUIMethod } from '@/pages/Play/componets/uiTypes';
 import { pageData } from '@/utils/somefunc';
 import { PlusOutlined } from '@ant-design/icons';
 import {

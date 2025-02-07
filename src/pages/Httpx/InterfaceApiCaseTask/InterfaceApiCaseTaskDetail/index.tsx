@@ -9,8 +9,8 @@ import AssociationApis from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCase
 import AssociationCases from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationCases';
 import InterfaceApiTaskResultTable from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultTable';
 import { IInterfaceAPITask } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
-import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
+import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
+import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { useParams } from '@@/exports';
 import { MailOutlined, WechatWorkOutlined } from '@ant-design/icons';

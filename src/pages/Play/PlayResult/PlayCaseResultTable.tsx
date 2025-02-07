@@ -1,8 +1,8 @@
 import { clearUICaseResult, pageDebugResult } from '@/api/play/result';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
+import { IUIResult } from '@/pages/Play/componets/uiTypes';
 import PlayCaseResultDetail from '@/pages/Play/PlayResult/PlayCaseResultDetail';
-import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';

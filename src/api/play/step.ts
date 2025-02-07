@@ -5,7 +5,7 @@ import {
   IUICaseSteps,
   IUICaseStepSQL,
   IUICaseSubStep,
-} from '@/pages/UIPlaywright/uiTypes';
+} from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request';
 
 export const pageSteps = async (params: ISearch, options?: IObjGet) => {
@@ -244,6 +244,38 @@ export const addStepCondition = async (
   options?: IObjGet,
 ) => {
   return request<IResponse<null>>('/api/ui/case/step/condition/add', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件判断更新
+ * @param data
+ * @param options
+ */
+export const updateStepCondition = async (
+  data: IUICaseStepCondition,
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/condition/update', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 条件判断删除
+ * @param data
+ * @param options
+ */
+export const removeStepCondition = async (
+  data: { stepId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/step/condition/remove', {
     method: 'POST',
     data,
     ...(options || {}),

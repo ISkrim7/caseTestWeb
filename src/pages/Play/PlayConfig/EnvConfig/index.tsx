@@ -1,6 +1,6 @@
 import { addEnv, editEnv, pageEnv, removeEnv } from '@/api/play/env';
 import MyProTable from '@/components/Table/MyProTable';
-import { IUIEnv } from '@/pages/UIPlaywright/uiTypes';
+import { IUIEnv } from '@/pages/Play/componets/uiTypes';
 import { pageData } from '@/utils/somefunc';
 import { PlusOutlined } from '@ant-design/icons';
 import {

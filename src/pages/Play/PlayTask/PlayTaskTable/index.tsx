@@ -5,7 +5,7 @@ import {
   setUITaskSwitch,
 } from '@/api/play/task';
 import MyProTable from '@/components/Table/MyProTable';
-import { IUITask } from '@/pages/UIPlaywright/uiTypes';
+import { IUITask } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';

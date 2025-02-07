@@ -10,7 +10,7 @@ import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { Modal } from 'antd';
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-import { IUICaseStepAPI } from '@/pages/UIPlaywright/uiTypes';
+import { IUICaseStepAPI } from '@/pages/Play/componets/uiTypes';
 import { FormInstance } from 'antd';
 
 interface SelfProps {

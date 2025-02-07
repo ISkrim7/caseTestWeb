@@ -1,5 +1,5 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IUICase, IUICaseSteps } from '@/pages/UIPlaywright/uiTypes';
+import { IUICase, IUICaseSteps } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request/request';
 
 /**

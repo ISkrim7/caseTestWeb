@@ -1,7 +1,6 @@
 import EnvConfig from '@/pages/Play/PlayConfig/EnvConfig';
 import PlayCommonStepTable from '@/pages/Play/PlayConfig/PlayCommonStepTable';
 import UIMethodConfig from '@/pages/Play/PlayConfig/UIMethodConfig';
-import CommonStepsGroup from '@/pages/UIPlaywright/Config/CommonStepsGroup';
 import { ProCard } from '@ant-design/pro-components';
 import { Tabs } from 'antd';
 import { useState } from 'react';
@@ -28,9 +27,9 @@ const Index = () => {
         <Tabs.TabPane tab={'公共步骤'} key={'2'}>
           <PlayCommonStepTable />
         </Tabs.TabPane>
-        <Tabs.TabPane tab={'公共步骤组'} key={'3'}>
-          <CommonStepsGroup />
-        </Tabs.TabPane>
+        {/*<Tabs.TabPane tab={'公共步骤组'} key={'3'}>*/}
+        {/*  <CommonStepsGroup />*/}
+        {/*</Tabs.TabPane>*/}
       </Tabs>
     </ProCard>
   );

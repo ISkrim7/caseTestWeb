@@ -1,4 +1,4 @@
-import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
+import { IUIResult } from '@/pages/Play/componets/uiTypes';
 import { ProCard, ProDescriptions } from '@ant-design/pro-components';
 import { Badge, Image } from 'antd';
 import { FC } from 'react';

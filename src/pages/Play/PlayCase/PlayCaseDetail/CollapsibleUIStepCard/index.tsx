@@ -1,10 +1,10 @@
 import { copyStep, removeStep } from '@/api/play/step';
 import MyDrawer from '@/components/MyDrawer';
+import { IUICaseSteps } from '@/pages/Play/componets/uiTypes';
 import StepAPI from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI';
 import StepIF from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepIF';
 import StepSQL from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepSQL';
 import PlayStepDetail from '@/pages/Play/PlayCase/PlayStepDetail';
-import { IUICaseSteps } from '@/pages/UIPlaywright/uiTypes';
 import {
   ApiFilled,
   ApiOutlined,
@@ -92,6 +92,7 @@ const Index: FC<ISelfProps> = ({
       </Popconfirm>
     </>
   );
+
   return (
     <>
       <MyDrawer

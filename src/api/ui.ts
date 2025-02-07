@@ -1,5 +1,4 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { UIMultipleReport } from '@/pages/Report/uiReport';
 import {
   IUICase,
   IUICaseSteps,
@@ -7,7 +6,8 @@ import {
   IUIMethod,
   IUIResult,
   IUITask,
-} from '@/pages/UIPlaywright/uiTypes';
+} from '@/pages/Play/componets/uiTypes';
+import { UIMultipleReport } from '@/pages/Report/uiReport';
 import { request } from '@@/plugin-request/request';
 
 const MethodOptions: string = '/api/ui_case/method/option';
@@ -211,13 +211,6 @@ export const queryMultipleReportDetailByBaseId = async (
   });
 };
 
-export const pageUITaskReport = async (params: ISearch, options?: IObjGet) => {
-  return request<IResponse<IPage<any>>>('/aps/ui/report/page/taskResult', {
-    method: 'POST',
-    data: params,
-    ...(options || {}),
-  });
-};
 export const pageUICaseByTaskId = async (params: ISearch, opt?: IObjGet) => {
   return request<IResponse<IPage<IUICase>>>(pageUICaseByTaskID, {
     method: 'GET',

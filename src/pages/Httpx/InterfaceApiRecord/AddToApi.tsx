@@ -1,7 +1,7 @@
 import { queryProject } from '@/api/base';
 import { saveRecord2Api } from '@/api/inter';
-import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
-import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
+import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
+import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import {
   ProCard,

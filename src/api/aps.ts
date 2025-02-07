@@ -1,5 +1,5 @@
 import { ICasePart, IObjGet, IPage, IResponse } from '@/api';
-import { IUICaseStepAPI, IUIExtract } from '@/pages/UIPlaywright/uiTypes';
+import { IUICaseStepAPI, IUIExtract } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request/request';
 
 const QueryProjects = '/api/project/query';

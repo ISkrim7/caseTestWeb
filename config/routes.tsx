@@ -101,15 +101,21 @@ export default [
       },
 
       {
-        path: '/ui/statistics',
-        name: '自动化统计',
-        component: '@/pages/UIPlaywright/UIStatisitc',
-      },
-      {
         path: '/ui/config',
         name: '自动化配置',
         component: '@/pages/Play/PlayConfig',
         icon: 'ToolOutlined',
+      },
+      {
+        path: '/ui/report',
+        name: '自动化报告',
+        component: '@/pages/Play/PlayResult/PlayTaskResultTable.tsx',
+      },
+      {
+        path: '/ui/report/detail/resultId=:resultId',
+        name: '自动化详情',
+        hideInMenu: true,
+        component: '@/pages/Play/PlayResult/PlayTaskResult.tsx',
       },
       {
         path: '/ui/addCase',
@@ -135,13 +141,13 @@ export default [
         hideInMenu: true,
         component: '@/pages/Play/PlayTask/PlayTaskDetail',
       },
-      {
-        path: '/ui/case/stepGroup/detail/groupId=:groupId',
-        name: '用例组详情',
-        hideInMenu: true,
-        component:
-          '@/pages/UIPlaywright/Config/CommonStepsGroup/StepGroupDetail',
-      },
+      // {
+      //   path: '/ui/case/stepGroup/detail/groupId=:groupId',
+      //   name: '用例组详情',
+      //   hideInMenu: true,
+      //   component:
+      //     '@/pages/UIPlaywright/Config/CommonStepsGroup/StepGroupDetail',
+      // },
     ],
   },
   {

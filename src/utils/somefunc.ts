@@ -21,7 +21,7 @@ export const pageData = async (code: number, data: any, setter?: any) => {
 export const queryData = async (code: number, data: any, setter?: any) => {
   if (code === 0) {
     if (setter) {
-      setter(data.items);
+      setter(data);
     }
     return {
       data: data,

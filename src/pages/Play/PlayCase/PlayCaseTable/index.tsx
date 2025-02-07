@@ -4,7 +4,7 @@ import { copyUICase, pageUICase } from '@/api/play';
 import { queryUIEnvs } from '@/api/play/env';
 import { delUICase } from '@/api/ui';
 import MyProTable from '@/components/Table/MyProTable';
-import { IUICase } from '@/pages/UIPlaywright/uiTypes';
+import { IUICase } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history, useModel } from '@@/exports';

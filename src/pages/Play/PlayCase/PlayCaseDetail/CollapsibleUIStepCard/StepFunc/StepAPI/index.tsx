@@ -5,11 +5,11 @@ import {
   editUIStepApi,
   removeUIStepApi,
 } from '@/api/play/step';
+import { IUICaseStepAPI } from '@/pages/Play/componets/uiTypes';
 import Assert from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Assert';
 import Body from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Body';
 import Extract from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Extract';
 import Param from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Param';
-import { IUICaseStepAPI } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import {
   ProCard,

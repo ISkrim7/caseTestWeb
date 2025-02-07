@@ -1,6 +1,6 @@
 import MyDrawer from '@/components/MyDrawer';
+import { IUICaseSubStep } from '@/pages/Play/componets/uiTypes';
 import SubStepDetail from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepIF/SubStepDetail';
-import { IUICaseSubStep } from '@/pages/UIPlaywright/uiTypes';
 import { ProCard } from '@ant-design/pro-components';
 import { Tag } from 'antd';
 import { FC, useState } from 'react';

@@ -7,14 +7,15 @@ import {
   runApiCaseBack,
   setApiCase,
 } from '@/api/inter/interCase';
+import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
-import { CasePartEnum } from '@/pages/UIPlaywright/uiTypes';
+import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
+import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { useParams } from '@@/exports';
 import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
@@ -36,7 +37,6 @@ import {
   message,
 } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { history } from 'umi';
 
 const Index = () => {
@@ -212,17 +212,10 @@ const Index = () => {
         return null;
     }
   };
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return; // 拖拽没有放置，退出
-    // 重新排序 items 和 formData
-    const reorderedApis = reorder(
-      apis,
-      result.source.index,
-      result.destination.index,
-    );
-    setApis(reorderedApis);
+  const onDragEnd = (reorderedUIContents: any[]) => {
+    setApis(reorderedUIContents);
     if (caseApiId) {
-      const reorderData = reorderedApis.map((item) => item.api_Id);
+      const reorderData = reorderedUIContents.map((item) => item.api_Id);
       reorderApis2Case({ caseId: caseApiId, apiIds: reorderData }).then(
         async ({ code }) => {
           if (code === 0) {
@@ -232,13 +225,6 @@ const Index = () => {
       );
     }
   };
-  const reorder = (list: any[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
-
   const AddEmptyApiForm = () => {
     const currStep = step + 1;
     setStep(currStep);
@@ -376,37 +362,7 @@ const Index = () => {
         </ProForm>
       </ProCard>
       <ProCard extra={<ApisCardExtra current={currentStatus} />}>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable" direction="vertical">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                style={{
-                  // Adjust this to control the look of the droppable area
-                  // background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
-                  padding: '8px',
-                  borderRadius: '8px',
-                }}
-              >
-                {apis.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        {item.content}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <MyDraggable items={apis} setItems={setApis} dragEndFunc={onDragEnd} />
       </ProCard>
       <ProCard bodyStyle={{ padding: 0 }} style={{ marginTop: 30 }}>
         {currentStatus !== 2 ? (

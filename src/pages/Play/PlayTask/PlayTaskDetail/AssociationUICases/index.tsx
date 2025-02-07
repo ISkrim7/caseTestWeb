@@ -1,10 +1,11 @@
 import {
   queryAssociationUICasesByTaskId,
+  removeAssociationUICasesByTaskId,
   reorderAssociationUICasesByTaskId,
 } from '@/api/play/task';
 import MyDrawer from '@/components/MyDrawer';
+import { IUICase } from '@/pages/Play/componets/uiTypes';
 import ChoiceUICaseTable from '@/pages/Play/PlayTask/PlayTaskDetail/ChoiceUICaseTable';
-import { IUICase } from '@/pages/UIPlaywright/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { queryData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
@@ -31,7 +32,19 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
     }
   }, [currentTaskId]);
 
-  const removeCase = async (id: number) => {};
+  const removeCase = async (id: number) => {
+    if (currentTaskId) {
+      const { code, msg } = await removeAssociationUICasesByTaskId({
+        taskId: currentTaskId,
+        caseId: id,
+      });
+      if (code === 0) {
+        // 请求成功之后刷新列表
+        actionRef.current?.reload();
+        message.success(msg);
+      }
+    }
+  };
 
   const handleDragSortEnd = async (
     _: number,

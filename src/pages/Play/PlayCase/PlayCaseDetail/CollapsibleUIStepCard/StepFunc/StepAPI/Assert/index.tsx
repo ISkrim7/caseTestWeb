@@ -4,7 +4,7 @@ import {
   TYPE_ENUM,
 } from '@/pages/Httpx/componets/assertEnum';
 import { IAsserts } from '@/pages/Httpx/types';
-import { IUICaseStepAPI } from '@/pages/UIPlaywright/uiTypes';
+import { IUICaseStepAPI } from '@/pages/Play/componets/uiTypes';
 import {
   EditableFormInstance,
   EditableProTable,

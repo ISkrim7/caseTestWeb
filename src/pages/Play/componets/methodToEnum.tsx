@@ -1,5 +1,5 @@
 import { IObjGet } from '@/api';
-import { IUIMethod } from '@/pages/UIPlaywright/uiTypes';
+import { IUIMethod } from '@/pages/Play/componets/uiTypes';
 import { Tooltip } from 'antd';
 
 // 定义常量管理键名

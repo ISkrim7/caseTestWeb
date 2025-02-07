@@ -1,5 +1,5 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IUIResult } from '@/pages/UIPlaywright/uiTypes';
+import { IUIResult } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request';
 
 /**
@@ -46,6 +46,51 @@ export const getDebugResultDetail = async (
   return request<IResponse<IUIResult>>('/api/ui/case/result/detail', {
     method: 'GET',
     params: { uid: data },
+    ...(options || {}),
+  });
+};
+
+/**
+ * 通过任务ID 获取关联case执行结果
+ * @param data
+ * @param options
+ */
+export const queryUIReportByTaskId = async (
+  data: { baseId: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<any[]>>('/api/ui/task/report/case/query', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 任务结果Base分页
+ * @param params
+ * @param options
+ */
+export const pageUITaskResult = async (params: ISearch, options?: IObjGet) => {
+  return request<IResponse<IPage<any>>>('/api/ui/task/report/base/page', {
+    method: 'POST',
+    data: params,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 任务结果Base详情
+ * @param params
+ * @param options
+ */
+export const getUITaskResult = async (
+  params: { detailId: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/ui/task/report/base/detail', {
+    method: 'GET',
+    params,
     ...(options || {}),
   });
 };

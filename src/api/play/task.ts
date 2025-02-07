@@ -1,5 +1,5 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IUITask } from '@/pages/UIPlaywright/uiTypes';
+import { IUITask } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request';
 
 /**
@@ -119,7 +119,21 @@ export const queryAssociationUICasesByTaskId = async (
     ...(options || {}),
   });
 };
-
+/**
+ * 查询关联用例
+ * @param data
+ * @param options
+ */
+export const removeAssociationUICasesByTaskId = async (
+  data: { taskId: string | number; caseId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/task/association/remove', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
 /**
  * 关联Cases
  * @param data
@@ -132,6 +146,22 @@ export const associationUICasesByTaskId = async (
   return request<IResponse<null>>('/api/ui/task/association/case', {
     method: 'POST',
     data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 手动执行任务
+ * @param data
+ * @param options
+ */
+export const handelExecuteTask = async (
+  data: { taskId: number | string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/task/execute/handle', {
+    method: 'POST',
+    data,
     ...(options || {}),
   });
 };

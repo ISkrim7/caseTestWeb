@@ -1,7 +1,7 @@
 import { choiceAddUIStep, choiceAddUIStepWithCopy } from '@/api/play';
 import { pageSteps } from '@/api/play/step';
 import MyProTable from '@/components/Table/MyProTable';
-import { IUICaseSteps } from '@/pages/UIPlaywright/uiTypes';
+import { IUICaseSteps } from '@/pages/Play/componets/uiTypes';
 import { pageData } from '@/utils/somefunc';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { Button, message, Tag } from 'antd';

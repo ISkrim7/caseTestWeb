@@ -1,18 +1,19 @@
-import { pageUITaskReport } from '@/api/ui';
-import HistoryTable from '@/pages/Report/History/component/HistoryTable';
+import { pageUITaskResult } from '@/api/play/result';
+import MyProTable from '@/components/Table/MyProTable';
 import { UIMultipleReport } from '@/pages/Report/uiReport';
 import { CONFIG } from '@/utils/config';
 import { history } from '@@/core/history';
-import { ProColumns } from '@ant-design/pro-components';
+import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { message, Tag } from 'antd';
 import dayjs from 'dayjs';
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useRef } from 'react';
 
 interface SelfProps {
   taskId?: number;
 }
 
-const Index: FC<SelfProps> = ({ taskId }) => {
+const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
+  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const fetchTaskData = useCallback(
     async (params: any, sort: any) => {
       const newParams = {
@@ -28,7 +29,7 @@ const Index: FC<SelfProps> = ({ taskId }) => {
       }
       console.log(newParams);
 
-      const { code, data, msg } = await pageUITaskReport(newParams);
+      const { code, data, msg } = await pageUITaskResult(newParams);
       if (code === 0) {
         return {
           data: data.items,
@@ -48,15 +49,14 @@ const Index: FC<SelfProps> = ({ taskId }) => {
   );
   const columns: ProColumns<UIMultipleReport>[] = [
     {
-      title: 'UID',
+      title: '报告ID',
       dataIndex: 'uid',
-      hideInSearch: taskId !== undefined,
       fixed: 'left',
       width: '10%',
       renderText: (text, record) => (
         <a
           onClick={() => {
-            history.push(`/report/history/uiTask/detail/uid=${record.uid}`);
+            history.push(`/report/history/uiTask/detail/uid=${record.id}`);
           }}
         >
           {text}
@@ -65,14 +65,13 @@ const Index: FC<SelfProps> = ({ taskId }) => {
     },
     {
       title: '任务名称',
-      dataIndex: 'taskName',
+      dataIndex: 'task_name',
       fixed: 'left',
-      hideInSearch: taskId !== undefined,
       width: '14%',
       renderText: (text, record) => (
         <a
           onClick={() => {
-            history.push(`/ui/task/detail/taskId=${record.taskUid}`);
+            history.push(`/ui/task/detail/taskId=${record.task_id}`);
           }}
         >
           {text}
@@ -81,13 +80,13 @@ const Index: FC<SelfProps> = ({ taskId }) => {
     },
     {
       title: '执行人',
-      dataIndex: 'starterName',
+      dataIndex: 'starter_name',
       width: '10%',
       renderText: (text) => <Tag color={'blue'}>{text}</Tag>,
     },
     {
       title: '执行日期',
-      dataIndex: 'runDay',
+      dataIndex: 'run_day',
       valueType: 'dateRange',
       ellipsis: true,
       hideInTable: true,
@@ -125,7 +124,7 @@ const Index: FC<SelfProps> = ({ taskId }) => {
     },
     {
       title: '用时',
-      dataIndex: 'totalUseTime',
+      dataIndex: 'total_usetime',
       hideInSearch: true,
       renderText: (text) => <Tag color={'blue'}>{text}</Tag>,
     },
@@ -136,7 +135,7 @@ const Index: FC<SelfProps> = ({ taskId }) => {
       render: (_, record) => (
         <a
           onClick={() => {
-            history.push(`/report/history/uiTask/detail/uid=${record.uid}`);
+            history.push(`/ui/report/detail/resultId=${record.id}`);
           }}
         >
           详情
@@ -146,12 +145,14 @@ const Index: FC<SelfProps> = ({ taskId }) => {
   ];
 
   return (
-    <HistoryTable
-      request={fetchTaskData}
-      title={'批量构建历史'}
+    <MyProTable
+      actionRef={actionRef}
+      rowKey={'id'}
       columns={columns}
+      request={fetchTaskData}
+      x={1200}
     />
   );
 };
 
-export default Index;
+export default PlayTaskResultTable;

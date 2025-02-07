@@ -1,5 +1,5 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
-import { IUIVars } from '@/pages/UIPlaywright/uiTypes';
+import { IUIVars } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request';
 
 /**

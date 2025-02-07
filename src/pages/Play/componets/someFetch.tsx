@@ -6,7 +6,7 @@ import {
   CasePartEnum,
   IUIMethod,
   ProjectEnum,
-} from '@/pages/UIPlaywright/uiTypes';
+} from '@/pages/Play/componets/uiTypes';
 import { Tooltip } from 'antd';
 import React from 'react';
 

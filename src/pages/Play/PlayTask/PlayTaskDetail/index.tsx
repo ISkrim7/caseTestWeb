@@ -1,4 +1,4 @@
-import { CasePartEnum, IUITask } from '@/pages/UIPlaywright/uiTypes';
+import { CasePartEnum, IUITask } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { history, useParams } from '@@/exports';
 import { MailOutlined, WechatWorkOutlined } from '@ant-design/icons';
@@ -12,13 +12,18 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Form, message } from 'antd';
+import { Button, Empty, Form, message } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 import { queryProject } from '@/api/base';
-import { getTaskById, newUITask, updateUITask } from '@/api/play/task';
+import {
+  getTaskById,
+  handelExecuteTask,
+  newUITask,
+  updateUITask,
+} from '@/api/play/task';
+import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
 import AssociationUICases from '@/pages/Play/PlayTask/PlayTaskDetail/AssociationUICases';
-import { fetchCaseParts } from '@/pages/UIPlaywright/someFetch';
 
 const Index = () => {
   const { taskId } = useParams<{ taskId: string }>();
@@ -71,7 +76,14 @@ const Index = () => {
     }
   }, [taskId]);
 
-  const runTask = async () => {};
+  const runTask = async () => {
+    if (taskId) {
+      const { code, msg } = await handelExecuteTask({ taskId: taskId });
+      if (code === 0) {
+        message.success(msg);
+      }
+    }
+  };
 
   const saveTaskBase = async () => {
     await tasKForm.validateFields();
@@ -288,16 +300,13 @@ const Index = () => {
           </ProForm.Group>
         </ProForm>
       </ProCard>
-      {taskId ? (
-        <ProCard
-          title={'Cases'}
-          headerBordered
-          boxShadow
-          style={{ marginTop: 20 }}
-        >
+      <ProCard title={'Cases'} style={{ marginTop: 20 }}>
+        {taskId ? (
           <AssociationUICases currentTaskId={taskId} />
-        </ProCard>
-      ) : null}
+        ) : (
+          <Empty description={'需要先添加基本信息'} />
+        )}
+      </ProCard>
     </ProCard>
   );
 };

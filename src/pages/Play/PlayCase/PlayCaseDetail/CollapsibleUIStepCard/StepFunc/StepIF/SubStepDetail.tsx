@@ -5,7 +5,7 @@ import {
   IUICaseSteps,
   IUICaseSubStep,
   IUIMethod,
-} from '@/pages/UIPlaywright/uiTypes';
+} from '@/pages/Play/componets/uiTypes';
 import {
   ProCard,
   ProForm,

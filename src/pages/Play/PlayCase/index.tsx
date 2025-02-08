@@ -2,13 +2,15 @@ import LeftPart from '@/components/LeftPart';
 import PlayCaseTable from '@/pages/Play/PlayCase/PlayCaseTable';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Index = () => {
   const [currentCasePartId, setCurrentCasePartId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'PlayCase';
-
+  useEffect(() => {
+    console.log('currentCasePartId', currentCasePartId);
+  }, [currentCasePartId, currentProjectId]);
   return (
     <ProCard
       bordered={true}

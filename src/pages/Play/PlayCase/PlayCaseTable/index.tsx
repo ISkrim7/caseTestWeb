@@ -1,8 +1,6 @@
 import { IObjGet } from '@/api';
-import { handelAPSRunCase } from '@/api/aps';
-import { copyUICase, pageUICase } from '@/api/play';
+import { copyUICase, pageUICase, removeUICase } from '@/api/play';
 import { queryUIEnvs } from '@/api/play/env';
-import { delUICase } from '@/api/ui';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUICase } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
@@ -33,16 +31,24 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    actionRef.current?.reload();
+  }, [currentPartId, currentProjectId]);
+
   const fetchUICase = useCallback(
     async (params: any, sort: any) => {
-      const { code, data } = await pageUICase({
-        casePartId: currentPartId,
-        ...params,
-        sort: sort,
-      });
-      return pageData(code, data);
+      console.log('case', currentPartId);
+      if (currentPartId) {
+        const { code, data } = await pageUICase({
+          case_part_id: currentPartId,
+          ...params,
+          sort: sort,
+        });
+        return pageData(code, data);
+      }
     },
-    [currentPartId],
+    [currentPartId, currentProjectId],
   );
 
   const columns: ProColumns<IUICase>[] = [
@@ -141,20 +147,6 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
             <Divider type={'vertical'} />
             <a
               onClick={async () => {
-                const { code, msg } = await handelAPSRunCase({
-                  caseId: record.id,
-                  userId: initialState!.currentUser!.id!,
-                });
-                if (code === 0) {
-                  message.success(msg);
-                }
-              }}
-            >
-              执行
-            </a>
-            <Divider type={'vertical'} />
-            <a
-              onClick={async () => {
                 const { code, data, msg } = await copyUICase({
                   caseId: record.uid,
                 });
@@ -173,7 +165,9 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
                 okText={'确认'}
                 cancelText={'点错了'}
                 onConfirm={async () => {
-                  const { code, msg } = await delUICase({ uid: record.uid });
+                  const { code, msg } = await removeUICase({
+                    caseId: record.id,
+                  });
                   if (code === 0) {
                     message.success(msg);
                     actionRef.current?.reload();

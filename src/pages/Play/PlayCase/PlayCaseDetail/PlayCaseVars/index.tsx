@@ -11,9 +11,10 @@ import React, { FC, useCallback, useRef, useState } from 'react';
 
 interface ISelfProps {
   currentCaseId: string;
+  setVarsNum: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const Index: FC<ISelfProps> = ({ currentCaseId }) => {
+const Index: FC<ISelfProps> = ({ currentCaseId, setVarsNum }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [varsEditableKeys, setVarsEditableRowKeys] = useState<React.Key[]>();
   const [dataSource, setDataSource] = useState<IUIVars[]>([]);
@@ -25,6 +26,7 @@ const Index: FC<ISelfProps> = ({ currentCaseId }) => {
         ...values,
         case_id: currentCaseId,
       });
+      setVarsNum(data.pageInfo.total);
       return pageData(code, data, setDataSource);
     },
     [currentCaseId, edit],

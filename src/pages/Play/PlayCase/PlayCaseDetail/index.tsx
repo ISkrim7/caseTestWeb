@@ -71,7 +71,7 @@ const Index = () => {
   const [openChoiceStepDrawer, setOpenChoiceStepDrawer] = useState(false);
   const [refresh, setRefresh] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
-
+  const [varsNum, setVarsNum] = useState(0);
   /*
   查询project && env
    */
@@ -393,16 +393,33 @@ const Index = () => {
         </ProForm>
       </ProCard>
       <ProCard extra={<AddStepExtra currentStatus={currentMode} />}>
-        <Tabs size={'large'} defaultActiveKey={'2'}>
-          <Tabs.TabPane tab={'Vars'} key={'1'}>
-            <PlayCaseVars currentCaseId={caseId!} />
+        <Tabs size={'large'} type={'card'} defaultActiveKey={'2'}>
+          <Tabs.TabPane
+            tab={
+              <span>
+                Vars (<span style={{ color: 'green' }}>{varsNum}</span>)
+              </span>
+            }
+            key={'1'}
+          >
+            <PlayCaseVars currentCaseId={caseId!} setVarsNum={setVarsNum} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={'Steps'} key={'2'}>
-            <MyDraggable
-              items={uiStepsContent}
-              setItems={setUIStepsContent}
-              dragEndFunc={onDragEnd}
-            />
+          <Tabs.TabPane
+            tab={
+              <span>
+                Steps (
+                <span style={{ color: 'green' }}>{uiStepsContent.length}</span>)
+              </span>
+            }
+            key={'2'}
+          >
+            <ProCard>
+              <MyDraggable
+                items={uiStepsContent}
+                setItems={setUIStepsContent}
+                dragEndFunc={onDragEnd}
+              />
+            </ProCard>
           </Tabs.TabPane>
         </Tabs>
       </ProCard>

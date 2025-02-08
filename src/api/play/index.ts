@@ -189,3 +189,19 @@ export const copyUICase = async (
     ...(options || {}),
   });
 };
+
+/**
+ * 删除
+ * @param body
+ * @param options
+ */
+export const removeUICase = async (
+  body: { caseId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/ui/case/remove', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+};

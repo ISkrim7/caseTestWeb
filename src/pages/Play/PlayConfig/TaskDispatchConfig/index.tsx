@@ -113,6 +113,8 @@ const Index = () => {
   return (
     <MyProTable
       search={false}
+      // @ts-ignore
+      polling={15}
       actionRef={actionRef}
       rowKey={'id'}
       columns={columns}

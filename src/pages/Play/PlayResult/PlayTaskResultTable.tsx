@@ -205,7 +205,7 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
       rowKey={'id'}
       columns={columns}
       request={fetchTaskData}
-      x={1200}
+      x={1000}
     />
   );
 };

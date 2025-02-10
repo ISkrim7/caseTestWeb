@@ -7,6 +7,7 @@ import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import { IInterfaceCaseResult } from '@/pages/Httpx/types';
+import { pageData } from '@/utils/somefunc';
 import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
@@ -42,20 +43,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         ? taskResultId
         : undefined;
       const { code, data } = await pageInterCaseResult(searchData);
-      if (code === 0) {
-        return {
-          data: data.items,
-          total: data.pageInfo.total,
-          success: true,
-          pageSize: data.pageInfo.page,
-          current: data.pageInfo.limit,
-        };
-      }
-      return {
-        data: [],
-        success: false,
-        total: 0,
-      };
+      return pageData(code, data);
     },
     [apiCaseId, taskResultId],
   );

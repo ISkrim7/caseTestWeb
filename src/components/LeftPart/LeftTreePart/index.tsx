@@ -1,10 +1,11 @@
 import { ICasePart, IObjGet } from '@/api';
 import {
+  dropCasePart,
   insertCasePart,
   putCasePart,
   queryTreePartByProject,
+  removeCasePart,
 } from '@/api/base';
-import { delCasePart, dropCasePart } from '@/api/interface';
 import NewDirectoryModal from '@/components/LeftPart/LeftTreePart/newDirectoryModal';
 import { getPart, setPart } from '@/utils/token';
 import { useModel } from '@@/exports';
@@ -242,7 +243,7 @@ const Index: React.FC<SelfProps> = ({
   };
   //删除用例分组
   const onDeleteCasePart = async (id: number) => {
-    const { code } = await delCasePart({ id: id });
+    const { code } = await removeCasePart(id);
     if (code === 0) {
       setEdit(edit + 1);
     }

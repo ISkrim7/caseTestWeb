@@ -1,7 +1,6 @@
 import { IObjGet } from '@/api';
 import { queryMethods } from '@/api/play/method';
-import { pageSteps } from '@/api/play/step';
-import { delCommonStep } from '@/api/ui';
+import { pageSteps, removeCommonStep } from '@/api/play/step';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import AddStep from '@/pages/Play/componets/AddStep';
@@ -103,7 +102,9 @@ const Index = () => {
         <a
           key="delete"
           onClick={async () => {
-            const { code, msg } = await delCommonStep({ uid: record.uid });
+            const { code, msg } = await removeCommonStep({
+              stepId: record.uid,
+            });
             if (code === 0) {
               message.success(msg);
               action?.reload?.();

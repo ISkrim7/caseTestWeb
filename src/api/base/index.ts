@@ -10,6 +10,7 @@ import {
   IUser,
 } from '@/api';
 import { request } from '@@/plugin-request/request';
+import React from 'react';
 
 /** 登录接口 POST /user/login */
 export async function login(body: ILoginParams, options?: IObjGet) {
@@ -24,6 +25,33 @@ export async function login(body: ILoginParams, options?: IObjGet) {
 export async function currentUser(options?: IObjGet) {
   return request<{ data: IUser }>('/api/user/currentUser', {
     method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 删除用户  /user/current */
+export async function removeUser(userId: number, options?: IObjGet) {
+  return request<IResponse<null>>('/api/user/remove', {
+    method: 'POST',
+    data: { userId: userId },
+    ...(options || {}),
+  });
+}
+
+/** 删除用户  /user/current */
+export async function updateUser(user: IUser, options?: IObjGet) {
+  return request<IResponse<null>>('/api/user/update', {
+    method: 'POST',
+    data: user,
+    ...(options || {}),
+  });
+}
+
+/** 删除用户  /user/current */
+export async function registerUser(user: IUser, options?: IObjGet) {
+  return request<IResponse<null>>('/api/user/registerUser', {
+    method: 'POST',
+    data: user,
     ...(options || {}),
   });
 }
@@ -199,6 +227,21 @@ export const insertCasePart = async (body: ICasePart, options?: IObjGet) => {
   });
 };
 
+export async function removeCasePart(
+  body: number,
+  options?: {
+    [key: string]: any;
+  },
+) {
+  return request<IResponse<any>>('/api/part/remove', {
+    method: 'DELETE',
+    data: {
+      id: body,
+    },
+    ...(options || {}),
+  });
+}
+
 /**
  * 修改casePart
  * @param body
@@ -212,17 +255,44 @@ export const putCasePart = async (body: ICasePart, options?: IObjGet) => {
   });
 };
 
+export const dropCasePart = async (
+  body: {
+    id: React.Key;
+    targetId: React.Key | null;
+  },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/part/drop', {
+    method: 'POST',
+    data: body,
+    ...opt,
+  });
+};
 /**
  * page user
+ * @param searchInfo
  * @param options
  */
-export const pageUsers = async (searchInfo: ISearch, options?: IObjGet) => {
+export const pageUsers = async (searchInfo: any, options?: IObjGet) => {
   return request<IResponse<any>>('/api/user/pageUser', {
     method: 'POST',
     data: searchInfo,
     ...(options || {}),
   });
 };
+export async function userUpdatePwd(
+  data: {
+    new_password?: string;
+    old_password?: string;
+  },
+  options?: IObjGet,
+) {
+  return request<IResponse<any>>('/api/user/updatePwd', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+}
 
 export const uploadAvatar = async (file: any, options?: IObjGet) => {
   return request<IResponse<any>>('/api/user/uploadAvatar', {

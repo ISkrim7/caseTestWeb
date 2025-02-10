@@ -1,5 +1,4 @@
-import { ICaseInfo, ISearch } from '@/api';
-import { delCase, pageCases } from '@/api/case';
+import { ICaseInfo } from '@/api';
 import AddCase from '@/pages/CaseHub/component/AddCase';
 import ShowCase from '@/pages/CaseHub/component/ShowCase';
 import { CONFIG } from '@/utils/config';
@@ -10,8 +9,8 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { message, Popconfirm, Tag } from 'antd';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { Popconfirm, Tag } from 'antd';
+import { FC, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   projectID: number;
@@ -101,42 +100,11 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentCasePartID }) => {
     if (projectID) setCurrentCases([]);
   }, [projectID]);
 
-  const fetchDeleteDate = async (uid: string) => {
-    const { code, msg } = await delCase({ uid: uid });
-    if (code === 0) {
-      message.success(msg);
-      actionRef.current?.reload();
-      return;
-    }
-  };
-
-  const fetchCaseData = useCallback(
-    async (params: ISearch) => {
-      if (!currentCasePartID) return {};
-      const { code, data } = await pageCases({
-        casePartID: currentCasePartID,
-        ...params,
-      });
-      if (code === 0) {
-        setCurrentCases(data.items);
-        return {
-          data: data.items,
-          total: data.pageInfo.total,
-          success: true,
-        };
-      }
-      return {
-        data: [],
-        success: false,
-        total: 0,
-      };
-    },
-    [currentCasePartID],
-  );
+  const fetchDeleteDate = async (uid: string) => {};
 
   useEffect(() => {
     actionRef.current?.reload();
-  }, [currentCasePartID, fetchCaseData]);
+  }, [currentCasePartID]);
 
   return (
     <ProCard>
@@ -151,8 +119,6 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentCasePartID }) => {
         formRef={ref}
         actionRef={actionRef}
         dataSource={currentCases}
-        request={fetchCaseData}
-        rowKey={(record) => record.uid}
         columns={caseColumns}
         cardBordered
         options={{

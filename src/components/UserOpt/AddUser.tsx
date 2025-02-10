@@ -1,11 +1,10 @@
-import { IDepartment, IUser } from '@/api';
-import { departmentQuery, UserOpt, userTagQuery } from '@/api/user';
+import { IUser } from '@/api';
+import { registerUser } from '@/api/base';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   ModalForm,
   ProFormSelect,
   ProFormText,
-  RequestOptionsType,
 } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
 import React from 'react';
@@ -33,10 +32,12 @@ const Index: React.FC<selfProps> = (props) => {
         },
       }}
       onFinish={async (values: IUser) => {
-        const res = await UserOpt('POST', values);
-        message.success(res.msg);
-        reload!(true);
-        return true;
+        const res = await registerUser(values);
+        if (res.code === 0) {
+          message.success(res.msg);
+          reload!(true);
+          return true;
+        }
       }}
     >
       <ProFormText
@@ -55,48 +56,48 @@ const Index: React.FC<selfProps> = (props) => {
           0: '女',
         }}
       />
-      <ProFormSelect
-        showSearch
-        name="departmentID"
-        label="部门"
-        placeholder="input department"
-        request={async () => {
-          let data: any;
-          ({ data } = await departmentQuery('GET'));
-          const res: RequestOptionsType[] = [];
-          data.forEach((item: IDepartment) => {
-            res.push({
-              label: item.name,
-              value: item.id,
-            });
-          });
-          return res;
-        }}
-      />
-      <ProFormSelect
-        name="tagName"
-        label="标签"
-        placeholder="select tag"
-        required={false}
-        dependencies={['departmentID']}
-        request={async (params) => {
-          const res: RequestOptionsType[] = [];
-          if (params.departmentID) {
-            const form = {
-              id: params.departmentID,
-            };
-            let { data } = await userTagQuery(form);
-            data.forEach((item: any) => {
-              res.push({
-                label: item.name,
-                value: item.name,
-              });
-            });
-          }
+      {/*<ProFormSelect*/}
+      {/*  showSearch*/}
+      {/*  name="departmentID"*/}
+      {/*  label="部门"*/}
+      {/*  placeholder="input department"*/}
+      {/*  request={async () => {*/}
+      {/*    let data: any;*/}
+      {/*    ({ data } = await departmentQuery('GET'));*/}
+      {/*    const res: RequestOptionsType[] = [];*/}
+      {/*    data.forEach((item: IDepartment) => {*/}
+      {/*      res.push({*/}
+      {/*        label: item.name,*/}
+      {/*        value: item.id,*/}
+      {/*      });*/}
+      {/*    });*/}
+      {/*    return res;*/}
+      {/*  }}*/}
+      {/*/>*/}
+      {/*<ProFormSelect*/}
+      {/*  name="tagName"*/}
+      {/*  label="标签"*/}
+      {/*  placeholder="select tag"*/}
+      {/*  required={false}*/}
+      {/*  dependencies={['departmentID']}*/}
+      {/*  request={async (params) => {*/}
+      {/*    const res: RequestOptionsType[] = [];*/}
+      {/*    if (params.departmentID) {*/}
+      {/*      const form = {*/}
+      {/*        id: params.departmentID,*/}
+      {/*      };*/}
+      {/*      let { data } = await userTagQuery(form);*/}
+      {/*      data.forEach((item: any) => {*/}
+      {/*        res.push({*/}
+      {/*          label: item.name,*/}
+      {/*          value: item.name,*/}
+      {/*        });*/}
+      {/*      });*/}
+      {/*    }*/}
 
-          return res;
-        }}
-      />
+      {/*    return res;*/}
+      {/*  }}*/}
+      {/*/>*/}
     </ModalForm>
   );
 };

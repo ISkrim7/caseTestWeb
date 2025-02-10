@@ -1,6 +1,7 @@
-import { getTaskJobNextRunTime, handelAPSRunTask } from '@/api/aps';
 import {
   delCaseTaskByUid,
+  getTaskJobNextRunTime,
+  handelExecuteTask,
   pageUICaseTask,
   setUITaskSwitch,
 } from '@/api/play/task';
@@ -38,7 +39,7 @@ const Index: FC<SelfProps> = (props) => {
   );
 
   const setTaskSwitch = async (uid: string, flag: boolean) => {
-    const { code } = await setUITaskSwitch({ uid: uid, switch: flag });
+    const { code } = await setUITaskSwitch({ jobId: uid, switch: flag });
     if (code === 0) {
       if (flag) {
         message.success('已重启任务');
@@ -145,9 +146,8 @@ const Index: FC<SelfProps> = (props) => {
             <Divider type={'vertical'} />
             <a
               onClick={async () => {
-                const { code, msg } = await handelAPSRunTask({
+                const { code, msg } = await handelExecuteTask({
                   taskId: record.id,
-                  userId: initialState!.currentUser!.id!,
                 });
                 if (code === 0) {
                   message.success(msg);

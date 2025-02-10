@@ -1,5 +1,6 @@
 import EnvConfig from '@/pages/Play/PlayConfig/EnvConfig';
 import PlayCommonStepTable from '@/pages/Play/PlayConfig/PlayCommonStepTable';
+import TaskDispatchConfig from '@/pages/Play/PlayConfig/TaskDispatchConfig';
 import UIMethodConfig from '@/pages/Play/PlayConfig/UIMethodConfig';
 import { ProCard } from '@ant-design/pro-components';
 import { Tabs } from 'antd';
@@ -26,6 +27,9 @@ const Index = () => {
         </Tabs.TabPane>
         <Tabs.TabPane tab={'公共步骤'} key={'2'}>
           <PlayCommonStepTable />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={'任务调度'} key={'3'}>
+          <TaskDispatchConfig />
         </Tabs.TabPane>
         {/*<Tabs.TabPane tab={'公共步骤组'} key={'3'}>*/}
         {/*  <CommonStepsGroup />*/}

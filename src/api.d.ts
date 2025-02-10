@@ -52,11 +52,6 @@ export interface IUser {
   departmentName?: string;
 }
 
-export interface IPassword {
-  new_password?: string;
-  old_password?: string;
-}
-
 export interface IDepartment {
   adminID?: number;
   desc?: string;

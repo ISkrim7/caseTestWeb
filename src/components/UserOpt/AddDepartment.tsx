@@ -1,5 +1,3 @@
-import { IDepartment } from '@/api';
-import { departmentOpt } from '@/api/user';
 import MohuSearch from '@/components/UserOpt/MohuSearch';
 import { PlusOutlined } from '@ant-design/icons';
 import {
@@ -7,7 +5,7 @@ import {
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Button, message } from 'antd';
+import { Button } from 'antd';
 import React from 'react';
 
 interface selfProps {
@@ -32,12 +30,12 @@ const AddDepartment: React.FC<selfProps> = (props) => {
         </Button>
       }
       autoFocusFirstInput
-      onFinish={async (values: IDepartment) => {
-        const res = await departmentOpt(values, 'POST');
-        message.success(res.msg);
-        reload!(true);
-        return true;
-      }}
+      // onFinish={async (values: IDepartment) => {
+      //   const res = await departmentOpt(values, 'POST');
+      //   message.success(res.msg);
+      //   reload!(true);
+      //   return true;
+      // }}
     >
       <ProFormText
         name="name"

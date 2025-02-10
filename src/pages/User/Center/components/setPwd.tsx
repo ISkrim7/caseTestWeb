@@ -1,10 +1,8 @@
-import React from 'react';
+import { userUpdatePwd } from '@/api/base';
+import { clearToken } from '@/utils/token';
 import { ProForm, ProFormText } from '@ant-design/pro-components';
 import { Form, message } from 'antd';
-import { SetPwdServer } from '@/api/user';
-import { clearToken } from '@/utils/token';
 import { history } from 'umi';
-import { API } from '@/api';
 
 const SetPwd = () => {
   const [form] = Form.useForm();
@@ -12,15 +10,12 @@ const SetPwd = () => {
   const onFinish = async () => {
     await form.validateFields();
     const body = form.getFieldsValue();
-    const { code, data, msg } = await SetPwdServer(body);
+    const { code, msg } = await userUpdatePwd(body);
     if (code === 0) {
       message.success(msg);
       clearToken();
       history.push('/login');
       return true;
-    } else {
-      message.error(msg);
-      return false;
     }
   };
   return (

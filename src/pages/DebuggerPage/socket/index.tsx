@@ -1,4 +1,3 @@
-import { addApsWsJob } from '@/api/aps';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import { useModel } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
@@ -47,15 +46,12 @@ function App() {
 
     return () => socket.disconnect();
   }, []);
-  const click = async () => {
-    await addApsWsJob({ task_id: clientId });
-  };
 
   return (
     <ProCard split={'horizontal'}>
       <ProCard>
         <h1>aps</h1>
-        <button onClick={click}>Click Me!</button>
+        <button>Click Me!</button>
         <button
           onClick={() => {
             setApsMessage([]);

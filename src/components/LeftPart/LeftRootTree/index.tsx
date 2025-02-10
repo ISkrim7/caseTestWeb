@@ -1,4 +1,4 @@
-import { queryRootPartsByProjectId } from '@/api/aps';
+// import { queryRootPartsByProjectId } from '@/api/aps';
 import { Menu } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 
@@ -12,23 +12,23 @@ const Index: FC<SelfProps> = ({ currentProjectId, setCurrentCasePartId }) => {
 
   useEffect(() => {
     if (currentProjectId) {
-      queryRootPartsByProjectId({ projectId: currentProjectId }).then(
-        async ({ code, data }) => {
-          if (code === 0 || data) {
-            const partArr = data.map((items) => {
-              return {
-                key: items.id,
-                label: (
-                  <a onClick={() => setCurrentCasePartId(items.id as number)}>
-                    {items.title}
-                  </a>
-                ),
-              };
-            });
-            setRootPartArr(partArr);
-          }
-        },
-      );
+      // queryRootPartsByProjectId({ projectId: currentProjectId }).then(
+      //   async ({ code, data }) => {
+      //     if (code === 0 || data) {
+      //       const partArr = data.map((items) => {
+      //         return {
+      //           key: items.id,
+      //           label: (
+      //             <a onClick={() => setCurrentCasePartId(items.id as number)}>
+      //               {items.title}
+      //             </a>
+      //           ),
+      //         };
+      //       });
+      //       setRootPartArr(partArr);
+      //     }
+      //   },
+      // );
     }
   }, [currentProjectId]);
 

@@ -60,7 +60,21 @@ export const removeStep = async (
     ...(options || {}),
   });
 };
-
+/**
+ * 删除公共step
+ * @param body
+ * @param options
+ */
+export const removeCommonStep = async (
+  body: { stepId: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/ui/case/step/removeCommon', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+};
 /**
  * step 详情
  * @param data

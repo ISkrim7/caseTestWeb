@@ -1,5 +1,3 @@
-import { queryProject } from '@/api/project';
-
 const getProjectId = () => {
   const projectId = localStorage.getItem('projectID');
   if (projectId === undefined || projectId === null) {

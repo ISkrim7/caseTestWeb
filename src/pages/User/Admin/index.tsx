@@ -1,6 +1,5 @@
 import { IDepartment, IUser } from '@/api';
-import { pageUsers } from '@/api/base';
-import { UserOpt } from '@/api/user';
+import { pageUsers, removeUser, updateUser } from '@/api/base';
 import MyProTable from '@/components/Table/MyProTable';
 import AddUser from '@/components/UserOpt/AddUser';
 import type { ActionType } from '@ant-design/pro-components';
@@ -54,18 +53,18 @@ const Index: React.FC = () => {
   };
 
   const onSave = async (_: any, record: IUser) => {
-    const selectDepartment = departments?.find(
-      (item) => item.name === record.departmentName,
-    );
-    record.departmentID = selectDepartment?.id!;
-    const { code } = await UserOpt('PUT', record);
+    // const selectDepartment = departments?.find(
+    //   (item) => item.name === record.departmentName,
+    // );
+    // record.departmentID = selectDepartment?.id!;
+    const { code } = await updateUser(record);
     if (code === 0) {
       actionRef.current?.reload();
     }
   };
 
   const onDelete = async (_: any, record: IUser) => {
-    const { code, msg } = await UserOpt('DELETE', { uid: record.uid });
+    const { code, msg } = await removeUser(record.id!);
     if (code === 0) {
       message.success(msg);
       if (code === 0) {

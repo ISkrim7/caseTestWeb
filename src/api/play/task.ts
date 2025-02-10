@@ -21,13 +21,39 @@ export const pageUICaseTask = async (params: ISearch, options?: IObjGet) => {
  * @param opt
  */
 export const setUITaskSwitch = async (
-  data: { uid: string; switch: boolean },
+  data: { jobId: string; switch: boolean },
   opt?: IObjGet,
 ) => {
   return request<IResponse<any>>('/api/ui/task/job/setSwitch', {
     method: 'POST',
     data,
     ...opt,
+  });
+};
+
+/**
+ * 查看任务
+ * @param opt
+ */
+export const allUIJobs = async (opt?: IObjGet) => {
+  return request<IResponse<IUITask[]>>('/api/ui/task/job/list', {
+    method: 'GET',
+    ...opt,
+  });
+};
+/**
+ * 下次运行时间
+ * @param body
+ * @param options
+ */
+export const getTaskJobNextRunTime = async (
+  body: { jobId: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<string>>('/api/ui/task/job/nextRunTime', {
+    method: 'GET',
+    params: body,
+    ...(options || {}),
   });
 };
 

@@ -1,5 +1,4 @@
 import { IDepartment } from '@/api';
-import { departmentOpt, departmentPage } from '@/api/user';
 import MyProTable from '@/components/Table/MyProTable';
 import AddDepartment from '@/components/UserOpt/AddDepartment';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -84,28 +83,6 @@ const Index = () => {
     },
   ];
 
-  const pageDepartments = async (params: any, sort: any) => {
-    const searchInfo: any = {
-      ...params,
-      sort: sort,
-    };
-    const { code, data } = await departmentPage(searchInfo);
-    if (code === 0) {
-      return {
-        data: data.items,
-        total: data.pageInfo.total,
-        success: true,
-        pageSize: data.pageInfo.page,
-        current: data.pageInfo.limit,
-      };
-    }
-    return {
-      data: [],
-      total: 0,
-      success: false,
-    };
-  };
-
   const OnSave = async (_: any, record: IDepartment) => {
     const form = {
       uid: record.uid,
@@ -113,18 +90,18 @@ const Index = () => {
       desc: record.desc,
       adminID: record.adminID,
     };
-    return await departmentOpt(form, 'PUT');
+    // return await departmentOpt(form, 'PUT');
   };
 
   const OnDelete = async (_: any, record: IDepartment) => {
-    return await departmentOpt({ uid: record.uid } as IDepartment, 'DELETE');
+    // return await departmentOpt({ uid: record.uid } as IDepartment, 'DELETE');
   };
   return (
     <MyProTable
       headerTitle={'用户部门表'}
       actionRef={actionRef}
       columns={columns}
-      request={pageDepartments}
+      // request={pageDepartments}
       rowKey={'uid'}
       onDelete={OnDelete}
       onSave={OnSave}

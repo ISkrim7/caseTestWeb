@@ -1,5 +1,4 @@
 import { ICaseInfo, ICaseStepInfo } from '@/api';
-import { addCases, putCase } from '@/api/case';
 import CaseInfoStepTable from '@/pages/CaseHub/component/CaseInfoStepTable';
 import {
   ProCard,
@@ -80,26 +79,6 @@ const CaseForm: FC<SelfProps> = ({
       projectID: projectID,
       casePartID: casePartID,
     };
-    if (update) {
-      info.id = caseInfo!.id;
-      info.uid = caseInfo!.uid;
-      console.log(info);
-      await putCase(info).then(({ code, msg }) => {
-        if (code === 0) {
-          message.success(msg);
-          setDrawerVisible(false);
-          actionRef.current?.reload();
-        }
-      });
-    } else {
-      await addCases(info).then(({ code, msg }) => {
-        if (code === 0) {
-          message.success(msg);
-          setDrawerVisible(false);
-          actionRef.current?.reload();
-        }
-      });
-    }
   };
 
   return (

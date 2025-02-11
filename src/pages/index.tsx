@@ -1,19 +1,16 @@
-import { IProject } from '@/api';
-import { queryProject } from '@/api/base';
 import {
   fetchCurrentTaskData,
   fetchWeekData,
   fetchWeekTaskData,
 } from '@/api/base/statistics';
-import { useModel } from '@@/exports';
 import { Line, Pie } from '@ant-design/plots';
 import { ProCard, StatisticCard } from '@ant-design/pro-components';
-import { Divider, Typography } from 'antd';
+import { Typography } from 'antd';
 import RcResizeObserver from 'rc-resize-observer';
 import { useEffect, useState } from 'react';
 
 const { Statistic } = StatisticCard;
-const { Text, Title } = Typography;
+const { Title } = Typography;
 
 interface IStatisticsWeek {
   apis: number;
@@ -27,8 +24,6 @@ interface IStatisticsWeek {
 }
 
 export default function IndexPage() {
-  const { initialState, setInitialState } = useModel('@@initialState');
-  const [projectList, setProjectList] = useState<IProject[]>([]);
   const [weekData, setWeekData] = useState<IStatisticsWeek>({
     apis: 0,
     api_task: 0,
@@ -46,31 +41,24 @@ export default function IndexPage() {
   const [responsive, setResponsive] = useState(false);
 
   useEffect(() => {
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        setProjectList(data);
-      }
-    });
-
     fetchCurrentTaskData().then(async ({ code, data }) => {
       if (code === 0) {
         setCurrentApiTaskData(data.api_task);
         setCurrentUITaskData(data.ui_task);
       }
     });
-    fetchWeekData().then(({ code, data }) => {
+    fetchWeekData().then(async ({ code, data }) => {
       if (code === 0) {
         setWeekData(data as IStatisticsWeek);
       }
     });
-    fetchWeekTaskData().then(({ code, data }) => {
+    fetchWeekTaskData().then(async ({ code, data }) => {
       if (code === 0) {
         setApIWeekTaskData(data.api_tasks);
         setUIWeekTaskData(data.ui_tasks);
       }
     });
   }, []);
-  console.log('===', currentApiTaskData);
   const configAPI = {
     data: apiWeekTaskData,
     xField: 'date',
@@ -119,6 +107,7 @@ export default function IndexPage() {
     data: PieAPIData,
     angleField: 'value',
     colorField: 'type',
+    autoFit: true,
     radius: 0.8,
     label: {
       type: 'outer',
@@ -130,6 +119,32 @@ export default function IndexPage() {
     ],
   };
 
+  const PieUIData = [
+    {
+      type: '成功',
+      value: currentUITaskData?.success_num,
+    },
+    {
+      type: '失败',
+      value: currentUITaskData?.fail_num,
+    },
+  ];
+  const UIPieConfig = {
+    height: 50,
+    appendPadding: 2,
+    data: PieUIData,
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.8,
+    label: {
+      type: 'inner',
+    },
+    interactions: [
+      {
+        type: 'element-active',
+      },
+    ],
+  };
   return (
     <ProCard split={'horizontal'}>
       <RcResizeObserver
@@ -139,7 +154,7 @@ export default function IndexPage() {
         }}
       >
         <ProCard
-          headerBordered
+          bordered
           style={{ borderRadius: 10 }}
           split={responsive ? 'horizontal' : 'vertical'}
         >
@@ -202,9 +217,15 @@ export default function IndexPage() {
             />
           </StatisticCard.Group>
         </ProCard>
-        <ProCard split={'vertical'} style={{ borderRadius: 10, marginTop: 20 }}>
-          <ProCard title={'API Task 构建情况'}>
+        <ProCard
+          split={'vertical'}
+          colSpan={12}
+          gutter={16}
+          style={{ borderRadius: 10, marginTop: 20, overflow: 'hidden' }}
+        >
+          <ProCard title={'API Task 构建情况'} bordered>
             <StatisticCard.Group
+              boxShadow
               direction={responsive ? 'column' : 'row'}
               title={'今日构建'}
             >
@@ -216,7 +237,6 @@ export default function IndexPage() {
                   description: <Statistic value={currentApiTaskData?.date} />,
                 }}
               />
-              <Divider type={responsive ? 'horizontal' : 'vertical'} />
               <StatisticCard
                 statistic={{
                   title: '成功',
@@ -261,7 +281,6 @@ export default function IndexPage() {
                 }}
                 chartPlacement="left"
               />
-              <Divider type={responsive ? 'horizontal' : 'vertical'} />
               <StatisticCard chart={<Pie {...ApiPieConfig} />} />
             </StatisticCard.Group>
             <StatisticCard.Group
@@ -271,7 +290,67 @@ export default function IndexPage() {
               chart={<Line {...configAPI} />}
             />
           </ProCard>
-          <ProCard title={'UI Task 构建情况'}>
+          <ProCard bordered title={'UI Task 构建情况'}>
+            <StatisticCard.Group
+              boxShadow
+              bordered={true}
+              direction={responsive ? 'column' : 'row'}
+              title={'今日构建'}
+            >
+              <StatisticCard
+                statistic={{
+                  title: '总共',
+                  valueStyle: { color: 'greenyellow' },
+                  value: currentUITaskData?.total_num,
+                  description: <Statistic value={currentUITaskData?.date} />,
+                }}
+              />
+              <StatisticCard
+                statistic={{
+                  title: '成功',
+                  value: currentUITaskData?.success_num,
+                  valueStyle: { color: 'green' },
+                  description: (
+                    <Statistic
+                      title="占比"
+                      value={
+                        currentUITaskData?.success_num === 0
+                          ? '0%'
+                          : `${(
+                              (currentUITaskData?.success_num /
+                                currentUITaskData?.total_num) *
+                              100
+                            ).toFixed(2)}%`
+                      }
+                    />
+                  ),
+                }}
+                chartPlacement="left"
+              />
+              <StatisticCard
+                statistic={{
+                  title: '失败',
+                  value: currentUITaskData?.fail_num,
+                  valueStyle: { color: 'red' },
+                  description: (
+                    <Statistic
+                      title="占比"
+                      value={
+                        currentUITaskData?.fail_num === 0
+                          ? '0%'
+                          : `${(
+                              (currentUITaskData?.fail_num /
+                                currentUITaskData?.total_num) *
+                              100
+                            ).toFixed(2)}%`
+                      }
+                    />
+                  ),
+                }}
+                chartPlacement="left"
+              />
+              <StatisticCard chart={<Pie {...UIPieConfig} />} />
+            </StatisticCard.Group>
             <StatisticCard.Group
               direction={'row'}
               style={{ marginTop: 50 }}

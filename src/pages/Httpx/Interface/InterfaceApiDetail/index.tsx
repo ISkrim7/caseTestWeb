@@ -328,7 +328,7 @@ const Index: FC<SelfProps> = ({
         disabled={currentMode === 1}
         submitter={false}
       >
-        <ProCard>
+        <ProCard hidden={addFromCase}>
           <ProForm.Group>
             <ProFormSelect
               width={'md'}

@@ -5,6 +5,7 @@ import {
   IInterfaceCaseResult,
   ITryResponseInfo,
 } from '@/pages/Httpx/types';
+import { IUIVars } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request/request';
 
 /**
@@ -307,4 +308,56 @@ export const pageInterApiResult = async (data: ISearch, options?: IObjGet) => {
       ...(options || {}),
     },
   );
+};
+
+/**
+ * 修改Vars
+ * @param data
+ * @param options
+ */
+export const updateVars = async (data: IUIVars, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/case/vars/update', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 添加 Vars
+ * @param data
+ * @param options
+ */
+export const addVars = async (data: IUIVars, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/case/vars/add', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 添加 Vars
+ * @param data
+ * @param options
+ */
+export const removeVars = async (data: { uid: string }, options?: IObjGet) => {
+  return request<IResponse<null>>('/api/interface/case/vars/remove', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * query Vars
+ * @param data
+ * @param options
+ */
+export const pageVars = async (data: ISearch, options?: IObjGet) => {
+  return request<IResponse<IPage<IUIVars>>>('/api/interface/case/vars/page', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
 };

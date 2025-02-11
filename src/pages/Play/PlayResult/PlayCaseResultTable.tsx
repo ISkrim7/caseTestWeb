@@ -144,6 +144,11 @@ const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
         rowKey={'uid'}
         actionRef={actionRef}
         x={1000}
+        pagination={{
+          showQuickJumper: true,
+          defaultPageSize: 6,
+          showSizeChanger: true,
+        }}
         columns={columns}
         request={fetchDebugResult}
       />

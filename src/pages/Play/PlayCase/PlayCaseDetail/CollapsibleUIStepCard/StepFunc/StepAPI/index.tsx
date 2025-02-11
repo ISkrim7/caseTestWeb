@@ -59,7 +59,6 @@ const StepApi: FC<ISelfProps> = ({
           label: item.name,
           value: item.id,
         }));
-        console.log('-----', envs);
         const noEnv = { label: '自定义', value: -1 };
         setEnvs([noEnv, ...envs]);
       }
@@ -270,7 +269,7 @@ const StepApi: FC<ISelfProps> = ({
             </Tabs.TabPane>
           </Tabs>
         </ProCard>
-      </ProForm>{' '}
+      </ProForm>
     </ProCard>
   );
 };

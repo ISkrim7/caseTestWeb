@@ -10,6 +10,7 @@ import {
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
+import InterfaceApiCaseVars from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/InterfaceApiCaseVars';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
@@ -35,6 +36,7 @@ import {
   Form,
   MenuProps,
   message,
+  Tabs,
 } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
@@ -362,13 +364,23 @@ const Index = () => {
         </ProForm>
       </ProCard>
       <ProCard extra={<ApisCardExtra current={currentStatus} />}>
-        <MyDraggable items={apis} setItems={setApis} dragEndFunc={onDragEnd} />
+        <Tabs defaultActiveKey={'2'} defaultValue={'2'}>
+          <Tabs.TabPane key={'1'} tab={'Vars'}>
+            <InterfaceApiCaseVars currentCaseId={caseApiId} />
+          </Tabs.TabPane>
+          <Tabs.TabPane key={'2'} tab={'APIs'}>
+            <MyDraggable
+              items={apis}
+              setItems={setApis}
+              dragEndFunc={onDragEnd}
+            />
+          </Tabs.TabPane>
+        </Tabs>
       </ProCard>
-      <ProCard bodyStyle={{ padding: 0 }} style={{ marginTop: 30 }}>
-        {currentStatus !== 2 ? (
-          <InterfaceApiCaseResultTable apiCaseId={caseApiId} />
-        ) : null}
-      </ProCard>
+
+      {caseApiId ? (
+        <InterfaceApiCaseResultTable taskResultId={caseApiId} />
+      ) : null}
       <FloatButton.BackTop />
     </ProCard>
   );

@@ -9,7 +9,7 @@ import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/I
 import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { pageData } from '@/utils/somefunc';
 import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
-import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
 import { FC, useCallback, useRef, useState } from 'react';
 
@@ -137,14 +137,6 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     }
   };
 
-  const RemoveAllButton = (
-    <>
-      <Button type={'primary'} onClick={removeCaseResults}>
-        Remove All
-      </Button>
-    </>
-  );
-
   const GetButton = (
     <Button
       type="primary"
@@ -160,27 +152,33 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
       {polling ? '停止轮询' : '开始轮询'}
     </Button>
   );
-  const toolBar = () => {
-    if (!taskResultId) {
-      return [GetButton, RemoveAllButton];
-    }
-  };
+
   return (
-    <div style={{ marginTop: 20 }}>
+    <ProCard
+      title={'API DeBug His'}
+      bordered={true}
+      defaultCollapsed={true}
+      style={{ marginTop: 200, height: 'auto' }}
+      collapsible={true}
+      extra={
+        <Button type={'primary'} onClick={removeCaseResults}>
+          Clear All His
+        </Button>
+      }
+    >
       <MyDrawer name={''} open={open} setOpen={setOpen}>
         <InterfaceApiCaseResultDrawer
           currentCaseResultId={currentCaseResultId}
         />
       </MyDrawer>
       <MyProTable
-        headerTitle={'调试历史'}
         // @ts-ignore
         polling={polling}
         rowKey={'uid'}
         actionRef={actionRef}
         request={fetchResults}
         search={false}
-        toolBarRender={toolBar}
+        toolBarRender={() => [GetButton]}
         pagination={{
           showQuickJumper: true,
           defaultPageSize: 6,
@@ -189,7 +187,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         columns={columns}
         x={1000}
       />
-    </div>
+    </ProCard>
   );
 };
 

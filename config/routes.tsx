@@ -178,6 +178,18 @@ export default [
         component: '@/pages/Httpx/Interface/InterfaceApiDetail',
       },
       {
+        path: '/interface/group/detail',
+        name: '添加group',
+        hideInMenu: true,
+        component: '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiDetail',
+      },
+      {
+        path: '/interface/group/detail/groupId=:groupId',
+        name: '添加group',
+        hideInMenu: true,
+        component: '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiDetail',
+      },
+      {
         path: '/interface/caseApi/cases',
         name: '接口用例',
         component: '@/pages/Httpx/InterfaceApiCase',

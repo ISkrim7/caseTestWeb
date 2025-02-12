@@ -126,10 +126,10 @@ const Index = () => {
   const saveBaseInfo = async () => {
     const values = await baseForm.getFieldsValue(true);
     if (caseApiId) {
-      await setApiCase(values).then(async ({ code }) => {
+      await setApiCase(values).then(async ({ code, msg }) => {
         if (code === 0) {
           setCurrentStatus(1);
-          await message.success('添加成功');
+          await message.success(msg);
         }
       });
     } else {

@@ -11,6 +11,7 @@ export interface IInterfaceAPIRecord extends IBaseField {
   bodyType: number;
   response: any;
 }
+
 export interface IInterfaceAPI extends IBaseField {
   name: string;
   description: string;
@@ -28,7 +29,7 @@ export interface IInterfaceAPI extends IBaseField {
   project_id: number;
   part_id: number;
   env_id: number;
-  connect_tmeout: number;
+  connect_timeout: number;
   response_timeout: number;
   before_script: string;
   after_script: string;
@@ -36,6 +37,12 @@ export interface IInterfaceAPI extends IBaseField {
   follow_redirects: boolean;
   is_common: number;
   enable: boolean;
+}
+
+export interface IInterfaceGroup extends IBaseField {
+  name: string;
+  description: string;
+  api_num: number;
 }
 
 export interface IInterfaceAPICase extends IBaseField {

@@ -1,4 +1,5 @@
 import LeftPart from '@/components/LeftPart';
+import GroupApiTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiTable';
 import InterfaceApiTable from '@/pages/Httpx/Interface/InterfaceApiTable';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
@@ -8,6 +9,8 @@ const Index = () => {
   const [currentCasePartId, setCurrentCasePartId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'InterfaceApi';
+  const PerGroupKey = 'InterfaceGroupApi';
+
   return (
     <ProCard
       bordered={true}
@@ -43,7 +46,13 @@ const Index = () => {
                 perKey={PerKey}
               />
             </ProCard.TabPane>
-            <ProCard.TabPane key="case" tab="Group APIs"></ProCard.TabPane>
+            <ProCard.TabPane key="case" tab="Group APIs">
+              <GroupApiTable
+                currentProjectId={currentProjectId}
+                currentPartId={currentCasePartId}
+                perKey={PerGroupKey}
+              />
+            </ProCard.TabPane>
           </ProCard>
         </Splitter.Panel>
       </Splitter>

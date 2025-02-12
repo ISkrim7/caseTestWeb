@@ -14,7 +14,7 @@ interface SelfProps {
 const Index: FC<SelfProps> = (props) => {
   const [bodyType, setBodyType] = useState(0);
   useEffect(() => {
-    const t = props.form.getFieldValue('bodyType');
+    const t = props.form.getFieldValue('body_type');
     if (t) {
       setBodyType(t);
     }
@@ -38,7 +38,7 @@ const Index: FC<SelfProps> = (props) => {
 
   const onGroupChange = (e: RadioChangeEvent) => {
     setBodyType(e.target.value);
-    props.form.setFieldValue('bodyType', e.target.value);
+    props.form.setFieldValue('body_type', e.target.value);
   };
   return (
     <>

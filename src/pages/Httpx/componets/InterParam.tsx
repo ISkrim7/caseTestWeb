@@ -1,14 +1,13 @@
-import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
+import SetKv2Query from '@/pages/Httpx/componets/setKv2Query';
 import { IInterfaceAPI, IParams } from '@/pages/Httpx/types';
-import { CodeOutlined } from '@ant-design/icons';
 import {
   EditableProTable,
   ProForm,
   ProFormText,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { Button, FormInstance, Modal } from 'antd';
-import React, { FC, useRef, useState } from 'react';
+import { FormInstance } from 'antd';
+import React, { FC, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -18,10 +17,6 @@ interface SelfProps {
 const InterParam: FC<SelfProps> = ({ form, mode }) => {
   const [paramsEditableKeys, setParamsEditableRowKeys] =
     useState<React.Key[]>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [kvData, setKVData] = useState<string>();
-  const [showError, setShowError] = useState(false);
-  const timeoutRef = useRef<any>(null);
   const columns: ProColumns<IParams>[] = [
     {
       title: 'key',
@@ -71,66 +66,17 @@ const InterParam: FC<SelfProps> = ({ form, mode }) => {
       },
     },
   ];
-  const inputParams = () => {
-    setKVData('');
-    setIsModalOpen(true);
-  };
-  const handleOnChange = (value: any) => {
-    clearTimeout(timeoutRef.current);
-    setKVData(value);
-    timeoutRef.current = setTimeout(() => {
-      if (value) {
-        try {
-          setShowError(false);
-        } catch (error) {
-          setShowError(true);
-        }
-      }
-    }, 1000); // 延迟1秒钟进行验证
-  };
-  const onModelFinish = () => {
-    clearTimeout(timeoutRef.current);
-    try {
-      if (kvData) {
-        const NewKVData = JSON.parse(kvData);
-        const resultArray = Object.keys(NewKVData).map((key) => {
-          return {
-            key: key,
-            value: NewKVData[key],
-            id: Date.now(),
-          };
-        });
-        form.setFieldValue('params', resultArray);
-        setParamsEditableRowKeys(resultArray.map((item) => item.id) || []);
-        setIsModalOpen(false);
-      }
-    } catch (error) {
-      setShowError(true);
-    }
-  };
+
   return (
     <ProForm form={form} submitter={false}>
-      <Modal
-        title="导入参数"
-        open={isModalOpen}
-        onOk={onModelFinish}
-        onCancel={() => {
-          setIsModalOpen(false);
-          setShowError(false);
+      <SetKv2Query
+        callBack={(resultArray: any) => {
+          form.setFieldValue('params', resultArray);
+          setParamsEditableRowKeys(
+            resultArray.map((item: any) => item.id) || [],
+          );
         }}
-      >
-        <span style={{ color: 'gray' }}>
-          快速导入到请求参数，支持 JSON/Key-value 格式
-        </span>
-        {showError && <p style={{ color: 'red' }}>JSON 格式错误，请检查。</p>}
-        <AceCodeEditor onChange={handleOnChange} value={kvData} />
-      </Modal>
-      <span>
-        <CodeOutlined style={{ color: 'gray' }} />
-        <Button type={'link'} style={{ color: 'gray' }} onClick={inputParams}>
-          导入参数
-        </Button>
-      </span>
+      />
       <ProForm.Item name={'params'} trigger={'onValuesChange'}>
         <EditableProTable<IParams>
           rowKey={'id'}

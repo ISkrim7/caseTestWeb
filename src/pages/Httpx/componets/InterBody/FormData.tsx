@@ -1,3 +1,4 @@
+import SetKv2Query from '@/pages/Httpx/componets/setKv2Query';
 import { IFromData, IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   EditableProTable,
@@ -71,9 +72,14 @@ const FormData: FC<SelfProps> = ({ form, mode }) => {
       },
     },
   ];
-
   return (
     <ProForm form={form} submitter={false}>
+      <SetKv2Query
+        callBack={(resultArray: any) => {
+          form.setFieldValue('data', resultArray);
+          setDataEditableRowKeys(resultArray.map((item: any) => item.id) || []);
+        }}
+      />
       <ProForm.Item name={'data'} trigger={'onValuesChange'}>
         <EditableProTable<IFromData>
           rowKey={'id'}

@@ -13,12 +13,12 @@ export interface IInterfaceAPIRecord extends IBaseField {
 }
 export interface IInterfaceAPI extends IBaseField {
   name: string;
-  desc: string;
+  description: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   status: string;
   level: string;
   url: string;
-  bodyType: number;
+  body_type: number;
   headers: IHeaders[] | [];
   params: IParams[] | [];
   body: any;
@@ -28,11 +28,11 @@ export interface IInterfaceAPI extends IBaseField {
   project_id: number;
   part_id: number;
   env_id: number;
-  connectTimeout: number;
-  responseTimeout: number;
-  beforeScript: string;
-  afterScript: string;
-  beforeParams: IBeforeParams[] | [];
+  connect_tmeout: number;
+  response_timeout: number;
+  before_script: string;
+  after_script: string;
+  before_params: IBeforeParams[] | [];
   follow_redirects: boolean;
   is_common: number;
   enable: boolean;

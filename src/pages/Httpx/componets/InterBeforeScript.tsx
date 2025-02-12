@@ -25,7 +25,7 @@ const InterBeforeScript: FC<SelfProps> = ({ form, mode }) => {
     }
   }, [mode]);
   useEffect(() => {
-    const script = form.getFieldValue('beforeScript');
+    const script = form.getFieldValue('before_script');
     if (script) {
       setScriptData(script);
     }
@@ -33,7 +33,7 @@ const InterBeforeScript: FC<SelfProps> = ({ form, mode }) => {
   const handleOnChange = (value: any) => {
     if (value) {
       setScriptData(value);
-      form.setFieldsValue({ beforeScript: value });
+      form.setFieldsValue({ before_script: value });
     }
   };
   return (

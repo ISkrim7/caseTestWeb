@@ -13,7 +13,9 @@ export { socketUrl };
 export const CONFIG: IObjGet = {
   EXTRACT_TARGET_ENUM: {
     6: { text: 'Response.json' },
+    8: { text: 'Response.text' },
     7: { text: 'Response.header' },
+    9: { text: 'Request.cookie' },
   },
   API_CASE_ERROR_STOP_OPT: [
     { label: '是', value: 1 },
@@ -32,6 +34,8 @@ export const CONFIG: IObjGet = {
     5: { text: 'AfterScript' },
     6: { text: 'ResponseJsonExtract' },
     7: { text: 'ResponseHeadExtract' },
+    8: { text: 'ResponseTextExtract' },
+    9: { text: 'RequestCookieExtract' },
   },
   API_LEVEL_SELECT: [
     {

@@ -157,7 +157,7 @@ export default [
     routes: [
       {
         path: '/interface/interApi/api',
-        name: '接口API',
+        name: '公共用例',
         component: '@/pages/Httpx/Interface',
       },
       {

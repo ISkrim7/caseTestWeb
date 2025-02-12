@@ -4,9 +4,9 @@ import InterfaceApiDetail from '@/pages/Httpx/Interface/InterfaceApiDetail';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Switch, Tag } from 'antd';
+import { Button, message, Popconfirm, Switch, Tag, Typography } from 'antd';
 import { FC, useEffect, useState } from 'react';
-
+const { Text } = Typography;
 interface SelfProps {
   projectId?: number;
   partId?: number;
@@ -23,7 +23,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
   useEffect(() => {
     if (interfaceApiInfo) {
       setCardTitle(interfaceApiInfo.name);
-      setSubCardTitle(interfaceApiInfo.desc);
+      setSubCardTitle(interfaceApiInfo.description);
     }
   }, [interfaceApiInfo]);
 
@@ -99,7 +99,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
           <Tag color={'#108ee9'}>{cardTitle}</Tag>
         </>
       }
-      subTitle={cardSubTitle}
+      subTitle={<Text style={{ color: 'gray' }}>{cardSubTitle}</Text>}
       style={{ borderRadius: '5px', marginTop: 10 }}
       collapsible={true}
       defaultCollapsed={props.collapsible}

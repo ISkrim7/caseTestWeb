@@ -36,6 +36,7 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
     {
       title: '提取语法',
       dataIndex: 'value',
+      tooltip: 'json&cookie:语法为jsonpath; text:语法为正则',
       valueType: 'textarea',
       width: '50%',
       fieldProps: {

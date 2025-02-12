@@ -6,6 +6,7 @@ import {
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPICase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Tag } from 'antd';
@@ -31,20 +32,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
         sort: sort,
       };
       const { code, data } = await pageInterApiCase(searchData);
-      if (code === 0) {
-        return {
-          data: data.items,
-          total: data.pageInfo.total,
-          success: true,
-          pageSize: data.pageInfo.page,
-          current: data.pageInfo.limit,
-        };
-      }
-      return {
-        data: [],
-        success: false,
-        total: 0,
-      };
+      return pageData(code, data);
     },
     [currentPartId],
   );
@@ -180,5 +168,4 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
     />
   );
 };
-
 export default Index;

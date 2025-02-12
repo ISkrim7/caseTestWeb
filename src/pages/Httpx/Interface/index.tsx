@@ -30,11 +30,21 @@ const Index = () => {
           />
         </Splitter.Panel>
         <Splitter.Panel>
-          <InterfaceApiTable
-            currentProjectId={currentProjectId}
-            currentPartId={currentCasePartId}
-            perKey={PerKey}
-          />
+          <ProCard
+            bodyStyle={{ padding: 0 }}
+            tabs={{
+              type: 'card',
+            }}
+          >
+            <ProCard.TabPane key="api" tab="Common API">
+              <InterfaceApiTable
+                currentProjectId={currentProjectId}
+                currentPartId={currentCasePartId}
+                perKey={PerKey}
+              />
+            </ProCard.TabPane>
+            <ProCard.TabPane key="case" tab="Group APIs"></ProCard.TabPane>
+          </ProCard>
         </Splitter.Panel>
       </Splitter>
     </ProCard>

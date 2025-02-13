@@ -1,4 +1,4 @@
-import { IObjGet, IPage, IResponse, ISearch } from '@/api';
+import { IObjGet, IPage, IResponse } from '@/api';
 import {
   IInterfaceAPI,
   IInterfaceAPIRecord,
@@ -11,7 +11,7 @@ import { request } from '@@/plugin-request/request';
  * @param data
  * @param options
  */
-export const pageInterApi = async (data: ISearch, options?: IObjGet) => {
+export const pageInterApi = async (data: any, options?: IObjGet) => {
   return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/page', {
     method: 'POST',
     data: data,
@@ -56,7 +56,7 @@ export const asyncTryInterApi = async (
  * @param options
  */
 export const detailInterApiById = async (
-  data?: { interfaceId: string },
+  data?: { interfaceId: string | number },
   options?: IObjGet,
 ) => {
   return request<IResponse<IInterfaceAPI>>('/api/interface/detail', {

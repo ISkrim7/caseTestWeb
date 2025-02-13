@@ -37,12 +37,16 @@ export interface IInterfaceAPI extends IBaseField {
   follow_redirects: boolean;
   is_common: number;
   enable: boolean;
+  is_group: number;
+  group_id: number;
 }
 
 export interface IInterfaceGroup extends IBaseField {
   name: string;
   description: string;
   api_num: number;
+  project_id: number;
+  part_id: number;
 }
 
 export interface IInterfaceAPICase extends IBaseField {

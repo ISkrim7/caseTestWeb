@@ -7,6 +7,7 @@ import {
   updateInterApiById,
 } from '@/api/inter';
 import { addApi2Case } from '@/api/inter/interCase';
+import { addInterfaceGroupApi } from '@/api/inter/interGroup';
 import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterBeforeParams from '@/pages/Httpx/componets/InterBeforeParams';
@@ -43,22 +44,28 @@ import { history, useParams } from 'umi';
 
 interface SelfProps {
   addFromCase: boolean;
+  addFromGroup: boolean;
   projectId?: number;
   partId?: number;
   setTitle?: Dispatch<React.SetStateAction<string>>;
   setSubCardTitle?: Dispatch<React.SetStateAction<string>>;
   caseApiId?: string;
+  groupId?: string;
   interfaceApiInfo?: IInterfaceAPI;
   refresh: () => void;
+  interfaceId?: number;
 }
 
 const Index: FC<SelfProps> = ({
+  interfaceId,
   addFromCase = false,
+  addFromGroup = false,
   projectId,
   setTitle,
   setSubCardTitle,
   partId,
   caseApiId,
+  groupId,
   refresh,
   interfaceApiInfo,
 }) => {
@@ -96,6 +103,18 @@ const Index: FC<SelfProps> = ({
           setCurrentProjectId(data.project_id); // 设置当前项目ID
         }
       });
+    } else if (interfaceId) {
+      setCurrentMode(1); // 设置当前模式为查看模式
+      detailInterApiById({ interfaceId: interfaceId }).then(
+        ({ code, data }) => {
+          if (code === 0) {
+            // 请求成功
+            interApiForm.setFieldsValue(data); // 设置表单值
+            setDataLength(data); // 设置数据长度
+            setCurrentProjectId(data.project_id); // 设置当前项目ID
+          }
+        },
+      );
     } else {
       setCurrentMode(2); // 如果不存在接口ID，则设置当前模式为编辑模式
     }
@@ -235,12 +254,14 @@ const Index: FC<SelfProps> = ({
    * 对用例的新增与修改
    * 区别 公共新增修改 与 从用例新增与修改
    * addFromCase 从用例新增与修改
+   * addFromGroup 从API GROUP新增与修改
    */
   const SaveOrUpdate = async () => {
     const values = interApiForm.getFieldsValue(true);
 
     // 从用例中新增私有的API
     values.is_common = addFromCase ? 0 : 1;
+    values.is_common = addFromGroup ? 0 : 1;
     if (interId !== undefined || values.id !== undefined) {
       //修改
       await updateInterApiById(values).then(({ code, msg }) => {
@@ -258,6 +279,12 @@ const Index: FC<SelfProps> = ({
           // 添加到Case中
           if (caseApiId && data) {
             await addApi2Case({ caseId: caseApiId, apiId: data.id }).then(
+              async () => {
+                refresh();
+              },
+            );
+          } else if (groupId && data) {
+            addInterfaceGroupApi({ groupId: groupId, apiId: data.id }).then(
               async () => {
                 refresh();
               },
@@ -304,15 +331,22 @@ const Index: FC<SelfProps> = ({
 
   const DetailExtra: FC<{ currentMode: number }> = ({ currentMode }) => {
     switch (currentMode) {
-      //用例详情下、公共api不展示编辑按钮
+      //用例详情下 group详情下、公共api不展示编辑按钮
       case 1:
         return (
           <>
             {interId ||
-            (caseApiId !== undefined && interfaceApiInfo?.is_common === 0) ? (
-              <Button type={'primary'} onClick={() => setCurrentMode(3)}>
-                Edit
-              </Button>
+            ((caseApiId !== undefined || groupId !== undefined) &&
+              interfaceApiInfo?.is_common === 0) ? (
+              <>
+                <Button
+                  type={'primary'}
+                  style={{ marginLeft: 10 }}
+                  onClick={() => setCurrentMode(3)}
+                >
+                  Edit
+                </Button>
+              </>
             ) : null}
           </>
         );
@@ -358,7 +392,7 @@ const Index: FC<SelfProps> = ({
         disabled={currentMode === 1}
         submitter={false}
       >
-        <ProCard hidden={addFromCase}>
+        <ProCard hidden={addFromCase || addFromGroup}>
           <ProForm.Group>
             <ProFormSelect
               width={'md'}

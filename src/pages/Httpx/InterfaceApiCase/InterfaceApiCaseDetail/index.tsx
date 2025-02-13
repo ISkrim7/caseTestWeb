@@ -9,6 +9,7 @@ import {
 } from '@/api/inter/interCase';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
+import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
 import InterfaceApiCaseVars from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/InterfaceApiCaseVars';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
@@ -60,6 +61,7 @@ const Index = () => {
   const [editCase, setEditCase] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
   const [choiceOpen, setChoiceOpen] = useState(false);
+  const [choiceGroupOpen, setChoiceGroupOpen] = useState(false);
   useEffect(() => {
     if (caseApiId) {
       baseInfoApiCase(caseApiId).then(({ code, data }) => {
@@ -252,6 +254,10 @@ const Index = () => {
       case 1:
         return (
           <>
+            <Button type={'primary'} onClick={() => setChoiceGroupOpen(true)}>
+              Choice Group
+            </Button>
+            <Divider type={'vertical'} />
             <Button type={'primary'} onClick={() => setChoiceOpen(true)}>
               Choice API
             </Button>
@@ -276,6 +282,9 @@ const Index = () => {
           openStatus={runOpen}
           caseApiId={caseApiId!}
         />
+      </MyDrawer>
+      <MyDrawer name={''} open={choiceGroupOpen} setOpen={setChoiceGroupOpen}>
+        <GroupApiChoiceTable refresh={refresh} currentCaseId={caseApiId!} />
       </MyDrawer>
       <MyDrawer name={''} open={choiceOpen} setOpen={setChoiceOpen}>
         <InterfaceCaseChoiceApiTable

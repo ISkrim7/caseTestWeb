@@ -105,6 +105,22 @@ export const selectCommonApis2Case = async (
 };
 
 /**
+ * 选择公共Group 给 case
+ * @param data
+ * @param opt
+ */
+export const selectCommonGroups2Case = async (
+  data: { caseId: number | string; groupIds: number[] },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interface/case/selectGroups', {
+    method: 'POST',
+    data: data,
+    ...(opt || {}),
+  });
+};
+
+/**
  * 获取apis
  * @param data
  * @param opt

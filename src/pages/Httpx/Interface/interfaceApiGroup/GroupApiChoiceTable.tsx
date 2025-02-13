@@ -1,14 +1,11 @@
 import { IObjGet } from '@/api';
 import { queryProject } from '@/api/base';
-import { pageInterApi } from '@/api/inter';
-import { selectCommonApis2Case } from '@/api/inter/interCase';
-import { addInterfaceGroupApis } from '@/api/inter/interGroup';
-import { associationApisByTaskId } from '@/api/inter/interTask';
+import { selectCommonGroups2Case } from '@/api/inter/interCase';
+import { pageInterfaceGroup } from '@/api/inter/interGroup';
 import MyProTable from '@/components/Table/MyProTable';
-import { IInterfaceAPI } from '@/pages/Httpx/types';
+import { IInterfaceGroup } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
 import { CasePartEnum, IUICase } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, message, Tag } from 'antd';
@@ -16,20 +13,12 @@ import { TableRowSelection } from 'antd/es/table/interface';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
-  currentProjectId?: number;
-  currentCaseApiId?: string;
-  currentGroupId?: string;
-  currentTaskId?: string;
+  currentCaseId: string;
   refresh?: () => void;
 }
 
-const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
-  currentGroupId,
-  currentCaseApiId,
-  refresh,
-  currentProjectId,
-  currentTaskId,
-}) => {
+const GroupApiChoiceTable: FC<SelfProps> = (props) => {
+  const { currentCaseId, refresh } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number>();
   const [selectPartId, setSelectPartId] = useState<number>();
@@ -50,27 +39,11 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
     });
   }, []);
   useEffect(() => {
-    if (currentProjectId) {
-      setSelectProjectId(currentProjectId);
-    }
-  }, [currentProjectId]);
-  useEffect(() => {
     if (selectProjectId) {
       fetchCaseParts(selectProjectId, setPartEnumMap).then();
     }
   }, [selectProjectId]);
-  const fetchInterface = useCallback(async (params: any, sort: any) => {
-    const searchData = {
-      ...params,
-      //只查询公共api
-      is_common: 1,
-      sort: sort,
-    };
-    const { code, data } = await pageInterApi(searchData);
-    return pageData(code, data);
-  }, []);
-
-  const columns: ProColumns<IInterfaceAPI>[] = [
+  const columns: ProColumns<IInterfaceGroup>[] = [
     {
       title: '项目',
       dataIndex: 'project_id',
@@ -105,34 +78,27 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       },
     },
     {
-      title: '接口编号',
+      title: 'ID',
       dataIndex: 'uid',
       key: 'uid',
+      width: '15%',
       copyable: true,
-    },
-    {
-      title: '名称',
-      dataIndex: 'name',
-      key: 'name',
-    },
-
-    {
-      title: '优先级',
-      dataIndex: 'level',
-      valueType: 'select',
-      valueEnum: CONFIG.API_LEVEL_ENUM,
-      width: '10%',
+      fixed: 'left',
       render: (_, record) => {
-        return <Tag color={'blue'}>{record.level}</Tag>;
+        return <Tag>{record.uid}</Tag>;
       },
     },
     {
-      title: '状态',
-      dataIndex: 'status',
-      valueType: 'select',
-      valueEnum: CONFIG.API_STATUS_ENUM,
+      title: '组名',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '接口数',
+      dataIndex: 'api_num',
+      key: 'api_num',
       render: (_, record) => {
-        return CONFIG.API_STATUS_ENUM[record.status].tag;
+        return <Tag>{record.api_num}</Tag>;
       },
     },
     {
@@ -143,14 +109,16 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       },
     },
   ];
-
   const rowSelection: TableRowSelection<IUICase> = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys: React.Key[]) => {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-
+  const fetchInterfaceGroup = useCallback(async (params: any) => {
+    const { code, data } = await pageInterfaceGroup({ ...params });
+    return pageData(code, data);
+  }, []);
   return (
     <MyProTable
       // @ts-ignore
@@ -159,28 +127,10 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
           <Button
             type={'primary'}
             onClick={async () => {
-              if (currentCaseApiId) {
-                const { code, msg } = await selectCommonApis2Case({
-                  caseId: currentCaseApiId,
-                  commonApis: selectedRowKeys as number[],
-                });
-                if (code === 0) {
-                  message.success(msg);
-                  refresh?.();
-                }
-              } else if (currentTaskId) {
-                const { code, msg } = await associationApisByTaskId({
-                  taskId: currentTaskId,
-                  apiIds: selectedRowKeys as number[],
-                });
-                if (code === 0) {
-                  message.success(msg);
-                  refresh?.();
-                }
-              } else if (currentGroupId) {
-                const { code, msg } = await addInterfaceGroupApis({
-                  groupId: currentGroupId,
-                  apiIds: selectedRowKeys as number[],
+              if (currentCaseId) {
+                const { code, msg } = await selectCommonGroups2Case({
+                  caseId: currentCaseId,
+                  groupIds: selectedRowKeys as number[],
                 });
                 if (code === 0) {
                   message.success(msg);
@@ -198,9 +148,9 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       rowKey={'id'}
       x={1000}
       actionRef={actionRef}
-      request={fetchInterface}
+      request={fetchInterfaceGroup}
     />
   );
 };
 
-export default InterfaceCaseChoiceApiTable;
+export default GroupApiChoiceTable;

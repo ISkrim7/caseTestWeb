@@ -1,10 +1,14 @@
-import { pageInterfaceGroup } from '@/api/inter/interGroup';
+import {
+  copyInterfaceGroup,
+  pageInterfaceGroup,
+  removeInterfaceGroup,
+} from '@/api/inter/interGroup';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceGroup } from '@/pages/Httpx/types';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Tag } from 'antd';
+import { Button, Divider, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
@@ -31,9 +35,12 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       title: 'ID',
       dataIndex: 'uid',
       key: 'uid',
-      width: '10%',
+      width: '15%',
       copyable: true,
       fixed: 'left',
+      render: (_, record) => {
+        return <Tag>{record.uid}</Tag>;
+      },
     },
     {
       title: '组名',
@@ -44,13 +51,60 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       title: '接口数',
       dataIndex: 'api_num',
       key: 'api_num',
+      render: (_, record) => {
+        return <Tag>{record.api_num}</Tag>;
+      },
     },
     {
       title: '创建人',
       dataIndex: 'creatorName',
-      width: '10%',
       render: (_, record) => {
         return <Tag>{record.creatorName}</Tag>;
+      },
+    },
+    {
+      title: '操作',
+      valueType: 'option',
+      key: 'option',
+      fixed: 'right',
+      width: '20%',
+      render: (_, record) => {
+        return (
+          <>
+            <a
+              onClick={() => {
+                history.push(`/interface/group/detail/groupId=${record.id}`);
+              }}
+            >
+              详情
+            </a>
+            <Divider type={'vertical'} />
+            <a
+              onClick={async () => {
+                const { code } = await copyInterfaceGroup(record.id);
+                if (code === 0) {
+                  actionRef.current?.reload();
+                }
+              }}
+            >
+              复制
+            </a>
+            <Popconfirm
+              title={'确认删除？'}
+              okText={'确认'}
+              cancelText={'点错了'}
+              onConfirm={async () => {
+                const { code } = await removeInterfaceGroup(record.id);
+                if (code === 0) {
+                  actionRef.current?.reload();
+                }
+              }}
+            >
+              <Divider type={'vertical'} />
+              <a>删除</a>
+            </Popconfirm>
+          </>
+        );
       },
     },
   ];
@@ -59,7 +113,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       persistenceKey={perKey}
       columns={columns}
       rowKey={'id'}
-      x={1000}
+      x={800}
       actionRef={actionRef}
       request={fetchInterfaceGroup}
       toolBarRender={() => [

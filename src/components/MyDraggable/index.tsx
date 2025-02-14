@@ -36,11 +36,11 @@ const Index: FC<ISelfProps> = (props) => {
             ref={provided.innerRef}
             {...provided.droppableProps}
             style={{
-              // Adjust this to control the look of the droppable area
-
               background: snapshot.isDraggingOver ? '#f4f5f7' : '#fff',
               padding: '8px',
               borderRadius: '8px',
+              border: '1px solid #e0e0e0',
+              transition: 'background-color 0.2s ease',
             }}
           >
             {items.map((item, index) => (
@@ -50,6 +50,9 @@ const Index: FC<ISelfProps> = (props) => {
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
+                    style={{
+                      ...provided.draggableProps.style,
+                    }}
                   >
                     {item.content}
                   </div>

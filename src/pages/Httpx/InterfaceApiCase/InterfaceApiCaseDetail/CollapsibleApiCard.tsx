@@ -7,7 +7,12 @@ import {
 import InterfaceApiDetail from '@/pages/Httpx/Interface/InterfaceApiDetail';
 import GroupInterfaceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupInterfaceTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
+import {
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  RightOutlined,
+  UnorderedListOutlined,
+} from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Switch, Tag, Typography } from 'antd';
 import { FC, useEffect, useState } from 'react';
@@ -104,7 +109,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
   };
 
   const extraButton = (
-    <>
+    <div style={{ marginRight: 10 }}>
       {interfaceApiInfo && (
         <>
           {interfaceApiInfo.is_group ? (
@@ -147,21 +152,30 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
           />
         </>
       )}
-    </>
+    </div>
   );
 
   return (
     <ProCard
-      bordered
-      boxShadow={true}
+      collapsibleIconRender={() => (
+        <>
+          <UnorderedListOutlined style={{ color: '#e67411', marginLeft: 10 }} />{' '}
+          <RightOutlined />{' '}
+        </>
+      )}
+      // boxShadow={true}
+      hoverable
       title={
         <>
-          <Tag color={'#108ee9'}>{cardTitle}</Tag>
+          <Tag color={'#108ee9'} style={{ marginLeft: 4 }}>
+            {cardTitle}
+          </Tag>
         </>
       }
       subTitle={<Text style={{ color: 'gray' }}>{cardSubTitle}</Text>}
       style={{ borderRadius: '5px', marginTop: 10 }}
       collapsible={true}
+      ghost={true}
       defaultCollapsed={props.collapsible}
       extra={extraButton}
     >

@@ -284,12 +284,3 @@ export interface IInterfaceTask {
   sendType?: number;
   sendKey?: string;
 }
-
-export interface IInterfaceTaskInterface {
-  uid: string;
-  interfaceName: string;
-  interfaceDesc?: string;
-  interfaceStepNum: number;
-  creatorId: number;
-  creatorName: string;
-}

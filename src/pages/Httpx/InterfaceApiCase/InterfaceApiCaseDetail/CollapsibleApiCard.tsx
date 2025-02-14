@@ -14,7 +14,15 @@ import {
   UnorderedListOutlined,
 } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Switch, Tag, Typography } from 'antd';
+import {
+  Button,
+  message,
+  Popconfirm,
+  Switch,
+  Tag,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 const { Text } = Typography;
@@ -134,22 +142,24 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
           >
             <Button type={'link'}>Del</Button>
           </Popconfirm>
-          <Switch
-            style={{ marginLeft: 10 }}
-            checkedChildren={<CheckCircleTwoTone />}
-            unCheckedChildren={<CloseCircleTwoTone />}
-            value={interfaceApiInfo.enable}
-            onClick={async (checked, _) => {
-              // @ts-ignore
-              const { code } = await updateInterApiById({
-                id: interfaceApiInfo?.id,
-                enable: checked,
-              });
-              if (code === 0) {
-                refresh();
-              }
-            }}
-          />
+          <Tooltip title="关闭后此步骤将不运行、只在用例场景中生效">
+            <Switch
+              style={{ marginLeft: 10 }}
+              checkedChildren={<CheckCircleTwoTone />}
+              unCheckedChildren={<CloseCircleTwoTone />}
+              value={interfaceApiInfo.enable}
+              onClick={async (checked, _) => {
+                // @ts-ignore
+                const { code } = await updateInterApiById({
+                  id: interfaceApiInfo?.id,
+                  enable: checked,
+                });
+                if (code === 0) {
+                  refresh();
+                }
+              }}
+            />
+          </Tooltip>
         </>
       )}
     </div>
@@ -159,7 +169,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
     <ProCard
       collapsibleIconRender={() => (
         <>
-          <UnorderedListOutlined style={{ color: '#e67411', marginLeft: 10 }} />{' '}
+          <UnorderedListOutlined style={{ color: '#c3cad4', marginLeft: 10 }} />{' '}
           <RightOutlined />{' '}
         </>
       )}

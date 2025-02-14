@@ -157,14 +157,10 @@ export default [
     routes: [
       {
         path: '/interface/interApi/api',
-        name: '公共用例',
+        name: '公共接口&组',
         component: '@/pages/Httpx/Interface',
       },
-      {
-        path: '/interface/interApi/record',
-        name: '接口录制',
-        component: '@/pages/Httpx/InterfaceApiRecord',
-      },
+
       {
         path: '/interface/interApi/detail/interId=:interId',
         name: '接口详情添加',
@@ -191,7 +187,7 @@ export default [
       },
       {
         path: '/interface/caseApi/cases',
-        name: '接口用例',
+        name: '业务场景',
         component: '@/pages/Httpx/InterfaceApiCase',
       },
       {
@@ -202,14 +198,14 @@ export default [
       },
       {
         path: '/interface/caseApi/detail/caseApiId=:caseApiId',
-        name: '接口用例',
+        name: '业务用例',
         hideInMenu: true,
         component: '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail',
       },
 
       {
         path: '/interface/tasks',
-        name: '接口任务',
+        name: '自动化任务',
         component: '@/pages/Httpx/InterfaceApiCaseTask',
       },
       {
@@ -231,6 +227,11 @@ export default [
         component:
           '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail',
         hideInMenu: true,
+      },
+      {
+        path: '/interface/interApi/record',
+        name: '接口录制',
+        component: '@/pages/Httpx/InterfaceApiRecord',
       },
       { component: '@/pages/404' },
     ],

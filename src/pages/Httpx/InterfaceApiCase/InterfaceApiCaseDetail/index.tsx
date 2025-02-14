@@ -377,7 +377,7 @@ const Index = () => {
           <Tabs.TabPane key={'1'} tab={'Vars'}>
             <InterfaceApiCaseVars currentCaseId={caseApiId} />
           </Tabs.TabPane>
-          <Tabs.TabPane key={'2'} tab={'APIs'}>
+          <Tabs.TabPane key={'2'} tab={`API (${apis.length})`}>
             <MyDraggable
               items={apis}
               setItems={setApis}

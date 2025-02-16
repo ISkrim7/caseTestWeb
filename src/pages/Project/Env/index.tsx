@@ -2,6 +2,7 @@ import { IEnv, ISearch } from '@/api';
 import { deleteEnv, pageEnv, updateEnv } from '@/api/base';
 import MyProTable from '@/components/Table/MyProTable';
 import AddEnv from '@/pages/Project/Env/AddEnv';
+import { pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { message } from 'antd';
 import { useRef } from 'react';
@@ -14,21 +15,7 @@ const Index = () => {
       sort: sort,
     };
     const { code, data } = await pageEnv(searchData);
-    if (code === 0) {
-      return {
-        data: data.items,
-        total: data.pageInfo.total,
-        success: true,
-        pageSize: data.pageInfo.page,
-        current: data.pageInfo.limit,
-      };
-    } else {
-      return {
-        data: [],
-        total: 0,
-        success: false,
-      };
-    }
+    return pageData(code, data);
   };
 
   const isReload = (value: boolean) => {
@@ -138,7 +125,7 @@ const Index = () => {
   };
   return (
     <MyProTable
-      headerTitle={'Env'}
+      headerTitle={'环境配置'}
       actionRef={actionRef}
       columns={columns}
       request={pageEnvs}
@@ -149,5 +136,4 @@ const Index = () => {
     />
   );
 };
-
 export default Index;

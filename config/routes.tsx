@@ -65,6 +65,11 @@ export default [
         name: '环境',
         component: '@/pages/Project/Env',
       },
+      {
+        path: '/project/DB',
+        name: '数据库',
+        component: '@/pages/Project/Db',
+      },
     ],
   },
 

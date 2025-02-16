@@ -1,4 +1,3 @@
-import { queryProject } from '@/api/base';
 import {
   baseInfoApiCase,
   insertApiCase,
@@ -7,6 +6,7 @@ import {
   runApiCaseBack,
   setApiCase,
 } from '@/api/inter/interCase';
+import { queryProjects } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
@@ -80,15 +80,7 @@ const Index = () => {
     } else {
       setCurrentStatus(2);
     }
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const projects = data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-        setProjects(projects);
-      }
-    });
+    queryProjects(setProjects).then();
   }, [editCase]);
 
   useEffect(() => {

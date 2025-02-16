@@ -1,20 +1,27 @@
 import { IProject } from '@/api';
-import { pageProject, putProject, queryProject } from '@/api/base';
-import { pageData } from '@/utils/somefunc';
-import { ProjectTwoTone } from '@ant-design/icons';
-import { ActionType, ProCard } from '@ant-design/pro-components';
-import { Col, Row, Typography } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
-import NewProject from 'src/pages/Project/NewProject';
+import { newProject, putProject, queryProject, searchUser } from '@/api/base';
+import { PlusOutlined, ProjectTwoTone } from '@ant-design/icons';
+import {
+  ModalForm,
+  ProCard,
+  ProFormSelect,
+  ProFormText,
+} from '@ant-design/pro-components';
+import { Button, Col, Form, message, Row, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useAccess } from 'umi';
 
-const { Text, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 const ProjectList: React.FC = () => {
   const { isAdmin } = useAccess();
-  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [projects, setProjects] = useState<IProject[]>([]);
   const [status, setStatus] = useState<number>(0);
+  const [currentProjectId, setCurrentProjectId] = useState<string>();
+  const [openModel, setOpenModel] = useState(false);
+  const [currentForm] = Form.useForm<IProject>();
+  const [title, setTitle] = useState('');
+
   useEffect(() => {
     queryProject().then(async ({ code, data }) => {
       if (code === 0) {
@@ -23,67 +30,143 @@ const ProjectList: React.FC = () => {
     });
   }, [status]);
 
-  const isReload = (value: boolean) => {
-    if (value) {
-      setStatus(status + 1);
+  const isReload = async () => {
+    setStatus(status + 1);
+  };
+
+  const saveOrPut = async () => {
+    const values = await currentForm.validateFields();
+    if (currentProjectId) {
+      putProject({ ...values, uid: currentProjectId }).then(
+        async ({ code, msg }) => {
+          if (code === 0) {
+            message.success(msg);
+            setOpenModel(false);
+            await isReload();
+            return true;
+          }
+        },
+      );
+    } else {
+      newProject(values).then(async ({ code, msg }) => {
+        if (code === 0) {
+          message.success(msg);
+          setOpenModel(false);
+          await isReload();
+          return true;
+        }
+      });
+    }
+  };
+  const queryUser: any = async (value: any) => {
+    const { keyWords } = value;
+    if (keyWords) {
+      const { code, data } = await searchUser({ username: keyWords });
+      if (code === 0) {
+        return data.map((item) => ({
+          label: item.username,
+          value: item.id,
+        }));
+      }
     }
   };
 
-  const fetchPageProjects = async (params: any, sort: any) => {
-    const searchInfo: any = {
-      ...params,
-      sort: sort,
-    };
-    const { code, data } = await pageProject(searchInfo);
-    return pageData(code, data);
-  };
-
-  const OnSave = async (_: any, record: IProject) => {
-    return await putProject(record);
-  };
-
   return (
-    <ProCard
-      gutter={[16, 16]}
-      title={'全部项目'}
-      headerBordered={true}
-      extra={<NewProject reload={isReload} />}
-      style={{ marginBlockStart: 16, height: '100vh' }}
-    >
-      <Row gutter={[20, 20]}>
-        {projects.map((item, index) => {
-          return (
-            <Col span={8} key={index}>
-              <ProCard
-                bordered={true}
-                hoverable={true}
-                type="inner"
-                headerBordered={true}
-                style={{ marginBlockStart: 16, borderRadius: 16 }}
-                title={
-                  <>
-                    {' '}
-                    <ProjectTwoTone />
-                    <span style={{ marginLeft: 8 }}>{item.title} </span>
-                  </>
-                }
-              >
-                <Paragraph>{item.desc}</Paragraph>
-              </ProCard>
-            </Col>
-          );
-        })}
-      </Row>
-      {/*<MyProTable*/}
-      {/*  headerTitle={'项目'}*/}
-      {/*  actionRef={actionRef}*/}
-      {/*  columns={columns}*/}
-      {/*  request={fetchPageProjects}*/}
-      {/*  rowKey={'uid'}*/}
-      {/*  onSave={OnSave}*/}
-      {/*  toolBarRender={() => [<NewProject reload={isReload} />]}*/}
-      {/*/>*/}
-    </ProCard>
+    <>
+      <ModalForm<IProject>
+        title={`${title}项目`}
+        form={currentForm}
+        open={openModel}
+        onOpenChange={setOpenModel}
+        autoFocusFirstInput
+        // 关闭执录入执行
+        modalProps={{
+          onCancel: () => console.log('close'),
+        }}
+        onFinish={saveOrPut}
+      >
+        <ProFormText
+          name="title"
+          label="项目名称"
+          placeholder="input your project name"
+          required={true}
+        />
+        <ProFormText
+          name="desc"
+          label="项目描述"
+          placeholder="input your project desc"
+        />
+        <ProFormSelect
+          showSearch
+          name="chargeId"
+          label="项目负责人"
+          placeholder="input your admin name to search"
+          rules={[{ required: true, message: 'Please select !' }]}
+          debounceTime={1000}
+          request={queryUser}
+        />
+      </ModalForm>
+      <ProCard
+        gutter={[16, 16]}
+        title={'全部项目'}
+        headerBordered={true}
+        extra={
+          <Button
+            type={'primary'}
+            onClick={() => {
+              setTitle('新增');
+              setOpenModel(true);
+            }}
+          >
+            {' '}
+            <PlusOutlined />
+            新建项目
+          </Button>
+        }
+        style={{ marginBlockStart: 16, height: 'auto' }}
+      >
+        <Row gutter={[20, 20]}>
+          {projects.map((item, index) => {
+            return (
+              <Col span={8} key={index}>
+                <ProCard
+                  bordered={true}
+                  hoverable={true}
+                  type="inner"
+                  headerBordered={true}
+                  style={{ marginBlockStart: 16, borderRadius: 16 }}
+                  actions={
+                    isAdmin
+                      ? [
+                          <a
+                            key="edit"
+                            onClick={() => {
+                              setCurrentProjectId(item.uid);
+                              currentForm.setFieldsValue(item);
+                              setTitle('编辑');
+                              setOpenModel(true);
+                            }}
+                          >
+                            编辑
+                          </a>,
+                        ]
+                      : []
+                  }
+                  title={
+                    <>
+                      <ProjectTwoTone />
+                      <span style={{ marginLeft: 8 }}>{item.title} </span>
+                    </>
+                  }
+                >
+                  <Paragraph>{item.desc}</Paragraph>
+                </ProCard>
+              </Col>
+            );
+          })}
+        </Row>
+      </ProCard>
+    </>
   );
 };
 

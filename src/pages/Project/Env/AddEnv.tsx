@@ -20,7 +20,7 @@ const AddEnv: React.FC<selfProps> = ({ reload }) => {
       trigger={
         <Button type="primary">
           <PlusOutlined />
-          新建host
+          新建环境
         </Button>
       }
       autoFocusFirstInput

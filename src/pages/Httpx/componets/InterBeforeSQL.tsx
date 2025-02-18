@@ -66,19 +66,30 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
               </Text>
             </li>
             <li>
-              <Text>n,p 将被处理为变量名，对应的值是搜索返回的第一个</Text>
+              <Text>u,p 将被处理为变量名，对应的值是搜索返回的第一个</Text>
             </li>
           </ul>
         </li>
       </ul>
       <ul>
         <li>
-          {'支持 上文 变量{{xx}} 写入SQL'}
+          <Text strong>{'支持 上文 变量{{xx}} 写入SQL'}</Text>
           <ul>
             <li>
               <Text code>{'select * from table where id = {{ID}}'}</Text>
             </li>
           </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          {'使用Oracle 注意⚠️'}
+          <li>
+            <Text>
+              Oracle
+              返回变量字段名皆为大写，设置变量名需大写，否则无法获取到变量值。
+            </Text>
+          </li>
         </li>
       </ul>
     </Paragraph>

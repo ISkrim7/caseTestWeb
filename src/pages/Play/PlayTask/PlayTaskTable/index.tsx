@@ -13,7 +13,7 @@ import { history } from '@@/core/history';
 import { useModel } from '@@/exports';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Popconfirm, Switch, Tag } from 'antd';
-import { FC, useCallback, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
@@ -29,7 +29,7 @@ const Index: FC<SelfProps> = (props) => {
   const fetchPageUITaskTable = useCallback(
     async (params: any, sort: any) => {
       const { code, data } = await pageUICaseTask({
-        case_part_id: currentPartId,
+        part_id: currentPartId,
         sort: sort,
         ...params,
       });
@@ -37,6 +37,9 @@ const Index: FC<SelfProps> = (props) => {
     },
     [currentProjectId, currentPartId],
   );
+  useEffect(() => {
+    actionRef.current?.reload();
+  }, [currentPartId, currentProjectId]);
 
   const setTaskSwitch = async (uid: string, flag: boolean) => {
     const { code } = await setUITaskSwitch({ jobId: uid, switch: flag });

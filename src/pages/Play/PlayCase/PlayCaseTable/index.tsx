@@ -41,7 +41,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       console.log('case', currentPartId);
       if (currentPartId) {
         const { code, data } = await pageUICase({
-          case_part_id: currentPartId,
+          part_id: currentPartId,
           ...params,
           sort: sort,
         });
@@ -84,13 +84,13 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       dataIndex: 'level',
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
-      render: (_, record) => {
-        return (
-          <Tag color={CONFIG.RENDER_CASE_LEVEL[record.level].color}>
-            {CONFIG.RENDER_CASE_LEVEL[record.level].text}
-          </Tag>
-        );
-      },
+      // render: (_, record) => {
+      //   return (
+      //     <Tag color={CONFIG.RENDER_CASE_LEVEL[record.level].color}>
+      //       {CONFIG.RENDER_CASE_LEVEL[record.level].text}
+      //     </Tag>
+      //   );
+      // },
     },
     {
       title: 'step num',
@@ -106,13 +106,13 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       dataIndex: 'status',
       valueType: 'select',
       valueEnum: CONFIG.CASE_STATUS_ENUM,
-      render: (_, record) => {
-        return (
-          <Tag color={CONFIG.RENDER_CASE_STATUS[record.status].color}>
-            {CONFIG.RENDER_CASE_STATUS[record.status].text}
-          </Tag>
-        );
-      },
+      // render: (_, record) => {
+      //   return (
+      //     <Tag color={CONFIG.RENDER_CASE_STATUS[record.status].color}>
+      //       {CONFIG.RENDER_CASE_STATUS[record.status].text}
+      //     </Tag>
+      //   );
+      // },
     },
     {
       title: 'creator',

@@ -1,4 +1,3 @@
-import { queryProject } from '@/api/base';
 import {
   getInterfaceGroup,
   insertInterfaceGroup,
@@ -7,6 +6,7 @@ import {
   tryInterfaceGroup,
   updateInterfaceGroup,
 } from '@/api/inter/interGroup';
+import { queryProjects } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
@@ -54,7 +54,9 @@ const Index = () => {
   const handleReload = async () => {
     setReload(reload + 1);
   };
-
+  useEffect(() => {
+    queryProjects(setProjects).then();
+  }, []);
   useEffect(() => {
     if (groupId) {
       getInterfaceGroup(groupId).then(async ({ code, data }) => {
@@ -73,15 +75,6 @@ const Index = () => {
     } else {
       setCurrentStatus(2);
     }
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const projects = data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-        setProjects(projects);
-      }
-    });
   }, [reload]);
 
   useEffect(() => {
@@ -120,6 +113,8 @@ const Index = () => {
       });
       if (code === 0) {
         message.success(msg);
+        setReload(reload + 1);
+        setCurrentStatus(1);
       }
     } else {
       const { code, data } = await insertInterfaceGroup(values);

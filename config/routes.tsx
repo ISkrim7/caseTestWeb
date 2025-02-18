@@ -238,6 +238,11 @@ export default [
         name: '接口录制',
         component: '@/pages/Httpx/InterfaceApiRecord',
       },
+      {
+        path: '/interface/interApi/config',
+        name: '全局配置',
+        component: '@/pages/Httpx/InterfaceConfig',
+      },
       { component: '@/pages/404' },
     ],
   },

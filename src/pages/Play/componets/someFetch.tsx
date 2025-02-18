@@ -1,9 +1,8 @@
-import { IQueryPartTree } from '@/api';
 import { queryTreePartByProject } from '@/api/base';
 import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
 import React from 'react';
 
-const loopData = (data: IQueryPartTree[]): CasePartEnum[] => {
+const loopData = (data: any[]): CasePartEnum[] => {
   return data.map((item) => {
     if (item.children) {
       return {

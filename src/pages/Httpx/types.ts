@@ -1,6 +1,20 @@
 import { IBaseField, IExtract, IObjGet } from '@/api';
 import React from 'react';
 
+export interface IInterfaceGlobalVariable extends IBaseField {
+  key: string;
+  value: string;
+  description: string;
+  project_id: number;
+}
+
+export interface IInterfaceGlobalHeader extends IBaseField {
+  key: string;
+  value: string;
+  description: string;
+  project_id: number;
+}
+
 export interface IInterfaceAPIRecord extends IBaseField {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';

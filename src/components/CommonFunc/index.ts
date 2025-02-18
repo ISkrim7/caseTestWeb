@@ -21,3 +21,17 @@ export const queryProjects = async (
     }
   });
 };
+
+export const queryProjectEnum = async (
+  setter: React.Dispatch<React.SetStateAction<any>>,
+) => {
+  queryProject().then(({ code, data }) => {
+    if (code === 0) {
+      const mapData = data.reduce((acc: any, obj) => {
+        acc[obj.id] = { text: obj.title };
+        return acc;
+      }, {});
+      setter(mapData);
+    }
+  });
+};

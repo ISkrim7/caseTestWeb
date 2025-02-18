@@ -10,7 +10,7 @@ export interface IUICase {
   status: string;
   steps: IUICaseSteps[];
   project_id: number;
-  case_part_id: number;
+  part_id: number;
   create_time: string;
   update_time: string;
   creatorName: string;
@@ -48,7 +48,7 @@ export interface IUITask {
   ui_cases: IUICase[];
   ui_case_num: number;
   project_id: number;
-  case_part_id: number;
+  part_id: number;
   create_time: string;
   update_time: string;
   creatorName: string;

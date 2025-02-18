@@ -184,13 +184,13 @@ const Index = () => {
               fieldProps={{
                 onChange: (value: number) => {
                   setCurrentProjectId(value);
-                  tasKForm.setFieldsValue({ case_part_id: undefined });
+                  tasKForm.setFieldsValue({ part_id: undefined });
                 },
               }}
             />
             <ProFormTreeSelect
               required
-              name="case_part_id"
+              name="part_id"
               label="所属模块"
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}

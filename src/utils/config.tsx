@@ -1,3 +1,4 @@
+import { IObjGet } from '@/api';
 import { Send } from '@icon-park/react';
 import { Tag } from 'antd';
 
@@ -9,7 +10,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 export { socketUrl };
 
-export const CONFIG = {
+export const CONFIG: IObjGet = {
   EXTRACT_TARGET_ENUM: {
     6: { text: 'Response.json' },
     8: { text: 'Response.text' },

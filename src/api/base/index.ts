@@ -4,7 +4,6 @@ import {
   ILoginParams,
   IObjGet,
   IProject,
-  IQueryPartTree,
   IResponse,
   ISearch,
   IUser,
@@ -207,7 +206,7 @@ export const queryTreePartByProject = async (
   projectId: number,
   options?: IObjGet,
 ) => {
-  return request<IResponse<IQueryPartTree[]>>('/api/part/queryTreeByProject', {
+  return request<IResponse<any[]>>('/api/part/queryTreeByProject', {
     method: 'GET',
     params: { projectId: projectId },
     ...(options || {}),

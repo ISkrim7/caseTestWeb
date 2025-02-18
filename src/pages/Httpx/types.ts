@@ -32,6 +32,9 @@ export interface IInterfaceAPI extends IBaseField {
   connect_timeout: number;
   response_timeout: number;
   before_script: string;
+  before_db_id: number;
+  before_sql: string;
+  before_sql_extracts: { key: string; jP: string; id: any }[];
   after_script: string;
   before_params: IBeforeParams[] | [];
   follow_redirects: boolean;

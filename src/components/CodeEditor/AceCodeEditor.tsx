@@ -1,6 +1,9 @@
 import 'ace-builds/src-noconflict/ace';
+import 'ace-builds/src-noconflict/mode-html.js';
 import 'ace-builds/src-noconflict/mode-json.js';
+import 'ace-builds/src-noconflict/mode-mysql.js';
 import 'ace-builds/src-noconflict/mode-python.js';
+import 'ace-builds/src-noconflict/mode-text.js';
 import 'ace-builds/src-noconflict/theme-twilight';
 import { FC, useState } from 'react';
 import AceEditor from 'react-ace';
@@ -29,6 +32,13 @@ const AceCodeEditor: FC<selfProps> = (props) => {
   } = props;
   const [mode, setMode] = useState(_mode);
   return (
+    // @param onChange - 当代码内容发生变化时的回调函数
+    // @param showGutter - 是否显示行号
+    // @param showPrintMargin - 是否显示打印边距
+    // @param wrapEnabled - 是否启用代码自动换行
+    // @param highlightActiveLine - 是否高亮当前行
+    // @param editorProps - 编辑器的其他属性设置
+    // @param setOptions - 编辑器的配置选项
     <AceEditor
       style={{ borderRadius: 10 }}
       theme="twilight"
@@ -39,9 +49,9 @@ const AceCodeEditor: FC<selfProps> = (props) => {
       value={value}
       fontSize={14}
       onChange={onChange}
-      showGutter={gutter}
+      showGutter={gutter} //是否显示行号
       showPrintMargin={true}
-      wrapEnabled={wrap}
+      wrapEnabled={wrap} // 是否启用代码自动换行
       highlightActiveLine={true}
       editorProps={{
         $blockScrolling: true,
@@ -52,7 +62,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
       setOptions={{
         showLineNumbers: showLineNumbers,
         highlightActiveLine: true,
-        cursorStyle: 'slim',
+        cursorStyle: 'smooth',
         highlightSelectedWord: true,
         tabSize: 4,
         behavioursEnabled: true,
@@ -60,6 +70,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
         enableLiveAutocompletion: false,
         autoScrollEditorIntoView: true,
         useWorker: true,
+        useSoftTabs: true,
       }}
     />
   );

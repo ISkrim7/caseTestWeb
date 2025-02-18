@@ -48,7 +48,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
   return (
     <ProCard>
       <ProForm form={form} submitter={false}>
-        <ProForm.Item name={'beforeParams'} trigger={'onValuesChange'}>
+        <ProForm.Item name={'before_params'} trigger={'onValuesChange'}>
           <EditableProTable<IBeforeParams>
             rowKey={'id'}
             search={false}

@@ -1,5 +1,3 @@
-import { IObjGet } from '@/api';
-import TextIcon from '@/utils/TextIcon';
 import { Send } from '@icon-park/react';
 import { Tag } from 'antd';
 
@@ -10,7 +8,8 @@ if (process.env.NODE_ENV === 'development') {
   socketUrl = 'wss://aijia-test.5i5j.com/';
 }
 export { socketUrl };
-export const CONFIG: IObjGet = {
+
+export const CONFIG = {
   EXTRACT_TARGET_ENUM: {
     6: { text: 'Response.json' },
     8: { text: 'Response.text' },
@@ -31,6 +30,7 @@ export const CONFIG: IObjGet = {
     2: { text: 'ResponseHeader' },
     3: { text: 'BeforeScript' },
     4: { text: 'BeforeParams' },
+    10: { text: 'BeforeSQL' },
     5: { text: 'AfterScript' },
     6: { text: 'ResponseJsonExtract' },
     7: { text: 'ResponseHeadExtract' },
@@ -252,8 +252,6 @@ export const CONFIG: IObjGet = {
         <Send theme="outline" size="14" fill="#7ed321" /> HTTPS
       </span>
     ),
-    GRPC: <TextIcon font={14} icon="icon-GRPC" text="GRPC" />,
-    Dubbo: <TextIcon font={14} icon="icon-a-dubbo1" text="Dubbo" />,
   },
   REQUEST_TYPE_TAG: {
     1: <Tag color="success">HTTP</Tag>,
@@ -345,11 +343,4 @@ export const CONFIG: IObjGet = {
     2: '企业微信',
     3: '飞书',
   },
-  MSG_ICON: {
-    0: 'icon-dianziyoujian',
-    1: 'icon-dingding01',
-    2: 'icon-qiyeweixin',
-    3: 'icon-feishu',
-  },
-  WECHAT_URL: 'https://static.pity.fun/picture/20220813204341.png',
 };

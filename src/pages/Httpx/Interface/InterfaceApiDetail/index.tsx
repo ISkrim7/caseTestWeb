@@ -12,6 +12,7 @@ import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterBeforeParams from '@/pages/Httpx/componets/InterBeforeParams';
 import InterBeforeScript from '@/pages/Httpx/componets/InterBeforeScript';
+import InterBeforeSql from '@/pages/Httpx/componets/InterBeforeSQL';
 import InterBody from '@/pages/Httpx/componets/InterBody';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterHeader from '@/pages/Httpx/componets/InterHeader';
@@ -24,6 +25,7 @@ import { CONFIG } from '@/utils/config';
 import {
   ApiOutlined,
   CheckCircleOutlined,
+  CodeOutlined,
   EditOutlined,
   FormOutlined,
   PythonOutlined,
@@ -38,7 +40,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Form, message, Spin, Tabs } from 'antd';
+import { Button, Form, message, Spin, Tabs, Tooltip } from 'antd';
 import React, { Dispatch, FC, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 
@@ -447,7 +449,13 @@ const Index: FC<SelfProps> = ({
         </ProCard>
         <ProCard>
           <Tabs defaultActiveKey={'2'} size={'large'}>
-            <Tabs.TabPane key={'1'} icon={<SettingOutlined />} tab={'前置操作'}>
+            <Tabs.TabPane
+              key={'1'}
+              icon={<SettingOutlined />}
+              tab={
+                <Tooltip title="依次执行 设置变量、脚本、SQL">前置操作</Tooltip>
+              }
+            >
               <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
                 <Tabs tabPosition={'left'}>
                   <Tabs.TabPane
@@ -463,6 +471,13 @@ const Index: FC<SelfProps> = ({
                     tab={'添加脚本'}
                   >
                     <InterBeforeScript form={interApiForm} mode={currentMode} />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane
+                    key={'3'}
+                    icon={<CodeOutlined />}
+                    tab={'添加SQL'}
+                  >
+                    <InterBeforeSql form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
                 </Tabs>
               </ProCard>

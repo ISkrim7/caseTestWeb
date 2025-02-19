@@ -21,7 +21,6 @@ const FuncScriptDesc = () => {
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     queryScripts().then(async ({ code, data }) => {
-      console.log(data);
       if (code === 0) {
         setLoading(false);
         setScriptsDesc(data);
@@ -30,10 +29,16 @@ const FuncScriptDesc = () => {
   }, []);
 
   return (
-    <ProCard>
+    <ProCard
+      title={'内置函数'}
+      subTitle={'用于前后置 Py脚本编写使用'}
+      bodyStyle={{ padding: 0 }}
+      headerBordered={true}
+    >
       <ProList<IFuncMap>
+        style={{ marginTop: 20 }}
         loading={loading}
-        bordered={false}
+        bordered={true}
         rowKey="title"
         expandable={{
           expandedRowKeys,

@@ -1,10 +1,10 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import MyDrawer from '@/components/MyDrawer';
-import FuncScriptDesc from '@/pages/Httpx/componets/funcScriptDesc';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, FormInstance } from 'antd';
+import { FormInstance, Typography } from 'antd';
 import { FC, useEffect, useState } from 'react';
+
+const { Text, Title } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -14,7 +14,6 @@ interface SelfProps {
 const InterBeforeScript: FC<SelfProps> = ({ form, mode }) => {
   const [scriptData, setScriptData] = useState<any>();
   const [readonly, setReadonly] = useState(false);
-  const [funcOpen, setFuncOpen] = useState(false);
   useEffect(() => {
     if (mode) {
       if (mode === 1) {
@@ -38,15 +37,17 @@ const InterBeforeScript: FC<SelfProps> = ({ form, mode }) => {
   };
   return (
     <ProCard
-      extra={
-        <Button onClick={() => setFuncOpen(true)} type={'primary'}>
-          内置func
-        </Button>
+      title={<Title level={5}>编写py脚本 设置变量</Title>}
+      subTitle={
+        <Text style={{ marginLeft: 30 }} type={'secondary'}>
+          like{' '}
+          <Text type={'secondary'} code>
+            name = faker.name()
+          </Text>
+        </Text>
       }
+      headerBordered
     >
-      <MyDrawer open={funcOpen} width={'30%'} setOpen={setFuncOpen} name={''}>
-        <FuncScriptDesc />
-      </MyDrawer>
       <AceCodeEditor
         value={scriptData}
         onChange={handleOnChange}

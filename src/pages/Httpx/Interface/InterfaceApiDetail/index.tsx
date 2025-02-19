@@ -8,12 +8,14 @@ import {
 } from '@/api/inter';
 import { addApi2Case } from '@/api/inter/interCase';
 import { addInterfaceGroupApi } from '@/api/inter/interGroup';
+import MyDrawer from '@/components/MyDrawer';
 import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterBeforeParams from '@/pages/Httpx/componets/InterBeforeParams';
 import InterBeforeScript from '@/pages/Httpx/componets/InterBeforeScript';
 import InterBeforeSql from '@/pages/Httpx/componets/InterBeforeSQL';
 import InterBody from '@/pages/Httpx/componets/InterBody';
+import InterDoc from '@/pages/Httpx/componets/InterDoc';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterHeader from '@/pages/Httpx/componets/InterHeader';
 import InterParam from '@/pages/Httpx/componets/InterParam';
@@ -29,6 +31,7 @@ import {
   EditOutlined,
   FormOutlined,
   PythonOutlined,
+  QuestionCircleOutlined,
   SettingOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons';
@@ -40,7 +43,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Form, message, Spin, Tabs, Tooltip } from 'antd';
+import { Button, FloatButton, Form, message, Spin, Tabs, Tooltip } from 'antd';
 import React, { Dispatch, FC, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 
@@ -91,7 +94,8 @@ const Index: FC<SelfProps> = ({
   const [headersLength, setHeadersLength] = useState<number>();
   const [queryLength, setQueryLength] = useState<number>();
   const [bodyLength, setBodyLength] = useState<number>();
-
+  const [hiddenBody, setHiddenBody] = useState(false);
+  const [openDoc, setOpenDoc] = useState(false);
   // 初始化接口详情和项目列表
   useEffect(() => {
     // 如果存在接口ID，则获取接口详细信息
@@ -103,6 +107,7 @@ const Index: FC<SelfProps> = ({
           interApiForm.setFieldsValue(data); // 设置表单值
           setDataLength(data); // 设置数据长度
           setCurrentProjectId(data.project_id); // 设置当前项目ID
+          setHiddenBody(data.method === 'GET');
         }
       });
     } else if (interfaceId) {
@@ -235,10 +240,17 @@ const Index: FC<SelfProps> = ({
         className={'method'}
         name={'method'}
         label={'method'}
-        initialValue={'GET'}
+        initialValue={'POST'}
         options={API_REQUEST_METHOD}
         required={true}
         rules={[{ required: true, message: 'method 不能为空' }]}
+        onChange={(value: string) => {
+          if (value === 'GET') {
+            setHiddenBody(false);
+          } else {
+            setHiddenBody(true);
+          }
+        }}
       />
       <Button
         loading={tryLoading}
@@ -389,6 +401,14 @@ const Index: FC<SelfProps> = ({
       split={'horizontal'}
       extra={<DetailExtra currentMode={currentMode} />}
     >
+      <MyDrawer
+        name={'API Doc'}
+        width={'40%'}
+        open={openDoc}
+        setOpen={setOpenDoc}
+      >
+        <InterDoc />
+      </MyDrawer>
       <ProForm
         form={interApiForm}
         disabled={currentMode === 1}
@@ -448,7 +468,7 @@ const Index: FC<SelfProps> = ({
           </ProForm.Group>
         </ProCard>
         <ProCard>
-          <Tabs defaultActiveKey={'2'} size={'large'}>
+          <Tabs defaultActiveKey={'2'} type={'card'} size={'large'}>
             <Tabs.TabPane
               key={'1'}
               icon={<SettingOutlined />}
@@ -559,7 +579,11 @@ const Index: FC<SelfProps> = ({
                   <Tabs.TabPane key={'1'} tab={renderTab(2)}>
                     <InterParam form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane key={'3'} tab={renderTab(3)}>
+                  <Tabs.TabPane
+                    key={'3'}
+                    tab={renderTab(3)}
+                    disabled={hiddenBody}
+                  >
                     <InterBody form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
                 </Tabs>
@@ -594,6 +618,12 @@ const Index: FC<SelfProps> = ({
           ) : null}
         </Spin>
       </ProCard>
+      <FloatButton
+        icon={<QuestionCircleOutlined />}
+        type="primary"
+        onClick={() => setOpenDoc(true)}
+        style={{ insetInlineEnd: 24 }}
+      />
     </ProCard>
   );
 };

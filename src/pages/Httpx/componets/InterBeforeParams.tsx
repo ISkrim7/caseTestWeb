@@ -1,24 +1,53 @@
+import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import { IBeforeParams, IInterfaceAPI } from '@/pages/Httpx/types';
-import { EditableProTable, ProCard, ProForm } from '@ant-design/pro-components';
+import {
+  EditableProTable,
+  ProCard,
+  ProForm,
+  ProFormText,
+} from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { FormInstance } from 'antd';
+import { FormInstance, Tag, Typography } from 'antd';
 import React, { FC, useState } from 'react';
+
+const { Text } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
   mode: number;
 }
+
 const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
   const [beforeParamsEditableKeys, setBeforeParamsEditableRowKeys] =
     useState<React.Key[]>();
-  const beforeColumns: ProColumns[] = [
+  const beforeColumns: ProColumns<IBeforeParams>[] = [
     {
       title: '变量名',
       dataIndex: 'key',
+      render: (text, record) => <Text strong>{record.key}</Text>,
     },
     {
       title: '变量值',
       dataIndex: 'value',
+      render: (text, record) => {
+        if (record?.value?.includes('{{$')) {
+          return <Tag color="orange">{text}</Tag>;
+        } else {
+          return <Tag color={'blue'}>{text}</Tag>;
+        }
+      },
+      renderFormItem: (dom, { record }) => {
+        return (
+          <ProFormText
+            noStyle
+            name={'value'}
+            fieldProps={{
+              suffix: <ApiVariableFunc />,
+              value: record?.value,
+            }}
+          />
+        );
+      },
     },
     {
       title: '描述',
@@ -52,7 +81,6 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
           <EditableProTable<IBeforeParams>
             rowKey={'id'}
             search={false}
-            // toolBarRender={() => [searchVariableButton]}
             columns={beforeColumns}
             recordCreatorProps={{
               newRecordType: 'dataSource',

@@ -1,13 +1,16 @@
+import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import SetKv2Query from '@/pages/Httpx/componets/setKv2Query';
 import { IInterfaceAPI, IParams } from '@/pages/Httpx/types';
 import {
+  EditableFormInstance,
   EditableProTable,
   ProForm,
   ProFormText,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { FormInstance } from 'antd';
-import React, { FC, useState } from 'react';
+import { FormInstance, Tag, Typography } from 'antd';
+import React, { FC, useRef, useState } from 'react';
+const { Text } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -17,45 +20,57 @@ interface SelfProps {
 const InterParam: FC<SelfProps> = ({ form, mode }) => {
   const [paramsEditableKeys, setParamsEditableRowKeys] =
     useState<React.Key[]>();
+  const editorFormRef = useRef<EditableFormInstance<IParams>>();
+
   const columns: ProColumns<IParams>[] = [
     {
       title: 'key',
-      key: 'key',
       dataIndex: 'key',
-      width: '30%',
+      render: (_, record) => <Text strong>{record.key}</Text>,
+    },
+    {
+      title: 'value',
+      dataIndex: 'value',
+      render: (text, record) => {
+        if (record?.value?.includes('{{$')) {
+          return <Tag color={'orange'}>{text}</Tag>;
+        } else {
+          return <Tag color={'blue'}>{text}</Tag>;
+        }
+      },
       renderFormItem: (_, { record }) => {
         return (
           <ProFormText
-            name={'key'}
-            noStyle={true}
-            fieldProps={{ value: record?.key }}
+            noStyle
+            name={'value'}
+            fieldProps={{
+              suffix: (
+                <ApiVariableFunc
+                  value={record?.value}
+                  index={record?.id}
+                  setValue={editorFormRef.current?.setRowData}
+                />
+              ),
+              value: record?.value,
+            }}
           />
         );
       },
     },
     {
-      title: 'value',
-      key: 'value',
-      dataIndex: 'value',
-      width: '30%',
-    },
-
-    {
       title: 'desc',
-      key: 'desc',
       dataIndex: 'desc',
-      width: '30%',
     },
     {
       title: 'opt',
       valueType: 'option',
-      render: (_: any, record: any) => {
+      render: (text, record, _, action) => {
         return (
           <>
             {mode !== 1 ? (
               <a
                 onClick={() => {
-                  setParamsEditableRowKeys([record.id]);
+                  action?.startEditable?.(record.id);
                 }}
               >
                 编辑
@@ -79,6 +94,7 @@ const InterParam: FC<SelfProps> = ({ form, mode }) => {
       />
       <ProForm.Item name={'params'} trigger={'onValuesChange'}>
         <EditableProTable<IParams>
+          editableFormRef={editorFormRef}
           rowKey={'id'}
           toolBarRender={false}
           columns={columns}
@@ -93,7 +109,7 @@ const InterParam: FC<SelfProps> = ({ form, mode }) => {
             editableKeys: paramsEditableKeys,
             onChange: setParamsEditableRowKeys, // Update editable keys
             actionRender: (_, __, dom) => {
-              return [dom.save, dom.delete, dom.cancel];
+              return [dom.delete];
             },
           }}
         />

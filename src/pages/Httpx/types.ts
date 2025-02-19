@@ -14,6 +14,12 @@ export interface IInterfaceGlobalHeader extends IBaseField {
   description: string;
   project_id: number;
 }
+export interface IInterfaceGlobalFunc extends IBaseField {
+  label: string;
+  value: string;
+  description: string;
+  demo: string;
+}
 
 export interface IInterfaceAPIRecord extends IBaseField {
   url: string;

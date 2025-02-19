@@ -1,6 +1,7 @@
 import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import { IBeforeParams, IInterfaceAPI } from '@/pages/Httpx/types';
 import {
+  EditableFormInstance,
   EditableProTable,
   ProCard,
   ProForm,
@@ -8,7 +9,7 @@ import {
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Tag, Typography } from 'antd';
-import React, { FC, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -20,11 +21,12 @@ interface SelfProps {
 const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
   const [beforeParamsEditableKeys, setBeforeParamsEditableRowKeys] =
     useState<React.Key[]>();
+  const editorFormRef = useRef<EditableFormInstance<IBeforeParams>>();
   const beforeColumns: ProColumns<IBeforeParams>[] = [
     {
       title: '变量名',
       dataIndex: 'key',
-      render: (text, record) => <Text strong>{record.key}</Text>,
+      render: (_, record) => <Text strong>{record.key}</Text>,
     },
     {
       title: '变量值',
@@ -36,13 +38,19 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
           return <Tag color={'blue'}>{text}</Tag>;
         }
       },
-      renderFormItem: (dom, { record }) => {
+      renderFormItem: (_, { record }) => {
         return (
           <ProFormText
             noStyle
             name={'value'}
             fieldProps={{
-              suffix: <ApiVariableFunc />,
+              suffix: (
+                <ApiVariableFunc
+                  value={record?.value}
+                  index={record?.id}
+                  setValue={editorFormRef.current?.setRowData}
+                />
+              ),
               value: record?.value,
             }}
           />
@@ -56,13 +64,13 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
     {
       title: 'Opt',
       valueType: 'option',
-      render: (_: any, record: any) => {
+      render: (text, record, _, action) => {
         return (
           <>
             {mode !== 1 ? (
               <a
                 onClick={() => {
-                  setBeforeParamsEditableRowKeys([record.id]);
+                  action?.startEditable?.(record.id);
                 }}
               >
                 编辑
@@ -79,6 +87,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
       <ProForm form={form} submitter={false}>
         <ProForm.Item name={'before_params'} trigger={'onValuesChange'}>
           <EditableProTable<IBeforeParams>
+            editableFormRef={editorFormRef}
             rowKey={'id'}
             search={false}
             columns={beforeColumns}
@@ -93,7 +102,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
               editableKeys: beforeParamsEditableKeys,
               onChange: setBeforeParamsEditableRowKeys,
               actionRender: (row, _, dom) => {
-                return [dom.save, dom.delete, dom.cancel];
+                return [dom.delete];
               },
             }}
           />

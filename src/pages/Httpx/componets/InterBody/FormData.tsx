@@ -1,13 +1,17 @@
+import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import SetKv2Query from '@/pages/Httpx/componets/setKv2Query';
 import { IFromData, IInterfaceAPI } from '@/pages/Httpx/types';
 import {
+  EditableFormInstance,
   EditableProTable,
   ProForm,
   ProFormText,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { FormInstance } from 'antd';
-import React, { FC, useState } from 'react';
+import { FormInstance, Tag, Typography } from 'antd';
+import React, { FC, useRef, useState } from 'react';
+
+const { Text } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -16,52 +20,61 @@ interface SelfProps {
 
 const FormData: FC<SelfProps> = ({ form, mode }) => {
   const [dataEditableKeys, setDataEditableRowKeys] = useState<React.Key[]>();
+  const editorFormRef = useRef<EditableFormInstance<IFromData>>();
+
   const columns: ProColumns<IFromData>[] = [
     {
       title: 'key',
       key: 'key',
       dataIndex: 'key',
       width: '30%',
+      render: (_, record) => <Text strong>{record.key}</Text>,
+    },
+    {
+      title: 'value',
+      dataIndex: 'value',
+      width: '30%',
+      render: (text, record) => {
+        if (record?.value?.includes('{{$')) {
+          return <Tag color={'orange'}>{text}</Tag>;
+        } else {
+          return <Tag color={'blue'}>{text}</Tag>;
+        }
+      },
       renderFormItem: (_, { record }) => {
         return (
           <ProFormText
-            name={'key'}
-            noStyle={true}
-            fieldProps={{ value: record?.key }}
+            noStyle
+            name={'value'}
+            fieldProps={{
+              suffix: (
+                <ApiVariableFunc
+                  value={record?.value}
+                  index={record?.id}
+                  setValue={editorFormRef.current?.setRowData}
+                />
+              ),
+              value: record?.value,
+            }}
           />
         );
       },
     },
     {
-      title: 'value',
-      key: 'value',
-      dataIndex: 'value',
-      width: '30%',
-    },
-    // {
-    //   title: 'content-type',
-    //   key: 'content_type',
-    //   dataIndex: 'content_type',
-    //   width: '30%',
-    //   valueType: 'select',
-    //   valueEnum: FormDataTypeEnum,
-    // },
-    {
       title: 'desc',
       key: 'desc',
       dataIndex: 'desc',
-      width: '30%',
     },
     {
       title: 'opt',
       valueType: 'option',
-      render: (_: any, record: any) => {
+      render: (text, record, _, action) => {
         return (
           <>
             {mode !== 1 ? (
               <a
                 onClick={() => {
-                  setDataEditableRowKeys([record.id]);
+                  action?.startEditable?.(record.id);
                 }}
               >
                 编辑
@@ -83,6 +96,7 @@ const FormData: FC<SelfProps> = ({ form, mode }) => {
       <ProForm.Item name={'data'} trigger={'onValuesChange'}>
         <EditableProTable<IFromData>
           rowKey={'id'}
+          editableFormRef={editorFormRef}
           toolBarRender={false}
           columns={columns}
           recordCreatorProps={{
@@ -96,7 +110,7 @@ const FormData: FC<SelfProps> = ({ form, mode }) => {
             editableKeys: dataEditableKeys,
             onChange: setDataEditableRowKeys, // Update editable keys
             actionRender: (_, __, dom) => {
-              return [dom.save, dom.delete, dom.cancel];
+              return [dom.delete];
             },
           }}
         />

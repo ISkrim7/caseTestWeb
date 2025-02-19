@@ -1,5 +1,6 @@
 import { IObjGet, IPage, IResponse } from '@/api';
 import {
+  IInterfaceGlobalFunc,
   IInterfaceGlobalHeader,
   IInterfaceGlobalVariable,
 } from '@/pages/Httpx/types';
@@ -32,6 +33,19 @@ export const pageInterGlobalHeader = async (data: any, options?: IObjGet) => {
     {
       method: 'POST',
       data: data,
+      ...(options || {}),
+    },
+  );
+};
+/**
+ * pageInterGlobalHeader
+ * @param options
+ */
+export const queryInterGlobalFunc = async (options?: IObjGet) => {
+  return request<IResponse<IInterfaceGlobalFunc[]>>(
+    '/api/interface/global/query_func',
+    {
+      method: 'GET',
       ...(options || {}),
     },
   );

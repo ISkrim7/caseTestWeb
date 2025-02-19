@@ -1,7 +1,7 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import { useModel } from '@@/exports';
-import { ProCard } from '@ant-design/pro-components';
+import { ProCard, ProFormText } from '@ant-design/pro-components';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
@@ -9,23 +9,8 @@ function App() {
   const [apsMessage, setApsMessage] = useState<string[]>([]);
   const { initialState } = useModel('@@initialState');
   const [clientId, setClientId] = useState<any>(null);
+  const [value, setValue] = useState<string>();
 
-  // useEffect(() => {
-  //   if (initialState && initialState?.currentUser?.uid) {
-  //     // const ws = new WebSocket(`ws://127.0.0.1:5050/ws/${initialState?.currentUser.uid}`);
-  //     const ws = new WebSocket(`ws://127.0.0.1:5050/ws/task/${initialState?.currentUser.uid}`);
-  //
-  //     ws.onopen = ()=>{
-  //       console.log("socket connected");
-  //
-  //     }
-  //     ws.onmessage =  function (event) {
-  //       console.log('Received message', event.data);
-  //       setApsMessage((pre) => [...pre, event.data]);
-  //     };
-  //   }
-  //
-  // }, []);
   // @ts-ignore
   useEffect(() => {
     const socket = io('ws://localhost:5050/ws', {
@@ -51,7 +36,13 @@ function App() {
   return (
     <ProCard split={'horizontal'}>
       <ProCard>
-        <ApiVariableFunc />
+        <ProFormText
+          name={'name'}
+          fieldProps={{
+            value: value,
+          }}
+        />
+        <ApiVariableFunc value={value} setValue={setValue} />
       </ProCard>
       <ProCard>
         <h1>aps</h1>

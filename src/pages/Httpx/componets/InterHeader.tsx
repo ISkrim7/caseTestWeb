@@ -1,9 +1,15 @@
 import { HeadersEnum } from '@/pages/Httpx/componets/APIEditEnum';
+import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import { IHeaders, IInterfaceAPI } from '@/pages/Httpx/types';
-import { EditableProTable, ProForm } from '@ant-design/pro-components';
+import {
+  EditableFormInstance,
+  EditableProTable,
+  ProForm,
+  ProFormText,
+} from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { FormInstance, Mentions, Select } from 'antd';
-import React, { FC, useState } from 'react';
+import { FormInstance, Select, Tag } from 'antd';
+import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -18,6 +24,8 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
       text: any;
     }[]
   >([]);
+  const editorFormRef = useRef<EditableFormInstance<IHeaders>>();
+
   const handleHeaderSearch = (newValue: string) => {
     if (newValue) {
       const filteredOptions = Object.keys(HeadersEnum)
@@ -60,18 +68,30 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
       title: 'value',
       key: 'value',
       dataIndex: 'value',
-      renderFormItem: (_, { record }) => {
-        if (record?.value?.includes('{{') && record.value?.includes('}}')) {
-          return (
-            <Mentions
-              prefix={['{{']}
-              value={record?.value}
-              style={{ color: 'orange' }}
-              options={[]}
-            />
-          );
+      render: (text, record) => {
+        if (record?.value?.includes('{{$')) {
+          return <Tag color={'orange'}>{text}</Tag>;
+        } else {
+          return <Tag color={'blue'}>{text}</Tag>;
         }
-        return <Mentions prefix={['{{']} value={record?.value} options={[]} />;
+      },
+      renderFormItem: (_, { record }) => {
+        return (
+          <ProFormText
+            noStyle
+            name={'value'}
+            fieldProps={{
+              suffix: (
+                <ApiVariableFunc
+                  value={record?.value}
+                  index={record?.id}
+                  setValue={editorFormRef.current?.setRowData}
+                />
+              ),
+              value: record?.value,
+            }}
+          />
+        );
       },
     },
     {
@@ -101,6 +121,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
     <ProForm form={form} submitter={false}>
       <ProForm.Item name={'headers'} trigger={'onValuesChange'}>
         <EditableProTable<IHeaders>
+          editableFormRef={editorFormRef}
           rowKey={'id'}
           toolBarRender={false}
           columns={headerColumns}

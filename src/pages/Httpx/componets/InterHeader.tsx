@@ -136,7 +136,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
             editableKeys: headersEditableKeys,
             onChange: setHeadersEditableRowKeys, // Update editable keys
             actionRender: (_, __, dom) => {
-              return [dom.delete];
+              return [dom.save, dom.cancel, dom.delete];
             },
           }}
         />

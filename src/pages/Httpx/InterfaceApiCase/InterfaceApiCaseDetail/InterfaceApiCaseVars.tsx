@@ -4,23 +4,30 @@ import {
   removeVars,
   updateVars,
 } from '@/api/inter/interCase';
-import { IUIVars } from '@/pages/Play/componets/uiTypes';
+import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
+import { IVariable } from '@/pages/Httpx/types';
 import { pageData } from '@/utils/somefunc';
 import {
   ActionType,
+  EditableFormInstance,
   EditableProTable,
   ProColumns,
+  ProFormText,
 } from '@ant-design/pro-components';
-import { message, Popconfirm, Tag } from 'antd';
+import { message, Popconfirm, Tag, Typography } from 'antd';
 import React, { FC, useCallback, useRef, useState } from 'react';
+const { Text } = Typography;
+
 interface ISelfProps {
   currentCaseId?: string;
 }
+
 const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [varsEditableKeys, setVarsEditableRowKeys] = useState<React.Key[]>();
-  const [dataSource, setDataSource] = useState<IUIVars[]>([]);
+  const [dataSource, setDataSource] = useState<IVariable[]>([]);
   const [edit, setEdit] = useState(0);
+  const editorFormRef = useRef<EditableFormInstance<IVariable>>();
 
   const fetchPageVars = useCallback(
     async (values: any) => {
@@ -33,7 +40,7 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
     [currentCaseId, edit],
   );
 
-  const varColumns: ProColumns<IUIVars>[] = [
+  const varColumns: ProColumns<IVariable>[] = [
     {
       title: '变量名',
       dataIndex: 'key',
@@ -46,22 +53,36 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
           },
         ],
       },
-      render: (_, record) => {
-        return <Tag color={'blue'}>{record.key}</Tag>;
-      },
+      render: (_, record) => <Text strong>{record.key}</Text>,
     },
     {
       title: '值',
       dataIndex: 'value',
       valueType: 'text',
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            whitespace: true,
-            message: '此项是必填项',
-          },
-        ],
+      render: (text, record) => {
+        if (record?.value?.includes('{{$')) {
+          return <Tag color="orange">{text}</Tag>;
+        } else {
+          return <Tag color={'blue'}>{text}</Tag>;
+        }
+      },
+      renderFormItem: (_, { record }) => {
+        return (
+          <ProFormText
+            noStyle
+            name={'value'}
+            fieldProps={{
+              suffix: (
+                <ApiVariableFunc
+                  value={record?.value}
+                  index={record?.id}
+                  setValue={editorFormRef.current?.setRowData}
+                />
+              ),
+              value: record?.value,
+            }}
+          />
+        );
       },
     },
     {
@@ -95,7 +116,8 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
   ];
 
   return (
-    <EditableProTable<IUIVars>
+    <EditableProTable<IVariable>
+      editableFormRef={editorFormRef}
       options={{
         density: true,
         setting: {
@@ -125,7 +147,6 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
         editableKeys: varsEditableKeys,
         onChange: setVarsEditableRowKeys,
         onSave: async (_, data) => {
-          console.log(data);
           if (data.uid) {
             const { code, msg } = await updateVars(data);
             if (code === 0) {
@@ -139,7 +160,6 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
           }
           setEdit(edit + 1);
         },
-
         actionRender: (row, _, dom) => {
           return [dom.save, dom.cancel];
         },

@@ -1,10 +1,10 @@
-import { queryProject } from '@/api/base';
 import {
   executeTask,
   getApiTaskBaseDetail,
   insertApiTask,
   updateApiTaskBaseInfo,
 } from '@/api/inter/interTask';
+import { queryProjects } from '@/components/CommonFunc';
 import AssociationApis from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationApis';
 import AssociationCases from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationCases';
 import InterfaceApiTaskResultTable from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultTable';
@@ -57,15 +57,7 @@ const Index = () => {
     } else {
       setCurrentStatus(2);
     }
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const projects = data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-        setProjects(projects);
-      }
-    });
+    queryProjects(setProjects).then();
   }, [editTsk]);
 
   useEffect(() => {

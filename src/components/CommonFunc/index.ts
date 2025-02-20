@@ -1,4 +1,5 @@
-import { queryProject } from '@/api/base';
+import { IEnv } from '@/api';
+import { queryEnvBy, queryProject } from '@/api/base';
 import React from 'react';
 
 export const queryProjects = async (
@@ -32,6 +33,25 @@ export const queryProjectEnum = async (
         return acc;
       }, {});
       setter(mapData);
+    }
+  });
+};
+
+export const queryEnvByProjectIdFormApi = async (
+  projectId: number,
+  setter: React.Dispatch<
+    React.SetStateAction<{ label: string; value: number | null }[]>
+  >,
+) => {
+  queryEnvBy({ project_id: projectId } as IEnv).then(({ code, data }) => {
+    if (code === 0) {
+      // 请求成功
+      const envs = data.map((item) => ({
+        label: item.name,
+        value: item.id,
+      }));
+      const noEnv = { label: '自定义', value: -1 };
+      setter([noEnv, ...envs]); // 设置环境列表
     }
   });
 };

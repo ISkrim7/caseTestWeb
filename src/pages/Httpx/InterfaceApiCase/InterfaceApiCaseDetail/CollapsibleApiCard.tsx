@@ -10,6 +10,7 @@ import { IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   CheckCircleTwoTone,
   CloseCircleTwoTone,
+  DownOutlined,
   RightOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons';
@@ -167,10 +168,10 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
 
   return (
     <ProCard
-      collapsibleIconRender={() => (
+      collapsibleIconRender={({ collapsed }) => (
         <>
           <UnorderedListOutlined style={{ color: '#c3cad4', marginLeft: 10 }} />{' '}
-          <RightOutlined />{' '}
+          {collapsed ? <RightOutlined /> : <DownOutlined />}
         </>
       )}
       // boxShadow={true}

@@ -244,26 +244,6 @@ export interface ITryResponse {
   useTime: number;
 }
 
-export interface InterfaceResponse {
-  id: number;
-  uid: string;
-  interfaceID: number;
-  interfaceUid: string;
-  interfaceName: string;
-  interfaceDesc?: string;
-  interfaceLog: string;
-  interfaceSteps: number;
-  interfaceErrorStep: number;
-  starterID: number;
-  starterName: string;
-  status: string;
-  create_time: string;
-  update_time: string;
-  startTime: string;
-  useTime: string;
-  resultInfo: ITryResponse[];
-}
-
 /**
  * 全局变量
  */
@@ -282,28 +262,4 @@ export interface IVariable {
   projectName: string;
   create_time: string;
   update_time: string;
-}
-
-export interface IInterfaceTask {
-  id: number;
-  uid: string;
-  title: string;
-  switch: boolean;
-  desc?: string;
-  level: string;
-  status: string;
-  cron: string;
-  interfaceNum: number;
-  projectId: number;
-  casePartId: number;
-  interfaces: number[] | [];
-  create_time: string;
-  update_time: string;
-  creatorName: string;
-  creatorId: number;
-  updaterName?: string;
-  updaterId?: number;
-  isSend: boolean;
-  sendType?: number;
-  sendKey?: string;
 }

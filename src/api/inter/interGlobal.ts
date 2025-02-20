@@ -23,6 +23,20 @@ export const pageInterGlobalVariable = async (data: any, options?: IObjGet) => {
 };
 
 /**
+ * queryInterGlobalVariable
+ * @param options
+ */
+export const queryInterGlobalVariable = async (options?: IObjGet) => {
+  return request<IResponse<IInterfaceGlobalVariable[]>>(
+    '/api/interface/global/query_variable',
+    {
+      method: 'GET',
+      ...(options || {}),
+    },
+  );
+};
+
+/**
  * pageInterGlobalHeader
  * @param data
  * @param options

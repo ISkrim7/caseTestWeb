@@ -4,6 +4,7 @@ import {
   IInterfaceAPICase,
   IInterfaceCaseResult,
   ITryResponseInfo,
+  IVariable,
 } from '@/pages/Httpx/types';
 import { IUIVars } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request/request';
@@ -331,7 +332,7 @@ export const pageInterApiResult = async (data: ISearch, options?: IObjGet) => {
  * @param data
  * @param options
  */
-export const updateVars = async (data: IUIVars, options?: IObjGet) => {
+export const updateVars = async (data: IVariable, options?: IObjGet) => {
   return request<IResponse<null>>('/api/interface/case/vars/update', {
     method: 'POST',
     data,
@@ -344,7 +345,7 @@ export const updateVars = async (data: IUIVars, options?: IObjGet) => {
  * @param data
  * @param options
  */
-export const addVars = async (data: IUIVars, options?: IObjGet) => {
+export const addVars = async (data: IVariable, options?: IObjGet) => {
   return request<IResponse<null>>('/api/interface/case/vars/add', {
     method: 'POST',
     data,

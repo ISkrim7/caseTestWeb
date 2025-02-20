@@ -1,5 +1,3 @@
-import { IEnv } from '@/api';
-import { queryEnvBy, queryProject } from '@/api/base';
 import {
   detailInterApiById,
   insertInterApi,
@@ -8,6 +6,7 @@ import {
 } from '@/api/inter';
 import { addApi2Case } from '@/api/inter/interCase';
 import { addInterfaceGroupApi } from '@/api/inter/interGroup';
+import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
@@ -24,6 +23,7 @@ import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
 import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
+import { useSelector } from '@@/exports';
 import {
   ApiOutlined,
   CheckCircleOutlined,
@@ -43,8 +43,9 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
+import { useDispatch } from '@umijs/plugins/libs/dva';
 import { Button, FloatButton, Form, message, Spin, Tabs, Tooltip } from 'antd';
-import React, { Dispatch, FC, useEffect, useState } from 'react';
+import React, { Dispatch, FC, useCallback, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 
 interface SelfProps {
@@ -74,14 +75,20 @@ const Index: FC<SelfProps> = ({
   refresh,
   interfaceApiInfo,
 }) => {
+  const dispatch = useDispatch();
+
   const { interId } = useParams<{ interId: string }>();
   const { API_LEVEL_SELECT, API_STATUS_SELECT, API_REQUEST_METHOD } = CONFIG;
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
-  const [projects, setProjects] = useState<{ label: string; value: number }[]>(
-    [],
+  // const [projects, setProjects] = useState<{ label: string; value: number }[]>(
+  //   [],
+  // );
+  const projects = useSelector(
+    (state: { projects: { projects: any } }) => state.projects.projects,
   );
+
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
     [],
@@ -96,81 +103,56 @@ const Index: FC<SelfProps> = ({
   const [bodyLength, setBodyLength] = useState<number>();
   const [hiddenBody, setHiddenBody] = useState(false);
   const [openDoc, setOpenDoc] = useState(false);
+
+  const fetchInterfaceDetails = useCallback(
+    async (id: string | number) => {
+      const { code, data } = await detailInterApiById({ interfaceId: id });
+      if (code === 0) {
+        interApiForm.setFieldsValue(data);
+        setDataLength(data);
+        setCurrentProjectId(data.project_id);
+        setHiddenBody(data.method === 'GET');
+      }
+    },
+    [interApiForm],
+  );
+
   // 初始化接口详情和项目列表
   useEffect(() => {
-    // 如果存在接口ID，则获取接口详细信息
     if (interId) {
-      setCurrentMode(1); // 设置当前模式为查看模式
-      detailInterApiById({ interfaceId: interId }).then(({ code, data }) => {
-        if (code === 0) {
-          // 请求成功
-          interApiForm.setFieldsValue(data); // 设置表单值
-          setDataLength(data); // 设置数据长度
-          setCurrentProjectId(data.project_id); // 设置当前项目ID
-          setHiddenBody(data.method === 'GET');
-        }
-      });
+      setCurrentMode(1);
+      fetchInterfaceDetails(interId).then();
     } else if (interfaceId) {
-      setCurrentMode(1); // 设置当前模式为查看模式
-      detailInterApiById({ interfaceId: interfaceId }).then(
-        ({ code, data }) => {
-          if (code === 0) {
-            // 请求成功
-            interApiForm.setFieldsValue(data); // 设置表单值
-            setDataLength(data); // 设置数据长度
-            setCurrentProjectId(data.project_id); // 设置当前项目ID
-          }
-        },
-      );
+      setCurrentMode(1);
+      fetchInterfaceDetails(interfaceId).then();
     } else {
-      setCurrentMode(2); // 如果不存在接口ID，则设置当前模式为编辑模式
+      setCurrentMode(2);
     }
-    // 获取项目列表
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        // 请求成功
-        const projects = data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-        setProjects(projects); // 设置项目列表
-      }
-    });
-  }, []);
+    // queryProjects(setProjects).then()
+    dispatch({ type: 'projects/fetchProjects' });
+  }, [interId, interfaceId, fetchInterfaceDetails, dispatch]);
 
   // 根据当前项目ID获取环境和用例部分
   useEffect(() => {
     // 如果存在当前项目ID，则获取环境列表和用例部分
     if (currentProjectId) {
-      queryEnvBy({ project_id: currentProjectId } as IEnv).then(
-        ({ code, data }) => {
-          if (code === 0) {
-            // 请求成功
-            const envs = data.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }));
-            const noEnv = { label: '自定义', value: -1 };
-            setEnvs([noEnv, ...envs]); // 设置环境列表
-          }
-        },
-      );
+      queryEnvByProjectIdFormApi(currentProjectId, setEnvs).then();
       fetchCaseParts(currentProjectId, setCasePartEnum).then(); // 获取用例部分
     }
   }, [currentProjectId]);
 
   // 根据项目ID和部分ID设置表单值
   useEffect(() => {
-    // 如果存在项目ID，则设置当前项目ID和表单的项目ID值
     if (projectId) {
+      // 如果存在项目ID，则设置当前项目ID和表单的项目ID值
       setCurrentProjectId(projectId);
       interApiForm.setFieldValue('project_id', projectId);
     }
-    // 如果存在部分ID，则设置表单的部分ID值
     if (partId) {
+      // 如果存在部分ID，则设置表单的部分ID值
       interApiForm.setFieldValue('part_id', partId);
     }
-  }, [projectId, partId]);
+  }, [projectId, partId, interApiForm]);
 
   // 根据接口API信息设置表单值
   useEffect(() => {
@@ -181,7 +163,7 @@ const Index: FC<SelfProps> = ({
       setDataLength(interfaceApiInfo); // 设置数据长度
       setCurrentInterAPIId(interfaceApiInfo.id); // 设置当前接口API ID
     }
-  }, [interfaceApiInfo]);
+  }, [interfaceApiInfo, interApiForm]);
 
   const setDataLength = (data: IInterfaceAPI) => {
     setHeadersLength(data?.headers?.length || 0);
@@ -195,8 +177,6 @@ const Index: FC<SelfProps> = ({
         setBodyLength(data.data?.length || 0);
         break;
       default:
-        // 记录日志或添加注释，解释为什么设置为 0
-        console.warn('Unexpected body_type value:', data.body_type);
         setBodyLength(0);
     }
   };
@@ -204,8 +184,6 @@ const Index: FC<SelfProps> = ({
     setTryLoading(true);
     const interfaceId = interId || currentInterAPIId;
     if (!interfaceId) {
-      // 处理边界条件，提供明确的反馈
-      console.error('No valid interface ID provided');
       setTryLoading(false);
       return;
     }

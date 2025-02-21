@@ -14,6 +14,7 @@ export interface IInterfaceGlobalHeader extends IBaseField {
   description: string;
   project_id: number;
 }
+
 export interface IInterfaceGlobalFunc extends IBaseField {
   label: string;
   value: string;
@@ -101,6 +102,7 @@ export interface IInterfaceAPITask extends IBaseField {
 
 export interface ITryResponseInfo extends IBaseField {
   interfaceID: number;
+  interfaceGroupId: number;
   interfaceName: string;
   interfaceDesc: string;
   interfaceEnvId: number;
@@ -262,4 +264,28 @@ export interface IVariable {
   projectName: string;
   create_time: string;
   update_time: string;
+}
+
+export interface IInterfaceResultByCase {
+  groupId: number | null;
+  groupName: string;
+  groupDesc: string;
+  data: ITryResponseInfo[];
+  interfaceID: number;
+  id: number;
+  interfaceGroupId: number;
+  interfaceName: string;
+  interfaceDesc: string;
+  interfaceEnvId: number;
+  response_txt: string;
+  response_status: number;
+  response_head: IObjGet;
+  request_head: IObjGet;
+  request_method: string;
+  startId: number;
+  starterName: string;
+  useTime: string;
+  result?: 'SUCCESS' | 'ERROR';
+  extracts: IExtract[];
+  asserts: any;
 }

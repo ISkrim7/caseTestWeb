@@ -8,9 +8,8 @@ import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { pageData } from '@/utils/somefunc';
-import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, message, Tag } from 'antd';
+import { Button, Divider, message, Space, Tag } from 'antd';
 import { FC, useCallback, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -19,19 +18,11 @@ interface SelfProps {
 }
 
 const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
+  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const { apiCaseId, taskResultId } = props;
   const [open, setOpen] = useState(false);
-  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [currentCaseResultId, setCurrentCaseResultId] = useState<number>();
-  const [polling, setPolling] = useState<number>(0);
-  // useEffect(() => {
-  //   if (apiCaseId) {
-  //     setPolling(2000);
-  //   } else {
-  //     setPolling(0);
-  //   }
-  //   return () => setPolling(0);
-  // }, [apiCaseId]);
+
   const fetchResults = useCallback(
     async (params: any, sort: any) => {
       const searchData = {
@@ -137,48 +128,31 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     }
   };
 
-  const GetButton = (
-    <Button
-      type="primary"
-      onClick={() => {
-        if (polling) {
-          setPolling(0);
-          return;
-        }
-        setPolling(2000);
-      }}
-    >
-      {polling ? <LoadingOutlined /> : <ReloadOutlined />}
-      {polling ? '停止轮询' : '开始轮询'}
-    </Button>
-  );
-
   return (
     <ProCard
-      title={'API DeBug His'}
+      title={taskResultId ? '' : '调试历史'}
       bordered={true}
-      defaultCollapsed={true}
-      style={{ marginTop: 200, height: 'auto' }}
-      collapsible={true}
+      style={{ marginTop: taskResultId ? 0 : 200, height: 'auto' }}
       extra={
-        <Button type={'primary'} onClick={removeCaseResults}>
-          Clear All His
-        </Button>
+        taskResultId ? null : (
+          <Space>
+            <Button type={'primary'} onClick={removeCaseResults}>
+              Clear All
+            </Button>
+          </Space>
+        )
       }
     >
-      <MyDrawer name={''} open={open} setOpen={setOpen}>
+      <MyDrawer name={''} width={'75%'} open={open} setOpen={setOpen}>
         <InterfaceApiCaseResultDrawer
           currentCaseResultId={currentCaseResultId}
         />
       </MyDrawer>
       <MyProTable
-        // @ts-ignore
-        polling={polling}
         rowKey={'uid'}
         actionRef={actionRef}
         request={fetchResults}
         search={false}
-        toolBarRender={() => [GetButton]}
         pagination={{
           showQuickJumper: true,
           defaultPageSize: 6,

@@ -1,42 +1,27 @@
-import { getEnvById } from '@/api/base';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import AssertColumns from '@/pages/Httpx/componets/AssertColumns';
 import RequestHeaders from '@/pages/Httpx/InterfaceApiResponse/RequestHeaders';
 import ResponseExtractColumns from '@/pages/Httpx/InterfaceApiResponse/ResponseExtract';
 import RespProTable from '@/pages/Httpx/InterfaceApiResponse/RespProTable';
-import { ITryResponseInfo } from '@/pages/Httpx/types';
+import { IInterfaceResultByCase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
-import { Tabs, Tag } from 'antd';
-import { FC, useEffect, useState } from 'react';
+import { Tabs, Tag, Typography } from 'antd';
+import { FC, useState } from 'react';
+
+const { Text } = Typography;
 
 interface SelfProps {
-  responses?: ITryResponseInfo[];
+  responses?: any[];
 }
 
 const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
-  const [envNames, setEnvNames] = useState<string[]>([]);
   const { API_STATUS } = CONFIG;
-  useEffect(() => {
-    if (responses) {
-      const fetchAllEnvNames = async () => {
-        const newEnvNames = responses.map(async (item) => {
-          return item.interfaceEnvId !== -1
-            ? await fetchEnvName(item.interfaceEnvId)
-            : '自定义URL';
-        });
-        // 由于map返回的是一个Promise数组，需要使用Promise.all来等待所有异步操作完成
-        const resolvedEnvNames = await Promise.all(newEnvNames);
-        setEnvNames(resolvedEnvNames);
-      };
-      fetchAllEnvNames();
-    }
-  }, [responses]);
   const [activeKeys, setActiveKeys] = useState(
     Array(responses?.length).fill('3'),
   );
 
-  const tabExtra = (response: ITryResponseInfo) => {
+  const tabExtra = (response: IInterfaceResultByCase) => {
     if (!response.response_status) return null;
     const { response_status, useTime } = response;
     const { color, text = '' } = API_STATUS[response_status!] || {
@@ -66,7 +51,7 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   const TabTitle = (title: string) => (
     <span style={{ color: 'orange' }}>{title}</span>
   );
-  const renderResponseBody = (item: ITryResponseInfo) => {
+  const renderResponseBody = (item: IInterfaceResultByCase) => {
     const { response_txt } = item;
     try {
       const jsonValue = JSON.parse(response_txt);
@@ -78,75 +63,100 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
       );
     }
   };
-  const fetchEnvName = async (envId: number) => {
-    const { code, data } = await getEnvById(envId);
-    if (code === 0) {
-      return data.name;
-    }
-    return '';
-  };
+
   const setDesc = (text: string) => {
-    return text.length > 10 ? text.slice(0, 10) + '...' : text;
+    return text?.length > 8 ? text?.slice(0, 8) + '...' : text;
   };
   return (
     <div>
-      {responses?.map((item: ITryResponseInfo, index: number) => {
-        return (
-          <ProCard
-            extra={tabExtra(item)}
-            bordered
-            style={{ borderRadius: '5px', marginTop: 5 }}
-            title={
-              <>
-                <Tag color={'blue'}>{envNames[index]}</Tag>
-                <Tag
-                  color={
-                    item.result?.toLowerCase() === 'error' ? '#f50' : '#87d068'
-                  }
-                >
-                  {item.interfaceName}
-                </Tag>
-                <span style={{ color: 'gray' }}>
-                  {setDesc(item.interfaceDesc)}
-                </span>
-              </>
-            }
-            headerBordered
-            collapsible
-            defaultCollapsed
-          >
-            <Tabs
-              activeKey={activeKeys[index]}
-              onChange={(key) => {
-                const newActiveKeys = [...activeKeys];
-                newActiveKeys[index] = key;
-                setActiveKeys(newActiveKeys);
-              }}
+      {responses?.map((item: any, index: number) => {
+        if (item.groupId) {
+          return (
+            <ProCard
+              bodyStyle={{ padding: 10 }}
+              extra={tabExtra(item)}
+              bordered
+              style={{ borderRadius: '5px', marginTop: 5 }}
+              title={
+                <>
+                  <Tag color={'blue'}>组</Tag>
+                  <Tag
+                    color={
+                      item.result?.toLowerCase() === 'error'
+                        ? '#f50'
+                        : '#87d068'
+                    }
+                  >
+                    {item.groupName}
+                  </Tag>
+                  <Text type={'secondary'}>{setDesc(item.groupDesc)}</Text>
+                </>
+              }
+              headerBordered
+              collapsible
+              defaultCollapsed
             >
-              <Tabs.TabPane tab={TabTitle('请求头')} key={'1'}>
-                <RequestHeaders header={item.request_head} />
-              </Tabs.TabPane>
-              <Tabs.TabPane tab={TabTitle('响应头')} key={'2'}>
-                <RequestHeaders header={item.response_head} />
-              </Tabs.TabPane>
-              <Tabs.TabPane tab={TabTitle('响应体')} key={'3'}>
-                {renderResponseBody(item)}
-              </Tabs.TabPane>
-              <Tabs.TabPane tab={TabTitle('变量与响应参数提取')} key={'4'}>
-                <RespProTable
-                  columns={ResponseExtractColumns}
-                  dataSource={item.extracts}
-                />
-              </Tabs.TabPane>
-              <Tabs.TabPane tab={TabTitle('断言')} key={'5'}>
-                <RespProTable
-                  columns={AssertColumns}
-                  dataSource={item.asserts}
-                />
-              </Tabs.TabPane>
-            </Tabs>
-          </ProCard>
-        );
+              <InterfaceApiResponseDetail responses={item.data} />
+            </ProCard>
+          );
+        } else {
+          return (
+            <ProCard
+              extra={tabExtra(item)}
+              bordered
+              style={{ borderRadius: '5px', marginTop: 5 }}
+              title={
+                <>
+                  <Tag color={'blue'}>API</Tag>
+                  <Tag
+                    color={
+                      item.result?.toLowerCase() === 'error'
+                        ? '#f50'
+                        : '#87d068'
+                    }
+                  >
+                    {item.interfaceName}
+                  </Tag>
+                  <Text type={'secondary'}>{setDesc(item.interfaceDesc)}</Text>
+                </>
+              }
+              headerBordered
+              collapsible
+              defaultCollapsed
+            >
+              <Tabs
+                activeKey={activeKeys[index]}
+                onChange={(key) => {
+                  const newActiveKeys = [...activeKeys];
+                  newActiveKeys[index] = key;
+                  setActiveKeys(newActiveKeys);
+                }}
+              >
+                <Tabs.TabPane tab={TabTitle('请求头')} key={'1'}>
+                  <RequestHeaders header={item.request_head} />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={TabTitle('响应头')} key={'2'}>
+                  <RequestHeaders header={item.response_head} />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={TabTitle('响应体')} key={'3'}>
+                  {renderResponseBody(item)}
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={TabTitle('变量与响应参数提取')} key={'4'}>
+                  <RespProTable
+                    columns={ResponseExtractColumns}
+                    dataSource={item.extracts}
+                  />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={TabTitle('断言')} key={'5'}>
+                  <RespProTable
+                    columns={AssertColumns}
+                    dataSource={item.asserts}
+                  />
+                </Tabs.TabPane>
+              </Tabs>
+            </ProCard>
+          );
+        }
       })}
     </div>
   );

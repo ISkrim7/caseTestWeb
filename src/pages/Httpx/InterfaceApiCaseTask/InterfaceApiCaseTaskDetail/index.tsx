@@ -199,25 +199,31 @@ const Index = () => {
               rules={[{ required: true, message: '用例优先级必选' }]}
             />
           </ProForm.Group>
+
           <ProForm.Group>
-            <ProFormTextArea
+            <ProFormDigit
+              label={'重试次数'}
+              name={'retry'}
               width={'md'}
-              name="desc"
-              label="用例描述"
               required={true}
-              rules={[{ required: true, message: '用例描述必填' }]}
+              // hidden={true}
+              initialValue={0}
+              max={5}
+              min={0}
+            />
+            <ProFormDigit
+              tooltip={'设置大于0后日志可能会混乱'}
+              label={'并行执行'}
+              name={'parallel'}
+              required={true}
+              width={'md'}
+              // hidden={true}
+              initialValue={0}
+              max={5}
+              min={0}
             />
           </ProForm.Group>
-          <ProFormDigit
-            label={'重试次数'}
-            name={'retry'}
-            width={'lg'}
-            required={true}
-            hidden={true}
-            initialValue={0}
-            max={5}
-            min={0}
-          />
+
           <ProForm.Group>
             <ProFormSwitch
               name={'is_auto'}
@@ -289,6 +295,15 @@ const Index = () => {
                 />
               </>
             ) : null}
+          </ProForm.Group>
+          <ProForm.Group>
+            <ProFormTextArea
+              width={'md'}
+              name="desc"
+              label="用例描述"
+              required={true}
+              rules={[{ required: true, message: '用例描述必填' }]}
+            />
           </ProForm.Group>
         </ProForm>
       </ProCard>

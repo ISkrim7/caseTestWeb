@@ -1,6 +1,6 @@
-import { caseAPIResults } from '@/api/inter/interCase';
+import { caseAPIResultsByCase } from '@/api/inter/interCase';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
-import { ITryResponseInfo } from '@/pages/Httpx/types';
+import { IInterfaceResultByCase } from '@/pages/Httpx/types';
 import { ProCard } from '@ant-design/pro-components';
 import { FC, useEffect, useState } from 'react';
 
@@ -9,10 +9,10 @@ interface SelfProps {
 }
 
 const InterfaceApiResultResponses: FC<SelfProps> = ({ caseResultId }) => {
-  const [apiResponses, setApiResponses] = useState<ITryResponseInfo[]>();
+  const [apiResponses, setApiResponses] = useState<IInterfaceResultByCase[]>();
   useEffect(() => {
     if (caseResultId) {
-      caseAPIResults({ interface_case_result_Id: caseResultId }).then(
+      caseAPIResultsByCase({ caseResultId: caseResultId }).then(
         ({ code, data }) => {
           if (code === 0) {
             console.log(data);

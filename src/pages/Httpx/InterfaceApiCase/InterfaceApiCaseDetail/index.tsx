@@ -378,7 +378,6 @@ const Index = () => {
           </Tabs.TabPane>
         </Tabs>
       </ProCard>
-
       {caseApiId ? <InterfaceApiCaseResultTable apiCaseId={caseApiId} /> : null}
       <FloatButton.BackTop />
     </ProCard>

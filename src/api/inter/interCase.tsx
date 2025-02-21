@@ -3,6 +3,7 @@ import {
   IInterfaceAPI,
   IInterfaceAPICase,
   IInterfaceCaseResult,
+  IInterfaceResultByCase,
   ITryResponseInfo,
   IVariable,
 } from '@/pages/Httpx/types';
@@ -291,6 +292,25 @@ export const caseAPIResults = async (
     {
       method: 'POST',
       data: data,
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 查询case result 关联的api result
+ */
+export const caseAPIResultsByCase = async (
+  data: {
+    caseResultId: string | number;
+  },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceResultByCase[]>>(
+    `/api/interface/result/queryByCaseResultId`,
+    {
+      method: 'GET',
+      params: data,
       ...(opt || {}),
     },
   );

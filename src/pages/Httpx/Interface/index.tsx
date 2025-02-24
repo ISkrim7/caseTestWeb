@@ -1,6 +1,7 @@
 import LeftPart from '@/components/LeftPart';
 import GroupApiTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiTable';
 import InterfaceApiTable from '@/pages/Httpx/Interface/InterfaceApiTable';
+import InterfaceApiUpload from '@/pages/Httpx/Interface/InterfaceApiUpload';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
 import { useState } from 'react';
@@ -52,6 +53,9 @@ const Index = () => {
                 currentPartId={currentCasePartId}
                 perKey={PerGroupKey}
               />
+            </ProCard.TabPane>
+            <ProCard.TabPane key="upload" tab="Upload API">
+              <InterfaceApiUpload />
             </ProCard.TabPane>
           </ProCard>
         </Splitter.Panel>

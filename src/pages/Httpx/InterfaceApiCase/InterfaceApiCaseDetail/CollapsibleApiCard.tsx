@@ -8,10 +8,12 @@ import InterfaceApiDetail from '@/pages/Httpx/Interface/InterfaceApiDetail';
 import GroupInterfaceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupInterfaceTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import {
-  CheckCircleTwoTone,
-  CloseCircleTwoTone,
+  CopyFilled,
+  DeleteOutlined,
   DownOutlined,
+  PlayCircleOutlined,
   RightOutlined,
+  StopOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
@@ -19,6 +21,7 @@ import {
   Button,
   message,
   Popconfirm,
+  Space,
   Switch,
   Tag,
   Tooltip,
@@ -60,7 +63,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
   useEffect(() => {
     if (interfaceApiInfo) {
       setCardTitle(interfaceApiInfo.name);
-      setSubCardTitle(interfaceApiInfo.description);
+      setSubCardTitle(interfaceApiInfo.url);
     }
   }, [interfaceApiInfo]);
 
@@ -121,46 +124,52 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
     <div style={{ marginRight: 10 }}>
       {interfaceApiInfo && (
         <>
-          {interfaceApiInfo.is_group ? (
-            <Tag color={'green-inverse'}>组</Tag>
-          ) : null}
-          {interfaceApiInfo.is_common ? (
-            <Tag color={'green-inverse'}>公</Tag>
-          ) : null}
-          {interfaceApiInfo.is_group ? null : (
-            <Button type={'link'} onClick={copyApi}>
-              Copy To Bottom
-            </Button>
-          )}
+          <Space>
+            {interfaceApiInfo.is_group ? (
+              <Tag color={'green-inverse'}>组</Tag>
+            ) : null}
+            {interfaceApiInfo.is_common ? (
+              <Tag color={'green-inverse'}>公</Tag>
+            ) : null}
+            {interfaceApiInfo.is_group ? null : (
+              <Button color={'primary'} variant="filled" onClick={copyApi}>
+                <CopyFilled />
+                Copy
+              </Button>
+            )}
 
-          <Popconfirm
-            title={'确认删除？'}
-            description={'非公共Api&Group会彻底删除'}
-            okText={'确认'}
-            cancelText={'点错了'}
-            style={{ marginLeft: 10 }}
-            onConfirm={removeApi}
-          >
-            <Button type={'link'}>Del</Button>
-          </Popconfirm>
-          <Tooltip title="关闭后此步骤将不运行、只在用例场景中生效">
-            <Switch
+            <Popconfirm
+              title={'确认删除？'}
+              description={'非公共Api&Group会彻底删除'}
+              okText={'确认'}
+              cancelText={'点错了'}
               style={{ marginLeft: 10 }}
-              checkedChildren={<CheckCircleTwoTone />}
-              unCheckedChildren={<CloseCircleTwoTone />}
-              value={interfaceApiInfo.enable}
-              onClick={async (checked, _) => {
-                // @ts-ignore
-                const { code } = await updateInterApiById({
-                  id: interfaceApiInfo?.id,
-                  enable: checked,
-                });
-                if (code === 0) {
-                  refresh();
-                }
-              }}
-            />
-          </Tooltip>
+              onConfirm={removeApi}
+            >
+              <Button color={'primary'} variant={'filled'}>
+                <DeleteOutlined />
+                DEL
+              </Button>
+            </Popconfirm>
+            <Tooltip title="关闭后此步骤将不运行、只在用例场景中生效">
+              <Switch
+                style={{ marginLeft: 10 }}
+                checkedChildren={<PlayCircleOutlined />}
+                unCheckedChildren={<StopOutlined />}
+                value={interfaceApiInfo.enable}
+                onClick={async (checked, _) => {
+                  // @ts-ignore
+                  const { code } = await updateInterApiById({
+                    id: interfaceApiInfo?.id,
+                    enable: checked,
+                  });
+                  if (code === 0) {
+                    refresh();
+                  }
+                }}
+              />
+            </Tooltip>
+          </Space>
         </>
       )}
     </div>
@@ -183,7 +192,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
           </Tag>
         </>
       }
-      subTitle={<Text style={{ color: 'gray' }}>{cardSubTitle}</Text>}
+      subTitle={<Text type={'secondary'}>{cardSubTitle}</Text>}
       style={{ borderRadius: '5px', marginTop: 10 }}
       collapsible={true}
       ghost={true}

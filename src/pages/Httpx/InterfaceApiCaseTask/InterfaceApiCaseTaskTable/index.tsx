@@ -161,20 +161,16 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
               title={'确认删除？'}
               okText={'确认'}
               cancelText={'点错了'}
-              onConfirm={async () => {}}
+              onConfirm={async () => {
+                const { code, msg } = await removeApiTaskBaseInfo(record.id);
+                if (code === 0) {
+                  message.success(msg);
+                  actionRef.current?.reload();
+                }
+              }}
             >
               <Divider type={'vertical'} />
-              <a
-                onClick={async () => {
-                  const { code, msg } = await removeApiTaskBaseInfo(record.id);
-                  if (code === 0) {
-                    message.success(msg);
-                    actionRef.current?.reload();
-                  }
-                }}
-              >
-                删除
-              </a>
+              <a>删除</a>
             </Popconfirm>
           </>
         );

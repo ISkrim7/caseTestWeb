@@ -7,6 +7,7 @@ import { IInterfaceAPICase } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
 import { CasePartEnum, IUICase } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import { ProColumns } from '@ant-design/pro-components';
 import { Button, message, Tag } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
@@ -51,25 +52,11 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
     }
   }, [selectProjectId]);
   const pageInterfaceCase = useCallback(async (params: any, sort: any) => {
-    const searchData = {
+    const { code, data } = await pageInterApiCase({
       ...params,
       sort: sort,
-    };
-    const { code, data } = await pageInterApiCase(searchData);
-    if (code === 0) {
-      return {
-        data: data.items,
-        total: data.pageInfo.total,
-        success: true,
-        pageSize: data.pageInfo.page,
-        current: data.pageInfo.limit,
-      };
-    }
-    return {
-      data: [],
-      success: false,
-      total: 0,
-    };
+    });
+    return pageData(code, data);
   }, []);
 
   const rowSelection: TableRowSelection<IUICase> = {

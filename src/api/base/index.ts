@@ -233,9 +233,9 @@ export async function removeCasePart(
   },
 ) {
   return request<IResponse<any>>('/api/part/remove', {
-    method: 'DELETE',
+    method: 'POST',
     data: {
-      id: body,
+      partId: body,
     },
     ...(options || {}),
   });

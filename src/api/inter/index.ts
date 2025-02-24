@@ -11,6 +11,19 @@ import { request } from '@@/plugin-request/request';
  * @param data
  * @param options
  */
+export const uploadInterApi = async (data: any, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/interface/upload', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * page api
+ * @param data
+ * @param options
+ */
 export const pageInterApi = async (data: any, options?: IObjGet) => {
   return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/page', {
     method: 'POST',

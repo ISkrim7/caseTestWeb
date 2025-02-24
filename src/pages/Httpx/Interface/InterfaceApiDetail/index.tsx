@@ -136,7 +136,7 @@ const Index: FC<SelfProps> = ({
   useEffect(() => {
     // 如果存在当前项目ID，则获取环境列表和用例部分
     if (currentProjectId) {
-      queryEnvByProjectIdFormApi(currentProjectId, setEnvs).then();
+      queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
       fetchCaseParts(currentProjectId, setCasePartEnum).then(); // 获取用例部分
     }
   }, [currentProjectId]);

@@ -42,6 +42,7 @@ export const queryEnvByProjectIdFormApi = async (
   setter: React.Dispatch<
     React.SetStateAction<{ label: string; value: number | null }[]>
   >,
+  noEnv: boolean,
 ) => {
   queryEnvBy({ project_id: projectId } as IEnv).then(({ code, data }) => {
     if (code === 0) {
@@ -50,8 +51,12 @@ export const queryEnvByProjectIdFormApi = async (
         label: item.name,
         value: item.id,
       }));
-      const noEnv = { label: '自定义', value: -1 };
-      setter([noEnv, ...envs]); // 设置环境列表
+      if (noEnv) {
+        const noEnv = { label: '自定义', value: -1 };
+        setter([noEnv, ...envs]); // 设置环境列表
+      } else {
+        setter(envs); // 设置环境列表
+      }
     }
   });
 };

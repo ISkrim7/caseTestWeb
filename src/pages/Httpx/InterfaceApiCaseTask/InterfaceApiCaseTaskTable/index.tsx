@@ -7,6 +7,7 @@ import {
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPITask } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Popconfirm, Switch, Tag } from 'antd';
@@ -27,28 +28,14 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
 
   const fetchPageTasks = useCallback(
     async (params: any, sort: any) => {
-      const searchData = {
+      const { code, data } = await pageApiTask({
         ...params,
         part_id: currentPartId,
         //只查询公共api
         is_common: 1,
         sort: sort,
-      };
-      const { code, data } = await pageApiTask(searchData);
-      if (code === 0) {
-        return {
-          data: data.items,
-          total: data.pageInfo.total,
-          success: true,
-          pageSize: data.pageInfo.page,
-          current: data.pageInfo.limit,
-        };
-      }
-      return {
-        data: [],
-        success: false,
-        total: 0,
-      };
+      });
+      return pageData(code, data);
     },
     [currentPartId],
   );

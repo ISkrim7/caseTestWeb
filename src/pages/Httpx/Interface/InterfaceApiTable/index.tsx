@@ -27,14 +27,13 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
 
   const fetchInterface = useCallback(
     async (params: any, sort: any) => {
-      const searchData = {
+      const { code, data } = await pageInterApi({
         ...params,
         part_id: currentPartId,
         //只查询公共api
         is_common: 1,
         sort: sort,
-      };
-      const { code, data } = await pageInterApi(searchData);
+      });
       return pageData(code, data);
     },
     [currentPartId],

@@ -7,7 +7,7 @@ import { associationApisByTaskId } from '@/api/inter/interTask';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum, IUICase } from '@/pages/Play/componets/uiTypes';
+import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
 import { CONFIG } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -144,7 +144,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
     },
   ];
 
-  const rowSelection: TableRowSelection<IUICase> = {
+  const rowSelection: TableRowSelection<IInterfaceAPI> = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys: React.Key[]) => {
       setSelectedRowKeys(newSelectedRowKeys);

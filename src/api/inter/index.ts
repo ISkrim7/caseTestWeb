@@ -31,6 +31,33 @@ export const pageInterApi = async (data: any, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+/**
+ * page api
+ * @param data
+ * @param options
+ */
+export const pageInterApiNoPart = async (data: any, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/pageNoPart', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+/**
+ * page api
+ * @param data
+ * @param options
+ */
+export const setInterApisPart = async (data: any, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceAPI>>>(
+    '/api/interface/setInterfacePart',
+    {
+      method: 'POST',
+      data: data,
+      ...(options || {}),
+    },
+  );
+};
 
 /**
  * try api

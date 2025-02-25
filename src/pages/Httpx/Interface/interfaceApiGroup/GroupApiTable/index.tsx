@@ -73,7 +73,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
           <>
             <a
               onClick={() => {
-                history.push(`/interface/group/detail/groupId=${record.id}`);
+                window.open(`/interface/group/detail/groupId=${record.id}`);
               }}
             >
               详情

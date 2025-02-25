@@ -101,7 +101,6 @@ const Index: FC<SelfProps> = ({
   const [headersLength, setHeadersLength] = useState<number>();
   const [queryLength, setQueryLength] = useState<number>();
   const [bodyLength, setBodyLength] = useState<number>();
-  const [hiddenBody, setHiddenBody] = useState(false);
   const [openDoc, setOpenDoc] = useState(false);
 
   const fetchInterfaceDetails = useCallback(
@@ -111,7 +110,6 @@ const Index: FC<SelfProps> = ({
         interApiForm.setFieldsValue(data);
         setDataLength(data);
         setCurrentProjectId(data.project_id);
-        setHiddenBody(data.method === 'GET');
       }
     },
     [interApiForm],
@@ -222,13 +220,6 @@ const Index: FC<SelfProps> = ({
         options={API_REQUEST_METHOD}
         required={true}
         rules={[{ required: true, message: 'method 不能为空' }]}
-        onChange={(value: string) => {
-          if (value === 'GET') {
-            setHiddenBody(false);
-          } else {
-            setHiddenBody(true);
-          }
-        }}
       />
       <Button
         loading={tryLoading}
@@ -557,11 +548,7 @@ const Index: FC<SelfProps> = ({
                   <Tabs.TabPane key={'1'} tab={renderTab(2)}>
                     <InterParam form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
-                  <Tabs.TabPane
-                    key={'3'}
-                    tab={renderTab(3)}
-                    disabled={hiddenBody}
-                  >
+                  <Tabs.TabPane key={'3'} tab={renderTab(3)}>
                     <InterBody form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
                 </Tabs>

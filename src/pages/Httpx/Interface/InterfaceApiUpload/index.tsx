@@ -35,7 +35,7 @@ const Index = () => {
   useEffect(() => {
     if (currentProjectId) {
       fetchCaseParts(currentProjectId, setCasePartEnum).then();
-      queryEnvByProjectIdFormApi(currentProjectId, setEnvs, false).then();
+      queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
     }
   }, [currentProjectId]);
 

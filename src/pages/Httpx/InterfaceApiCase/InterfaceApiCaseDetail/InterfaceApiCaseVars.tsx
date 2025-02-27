@@ -1,12 +1,12 @@
 import {
   addVars,
-  pageVars,
+  queryVarsByCaseId,
   removeVars,
   updateVars,
 } from '@/api/inter/interCase';
 import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import { IVariable } from '@/pages/Httpx/types';
-import { pageData } from '@/utils/somefunc';
+import { queryData } from '@/utils/somefunc';
 import {
   ActionType,
   EditableFormInstance,
@@ -29,16 +29,10 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
   const [edit, setEdit] = useState(0);
   const editorFormRef = useRef<EditableFormInstance<IVariable>>();
 
-  const fetchPageVars = useCallback(
-    async (values: any) => {
-      const { code, data } = await pageVars({
-        ...values,
-        case_id: currentCaseId,
-      });
-      return pageData(code, data, setDataSource);
-    },
-    [currentCaseId, edit],
-  );
+  const fetchPageVars = useCallback(async () => {
+    const { code, data } = await queryVarsByCaseId(currentCaseId!);
+    return queryData(code, data, setDataSource);
+  }, [currentCaseId, edit]);
 
   const varColumns: ProColumns<IVariable>[] = [
     {

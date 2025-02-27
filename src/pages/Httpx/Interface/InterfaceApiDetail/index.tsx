@@ -1,11 +1,13 @@
 import {
   detailInterApiById,
   insertInterApi,
+  setCurl2InterApi,
   tryInterApi,
   updateInterApiById,
 } from '@/api/inter';
 import { addApi2Case } from '@/api/inter/interCase';
 import { addInterfaceGroupApi } from '@/api/inter/interGroup';
+import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
@@ -44,7 +46,16 @@ import {
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
 import { useDispatch } from '@umijs/plugins/libs/dva';
-import { Button, FloatButton, Form, message, Spin, Tabs, Tooltip } from 'antd';
+import {
+  Button,
+  FloatButton,
+  Form,
+  message,
+  Modal,
+  Spin,
+  Tabs,
+  Tooltip,
+} from 'antd';
 import React, { Dispatch, FC, useCallback, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 
@@ -93,6 +104,7 @@ const Index: FC<SelfProps> = ({
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
     [],
   );
+  const [script, setScript] = useState();
   const [currentEnvId, setCurrentEnvId] = useState<number>();
   const [tryLoading, setTryLoading] = useState(false);
   const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
@@ -102,6 +114,7 @@ const Index: FC<SelfProps> = ({
   const [queryLength, setQueryLength] = useState<number>();
   const [bodyLength, setBodyLength] = useState<number>();
   const [openDoc, setOpenDoc] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchInterfaceDetails = useCallback(
     async (id: string | number) => {
@@ -193,6 +206,9 @@ const Index: FC<SelfProps> = ({
     });
   };
 
+  const transCurl = async () => {
+    setIsModalOpen(true);
+  };
   const addonBefore = (
     <>
       <ProFormSelect
@@ -365,11 +381,36 @@ const Index: FC<SelfProps> = ({
         return null;
     }
   };
+
+  const onModelFinish = async () => {
+    if (script) {
+      const { code, data } = await setCurl2InterApi({ script: script });
+      if (code === 0) {
+        interApiForm.setFieldsValue(data);
+        setIsModalOpen(false);
+      }
+    }
+  };
   return (
     <ProCard
       split={'horizontal'}
       extra={<DetailExtra currentMode={currentMode} />}
     >
+      <Modal
+        title="导入CURL"
+        open={isModalOpen}
+        onOk={onModelFinish}
+        onCancel={() => {
+          setIsModalOpen(false);
+        }}
+      >
+        <span style={{ color: 'gray' }}>curl格式内容 快速导入到请求参数</span>
+        <AceCodeEditor
+          _mode={'text'}
+          onChange={(value: any) => setScript(value)}
+          value={script}
+        />
+      </Modal>
       <MyDrawer
         name={'API Doc'}
         width={'40%'}
@@ -472,6 +513,16 @@ const Index: FC<SelfProps> = ({
               </ProCard>
             </Tabs.TabPane>
             <Tabs.TabPane key={'2'} icon={<ApiOutlined />} tab={'接口基础'}>
+              <span style={{ float: 'right' }}>
+                <CodeOutlined style={{ color: 'gray' }} />
+                <Button
+                  type={'link'}
+                  style={{ color: 'gray' }}
+                  onClick={transCurl}
+                >
+                  CURL 快速导入
+                </Button>
+              </span>
               <ProForm.Group>
                 <ProFormText
                   label={'接口名称'}

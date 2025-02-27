@@ -187,7 +187,15 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
       hoverable
       title={
         <>
-          <Tag color={'#108ee9'} style={{ marginLeft: 4 }}>
+          <Tag
+            color={'#108ee9'}
+            style={{ marginLeft: 4 }}
+            onClick={() => {
+              window.open(
+                `/interface/interApi/detail/interId=${interfaceApiInfo?.id}`,
+              );
+            }}
+          >
             {cardTitle}
           </Tag>
         </>

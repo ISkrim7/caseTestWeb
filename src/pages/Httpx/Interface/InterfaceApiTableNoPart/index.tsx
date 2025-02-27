@@ -127,6 +127,7 @@ const Index: FC<SelfProps> = (props) => {
   };
   return (
     <MyProTable
+      // @ts-ignore
       tableAlertOptionRender={() => (
         <Space wrap={true}>
           <TreeSelect

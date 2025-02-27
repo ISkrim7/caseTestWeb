@@ -391,10 +391,10 @@ export const removeVars = async (data: { uid: string }, options?: IObjGet) => {
  * @param data
  * @param options
  */
-export const pageVars = async (data: ISearch, options?: IObjGet) => {
-  return request<IResponse<IPage<IUIVars>>>('/api/interface/case/vars/page', {
+export const queryVarsByCaseId = async (data: string, options?: IObjGet) => {
+  return request<IResponse<IUIVars[]>>('/api/interface/case/vars/query', {
     method: 'POST',
-    data,
+    data: { case_id: data },
     ...(options || {}),
   });
 };

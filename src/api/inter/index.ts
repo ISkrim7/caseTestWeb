@@ -74,6 +74,21 @@ export const tryInterApi = async (
     ...(options || {}),
   });
 };
+/**
+ * try api
+ * @param data
+ * @param options
+ */
+export const setCurl2InterApi = async (
+  data: { script: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/interface/transCurl', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
 
 /**
  * try api

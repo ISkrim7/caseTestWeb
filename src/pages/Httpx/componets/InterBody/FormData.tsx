@@ -9,7 +9,7 @@ import {
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Tag, Typography } from 'antd';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -21,7 +21,15 @@ interface SelfProps {
 const FormData: FC<SelfProps> = ({ form, mode }) => {
   const [dataEditableKeys, setDataEditableRowKeys] = useState<React.Key[]>();
   const editorFormRef = useRef<EditableFormInstance<IFromData>>();
-
+  useEffect(() => {
+    if (mode === 3) {
+      setDataEditableRowKeys(
+        form.getFieldValue('data')?.map((item: any) => item.id),
+      );
+    } else {
+      setDataEditableRowKeys([]);
+    }
+  }, [mode]);
   const columns: ProColumns<IFromData>[] = [
     {
       title: 'key',
@@ -51,7 +59,19 @@ const FormData: FC<SelfProps> = ({ form, mode }) => {
                 <ApiVariableFunc
                   value={record?.value}
                   index={record?.id}
-                  setValue={editorFormRef.current?.setRowData}
+                  setValue={(index, newData) => {
+                    editorFormRef.current?.setRowData?.(index, newData);
+                    // 更新表单数据
+                    form.setFieldsValue({
+                      data: form
+                        .getFieldValue('data')
+                        .map((item: any) =>
+                          item.id === index
+                            ? { ...item, value: newData.value }
+                            : item,
+                        ),
+                    });
+                  }}
                 />
               ),
               value: record?.value,
@@ -68,20 +88,8 @@ const FormData: FC<SelfProps> = ({ form, mode }) => {
     {
       title: 'opt',
       valueType: 'option',
-      render: (text, record, _, action) => {
-        return (
-          <>
-            {mode !== 1 ? (
-              <a
-                onClick={() => {
-                  action?.startEditable?.(record.id);
-                }}
-              >
-                编辑
-              </a>
-            ) : null}
-          </>
-        );
+      render: () => {
+        return null;
       },
     },
   ];

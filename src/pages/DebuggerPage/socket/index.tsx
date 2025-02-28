@@ -1,7 +1,6 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import { useModel } from '@@/exports';
-import { ProCard, ProFormText } from '@ant-design/pro-components';
+import { ProCard } from '@ant-design/pro-components';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
@@ -35,15 +34,6 @@ function App() {
 
   return (
     <ProCard split={'horizontal'}>
-      <ProCard>
-        <ProFormText
-          name={'name'}
-          fieldProps={{
-            value: value,
-          }}
-        />
-        <ApiVariableFunc value={value} setValue={setValue} />
-      </ProCard>
       <ProCard>
         <h1>aps</h1>
         <button>Click Me!</button>

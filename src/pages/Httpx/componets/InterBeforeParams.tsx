@@ -9,7 +9,7 @@ import {
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Tag, Typography } from 'antd';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -48,7 +48,19 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
                 <ApiVariableFunc
                   value={record?.value}
                   index={record?.id}
-                  setValue={editorFormRef.current?.setRowData}
+                  setValue={(index, newData) => {
+                    editorFormRef.current?.setRowData?.(index, newData);
+                    // 更新表单数据
+                    form.setFieldsValue({
+                      before_params: form
+                        .getFieldValue('before_params')
+                        .map((item: any) =>
+                          item.id === index
+                            ? { ...item, value: newData.value }
+                            : item,
+                        ),
+                    });
+                  }}
                 />
               ),
               value: record?.value,
@@ -64,24 +76,20 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
     {
       title: 'Opt',
       valueType: 'option',
-      render: (text, record, _, action) => {
-        return (
-          <>
-            {mode !== 1 ? (
-              <a
-                onClick={() => {
-                  action?.startEditable?.(record.id);
-                }}
-              >
-                编辑
-              </a>
-            ) : null}
-          </>
-        );
+      render: () => {
+        return null;
       },
     },
   ];
-
+  useEffect(() => {
+    if (mode === 3) {
+      setBeforeParamsEditableRowKeys(
+        form.getFieldValue('before_params').map((item: any) => item.id),
+      );
+    } else {
+      setBeforeParamsEditableRowKeys([]);
+    }
+  }, [mode]);
   return (
     <ProCard>
       <ProForm form={form} submitter={false}>
@@ -102,7 +110,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
               editableKeys: beforeParamsEditableKeys,
               onChange: setBeforeParamsEditableRowKeys,
               actionRender: (row, _, dom) => {
-                return [dom.save, dom.cancel, dom.delete];
+                return [dom.delete];
               },
             }}
           />

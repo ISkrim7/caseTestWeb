@@ -167,8 +167,6 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
         <Space direction={'horizontal'}>
           <Button
             onClick={() => {
-              console.log(selectValue);
-              console.log(index);
               if (selectValue && index) {
                 setValue?.(index, { value: selectValue });
               }

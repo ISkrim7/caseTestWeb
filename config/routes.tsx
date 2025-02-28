@@ -256,6 +256,16 @@ export default [
         name: 'socket',
         component: '@/pages/DebuggerPage/socket',
       },
+      {
+        path: '/debugger/table',
+        name: 'table',
+        component: '@/pages/DebuggerPage/Debugge',
+      },
+      {
+        path: '/debugger/part',
+        name: 'part',
+        component: '@/pages/DebuggerPage/part',
+      },
     ],
   },
   {

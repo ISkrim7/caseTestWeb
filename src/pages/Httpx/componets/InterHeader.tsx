@@ -9,13 +9,14 @@ import {
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Select, Tag } from 'antd';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
+  mode: number;
 }
 
-const InterHeader: FC<SelfProps> = ({ form }) => {
+const InterHeader: FC<SelfProps> = ({ form, mode }) => {
   const [headersEditableKeys, setHeadersEditableRowKeys] =
     useState<React.Key[]>();
   const [headerData, setHeaderData] = useState<
@@ -25,7 +26,15 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
     }[]
   >([]);
   const editorFormRef = useRef<EditableFormInstance<IHeaders>>();
-
+  useEffect(() => {
+    if (mode === 3) {
+      setHeadersEditableRowKeys(
+        form.getFieldValue('headers')?.map((item: any) => item.id),
+      );
+    } else {
+      setHeadersEditableRowKeys([]);
+    }
+  }, [mode]);
   const handleHeaderSearch = (newValue: string) => {
     if (newValue) {
       const filteredOptions = Object.keys(HeadersEnum)
@@ -85,7 +94,19 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
                 <ApiVariableFunc
                   value={record?.value}
                   index={record?.id}
-                  setValue={editorFormRef.current?.setRowData}
+                  setValue={(index, newData) => {
+                    editorFormRef.current?.setRowData?.(index, newData);
+                    // 更新表单数据
+                    form.setFieldsValue({
+                      headers: form
+                        .getFieldValue('headers')
+                        .map((item: any) =>
+                          item.id === index
+                            ? { ...item, value: newData.value }
+                            : item,
+                        ),
+                    });
+                  }}
                 />
               ),
               value: record?.value,
@@ -103,16 +124,8 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
       title: 'opt',
       valueType: 'option',
       fixed: 'right',
-      render: (_: any, record: any) => {
-        return (
-          <a
-            onClick={() => {
-              setHeadersEditableRowKeys([record.id]);
-            }}
-          >
-            编辑
-          </a>
-        );
+      render: () => {
+        return null;
       },
     },
   ];
@@ -136,7 +149,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
             editableKeys: headersEditableKeys,
             onChange: setHeadersEditableRowKeys, // Update editable keys
             actionRender: (_, __, dom) => {
-              return [dom.save, dom.cancel, dom.delete];
+              return [dom.delete];
             },
           }}
         />

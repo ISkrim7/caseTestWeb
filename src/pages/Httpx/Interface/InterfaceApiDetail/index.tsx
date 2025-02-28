@@ -115,6 +115,52 @@ const Index: FC<SelfProps> = ({
   const [bodyLength, setBodyLength] = useState<number>();
   const [openDoc, setOpenDoc] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  /**
+   * 对用例的新增与修改
+   * 区别 公共新增修改 与 从用例新增与修改
+   * addFromCase 从用例新增与修改
+   * addFromGroup 从API GROUP新增与修改
+   */
+  const SaveOrUpdate = async () => {
+    const values = interApiForm.getFieldsValue(true);
+
+    // 从用例中新增私有的API
+    values.is_common = addFromCase ? 0 : 1;
+    values.is_common = addFromGroup ? 0 : 1;
+    if (interId !== undefined || values.id !== undefined) {
+      //修改
+      await updateInterApiById(values).then(({ code, msg }) => {
+        if (code === 0) {
+          message.success(msg);
+          setCurrentMode(1);
+        }
+      });
+    } else {
+      //新增
+      await insertInterApi(values).then(async ({ code, data, msg }) => {
+        if (code === 0) {
+          message.success(msg);
+          setCurrentMode(1);
+          // 添加到Case中
+          if (caseApiId && data) {
+            await addApi2Case({ caseId: caseApiId, apiId: data.id }).then(
+              async () => {
+                refresh();
+              },
+            );
+          } else if (groupId && data) {
+            addInterfaceGroupApi({ groupId: groupId, apiId: data.id }).then(
+              async () => {
+                refresh();
+              },
+            );
+          } else {
+            history.push(`/interface/interApi/detail/interId=${data.id}`);
+          }
+        }
+      });
+    }
+  };
 
   const fetchInterfaceDetails = useCallback(
     async (id: string | number) => {
@@ -248,53 +294,6 @@ const Index: FC<SelfProps> = ({
       </Button>
     </>
   );
-
-  /**
-   * 对用例的新增与修改
-   * 区别 公共新增修改 与 从用例新增与修改
-   * addFromCase 从用例新增与修改
-   * addFromGroup 从API GROUP新增与修改
-   */
-  const SaveOrUpdate = async () => {
-    const values = interApiForm.getFieldsValue(true);
-
-    // 从用例中新增私有的API
-    values.is_common = addFromCase ? 0 : 1;
-    values.is_common = addFromGroup ? 0 : 1;
-    if (interId !== undefined || values.id !== undefined) {
-      //修改
-      await updateInterApiById(values).then(({ code, msg }) => {
-        if (code === 0) {
-          message.success(msg);
-          setCurrentMode(1);
-        }
-      });
-    } else {
-      //新增
-      await insertInterApi(values).then(async ({ code, data, msg }) => {
-        if (code === 0) {
-          message.success(msg);
-          setCurrentMode(1);
-          // 添加到Case中
-          if (caseApiId && data) {
-            await addApi2Case({ caseId: caseApiId, apiId: data.id }).then(
-              async () => {
-                refresh();
-              },
-            );
-          } else if (groupId && data) {
-            addInterfaceGroupApi({ groupId: groupId, apiId: data.id }).then(
-              async () => {
-                refresh();
-              },
-            );
-          } else {
-            history.push(`/interface/interApi/detail/interId=${data.id}`);
-          }
-        }
-      });
-    }
-  };
 
   const renderTab = (type: number) => {
     switch (type) {
@@ -594,7 +593,7 @@ const Index: FC<SelfProps> = ({
               <ProCard bodyStyle={{ padding: 0 }}>
                 <Tabs defaultActiveKey={'1'} type="card">
                   <Tabs.TabPane key={'2'} tab={renderTab(1)}>
-                    <InterHeader form={interApiForm} />
+                    <InterHeader form={interApiForm} mode={currentMode} />
                   </Tabs.TabPane>
                   <Tabs.TabPane key={'1'} tab={renderTab(2)}>
                     <InterParam form={interApiForm} mode={currentMode} />

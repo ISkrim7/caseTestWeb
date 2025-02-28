@@ -7,8 +7,9 @@ import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
+import { PlusOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, Popconfirm, Tag } from 'antd';
+import { Button, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { history } from 'umi';
 
@@ -44,22 +45,26 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       dataIndex: 'uid',
       key: 'uid',
       fixed: 'left',
-      width: '10%',
+      width: '12%',
       copyable: true,
+      render: (_, record) => {
+        return <Tag color={'blue'}>{record.uid}</Tag>;
+      },
     },
     {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
-      width: '15%',
     },
     {
       title: '优先级',
       dataIndex: 'level',
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
-      width: '10%',
+      search: false,
+      filters: true,
+      onFilter: true,
       render: (_, record) => {
         return <Tag color={'blue'}>{record.level}</Tag>;
       },
@@ -68,7 +73,9 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       title: '状态',
       dataIndex: 'status',
       valueType: 'select',
-      width: '10%',
+      search: false,
+      filters: true,
+      onFilter: true,
       valueEnum: CONFIG.API_STATUS_ENUM,
       render: (_, record) => {
         return CONFIG.API_STATUS_ENUM[record.status].tag;
@@ -77,55 +84,48 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
     {
       title: '创建人',
       dataIndex: 'creatorName',
-      width: '10%',
       render: (_, record) => {
-        return <Tag>{record.creatorName}</Tag>;
+        return <Tag color={'orange'}>{record.creatorName}</Tag>;
       },
     },
     {
       title: '操作',
       valueType: 'option',
       key: 'option',
+      width: '12%',
       fixed: 'right',
-      width: '15%',
-      render: (_, record) => {
-        return (
-          <>
-            <a
-              onClick={() => {
-                history.push(`/interface/interApi/detail/interId=${record.id}`);
-              }}
-            >
-              详情
-            </a>
-            <Divider type={'vertical'} />
-            <a
-              onClick={async () => {
-                const { code } = await copyInterApiById(record.id);
-                if (code === 0) {
-                  actionRef.current?.reload();
-                }
-              }}
-            >
-              复制
-            </a>
-            <Popconfirm
-              title={'确认删除？'}
-              okText={'确认'}
-              cancelText={'点错了'}
-              onConfirm={async () => {
-                const { code } = await removeInterApiById(record.id);
-                if (code === 0) {
-                  actionRef.current?.reload();
-                }
-              }}
-            >
-              <Divider type={'vertical'} />
-              <a>删除</a>
-            </Popconfirm>
-          </>
-        );
-      },
+      render: (_, record) => [
+        <a
+          onClick={() => {
+            history.push(`/interface/interApi/detail/interId=${record.id}`);
+          }}
+        >
+          详情
+        </a>,
+        <a
+          onClick={async () => {
+            const { code } = await copyInterApiById(record.id);
+            if (code === 0) {
+              actionRef.current?.reload();
+            }
+          }}
+        >
+          复制
+        </a>,
+        <Popconfirm
+          title={'确认删除？'}
+          okText={'确认'}
+          cancelText={'点错了'}
+          onConfirm={async () => {
+            const { code } = await removeInterApiById(record.id);
+            if (code === 0) {
+              actionRef.current?.reload();
+            }
+          }}
+        >
+          <a>删除</a>
+        </Popconfirm>,
+      ],
     },
   ];
 
@@ -134,16 +134,17 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       persistenceKey={perKey}
       columns={columns}
       rowKey={'id'}
-      x={1000}
+      x={100}
       actionRef={actionRef}
       request={fetchInterface}
       toolBarRender={() => [
         <Button
           type={'primary'}
           onClick={() => {
-            history.push('/interface/interApi/detail');
+            window.open('/interface/interApi/detail');
           }}
         >
+          <PlusOutlined />
           添加
         </Button>,
       ]}

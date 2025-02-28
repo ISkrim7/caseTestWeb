@@ -19,7 +19,9 @@ export const queryProjects = async (
         value: item.id,
       }));
       setter(projects);
+      return projects;
     }
+    return [];
   });
 };
 

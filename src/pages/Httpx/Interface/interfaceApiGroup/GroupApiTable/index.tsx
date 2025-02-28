@@ -24,7 +24,10 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
   }, [currentPartId, currentProjectId]);
   const fetchInterfaceGroup = useCallback(
     async (params: any) => {
-      const { code, data } = await pageInterfaceGroup({ ...params });
+      const { code, data } = await pageInterfaceGroup({
+        ...params,
+        part_id: currentPartId,
+      });
       return pageData(code, data);
     },
     [currentPartId],
@@ -39,7 +42,7 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       copyable: true,
       fixed: 'left',
       render: (_, record) => {
-        return <Tag>{record.uid}</Tag>;
+        return <Tag color={'blue'}>{record.uid}</Tag>;
       },
     },
     {
@@ -52,14 +55,14 @@ const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
       dataIndex: 'api_num',
       key: 'api_num',
       render: (_, record) => {
-        return <Tag>{record.api_num}</Tag>;
+        return <Tag color={'blue-inverse'}>{record.api_num}</Tag>;
       },
     },
     {
       title: '创建人',
       dataIndex: 'creatorName',
       render: (_, record) => {
-        return <Tag>{record.creatorName}</Tag>;
+        return <Tag color={'orange'}>{record.creatorName}</Tag>;
       },
     },
     {

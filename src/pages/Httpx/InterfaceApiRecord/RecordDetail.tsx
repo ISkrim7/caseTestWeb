@@ -32,7 +32,7 @@ const RecordDetail: FC<IRecordDetailProps> = ({ interfaceAPIRecordInfo }) => {
     <ProCard>
       <Tabs defaultActiveKey={'1'} type="card">
         <Tabs.TabPane key={'2'} tab={'Headers'}>
-          <InterHeader form={interApiForm} />
+          <InterHeader form={interApiForm} mode={1} />
         </Tabs.TabPane>
         <Tabs.TabPane key={'1'} tab={'Params'}>
           <InterParam form={interApiForm} mode={1} />
@@ -46,7 +46,7 @@ const RecordDetail: FC<IRecordDetailProps> = ({ interfaceAPIRecordInfo }) => {
             height={'50vh'}
             readonly={true}
             _mode={'json'}
-          />{' '}
+          />
         </Tabs.TabPane>
       </Tabs>
     </ProCard>

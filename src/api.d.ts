@@ -128,3 +128,12 @@ export interface ICaseInfo {
   updaterID?: number;
   updaterName?: string;
 }
+
+export interface IModule {
+  key: number;
+  title: string;
+  parent_id: number;
+  project_id: number;
+  module_type: number;
+  children?: IModule[];
+}

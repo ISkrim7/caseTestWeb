@@ -178,8 +178,6 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
           <Button
             onClick={() => {
               if (selectValue && index) {
-                console.log('selectValue', selectValue);
-                console.log('value', value);
                 if (value) {
                   setValue?.(index, { value: value + selectValue });
                 }

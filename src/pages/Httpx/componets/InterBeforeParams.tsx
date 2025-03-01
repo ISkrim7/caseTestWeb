@@ -84,7 +84,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
   useEffect(() => {
     if (mode === 3) {
       setBeforeParamsEditableRowKeys(
-        form.getFieldValue('before_params').map((item: any) => item.id),
+        form.getFieldValue('before_params')?.map((item: any) => item.id),
       );
     } else {
       setBeforeParamsEditableRowKeys([]);

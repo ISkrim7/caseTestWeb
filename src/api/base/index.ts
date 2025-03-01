@@ -2,6 +2,7 @@ import {
   ICasePart,
   IEnv,
   ILoginParams,
+  IModule,
   IObjGet,
   IProject,
   IResponse,
@@ -214,6 +215,76 @@ export const queryTreePartByProject = async (
 };
 
 /**
+ * 通过project 获取模块树
+ * @param projectId
+ * @param moduleType
+ * @param options
+ */
+export const queryTreeModuleByProject = async (
+  projectId: number,
+  moduleType: number,
+  options?: IObjGet,
+) => {
+  return request<IResponse<IModule[]>>('/api/module/queryTreeByProject', {
+    method: 'GET',
+    params: { project_id: projectId, module_type: moduleType },
+    ...(options || {}),
+  });
+};
+
+/**
+ * 添加 module
+ * @param body
+ * @param options
+ */
+export const insertModule = async (
+  body: {
+    title: string;
+    project_id: number;
+    module_type: number;
+    parent_id?: number;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/module/insert', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+};
+/**
+ * 添加 module
+ * @param body
+ * @param options
+ */
+export const updateModule = async (
+  body: { title: string; id: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/module/update', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 添加 module
+ * @param body
+ * @param options
+ */
+export const removeModule = async (
+  body: { moduleId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/module/remove', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+};
+
+/**
  * 添加casePart
  * @param body
  * @param options
@@ -279,6 +350,7 @@ export const pageUsers = async (searchInfo: any, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
 export async function userUpdatePwd(
   data: {
     new_password?: string;

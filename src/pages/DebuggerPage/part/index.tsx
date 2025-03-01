@@ -1,4 +1,4 @@
-import LeftPart from '@/pages/DebuggerPage/part/LeftPart';
+import LeftComponents from '@/pages/DebuggerPage/part/LeftComponents';
 import { ProCard } from '@ant-design/pro-components';
 import { Space, Splitter } from 'antd';
 import { useState } from 'react';
@@ -7,6 +7,7 @@ const Index = () => {
   const [currentCasePartId, setCurrentCasePartId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'DEBUGGE';
+  const ModuleType = 1;
 
   return (
     <ProCard
@@ -22,11 +23,19 @@ const Index = () => {
           max="30%"
           style={{ height: '100vh' }}
         >
-          <LeftPart
+          {/*<LeftPart*/}
+          {/*  perKey={PerKey}*/}
+          {/*  currentProjectId={currentProjectId}*/}
+          {/*  setCurrentProjectId={setCurrentProjectId}*/}
+          {/*  setCurrentCasePartId={setCurrentCasePartId}*/}
+          {/*/>*/}
+
+          <LeftComponents
             perKey={PerKey}
+            moduleType={ModuleType}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
-            setCurrentCasePartId={setCurrentCasePartId}
+            setCurrentModuleId={setCurrentCasePartId}
           />
         </Splitter.Panel>
         <Splitter.Panel>

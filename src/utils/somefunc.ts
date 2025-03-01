@@ -35,3 +35,10 @@ export const queryData = async (code: number, data: any, setter?: any) => {
     total: 0,
   };
 };
+
+export const data2LabelValue = (data: any) => {
+  return data?.map((item: any) => ({
+    label: item.title,
+    value: item.id,
+  }));
+};

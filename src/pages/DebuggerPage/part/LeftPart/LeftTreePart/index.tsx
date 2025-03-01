@@ -74,12 +74,10 @@ const Index: React.FC<SelfProps> = ({
   // 树处理、如果有TOKEN 默认TOKEN
   useEffect(() => {
     if (partsData) {
-      console.log(partsData);
       const generatedTreeData = generatePartList(partsData);
       setPartDataList(generatedTreeData); // 更新树形数据状态
 
       const TOKEN_PART_NUMBER = getPart(perKey);
-      console.log(TOKEN_PART_NUMBER);
       if (TOKEN_PART_NUMBER) {
         const tokenKey = parseInt(TOKEN_PART_NUMBER);
         const selectedPart = generatedTreeData.find(
@@ -155,6 +153,7 @@ const Index: React.FC<SelfProps> = ({
       }
     };
     traverse(data);
+    console.log('partList', partList);
     return partList;
   };
 
@@ -357,7 +356,7 @@ const Index: React.FC<SelfProps> = ({
             treeData={treeData} //渲染树节点
             defaultSelectedKeys={defaultSelectedKeys}
             defaultCheckedKeys={defaultSelectedKeys}
-            defaultExpandAll={true}
+            // defaultExpandAll={true}
             onSelect={(keys: React.Key[], info: any) => {
               if (keys[0] != currentCasePart[0]) {
                 setPart(info.node.key, perKey); // set token
@@ -375,7 +374,7 @@ const Index: React.FC<SelfProps> = ({
                   <span style={{ color: 'gray', fontSize: 15 }}>
                     {partDataList.title}
                   </span>
-                  {initialState?.currentUser?.isAdmin ? (
+                  {isAdmin && (
                     <>
                       {nodeKey === partDataList.key ? (
                         <>
@@ -399,7 +398,7 @@ const Index: React.FC<SelfProps> = ({
                         </>
                       ) : null}
                     </>
-                  ) : null}
+                  )}
                 </div>
               );
             }}

@@ -284,6 +284,19 @@ export const removeModule = async (
   });
 };
 
+export const dropModule = async (
+  body: {
+    id: React.Key;
+    targetId: React.Key | null;
+  },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/module/drop', {
+    method: 'POST',
+    data: body,
+    ...opt,
+  });
+};
 /**
  * 添加casePart
  * @param body

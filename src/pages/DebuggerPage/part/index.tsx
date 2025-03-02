@@ -5,9 +5,11 @@ import { useState } from 'react';
 
 const Index = () => {
   const [currentCasePartId, setCurrentCasePartId] = useState<number>();
+  const [currentCasePartId2, setCurrentCasePartId2] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'DEBUGGE';
-  const ModuleType = 1;
+  const ModuleType1 = 1;
+  const ModuleType2 = 2;
 
   return (
     <ProCard
@@ -23,16 +25,15 @@ const Index = () => {
           max="30%"
           style={{ height: '100vh' }}
         >
-          {/*<LeftPart*/}
-          {/*  perKey={PerKey}*/}
-          {/*  currentProjectId={currentProjectId}*/}
-          {/*  setCurrentProjectId={setCurrentProjectId}*/}
-          {/*  setCurrentCasePartId={setCurrentCasePartId}*/}
-          {/*/>*/}
+          <LeftComponents
+            moduleType={ModuleType1}
+            currentProjectId={currentProjectId}
+            setCurrentProjectId={setCurrentProjectId}
+            setCurrentModuleId={setCurrentCasePartId2}
+          />
 
           <LeftComponents
-            perKey={PerKey}
-            moduleType={ModuleType}
+            moduleType={ModuleType2}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
             setCurrentModuleId={setCurrentCasePartId}
@@ -42,6 +43,7 @@ const Index = () => {
           <Space direction={'vertical'}>
             <a>currentCasePartId {currentCasePartId}</a>
             <a>currentProjectId {currentProjectId}</a>
+            <a>currentProjectId2 {currentCasePartId2}</a>
           </Space>
         </Splitter.Panel>
       </Splitter>

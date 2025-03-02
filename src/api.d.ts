@@ -135,5 +135,6 @@ export interface IModule {
   parent_id: number;
   project_id: number;
   module_type: number;
+  children_length?: number;
   children?: IModule[];
 }

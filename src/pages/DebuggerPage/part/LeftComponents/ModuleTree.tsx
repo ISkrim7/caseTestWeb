@@ -1,5 +1,6 @@
 import { IModule } from '@/api';
 import {
+  dropModule,
   insertModule,
   queryTreeModuleByProject,
   removeModule,
@@ -28,6 +29,7 @@ import {
   Space,
   Tooltip,
   Tree,
+  TreeProps,
   Typography,
 } from 'antd';
 import React, { FC, useEffect, useMemo, useState } from 'react';
@@ -82,7 +84,7 @@ const ModuleTree: FC<IProps> = (props) => {
     if (currentProjectId) {
       queryTreeModuleByProject(currentProjectId, moduleType).then(
         ({ code, data }) => {
-          if (code === 0 || data) {
+          if (code === 0 && data) {
             setModules(data);
             setModulesTree(module2Tree(data));
           }
@@ -96,34 +98,36 @@ const ModuleTree: FC<IProps> = (props) => {
    */
   const TreeModule = useMemo(() => {
     const loop: any = (data: IModule[]) =>
-      data.map((item: any) => {
-        const strTitle = item.title;
+      data.map((item: IModule) => {
+        const strTitle = `${item.title}${
+          item.children_length !== undefined ? ` (${item.children_length})` : ''
+        }`;
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
         const title =
           index > -1 ? (
-            <span>
+            <Text type={'secondary'}>
               {beforeStr}
-              <span style={{ color: 'red' }}>{searchValue}</span>
+              <Text type={'secondary'} style={{ color: 'red' }}>
+                {searchValue}
+              </Text>
               {afterStr}
-            </span>
+            </Text>
           ) : (
-            <span>{strTitle}</span>
+            <Text type={'secondary'} strong>
+              {strTitle}
+            </Text>
           );
         if (item.children) {
           return {
             title,
-            // isRoot: item.isRoot,
-            // rootID: item.rootID,
             key: item.key,
             children: loop(item.children),
           };
         }
         return {
           title,
-          // isRoot: item.isRoot,
-          // rootID: item.rootID,
           key: item.key,
         };
       });
@@ -137,11 +141,24 @@ const ModuleTree: FC<IProps> = (props) => {
     setReload(reload + 1);
   };
 
+  /**
+   * 拖拽
+   * @param info
+   */
+  const onDrop: TreeProps['onDrop'] = async (info) => {
+    const { code } = await dropModule({
+      id: info.dragNode.key,
+      targetId: info.dropToGap ? null : info.node.key,
+    });
+    if (code === 0) {
+      await handleReload();
+    }
+  };
   const menuItem = (node: IModule): MenuProps['items'] => {
     return [
       {
         key: '1',
-        label: '编辑',
+        label: <Text strong>编辑</Text>,
         onClick: async () => {
           console.log('click 编辑', node);
           setOpen(true);
@@ -152,7 +169,7 @@ const ModuleTree: FC<IProps> = (props) => {
       },
       {
         key: '2',
-        label: '删除',
+        label: <Text strong={true}>删除</Text>,
         onClick: async () => {
           return Modal.confirm({
             title: '你确定要删除这个目录吗?',
@@ -177,15 +194,15 @@ const ModuleTree: FC<IProps> = (props) => {
     ];
   };
 
-  const TreeTitleRender = (tree: IModule) => {
+  const TreeTitleRender = (tree: any) => {
     return (
       <div
         onMouseOver={() => {
           setCurrentModule(tree);
         }}
-        onMouseLeave={() => {
-          setCurrentModule(null);
-        }}
+        // onMouseLeave={() => {
+        //   setCurrentModule(null);
+        // }}
         onClick={() => {
           setCurrentModule(tree);
         }}
@@ -196,7 +213,7 @@ const ModuleTree: FC<IProps> = (props) => {
         {isAdmin && (
           <>
             {currentModule && currentModule.key === tree.key ? (
-              <Text style={{ float: 'right' }}>
+              <Space style={{ float: 'right' }}>
                 <PlusOutlined
                   onClick={async (event) => {
                     event.stopPropagation();
@@ -214,7 +231,7 @@ const ModuleTree: FC<IProps> = (props) => {
                     <MoreOutlined />
                   </Text>
                 </Dropdown>
-              </Text>
+              </Space>
             ) : null}
           </>
         )}
@@ -241,8 +258,6 @@ const ModuleTree: FC<IProps> = (props) => {
   };
 
   const onModuleFinish = async (value: { title: string }) => {
-    console.log('onModuleFinish', currentModule);
-    console.log('handleModule', handleModule);
     switch (handleModule) {
       case Handle.AddRoot:
         if (currentModule === null && currentProjectId) {
@@ -274,8 +289,6 @@ const ModuleTree: FC<IProps> = (props) => {
         }
         break;
       case Handle.EditModule:
-        console.log('编辑模块');
-        console.log('currentModule', currentModule);
         if (currentProjectId && currentModule) {
           const { code, msg } = await updateModule({
             id: currentModule.key,
@@ -332,6 +345,7 @@ const ModuleTree: FC<IProps> = (props) => {
               setExpandedKeys(newExpandedKeys);
               setAutoExpandParent(false);
             }}
+            onDrop={onDrop} //拖拽结束触发
             expandedKeys={expandedKeys}
             autoExpandParent={autoExpandParent}
             // defaultExpandedKeys={['0-0-0', '0-0-1']}
@@ -340,7 +354,6 @@ const ModuleTree: FC<IProps> = (props) => {
             // onSelect={onSelect}
             // onCheck={onCheck}
             onSelect={(keys: React.Key[], info: any) => {
-              console.log(info);
               setCurrentModuleId(info.node.key);
             }}
             treeData={TreeModule}

@@ -13,7 +13,6 @@ export const module2Tree = (modules: IModule[]) => {
     }
   };
   traverse(modules);
-  console.log(treeData);
   return treeData;
 };
 
@@ -21,7 +20,6 @@ export const getParentKey = (key: React.Key, tree: IModule[]): React.Key => {
   let parentKey: React.Key;
   for (let i = 0; i < tree.length; i++) {
     const node = tree[i];
-    console.log('node', node);
     if (node.children) {
       if (node.children.some((item) => item.key === key)) {
         parentKey = node.key;

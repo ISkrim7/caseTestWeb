@@ -1,3 +1,4 @@
+import { IModuleEnum } from '@/api';
 import {
   executeTask,
   getApiTaskBaseDetail,
@@ -9,9 +10,8 @@ import AssociationApis from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCase
 import AssociationCases from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationCases';
 import InterfaceApiTaskResultTable from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultTable';
 import { IInterfaceAPITask } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
 import { MailOutlined, WechatWorkOutlined } from '@ant-design/icons';
 import {
@@ -38,8 +38,8 @@ const Index = () => {
     [],
   );
   const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const [currentPartId, setCurrentPartId] = useState<number>();
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [currentModuleId, setCurrentModuleId] = useState<number>();
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [isAuto, setIsAuto] = useState<boolean>(false);
   const [isSend, setIsSend] = useState<boolean>(false);
 
@@ -49,9 +49,9 @@ const Index = () => {
         if (code === 0) {
           taskForm.setFieldsValue(data);
           setCurrentProjectId(data.project_id);
-          setCurrentPartId(data.part_id);
+          setCurrentModuleId(data.module_id);
           setIsSend(data.is_send as boolean);
-          setIsSend(data.is_auto as boolean);
+          setIsAuto(data.is_auto as boolean);
         }
       });
     } else {
@@ -62,7 +62,11 @@ const Index = () => {
 
   useEffect(() => {
     if (currentProjectId) {
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
+      fetchModulesEnum(
+        currentProjectId,
+        ModuleEnum.API_TASK,
+        setModuleEnum,
+      ).then();
     }
   }, [currentProjectId]);
   const refresh = () => {
@@ -164,15 +168,15 @@ const Index = () => {
             />
             <ProFormTreeSelect
               required
-              name="part_id"
+              name="module_id"
               label="所属模块"
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
                 onChange: (value) => {
-                  setCurrentPartId(value);
+                  setCurrentModuleId(value);
                 },
-                treeData: casePartEnum,
+                treeData: moduleEnum,
                 fieldNames: {
                   label: 'title',
                 },

@@ -5,7 +5,7 @@ import {
 } from '@/api/inter/interCase';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPICase } from '@/pages/Httpx/types';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -14,27 +14,32 @@ import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
-  currentPartId?: number;
+  currentModuleId?: number;
   perKey: string;
 }
 
-const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
+const Index: FC<SelfProps> = ({
+  currentModuleId,
+  currentProjectId,
+  perKey,
+}) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
 
   useEffect(() => {
     actionRef.current?.reload();
-  }, [currentPartId, currentProjectId]);
+  }, [currentModuleId, currentProjectId]);
   const fetchInterfaceCase = useCallback(
     async (params: any, sort: any) => {
       const searchData = {
         ...params,
-        part_id: currentPartId,
+        module_id: currentModuleId,
+        module_type: ModuleEnum.API_CASE,
         sort: sort,
       };
       const { code, data } = await pageInterApiCase(searchData);
       return pageData(code, data);
     },
-    [currentPartId],
+    [currentModuleId],
   );
   const columns: ProColumns<IInterfaceAPICase>[] = [
     {

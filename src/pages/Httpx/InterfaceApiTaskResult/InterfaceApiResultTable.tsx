@@ -3,6 +3,7 @@ import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
 import { ITryResponseInfo } from '@/pages/Httpx/types';
+import { pageData } from '@/utils/somefunc';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
 import { Tag } from 'antd';
 import { FC, useCallback, useRef, useState } from 'react';
@@ -25,20 +26,7 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
         sort: sort,
       };
       const { code, data } = await pageInterApiResult(searchData);
-      if (code === 0) {
-        return {
-          data: data.items,
-          total: data.pageInfo.total,
-          success: true,
-          pageSize: data.pageInfo.page,
-          current: data.pageInfo.limit,
-        };
-      }
-      return {
-        data: [],
-        success: false,
-        total: 0,
-      };
+      return pageData(code, data);
     },
     [taskResultId],
   );

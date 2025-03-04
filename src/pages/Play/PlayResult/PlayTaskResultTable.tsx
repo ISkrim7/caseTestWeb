@@ -1,11 +1,9 @@
-import { IObjGet } from '@/api';
-import { queryProject } from '@/api/base';
+import { IModuleEnum, IObjGet } from '@/api';
 import { pageUITaskResult } from '@/api/play/result';
+import { queryProjectEnum } from '@/components/CommonFunc';
 import MyProTable from '@/components/Table/MyProTable';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
-import { pageData } from '@/utils/somefunc';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Tag } from 'antd';
@@ -22,23 +20,15 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
   const [selectPartId, setSelectPartId] = useState<number>();
 
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [partEnumMap, setPartEnumMap] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   // 查询所有project 设置枚举
   useEffect(() => {
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const mapData = data.reduce((acc: any, obj) => {
-          acc[obj.id] = { text: obj.title };
-          return acc;
-        }, {});
-        setProjectEnumMap(mapData);
-      }
-    });
+    queryProjectEnum(setProjectEnumMap).then();
   }, []);
 
   useEffect(() => {
     if (selectProjectId) {
-      fetchCaseParts(selectProjectId, setPartEnumMap).then();
+      fetchModulesEnum(selectProjectId, ModuleEnum.API, setModuleEnum).then();
     }
   }, [selectProjectId]);
   const fetchTaskData = useCallback(
@@ -46,6 +36,7 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
       const newParams = {
         ...params,
         ...sort,
+        module_type: ModuleEnum.UI_TASK,
         taskId: taskId,
       };
       if (newParams.run_day && params.run_day.length > 1) {
@@ -54,7 +45,7 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
           dayjs(params.runDay[1]).format('YYYY-MM-DD'),
         ];
       }
-      const { code, data, msg } = await pageUITaskResult(newParams);
+      const { code, data } = await pageUITaskResult(newParams);
       return pageData(code, data);
     },
     [taskId],
@@ -101,7 +92,7 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
         onSelect: (value: number) => {
           setSelectPartId(value);
         },
-        treeData: partEnumMap,
+        treeData: moduleEnum,
         fieldNames: {
           label: 'title',
         },

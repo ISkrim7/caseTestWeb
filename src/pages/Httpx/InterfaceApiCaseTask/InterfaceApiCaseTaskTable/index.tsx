@@ -6,7 +6,7 @@ import {
 } from '@/api/inter/interTask';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPITask } from '@/pages/Httpx/types';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -15,29 +15,32 @@ import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
-  currentPartId?: number;
+  currentModuleId?: number;
   perKey: string;
 }
 
-const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
+const Index: FC<SelfProps> = ({
+  currentModuleId,
+  currentProjectId,
+  perKey,
+}) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
 
   useEffect(() => {
     actionRef.current?.reload();
-  }, [currentPartId, currentProjectId]);
+  }, [currentModuleId, currentProjectId]);
 
   const fetchPageTasks = useCallback(
     async (params: any, sort: any) => {
       const { code, data } = await pageApiTask({
         ...params,
-        part_id: currentPartId,
-        //只查询公共api
-        is_common: 1,
+        module_id: currentModuleId,
+        module_type: ModuleEnum.API_TASK,
         sort: sort,
       });
       return pageData(code, data);
     },
-    [currentPartId],
+    [currentModuleId],
   );
 
   const setTaskAuto = async (auto: boolean, taskId: number) => {

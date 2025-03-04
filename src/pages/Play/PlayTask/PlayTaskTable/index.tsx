@@ -7,7 +7,7 @@ import {
 } from '@/api/play/task';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUITask } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { useModel } from '@@/exports';
@@ -17,29 +17,30 @@ import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
-  currentPartId?: number;
+  currentModuleId?: number;
   perKey: string;
 }
 
 const Index: FC<SelfProps> = (props) => {
-  const { currentProjectId, currentPartId, perKey } = props;
+  const { currentProjectId, currentModuleId, perKey } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const { initialState } = useModel('@@initialState');
 
   const fetchPageUITaskTable = useCallback(
     async (params: any, sort: any) => {
       const { code, data } = await pageUICaseTask({
-        part_id: currentPartId,
+        module_id: currentModuleId,
+        module_type: ModuleEnum.UI_TASK,
         sort: sort,
         ...params,
       });
       return pageData(code, data);
     },
-    [currentProjectId, currentPartId],
+    [currentProjectId, currentModuleId],
   );
   useEffect(() => {
     actionRef.current?.reload();
-  }, [currentPartId, currentProjectId]);
+  }, [currentModuleId, currentProjectId]);
 
   const setTaskSwitch = async (uid: string, flag: boolean) => {
     const { code } = await setUITaskSwitch({ jobId: uid, switch: flag });

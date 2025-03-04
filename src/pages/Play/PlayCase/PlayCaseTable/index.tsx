@@ -1,10 +1,9 @@
 import { IObjGet } from '@/api';
 import { copyUICase, pageUICase, removeUICase } from '@/api/play';
-import { queryUIEnvs } from '@/api/play/env';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUICase } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
-import { pageData } from '@/utils/somefunc';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { pageData, queryUIEnvEnum } from '@/utils/somefunc';
 import { history, useModel } from '@@/exports';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Popconfirm, Tag } from 'antd';
@@ -12,43 +11,39 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
-  currentPartId?: number;
+  currentModuleId?: number;
   perKey: string;
 }
 
-const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
+const Index: FC<SelfProps> = ({
+  currentModuleId,
+  currentProjectId,
+  perKey,
+}) => {
   const { initialState } = useModel('@@initialState');
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [envOptions, setEnvOptions] = useState<IObjGet>({});
   useEffect(() => {
-    queryUIEnvs().then(async ({ code, data }) => {
-      if (code === 0) {
-        const envOptions = Object.create(null);
-        for (const item of data) {
-          envOptions[item.id] = item.name;
-        }
-        setEnvOptions(envOptions);
-      }
-    });
+    queryUIEnvEnum(setEnvOptions).then();
   }, []);
 
   useEffect(() => {
     actionRef.current?.reload();
-  }, [currentPartId, currentProjectId]);
+  }, [currentModuleId, currentProjectId]);
 
   const fetchUICase = useCallback(
     async (params: any, sort: any) => {
-      console.log('case', currentPartId);
-      if (currentPartId) {
+      if (currentModuleId) {
         const { code, data } = await pageUICase({
-          part_id: currentPartId,
+          module_id: currentModuleId,
+          module_type: ModuleEnum.UI_CASE,
           ...params,
           sort: sort,
         });
         return pageData(code, data);
       }
     },
-    [currentPartId, currentProjectId],
+    [currentModuleId, currentProjectId],
   );
 
   const columns: ProColumns<IUICase>[] = [

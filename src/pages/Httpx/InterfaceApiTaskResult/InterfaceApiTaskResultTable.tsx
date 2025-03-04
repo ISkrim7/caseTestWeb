@@ -1,16 +1,16 @@
-import { IObjGet } from '@/api';
-import { queryProject } from '@/api/base';
+import { IModuleEnum, IObjGet } from '@/api';
 import { removeAllTaskResults } from '@/api/inter/interCase';
 import {
   pageInterTaskResult,
   removeInterTaskResultDetail,
 } from '@/api/inter/interTask';
+import { queryProjectEnum } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import InterfaceApiTaskResultDetail from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultDetail';
 import { IInterfaceTaskResult } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
+import { ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
@@ -25,27 +25,23 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
   const [currentResultId, setCurrentResultId] = useState<number>();
   const [isFormTaskDetail, setIsFromTaskDetail] = useState(false);
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [partEnumMap, setPartEnumMap] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectProjectId, setSelectProjectId] = useState<number>();
-  const [selectPartId, setSelectPartId] = useState<number>();
+  const [selectModuleId, setSelectModuleId] = useState<number>();
   useEffect(() => {
     if (apiCaseTaskId) {
       setIsFromTaskDetail(true);
     } else {
-      queryProject().then(({ code, data }) => {
-        if (code === 0) {
-          const mapData = data.reduce((acc: any, obj) => {
-            acc[obj.id] = { text: obj.title };
-            return acc;
-          }, {});
-          setProjectEnumMap(mapData);
-        }
-      });
+      queryProjectEnum(setProjectEnumMap).then();
     }
   }, [apiCaseTaskId]);
   useEffect(() => {
     if (selectProjectId) {
-      fetchCaseParts(selectProjectId, setPartEnumMap).then();
+      fetchModulesEnum(
+        selectProjectId,
+        ModuleEnum.API_TASK,
+        setModuleEnum,
+      ).then();
     }
   }, [selectProjectId]);
   const fetchResults = useCallback(
@@ -57,20 +53,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
         sort: { ...sort },
       };
       const { code, data } = await pageInterTaskResult(searchData);
-      if (code === 0) {
-        return {
-          data: data.items,
-          total: data.pageInfo.total,
-          success: true,
-          pageSize: data.pageInfo.page,
-          current: data.pageInfo.limit,
-        };
-      }
-      return {
-        data: [],
-        success: false,
-        total: 0,
-      };
+      return pageData(code, data);
     },
     [apiCaseTaskId],
   );
@@ -86,22 +69,22 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
       fieldProps: {
         onSelect: (value: number) => {
           setSelectProjectId(value);
-          setSelectPartId(undefined);
+          setSelectModuleId(undefined);
         },
       },
     },
     {
       title: '所属模块',
-      dataIndex: 'interfacePartId',
+      dataIndex: 'interfaceModuleId',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectPartId,
+      initialValue: selectModuleId,
       fieldProps: {
-        value: selectPartId,
+        value: selectModuleId,
         onSelect: (value: number) => {
-          setSelectPartId(value);
+          setSelectModuleId(value);
         },
-        treeData: partEnumMap,
+        treeData: moduleEnum,
         fieldNames: {
           label: 'title',
         },

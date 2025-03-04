@@ -1,5 +1,4 @@
 import {
-  ICasePart,
   IEnv,
   ILoginParams,
   IModule,
@@ -67,17 +66,6 @@ export async function searchUser(
     ...(options || {}),
   });
 }
-
-/**
- * 项目分页
- */
-export const pageProject = async (params?: ISearch, options?: IObjGet) => {
-  return request<IResponse<any>>('/api/project/page', {
-    method: 'POST',
-    data: params,
-    ...(options || {}),
-  });
-};
 
 /**
  * 项目query
@@ -186,35 +174,6 @@ export const queryEnvBy = async (envInfo: IEnv, options?: IObjGet) => {
 };
 
 /**
- * env 查询
- * @param envInfo
- * @param options
- */
-export const getEnvById = async (envInfo: number, options?: IObjGet) => {
-  return request<IResponse<IEnv>>('/api/project/env/detail', {
-    method: 'GET',
-    params: { id: envInfo },
-    ...(options || {}),
-  });
-};
-
-/**
- * 通过project 获取模块树
- * @param projectId
- * @param options
- */
-export const queryTreePartByProject = async (
-  projectId: number,
-  options?: IObjGet,
-) => {
-  return request<IResponse<any[]>>('/api/part/queryTreeByProject', {
-    method: 'GET',
-    params: { projectId: projectId },
-    ...(options || {}),
-  });
-};
-
-/**
  * 通过project 获取模块树
  * @param projectId
  * @param moduleType
@@ -297,60 +256,7 @@ export const dropModule = async (
     ...opt,
   });
 };
-/**
- * 添加casePart
- * @param body
- * @param options
- */
-export const insertCasePart = async (body: ICasePart, options?: IObjGet) => {
-  return request<IResponse<any>>('/api/part/insert', {
-    method: 'POST',
-    data: body,
-    ...(options || {}),
-  });
-};
 
-export async function removeCasePart(
-  body: number,
-  options?: {
-    [key: string]: any;
-  },
-) {
-  return request<IResponse<any>>('/api/part/remove', {
-    method: 'POST',
-    data: {
-      partId: body,
-    },
-    ...(options || {}),
-  });
-}
-
-/**
- * 修改casePart
- * @param body
- * @param options
- */
-export const putCasePart = async (body: ICasePart, options?: IObjGet) => {
-  return request<IResponse<any>>('/api/part/update', {
-    method: 'POST',
-    data: body,
-    ...(options || {}),
-  });
-};
-
-export const dropCasePart = async (
-  body: {
-    id: React.Key;
-    targetId: React.Key | null;
-  },
-  opt?: IObjGet,
-) => {
-  return request<IResponse<any>>('/api/part/drop', {
-    method: 'POST',
-    data: body,
-    ...opt,
-  });
-};
 /**
  * page user
  * @param searchInfo

@@ -1,20 +1,17 @@
+import { IModuleEnum } from '@/api';
 import {
   pageInterApiNoModule,
-  pageInterApiNoPart,
-  removeInterApiById, setInterApisModule,
-  setInterApisPart,
+  removeInterApiById,
+  setInterApisModule,
 } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Space, Tag, TreeSelect } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { IModuleEnum } from '@/api';
 
 interface SelfProps {
   currentProjectId?: number;
@@ -136,7 +133,7 @@ const Index: FC<SelfProps> = (props) => {
             showSearch
             style={{ width: '100%' }}
             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            placeholder="Please select Part"
+            placeholder="Please select Module"
             fieldNames={{ label: 'title' }}
             allowClear
             filterTreeNode

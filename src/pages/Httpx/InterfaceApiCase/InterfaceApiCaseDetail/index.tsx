@@ -1,3 +1,4 @@
+import { IModuleEnum } from '@/api';
 import {
   baseInfoApiCase,
   insertApiCase,
@@ -16,9 +17,8 @@ import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/I
 import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
 import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import {
@@ -53,9 +53,9 @@ const Index = () => {
     [],
   );
 
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const [currentPartId, setCurrentPartId] = useState<number>();
+  const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentStatus, setCurrentStatus] = useState(1);
   const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
   const [editCase, setEditCase] = useState<number>(0);
@@ -68,7 +68,7 @@ const Index = () => {
         if (code === 0) {
           baseForm.setFieldsValue(data);
           setCurrentProjectId(data.project_id);
-          setCurrentPartId(data.part_id);
+          setCurrentModuleId(data.module_id);
         }
       });
 
@@ -85,7 +85,11 @@ const Index = () => {
 
   useEffect(() => {
     if (currentProjectId) {
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
+      fetchModulesEnum(
+        currentProjectId,
+        ModuleEnum.API_CASE,
+        setModuleEnum,
+      ).then();
     }
   }, [currentProjectId]);
 
@@ -101,7 +105,7 @@ const Index = () => {
             refresh={refresh}
             interfaceApiInfo={item}
             caseApiId={caseApiId}
-            partId={currentPartId}
+            moduleId={currentModuleId}
             projectId={currentProjectId}
           />
         ),
@@ -233,7 +237,7 @@ const Index = () => {
             collapsible={false}
             refresh={refresh}
             caseApiId={caseApiId}
-            partId={currentPartId}
+            moduleId={currentModuleId}
             projectId={currentProjectId}
           />
         ),
@@ -304,12 +308,12 @@ const Index = () => {
             />
             <ProFormTreeSelect
               required
-              name="part_id"
+              name="module_id"
               label="所属模块"
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
-                treeData: casePartEnum,
+                treeData: moduleEnum,
                 fieldNames: {
                   label: 'title',
                 },

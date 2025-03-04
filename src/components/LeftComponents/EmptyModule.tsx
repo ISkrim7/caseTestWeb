@@ -1,5 +1,5 @@
 import { insertModule } from '@/api/base';
-import ModuleModal from '@/pages/DebuggerPage/part/LeftComponents/ModuleModal';
+import ModuleModal from '@/components/LeftComponents/ModuleModal';
 import { Button, Empty, message, Typography } from 'antd';
 import { FC, useState } from 'react';
 

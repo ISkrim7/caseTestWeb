@@ -1,11 +1,12 @@
-import LeftPart from '@/components/LeftPart';
+import LeftComponents from '@/components/LeftComponents';
 import PlayTaskTable from '@/pages/Play/PlayTask/PlayTaskTable';
+import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
 import { useState } from 'react';
 
 const Index = () => {
-  const [currentCasePartId, setCurrentCasePartId] = useState<number>();
+  const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'PlayTask';
   return (
@@ -22,17 +23,18 @@ const Index = () => {
           max="30%"
           style={{ height: '100vh' }}
         >
-          <LeftPart
+          <LeftComponents
+            moduleType={ModuleEnum.UI_TASK}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
-            setCurrentCasePartId={setCurrentCasePartId}
+            setCurrentModuleId={setCurrentModuleId}
           />
         </Splitter.Panel>
         <Splitter.Panel>
           <PlayTaskTable
             perKey={PerKey}
             currentProjectId={currentProjectId}
-            currentPartId={currentCasePartId}
+            currentModuleId={currentModuleId}
           />
         </Splitter.Panel>
       </Splitter>

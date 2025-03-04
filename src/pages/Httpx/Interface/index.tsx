@@ -1,14 +1,15 @@
-import LeftPart from '@/components/LeftPart';
+import LeftComponents from '@/components/LeftComponents';
 import GroupApiTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiTable';
 import InterfaceApiTable from '@/pages/Httpx/Interface/InterfaceApiTable';
-import InterfaceApiTableNoPart from '@/pages/Httpx/Interface/InterfaceApiTableNoPart';
+import InterfaceApiTableNoModule from '@/pages/Httpx/Interface/InterfaceApiTableNoModule';
 import InterfaceApiUpload from '@/pages/Httpx/Interface/InterfaceApiUpload';
+import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
 import { useState } from 'react';
 
 const Index = () => {
-  const [currentCasePartId, setCurrentCasePartId] = useState<number>();
+  const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'InterfaceApi';
   const PerKeyNoPart = 'InterfaceApiNoPart';
@@ -28,11 +29,11 @@ const Index = () => {
           max="30%"
           style={{ height: '100vh' }}
         >
-          <LeftPart
-            perKey={PerKey}
+          <LeftComponents
+            moduleType={ModuleEnum.API}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
-            setCurrentCasePartId={setCurrentCasePartId}
+            setCurrentModuleId={setCurrentModuleId}
           />
         </Splitter.Panel>
         <Splitter.Panel>
@@ -45,19 +46,19 @@ const Index = () => {
             <ProCard.TabPane key="api" tab="Common API">
               <InterfaceApiTable
                 currentProjectId={currentProjectId}
-                currentPartId={currentCasePartId}
+                currentModuleId={currentModuleId}
                 perKey={PerKey}
               />
             </ProCard.TabPane>
             <ProCard.TabPane key="case" tab="Group APIs">
               <GroupApiTable
                 currentProjectId={currentProjectId}
-                currentPartId={currentCasePartId}
+                currentModuleId={currentModuleId}
                 perKey={PerGroupKey}
               />
             </ProCard.TabPane>
             <ProCard.TabPane key="not_part_api" tab="No Part APIs">
-              <InterfaceApiTableNoPart
+              <InterfaceApiTableNoModule
                 currentProjectId={currentProjectId}
                 perKey={PerKeyNoPart}
               />

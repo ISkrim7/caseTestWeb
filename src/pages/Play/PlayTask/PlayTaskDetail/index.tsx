@@ -1,5 +1,5 @@
-import { CasePartEnum, IUITask } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
+import { IUITask } from '@/pages/Play/componets/uiTypes';
+import { CONFIG, ModuleEnum } from '@/utils/config';
 import { history, useParams } from '@@/exports';
 import { MailOutlined, WechatWorkOutlined } from '@ant-design/icons';
 import {
@@ -15,15 +15,16 @@ import {
 import { Button, Empty, Form, message } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
-import { queryProject } from '@/api/base';
+import { IModuleEnum } from '@/api';
 import {
   getTaskById,
   handelExecuteTask,
   newUITask,
   updateUITask,
 } from '@/api/play/task';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
+import { queryProjects } from '@/components/CommonFunc';
 import AssociationUICases from '@/pages/Play/PlayTask/PlayTaskDetail/AssociationUICases';
+import { fetchModulesEnum } from '@/utils/somefunc';
 
 const Index = () => {
   const { taskId } = useParams<{ taskId: string }>();
@@ -34,30 +35,25 @@ const Index = () => {
   );
   const [tasKForm] = Form.useForm<IUITask>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [isSend, setIsSend] = useState(false);
   const [isAuto, setIsAuto] = useState(false);
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
-  const [edit, setEdit] = useState(0);
 
   /*
   查询project
    */
   useEffect(() => {
-    Promise.all([queryProject()]).then(([projectRes]) => {
-      if (projectRes.code === 0) {
-        const pros = projectRes.data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-        setProjects(pros);
-      }
-    });
+    queryProjects(setProjects).then();
   }, []);
   useEffect(() => {
     if (currentProjectId) {
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
+      fetchModulesEnum(
+        currentProjectId,
+        ModuleEnum.UI_TASK,
+        setModuleEnum,
+      ).then();
     }
   }, [currentProjectId]);
   useEffect(() => {
@@ -184,18 +180,18 @@ const Index = () => {
               fieldProps={{
                 onChange: (value: number) => {
                   setCurrentProjectId(value);
-                  tasKForm.setFieldsValue({ part_id: undefined });
+                  tasKForm.setFieldsValue({ module_id: undefined });
                 },
               }}
             />
             <ProFormTreeSelect
               required
-              name="part_id"
+              name="module_id"
               label="所属模块"
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
-                treeData: casePartEnum,
+                treeData: moduleEnum,
                 fieldNames: {
                   label: 'title',
                 },

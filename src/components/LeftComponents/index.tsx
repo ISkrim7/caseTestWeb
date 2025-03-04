@@ -1,8 +1,8 @@
 import { IProject } from '@/api';
 import { queryProject } from '@/api/base';
-import EmptyProject from '@/pages/DebuggerPage/part/LeftComponents/EmptyProject';
-import ModuleTree from '@/pages/DebuggerPage/part/LeftComponents/ModuleTree';
-import ProjectSelect from '@/pages/DebuggerPage/part/LeftComponents/ProjectSelect';
+import EmptyProject from '@/components/LeftComponents/EmptyProject';
+import ModuleTree from '@/components/LeftComponents/ModuleTree';
+import ProjectSelect from '@/components/LeftComponents/ProjectSelect';
 import { ProCard } from '@ant-design/pro-components';
 import React, { FC, useEffect, useState } from 'react';
 

@@ -1,12 +1,11 @@
-import { IObjGet } from '@/api';
-import { queryProject } from '@/api/base';
+import { IModuleEnum, IObjGet } from '@/api';
 import { pageUICase } from '@/api/play';
 import { associationUICasesByTaskId } from '@/api/play/task';
+import { queryProjectEnum } from '@/components/CommonFunc';
 import MyProTable from '@/components/Table/MyProTable';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum, IUICase } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
-import { pageData } from '@/utils/somefunc';
+import { IUICase } from '@/pages/Play/componets/uiTypes';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProCard } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
@@ -21,28 +20,22 @@ interface SelfProps {
 
 const Index: FC<SelfProps> = ({ currentTaskId, refresh }) => {
   const [selectProjectId, setSelectProjectId] = useState<number>();
-  const [selectPartId, setSelectPartId] = useState<number>();
+  const [selectModuleId, setSelectModuleId] = useState<number>();
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [partEnumMap, setPartEnumMap] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
 
   // 查询所有project 设置枚举
   useEffect(() => {
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const mapData = data.reduce((acc: any, obj) => {
-          acc[obj.id] = { text: obj.title };
-          return acc;
-        }, {});
-        setProjectEnumMap(mapData);
-      }
-    });
+    queryProjectEnum(setProjectEnumMap).then();
   }, []);
 
   useEffect(() => {
     if (selectProjectId) {
-      fetchCaseParts(selectProjectId, setPartEnumMap).then();
+      fetchModulesEnum(selectProjectId, ModuleEnum.UI_CASE, setModuleEnum).then(
+        (r) => {},
+      );
     }
   }, [selectProjectId]);
   const columns: ProColumns<IUICase>[] = [
@@ -58,22 +51,22 @@ const Index: FC<SelfProps> = ({ currentTaskId, refresh }) => {
       fieldProps: {
         onSelect: (value: number) => {
           setSelectProjectId(value);
-          setSelectPartId(undefined);
+          setSelectModuleId(undefined);
         },
       },
     },
     {
       title: '所属模块',
-      dataIndex: 'part_id',
+      dataIndex: 'module_id',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectPartId,
+      initialValue: selectModuleId,
       fieldProps: {
-        value: selectPartId,
+        value: selectModuleId,
         onSelect: (value: number) => {
-          setSelectPartId(value);
+          setSelectModuleId(value);
         },
-        treeData: partEnumMap,
+        treeData: moduleEnum,
         fieldNames: {
           label: 'title',
         },
@@ -139,7 +132,11 @@ const Index: FC<SelfProps> = ({ currentTaskId, refresh }) => {
   };
 
   const fetchUICases = useCallback(async (params: any, sort: any) => {
-    const { code, data } = await pageUICase({ ...params, sort: sort });
+    const { code, data } = await pageUICase({
+      ...params,
+      module_type: ModuleEnum.UI_CASE,
+      sort: sort,
+    });
     return pageData(code, data);
   }, []);
 

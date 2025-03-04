@@ -1,11 +1,12 @@
-import LeftPart from '@/components/LeftPart';
+import LeftComponents from '@/components/LeftComponents';
 import InterfaceApiCaseTaskTable from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskTable';
+import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
 import { useState } from 'react';
 
 const Index = () => {
-  const [currentCasePartId, setCurrentCasePartId] = useState<number>();
+  const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'InterfaceTask';
   return (
@@ -22,16 +23,16 @@ const Index = () => {
           max="30%"
           style={{ height: '100vh' }}
         >
-          <LeftPart
-            perKey={PerKey}
+          <LeftComponents
+            moduleType={ModuleEnum.API_TASK}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
-            setCurrentCasePartId={setCurrentCasePartId}
+            setCurrentModuleId={setCurrentModuleId}
           />
         </Splitter.Panel>
         <Splitter.Panel>
           <InterfaceApiCaseTaskTable
-            currentPartId={currentCasePartId}
+            currentModuleId={currentModuleId}
             currentProjectId={currentProjectId}
             perKey={PerKey}
           />

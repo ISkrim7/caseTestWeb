@@ -48,7 +48,7 @@ export interface IInterfaceAPI extends IBaseField {
   asserts: IAsserts[];
   extracts: IExtracts[];
   project_id: number;
-  part_id: number;
+  module_id: number;
   env_id: number;
   connect_timeout: number;
   response_timeout: number;
@@ -78,7 +78,7 @@ export interface IInterfaceAPICase extends IBaseField {
   desc: string;
   level: string;
   status: string;
-  part_id: number;
+  module_id: number;
   apiNum: number;
   project_id: number;
 }
@@ -91,7 +91,7 @@ export interface IInterfaceAPITask extends IBaseField {
   switch: number | boolean;
   status: string;
   total_cases_num: number;
-  part_id: number;
+  module_id: number;
   total_apis_num: number;
   project_id: number;
   is_send: boolean | number;
@@ -125,7 +125,7 @@ export interface IInterfaceCaseResult extends IBaseField {
   interfaceCaseUid: string;
   interfaceCaseDesc: string;
   interfaceCaseProjectId: number;
-  interfaceCasePartId: number;
+  interfaceCaseModuleId: number;
   starterId: number;
   starterName: string;
   total_num: number;
@@ -140,7 +140,7 @@ export interface IInterfaceCaseResult extends IBaseField {
 
 export interface IInterfaceTaskResult extends IBaseField {
   interfaceProjectId: number;
-  interfacePartId: number;
+  interfaceModuleId: number;
   startBy: number;
   starterId: number;
   starterName: string;
@@ -166,44 +166,6 @@ interface IBase {
   desc?: string;
 }
 
-export interface IInterface {
-  id: number;
-  uid: string;
-  title: string;
-  projectID: number;
-  casePartID: number;
-  create_time: string;
-  update_time: string;
-  creator: number;
-  creatorName: string;
-  updater: number;
-  updaterName: string;
-  responseTimeout: number;
-  status: string;
-  desc: string | undefined;
-  level: 'P0' | 'P1' | 'P2';
-  steps: ISteps[];
-}
-
-export interface ISteps {
-  name: string;
-  host: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  step: number;
-  url: string;
-  desc: string | undefined;
-  headers: IHeaders[] | [];
-  params: IParams[] | [];
-  asserts: IAsserts[] | [];
-  extracts: IExtracts[] | [];
-  beforeParams: IBeforeParams[] | [];
-  beforeVariable: IBeforeVariable[] | [];
-  beforeFunc: any;
-  afterFunc: any;
-  bodyType: number;
-  body: any;
-}
-
 export interface IParams extends IBase {}
 
 export interface IFromData extends IBase {
@@ -220,8 +182,6 @@ export interface IBeforeParams extends IBase {
   target?: string;
 }
 
-export interface IBeforeVariable extends IBase {}
-
 export interface IAsserts {
   asserOpt?: string;
   expect?: any;
@@ -232,18 +192,6 @@ export interface IAsserts {
   actual?: any;
   desc?: string;
   id: React.Key;
-}
-
-export interface ITryResponse {
-  name: string;
-  desc: string;
-  request?: any;
-  status: string;
-  response: any;
-  asserts: IAsserts[] | [];
-  extracts: IExtracts[] | [];
-  status_code: number;
-  useTime: number;
 }
 
 /**

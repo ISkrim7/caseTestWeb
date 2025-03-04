@@ -1,13 +1,12 @@
-import { IObjGet } from '@/api';
-import { queryProject } from '@/api/base';
+import { IModuleEnum, IObjGet } from '@/api';
 import { pageInterApiCase } from '@/api/inter/interCase';
 import { associationCasesByTaskId } from '@/api/inter/interTask';
+import { queryProjectEnum } from '@/components/CommonFunc';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPICase } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum, IUICase } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
-import { pageData } from '@/utils/somefunc';
+import { IUICase } from '@/pages/Play/componets/uiTypes';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ProColumns } from '@ant-design/pro-components';
 import { Button, message, Tag } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
@@ -25,21 +24,13 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
   reload,
 }) => {
   const [selectProjectId, setSelectProjectId] = useState<number>();
-  const [selectPartId, setSelectPartId] = useState<number>();
+  const [selectModuleId, setSelectModuleId] = useState<number>();
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [partEnumMap, setPartEnumMap] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   useEffect(() => {
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const mapData = data.reduce((acc: any, obj) => {
-          acc[obj.id] = { text: obj.title };
-          return acc;
-        }, {});
-        setProjectEnumMap(mapData);
-      }
-    });
+    queryProjectEnum(setProjectEnumMap).then();
   }, []);
   useEffect(() => {
     if (currentProjectId) {
@@ -48,12 +39,17 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
   }, [currentProjectId]);
   useEffect(() => {
     if (selectProjectId) {
-      fetchCaseParts(selectProjectId, setPartEnumMap).then();
+      fetchModulesEnum(
+        selectProjectId,
+        ModuleEnum.API_CASE,
+        setModuleEnum,
+      ).then((r) => {});
     }
   }, [selectProjectId]);
   const pageInterfaceCase = useCallback(async (params: any, sort: any) => {
     const { code, data } = await pageInterApiCase({
       ...params,
+      module_type: ModuleEnum.API_CASE,
       sort: sort,
     });
     return pageData(code, data);
@@ -77,24 +73,25 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
       valueEnum: projectEnumMap,
       initialValue: selectProjectId,
       fieldProps: {
+        defaultValue: selectProjectId,
         onSelect: (value: number) => {
           setSelectProjectId(value);
-          setSelectPartId(undefined);
+          setSelectModuleId(undefined);
         },
       },
     },
     {
       title: '所属模块',
-      dataIndex: 'part_id',
+      dataIndex: 'module_id',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectPartId,
+      initialValue: selectModuleId,
       fieldProps: {
-        value: selectPartId,
+        value: selectModuleId,
         onSelect: (value: number) => {
-          setSelectPartId(value);
+          setSelectModuleId(value);
         },
-        treeData: partEnumMap,
+        treeData: moduleEnum,
         fieldNames: {
           label: 'title',
         },

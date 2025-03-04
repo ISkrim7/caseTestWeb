@@ -33,7 +33,7 @@ const { Text } = Typography;
 
 interface SelfProps {
   projectId?: number;
-  partId?: number;
+  moduleId?: number;
   caseApiId?: string;
   groupId?: string;
   interfaceApiInfo?: IInterfaceAPI;

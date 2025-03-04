@@ -1,5 +1,6 @@
-import LeftPart from '@/components/LeftPart';
+import LeftComponents from '@/components/LeftComponents';
 import CaseHubTable from '@/pages/CaseHub/component/CaseHubTable';
+import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useRef, useState } from 'react';
@@ -27,10 +28,11 @@ const Index = () => {
           primaryMinSize={15}
           secondaryMinSize={70}
         >
-          <LeftPart
+          <LeftComponents
+            moduleType={ModuleEnum.CASE}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
-            setCurrentCasePartId={setCurrentCasePartId}
+            setCurrentModuleId={setCurrentCasePartId}
           />
           <CaseHubTable
             projectID={currentCasePartId!}

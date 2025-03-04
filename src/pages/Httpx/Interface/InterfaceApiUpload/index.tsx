@@ -1,11 +1,12 @@
+import { IModuleEnum } from '@/api';
 import { uploadInterApi } from '@/api/inter';
 import {
   queryEnvByProjectIdFormApi,
   queryProjects,
 } from '@/components/CommonFunc';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
+import { ModuleEnum } from '@/utils/config';
 import { ApiPostIcon, PostManIcon, SwaggerIcon, YAPIIcon } from '@/utils/icons';
+import { fetchModulesEnum } from '@/utils/somefunc';
 import {
   ProCard,
   ProForm,
@@ -13,7 +14,7 @@ import {
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
 import { ProFormUploadDragger } from '@ant-design/pro-form';
-import { Button, Col, Form, Row, Space, Typography } from 'antd';
+import { Button, Col, Form, message, Row, Space, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 
 const { Text } = Typography;
@@ -24,7 +25,7 @@ const Index = () => {
   const [projects, setProjects] = useState<{ label: string; value: number }[]>(
     [],
   );
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
     [],
@@ -34,7 +35,7 @@ const Index = () => {
   }, []);
   useEffect(() => {
     if (currentProjectId) {
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
+      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
       queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
     }
   }, [currentProjectId]);
@@ -52,10 +53,7 @@ const Index = () => {
   };
   const onSubmit = async () => {
     const values = form.getFieldsValue(); // 获取表单中所有字段的值
-    console.log('All form values:', values);
-
     const fileValue = values.api_file;
-    console.log('Selected file:', fileValue); // 打印文件值，检查是否获取到文件
     if (currentValue && fileValue.length > 0) {
       const formData = new FormData();
       // 添加文件
@@ -63,15 +61,11 @@ const Index = () => {
       formData.append('valueType', currentValue); // 添加其他字段（例如选择的值）
       formData.append('env_id', values.env_id); // 添加其他字段（例如选择的值）
       formData.append('project_id', values.project_id); // 添加其他字段（例如选择的值）
-      formData.append('part_id', values.part_id); // 添加其他字段（例如选择的值）
-      // 打印 FormData 内容
-      formData.forEach((value, key) => {
-        console.log(key, value);
-      });
+      formData.append('module_id', values.module_id); // 添加其他字段（例如选择的值）
       const { code, msg } = await uploadInterApi(formData);
       if (code === 0) {
         form.resetFields();
-        console.log(msg);
+        message.success(msg);
       }
     }
 
@@ -132,12 +126,12 @@ const Index = () => {
               />
               <ProFormTreeSelect
                 required
-                name="part_id"
+                name="module_id"
                 label="所属模块"
                 allowClear
                 rules={[{ required: true, message: '所属模块必选' }]}
                 fieldProps={{
-                  treeData: casePartEnum,
+                  treeData: moduleEnum,
                   fieldNames: {
                     label: 'title',
                   },

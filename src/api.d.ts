@@ -86,19 +86,6 @@ export interface ILoginParams {
   password: string;
 }
 
-export interface ICasePart {
-  id?: React.Key;
-  uid?: string;
-  title: string;
-  projectID?: number | string;
-  create_time?: string;
-  update_time?: string | null;
-  parentID?: number;
-  children?: ICasePart[];
-  isRoot: boolean;
-  rootID: number;
-}
-
 export interface IExtract {
   id?: number;
   key?: string;
@@ -137,4 +124,9 @@ export interface IModule {
   module_type: number;
   children_length?: number;
   children?: IModule[];
+}
+export interface IModuleEnum {
+  title: string;
+  value: number;
+  children?: IModuleEnum[];
 }

@@ -1,3 +1,4 @@
+import { IModuleEnum } from '@/api';
 import {
   detailInterApiById,
   insertInterApi,
@@ -22,9 +23,8 @@ import InterHeader from '@/pages/Httpx/componets/InterHeader';
 import InterParam from '@/pages/Httpx/componets/InterParam';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
 import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum } from '@/utils/somefunc';
 import { useSelector } from '@@/exports';
 import {
   ApiOutlined,
@@ -63,7 +63,7 @@ interface SelfProps {
   addFromCase: boolean;
   addFromGroup: boolean;
   projectId?: number;
-  partId?: number;
+  moduleId?: number;
   setTitle?: Dispatch<React.SetStateAction<string>>;
   setSubCardTitle?: Dispatch<React.SetStateAction<string>>;
   caseApiId?: string;
@@ -80,7 +80,7 @@ const Index: FC<SelfProps> = ({
   projectId,
   setTitle,
   setSubCardTitle,
-  partId,
+  moduleId,
   caseApiId,
   groupId,
   refresh,
@@ -107,7 +107,7 @@ const Index: FC<SelfProps> = ({
   const [script, setScript] = useState();
   const [currentEnvId, setCurrentEnvId] = useState<number>();
   const [tryLoading, setTryLoading] = useState(false);
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
   const [currentInterAPIId, setCurrentInterAPIId] = useState<number>();
   const [headersLength, setHeadersLength] = useState<number>();
@@ -194,7 +194,7 @@ const Index: FC<SelfProps> = ({
     // 如果存在当前项目ID，则获取环境列表和用例部分
     if (currentProjectId) {
       queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
-      fetchCaseParts(currentProjectId, setCasePartEnum).then(); // 获取用例部分
+      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
     }
   }, [currentProjectId]);
 
@@ -205,11 +205,11 @@ const Index: FC<SelfProps> = ({
       setCurrentProjectId(projectId);
       interApiForm.setFieldValue('project_id', projectId);
     }
-    if (partId) {
+    if (moduleId) {
       // 如果存在部分ID，则设置表单的部分ID值
-      interApiForm.setFieldValue('part_id', partId);
+      interApiForm.setFieldValue('module_id', moduleId);
     }
-  }, [projectId, partId, interApiForm]);
+  }, [projectId, moduleId, interApiForm]);
 
   // 根据接口API信息设置表单值
   useEffect(() => {
@@ -438,13 +438,13 @@ const Index: FC<SelfProps> = ({
             />
             <ProFormTreeSelect
               required
-              name="part_id"
+              name="module_id"
               label="所属模块"
               hidden={addFromCase}
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
-                treeData: casePartEnum,
+                treeData: moduleEnum,
                 fieldNames: {
                   label: 'title',
                 },

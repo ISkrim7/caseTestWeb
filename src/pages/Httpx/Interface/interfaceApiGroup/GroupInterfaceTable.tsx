@@ -5,7 +5,7 @@ import { CONFIG } from '@/utils/config';
 import { queryData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Tag } from 'antd';
-import { FC, useCallback, useRef, useState } from 'react';
+import { FC, useCallback, useRef } from 'react';
 
 interface SelfProps {
   groupId: number;
@@ -14,8 +14,6 @@ interface SelfProps {
 const GroupInterfaceTable: FC<SelfProps> = (props) => {
   const { groupId } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-  const [currentApi, setCurrentApi] = useState<number>();
-  const [showApi, setShowApi] = useState<boolean>(false);
   const fetchInterface = useCallback(async () => {
     if (groupId) {
       const { code, data } = await queryInterfaceGroupApis(groupId);

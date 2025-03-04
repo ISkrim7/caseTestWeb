@@ -5,7 +5,7 @@ import {
 } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { PlusOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -15,29 +15,34 @@ import { history } from 'umi';
 
 interface SelfProps {
   currentProjectId?: number;
-  currentPartId?: number;
+  currentModuleId?: number;
   perKey: string;
 }
 
-const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
+const Index: FC<SelfProps> = ({
+  currentModuleId,
+  currentProjectId,
+  perKey,
+}) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
 
   useEffect(() => {
     actionRef.current?.reload();
-  }, [currentPartId, currentProjectId]);
+  }, [currentModuleId, currentProjectId]);
 
   const fetchInterface = useCallback(
     async (params: any, sort: any) => {
       const { code, data } = await pageInterApi({
         ...params,
-        part_id: currentPartId,
+        module_id: currentModuleId,
+        module_type: ModuleEnum.API,
         //只查询公共api
         is_common: 1,
         sort: sort,
       });
       return pageData(code, data);
     },
-    [currentPartId],
+    [currentModuleId],
   );
   const columns: ProColumns<IInterfaceAPI>[] = [
     {

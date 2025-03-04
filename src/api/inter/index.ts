@@ -36,21 +36,24 @@ export const pageInterApi = async (data: any, options?: IObjGet) => {
  * @param data
  * @param options
  */
-export const pageInterApiNoPart = async (data: any, options?: IObjGet) => {
-  return request<IResponse<IPage<IInterfaceAPI>>>('/api/interface/pageNoPart', {
-    method: 'POST',
-    data: data,
-    ...(options || {}),
-  });
+export const pageInterApiNoModule = async (data: any, options?: IObjGet) => {
+  return request<IResponse<IPage<IInterfaceAPI>>>(
+    '/api/interface/pageNoModule',
+    {
+      method: 'POST',
+      data: data,
+      ...(options || {}),
+    },
+  );
 };
 /**
  * page api
  * @param data
  * @param options
  */
-export const setInterApisPart = async (data: any, options?: IObjGet) => {
+export const setInterApisModule = async (data: any, options?: IObjGet) => {
   return request<IResponse<IPage<IInterfaceAPI>>>(
-    '/api/interface/setInterfacePart',
+    '/api/interface/setInterfaceModule',
     {
       method: 'POST',
       data: data,
@@ -84,22 +87,6 @@ export const setCurl2InterApi = async (
   options?: IObjGet,
 ) => {
   return request<IResponse<any>>('/api/interface/transCurl', {
-    method: 'POST',
-    data: data,
-    ...(options || {}),
-  });
-};
-
-/**
- * try api
- * @param data
- * @param options
- */
-export const asyncTryInterApi = async (
-  data: { interfaceId: number },
-  options?: IObjGet,
-) => {
-  return request<IResponse<IPage<number>>>('/api/interface/asyncTry', {
     method: 'POST',
     data: data,
     ...(options || {}),
@@ -181,7 +168,6 @@ export const copyInterApiById = async (data: number, options?: IObjGet) => {
 
 /**
  * 查询script
- * @param data
  * @param options
  */
 export const queryScripts = async (options?: IObjGet) => {
@@ -192,6 +178,7 @@ export const queryScripts = async (options?: IObjGet) => {
 };
 /**
  * 开始录制
+ * @param values
  * @param options
  */
 export const startApiRecord = async (values: any, options?: IObjGet) => {
@@ -230,6 +217,7 @@ export const queryApiRecord = async (options?: IObjGet) => {
 
 /**
  * 保存录制到api
+ * @param data
  * @param options
  */
 export const saveRecord2Api = async (data: any, options?: IObjGet) => {
@@ -241,6 +229,7 @@ export const saveRecord2Api = async (data: any, options?: IObjGet) => {
 };
 /**
  * 保存录制到case
+ * @param data
  * @param options
  */
 export const appendRecord2Case = async (

@@ -6,13 +6,14 @@ import {
   removeModule,
   updateModule,
 } from '@/api/base';
-import EmptyModule from '@/pages/DebuggerPage/part/LeftComponents/EmptyModule';
+import EmptyModule from '@/components/LeftComponents/EmptyModule';
 import {
   getLocalStorageModule,
   getParentKey,
-  module2Tree, setLocalStorageModule,
-} from '@/pages/DebuggerPage/part/LeftComponents/func';
-import ModuleModal from '@/pages/DebuggerPage/part/LeftComponents/ModuleModal';
+  module2Tree,
+  setLocalStorageModule,
+} from '@/components/LeftComponents/func';
+import ModuleModal from '@/components/LeftComponents/ModuleModal';
 import { useAccess } from '@@/exports';
 import {
   DeleteOutlined,
@@ -77,7 +78,9 @@ const ModuleTree: FC<IProps> = (props) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-  const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<React.Key[]>([]);
+  const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<React.Key[]>(
+    [],
+  );
   /**
    * 查询module
    */
@@ -92,18 +95,18 @@ const ModuleTree: FC<IProps> = (props) => {
         },
       );
     }
-    localStorageFun()
+    localStorageFun();
   }, [currentProjectId, reload]);
 
-  const localStorageFun = ()=>{
+  const localStorageFun = () => {
     const storageNum = getLocalStorageModule(moduleType);
     if (storageNum) {
-      setCurrentModuleId(parseInt(storageNum))
+      setCurrentModuleId(parseInt(storageNum));
       setDefaultSelectedKeys([parseInt(storageNum)]);
       setExpandedKeys([parseInt(storageNum)]);
       setAutoExpandParent(true);
     }
-  }
+  };
 
   /**
    * 数渲染
@@ -124,7 +127,6 @@ const ModuleTree: FC<IProps> = (props) => {
               </Text>
               {afterStr}
             </Text>
-
           ) : (
             <Text type={'secondary'} strong>
               {strTitle}
@@ -219,7 +221,6 @@ const ModuleTree: FC<IProps> = (props) => {
       >
         <Text type={'secondary'} strong>
           {tree.title}
-
         </Text>
         {isAdmin && (
           <>
@@ -329,8 +330,8 @@ const ModuleTree: FC<IProps> = (props) => {
         <Space direction={'vertical'}>
           <Search
             enterButton
-            variant={"filled"}
-            style={{ marginBottom: 8, marginTop: 12}}
+            variant={'filled'}
+            style={{ marginBottom: 8, marginTop: 12 }}
             placeholder="模块查询"
             width={'100%'}
             suffix={

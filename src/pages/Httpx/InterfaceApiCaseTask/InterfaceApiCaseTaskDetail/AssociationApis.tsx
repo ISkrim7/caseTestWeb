@@ -7,6 +7,7 @@ import MyDrawer from '@/components/MyDrawer';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import {
   ActionType,
@@ -26,18 +27,7 @@ const AssociationApis: FC<IAssociationApisProps> = ({ currentTaskId }) => {
   const queryApisByTask = useCallback(async () => {
     if (currentTaskId) {
       const { code, data } = await queryAssociationApisByTaskId(currentTaskId);
-      if (code === 0) {
-        return {
-          data: data,
-          total: data.length,
-          success: true,
-        };
-      }
-      return {
-        data: [],
-        total: 0,
-        success: false,
-      };
+      return pageData(code, data);
     }
   }, [currentTaskId]);
   const handleDragSortEnd = async (

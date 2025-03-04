@@ -5,6 +5,7 @@ import {
 } from '@/api/inter/interGroup';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceGroup } from '@/pages/Httpx/types';
+import { ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
@@ -13,24 +14,29 @@ import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
-  currentPartId?: number;
+  currentModuleId?: number;
   perKey: string;
 }
 
-const Index: FC<SelfProps> = ({ currentPartId, currentProjectId, perKey }) => {
+const Index: FC<SelfProps> = ({
+  currentModuleId,
+  currentProjectId,
+  perKey,
+}) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   useEffect(() => {
     actionRef.current?.reload();
-  }, [currentPartId, currentProjectId]);
+  }, [currentModuleId, currentProjectId]);
   const fetchInterfaceGroup = useCallback(
     async (params: any) => {
       const { code, data } = await pageInterfaceGroup({
         ...params,
-        part_id: currentPartId,
+        module_id: currentModuleId,
+        module_type: ModuleEnum.API,
       });
       return pageData(code, data);
     },
-    [currentPartId],
+    [currentModuleId],
   );
 
   const columns: ProColumns<IInterfaceGroup>[] = [

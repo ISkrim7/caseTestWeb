@@ -1,8 +1,8 @@
-import { queryProject } from '@/api/base';
+import { IModuleEnum } from '@/api';
 import { saveRecord2Api } from '@/api/inter';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
+import { queryProjects } from '@/components/CommonFunc';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum } from '@/utils/somefunc';
 import {
   ProCard,
   ProForm,
@@ -25,22 +25,13 @@ const AddToApi: FC<IAddToApi> = ({ currentRecordId, setCloseModal }) => {
   );
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
-
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   useEffect(() => {
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const projects = data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-        setProjects(projects);
-      }
-    });
+    queryProjects(setProjects).then();
   }, []);
   useEffect(() => {
     if (currentProjectId) {
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
+      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
     }
   }, [currentProjectId]);
 
@@ -73,12 +64,12 @@ const AddToApi: FC<IAddToApi> = ({ currentRecordId, setCloseModal }) => {
           />
           <ProFormTreeSelect
             required
-            name="part_id"
+            name="module_id"
             label="所属模块"
             allowClear
             rules={[{ required: true, message: '所属模块必选' }]}
             fieldProps={{
-              treeData: casePartEnum,
+              treeData: moduleEnum,
               fieldNames: {
                 label: 'title',
               },

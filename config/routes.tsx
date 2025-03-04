@@ -261,11 +261,6 @@ export default [
         name: 'table',
         component: '@/pages/DebuggerPage/Debugge',
       },
-      {
-        path: '/debugger/part',
-        name: 'part',
-        component: '@/pages/DebuggerPage/part',
-      },
     ],
   },
   {

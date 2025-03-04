@@ -1,12 +1,12 @@
-import { IObjGet } from '@/api';
-import { queryProject } from '@/api/base';
+import { IModuleEnum, IObjGet } from '@/api';
 import { selectCommonGroups2Case } from '@/api/inter/interCase';
 import { pageInterfaceGroup } from '@/api/inter/interGroup';
+import { queryProjectEnum } from '@/components/CommonFunc';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceGroup } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum, IUICase } from '@/pages/Play/componets/uiTypes';
-import { pageData } from '@/utils/somefunc';
+import { IUICase } from '@/pages/Play/componets/uiTypes';
+import { ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, message, Tag } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
@@ -21,26 +21,20 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
   const { currentCaseId, refresh } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number>();
-  const [selectPartId, setSelectPartId] = useState<number>();
+  const [selectModuleId, setSelectModuleId] = useState<number>();
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [partEnumMap, setPartEnumMap] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // 查询所有project 设置枚举
   useEffect(() => {
-    queryProject().then(({ code, data }) => {
-      if (code === 0) {
-        const mapData = data.reduce((acc: any, obj) => {
-          acc[obj.id] = { text: obj.title };
-          return acc;
-        }, {});
-        setProjectEnumMap(mapData);
-      }
-    });
+    queryProjectEnum(setProjectEnumMap).then();
   }, []);
   useEffect(() => {
     if (selectProjectId) {
-      fetchCaseParts(selectProjectId, setPartEnumMap).then();
+      fetchModulesEnum(selectProjectId, ModuleEnum.API, setModuleEnum).then(
+        (r) => {},
+      );
     }
   }, [selectProjectId]);
   const columns: ProColumns<IInterfaceGroup>[] = [
@@ -56,22 +50,22 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
       fieldProps: {
         onSelect: (value: number) => {
           setSelectProjectId(value);
-          setSelectPartId(undefined);
+          setSelectModuleId(undefined);
         },
       },
     },
     {
       title: '所属模块',
-      dataIndex: 'part_id',
+      dataIndex: 'module_id',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectPartId,
+      initialValue: selectModuleId,
       fieldProps: {
-        value: selectPartId,
+        value: selectModuleId,
         onSelect: (value: number) => {
-          setSelectPartId(value);
+          setSelectModuleId(value);
         },
-        treeData: partEnumMap,
+        treeData: moduleEnum,
         fieldNames: {
           label: 'title',
         },
@@ -85,7 +79,7 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
       copyable: true,
       fixed: 'left',
       render: (_, record) => {
-        return <Tag>{record.uid}</Tag>;
+        return <Tag color={'geekblue'}>{record.uid}</Tag>;
       },
     },
     {
@@ -98,7 +92,7 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
       dataIndex: 'api_num',
       key: 'api_num',
       render: (_, record) => {
-        return <Tag>{record.api_num}</Tag>;
+        return <Tag color={'blue-inverse'}>{record.api_num}</Tag>;
       },
     },
     {
@@ -116,7 +110,10 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
     },
   };
   const fetchInterfaceGroup = useCallback(async (params: any) => {
-    const { code, data } = await pageInterfaceGroup({ ...params });
+    const { code, data } = await pageInterfaceGroup({
+      ...params,
+      module_type: ModuleEnum.API,
+    });
     return pageData(code, data);
   }, []);
   return (

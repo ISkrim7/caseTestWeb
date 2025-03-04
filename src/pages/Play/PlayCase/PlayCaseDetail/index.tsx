@@ -1,4 +1,4 @@
-import { queryProject } from '@/api/base';
+import { IModuleEnum } from '@/api';
 import {
   addUICaseBaseInfo,
   executeCaseByBack,
@@ -6,24 +6,19 @@ import {
   queryStepByCaseId,
   uiCaseDetailById,
 } from '@/api/play';
-import { queryUIEnvs } from '@/api/play/env';
 import { reOrderStep } from '@/api/play/step';
+import { queryProjects } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import {
-  CasePartEnum,
-  IUICase,
-  IUICaseSteps,
-  IUIEnv,
-} from '@/pages/Play/componets/uiTypes';
+import { IUICase, IUICaseSteps } from '@/pages/Play/componets/uiTypes';
 import CollapsibleUIStepCard from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard';
 import PlayCaseVars from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCaseVars';
 import PlayCommonChoiceTable from '@/pages/Play/PlayCase/PlayCaseDetail/PlayCommonChoiceTable';
 import PlayCaseResultDetail from '@/pages/Play/PlayResult/PlayCaseResultDetail';
 import PlayCaseResultTable from '@/pages/Play/PlayResult/PlayCaseResultTable';
-import { CONFIG } from '@/utils/config';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum, queryUIEnvList } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
 import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import {
@@ -59,8 +54,7 @@ const Index = () => {
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
     [],
   );
-  const [tryLoading, setTryLoading] = useState(false);
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
   const [loading, setLoading] = useState(true);
   const [uiStepsContent, setUIStepsContent] = useState<any[]>([]);
@@ -76,24 +70,7 @@ const Index = () => {
   查询project && env
    */
   useEffect(() => {
-    Promise.all([queryProject(), queryUIEnvs()]).then(
-      ([projectRes, envRes]) => {
-        if (projectRes.code === 0) {
-          const pros = projectRes.data.map((item) => ({
-            label: item.title,
-            value: item.id,
-          }));
-          setProjects(pros);
-        }
-        if (envRes.code === 0) {
-          const envs = envRes.data.map((item: IUIEnv) => ({
-            label: item.name,
-            value: item.id,
-          }));
-          setEnvs(envs);
-        }
-      },
-    );
+    Promise.all([queryProjects(setProjects), queryUIEnvList(setEnvs)]).then();
   }, []);
 
   /**
@@ -101,7 +78,11 @@ const Index = () => {
    */
   useEffect(() => {
     if (currentProjectId) {
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
+      fetchModulesEnum(
+        currentProjectId,
+        ModuleEnum.UI_CASE,
+        setModuleEnum,
+      ).then();
     }
   }, [currentProjectId]);
 
@@ -159,13 +140,6 @@ const Index = () => {
     setOpenAddStepDrawer(false);
     setOpenChoiceStepDrawer(false);
     setRefresh(refresh + 1);
-  };
-
-  const reorder = (list: any[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
   };
 
   const SaveOrUpdateCaseInfo = async () => {
@@ -350,7 +324,7 @@ const Index = () => {
               fieldProps={{
                 onChange: (value: number) => {
                   setCurrentProjectId(value);
-                  form.setFieldsValue({ part_id: undefined });
+                  form.setFieldsValue({ module_id: undefined });
                 },
               }}
             />
@@ -361,7 +335,7 @@ const Index = () => {
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
-                treeData: casePartEnum,
+                treeData: moduleEnum,
                 fieldNames: {
                   label: 'title',
                 },

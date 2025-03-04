@@ -7,6 +7,7 @@ import MyDrawer from '@/components/MyDrawer';
 import ChoiceApiCasesTable from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/ChoiceApiCasesTable';
 import { IInterfaceAPICase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import {
   ActionType,
@@ -32,18 +33,7 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
       const { code, data } = await queryAssociationCasesByTaskId({
         taskId: currentTaskId,
       });
-      if (code === 0) {
-        return {
-          data: data,
-          total: data.length,
-          success: true,
-        };
-      }
-      return {
-        data: [],
-        total: 0,
-        success: false,
-      };
+      return pageData(code, data);
     }
   }, [currentTaskId]);
 

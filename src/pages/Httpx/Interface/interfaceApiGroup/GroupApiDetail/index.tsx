@@ -1,3 +1,4 @@
+import { IModuleEnum } from '@/api';
 import {
   getInterfaceGroup,
   insertInterfaceGroup,
@@ -17,8 +18,8 @@ import {
   IInterfaceGroup,
   ITryResponseInfo,
 } from '@/pages/Httpx/types';
-import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
-import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
+import { ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
 import {
   ProCard,
@@ -46,9 +47,9 @@ const Index = () => {
     [],
   );
   const [tryResponses, setTryResponses] = useState<ITryResponseInfo[]>([]);
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const [currentPartId, setCurrentPartId] = useState<number>();
+  const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [reload, setReload] = useState(0);
 
   const handleReload = async () => {
@@ -57,12 +58,19 @@ const Index = () => {
   useEffect(() => {
     queryProjects(setProjects).then();
   }, []);
+
+  useEffect(() => {
+    if (currentProjectId) {
+      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
+    }
+  }, [currentProjectId]);
+
   useEffect(() => {
     if (groupId) {
       getInterfaceGroup(groupId).then(async ({ code, data }) => {
         if (code === 0) {
           setCurrentProjectId(data.project_id);
-          setCurrentPartId(data.part_id);
+          setCurrentModuleId(data.part_id);
           groupForm.setFieldsValue(data);
           setCurrentStatus(1);
         }
@@ -78,12 +86,6 @@ const Index = () => {
   }, [reload]);
 
   useEffect(() => {
-    if (currentProjectId) {
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
-    }
-  }, [currentProjectId]);
-
-  useEffect(() => {
     if (queryApis) {
       setStepApiIndex(queryApis.length);
       setApisContent(
@@ -96,7 +98,7 @@ const Index = () => {
               refresh={handleReload}
               interfaceApiInfo={item}
               groupId={groupId}
-              partId={currentPartId}
+              moduleId={currentModuleId}
               projectId={currentProjectId}
             />
           ),
@@ -149,7 +151,7 @@ const Index = () => {
             collapsible={false}
             refresh={handleReload}
             projectId={currentProjectId}
-            partId={currentPartId}
+            moduleId={currentModuleId}
             groupId={groupId}
           />
         ),
@@ -258,12 +260,12 @@ const Index = () => {
             />
             <ProFormTreeSelect
               required
-              name="part_id"
+              name="module_id"
               label="所属模块"
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
-                treeData: casePartEnum,
+                treeData: moduleEnum,
                 fieldNames: {
                   label: 'title',
                 },

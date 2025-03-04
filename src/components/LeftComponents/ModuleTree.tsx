@@ -8,8 +8,9 @@ import {
 } from '@/api/base';
 import EmptyModule from '@/pages/DebuggerPage/part/LeftComponents/EmptyModule';
 import {
+  getLocalStorageModule,
   getParentKey,
-  module2Tree,
+  module2Tree, setLocalStorageModule,
 } from '@/pages/DebuggerPage/part/LeftComponents/func';
 import ModuleModal from '@/pages/DebuggerPage/part/LeftComponents/ModuleModal';
 import { useAccess } from '@@/exports';
@@ -76,7 +77,7 @@ const ModuleTree: FC<IProps> = (props) => {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-
+  const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<React.Key[]>([]);
   /**
    * 查询module
    */
@@ -91,7 +92,18 @@ const ModuleTree: FC<IProps> = (props) => {
         },
       );
     }
+    localStorageFun()
   }, [currentProjectId, reload]);
+
+  const localStorageFun = ()=>{
+    const storageNum = getLocalStorageModule(moduleType);
+    if (storageNum) {
+      setCurrentModuleId(parseInt(storageNum))
+      setDefaultSelectedKeys([parseInt(storageNum)]);
+      setExpandedKeys([parseInt(storageNum)]);
+      setAutoExpandParent(true);
+    }
+  }
 
   /**
    * 数渲染
@@ -99,9 +111,7 @@ const ModuleTree: FC<IProps> = (props) => {
   const TreeModule = useMemo(() => {
     const loop: any = (data: IModule[]) =>
       data.map((item: IModule) => {
-        const strTitle = `${item.title}${
-          item.children_length !== undefined ? ` (${item.children_length})` : ''
-        }`;
+        const strTitle = item.title;
         const index = strTitle.indexOf(searchValue);
         const beforeStr = strTitle.substring(0, index);
         const afterStr = strTitle.slice(index + searchValue.length);
@@ -114,6 +124,7 @@ const ModuleTree: FC<IProps> = (props) => {
               </Text>
               {afterStr}
             </Text>
+
           ) : (
             <Text type={'secondary'} strong>
               {strTitle}
@@ -160,7 +171,6 @@ const ModuleTree: FC<IProps> = (props) => {
         key: '1',
         label: <Text strong>编辑</Text>,
         onClick: async () => {
-          console.log('click 编辑', node);
           setOpen(true);
           setCurrentModule(node);
           setHandleModule(Handle.EditModule);
@@ -209,6 +219,7 @@ const ModuleTree: FC<IProps> = (props) => {
       >
         <Text type={'secondary'} strong>
           {tree.title}
+
         </Text>
         {isAdmin && (
           <>
@@ -253,6 +264,7 @@ const ModuleTree: FC<IProps> = (props) => {
         (item, i, self): item is React.Key =>
           !!(item && self.indexOf(item) === i),
       );
+    console.log(newExpandedKeys);
     setExpandedKeys(newExpandedKeys);
     setAutoExpandParent(true);
   };
@@ -317,7 +329,8 @@ const ModuleTree: FC<IProps> = (props) => {
         <Space direction={'vertical'}>
           <Search
             enterButton
-            style={{ marginBottom: 8, marginTop: 12, marginRight: 10 }}
+            variant={"filled"}
+            style={{ marginBottom: 8, marginTop: 12}}
             placeholder="模块查询"
             width={'100%'}
             suffix={
@@ -348,13 +361,10 @@ const ModuleTree: FC<IProps> = (props) => {
             onDrop={onDrop} //拖拽结束触发
             expandedKeys={expandedKeys}
             autoExpandParent={autoExpandParent}
-            // defaultExpandedKeys={['0-0-0', '0-0-1']}
-            // defaultSelectedKeys={['0-0-1']}
-            // defaultCheckedKeys={['0-0-0', '0-0-1']}
-            // onSelect={onSelect}
-            // onCheck={onCheck}
+            defaultSelectedKeys={defaultSelectedKeys}
             onSelect={(keys: React.Key[], info: any) => {
               setCurrentModuleId(info.node.key);
+              setLocalStorageModule(moduleType, info.node.key);
             }}
             treeData={TreeModule}
             titleRender={TreeTitleRender}

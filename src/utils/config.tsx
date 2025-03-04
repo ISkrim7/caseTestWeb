@@ -10,6 +10,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 export { socketUrl };
 
+export const ModuleEnum = {
+  API : 1,
+  API_CASE : 2,
+  API_TASK : 3,
+
+  UI_CASE :4,
+  UI_TASK : 5,
+
+  CASE:6
+}
+
 export const CONFIG: IObjGet = {
   EXTRACT_TARGET_ENUM: {
     6: { text: 'Response.json' },

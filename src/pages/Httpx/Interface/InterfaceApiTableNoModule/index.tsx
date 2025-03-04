@@ -1,18 +1,20 @@
 import {
+  pageInterApiNoModule,
   pageInterApiNoPart,
-  removeInterApiById,
+  removeInterApiById, setInterApisModule,
   setInterApisPart,
 } from '@/api/inter';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { fetchCaseParts } from '@/pages/Play/componets/someFetch';
 import { CasePartEnum } from '@/pages/Play/componets/uiTypes';
-import { CONFIG } from '@/utils/config';
-import { pageData } from '@/utils/somefunc';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Space, Tag, TreeSelect } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { IModuleEnum } from '@/api';
 
 interface SelfProps {
   currentProjectId?: number;
@@ -23,18 +25,18 @@ const Index: FC<SelfProps> = (props) => {
   const { currentProjectId, perKey } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [casePartEnum, setCasePartEnum] = useState<CasePartEnum[]>([]);
-  const [selectPartId, setSelectPartId] = useState<number>();
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
+  const [selectModuleId, setSelectModuleId] = useState<number>();
   useEffect(() => {
     if (currentProjectId) {
       actionRef.current?.reload();
-      fetchCaseParts(currentProjectId, setCasePartEnum).then();
+      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
     }
   }, [currentProjectId]);
 
   const fetchInterface = useCallback(
     async (params: any, sort: any) => {
-      const { code, data } = await pageInterApiNoPart({
+      const { code, data } = await pageInterApiNoModule({
         ...params,
         project_id: currentProjectId,
         //只查询公共api
@@ -140,22 +142,22 @@ const Index: FC<SelfProps> = (props) => {
             filterTreeNode
             treeDefaultExpandAll
             onChange={(value: number) => {
-              setSelectPartId(value);
+              setSelectModuleId(value);
             }}
-            treeData={casePartEnum}
+            treeData={moduleEnum}
           />
           <Button
             type={'primary'}
             onClick={async () => {
-              if (selectPartId) {
-                const { code, msg } = await setInterApisPart({
-                  part_id: selectPartId,
+              if (selectModuleId && selectedRowKeys.length > 0) {
+                const { code, msg } = await setInterApisModule({
+                  module_id: selectModuleId,
                   interfaces: selectedRowKeys as number[],
                 });
                 if (code === 0) {
                   actionRef.current?.reload();
                   setSelectedRowKeys([]);
-                  setSelectPartId(undefined);
+                  setSelectModuleId(undefined);
                 }
               }
             }}

@@ -7,7 +7,10 @@ import {
   uiCaseDetailById,
 } from '@/api/play';
 import { reOrderStep } from '@/api/play/step';
-import { queryProjects } from '@/components/CommonFunc';
+import {
+  queryEnvByProjectIdFormApi,
+  queryProjects,
+} from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
@@ -54,6 +57,9 @@ const Index = () => {
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
     [],
   );
+  const [apiEnvs, setApiEnvs] = useState<
+    { label: string; value: number | null }[]
+  >([]);
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
   const [loading, setLoading] = useState(true);
@@ -66,6 +72,31 @@ const Index = () => {
   const [refresh, setRefresh] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
   const [varsNum, setVarsNum] = useState(0);
+  /**
+   * 如果是caseId 传递 这个证明是case 详情页
+   */
+  useEffect(() => {
+    if (caseId) {
+      uiCaseDetailById(caseId).then(async ({ code, data }) => {
+        if (code === 0) {
+          form.setFieldsValue(data);
+          setCurrentProjectId(data.project_id);
+        }
+      });
+      queryStepByCaseId(caseId).then(async ({ code, data }) => {
+        if (code === 0 && data) {
+          console.log(data);
+          setLoading(false);
+          setUISteps(data);
+        }
+      });
+      setCurrentMode(1);
+    } else {
+      setCurrentMode(2);
+      setLoading(false);
+    }
+  }, [refresh, caseId]);
+
   /*
   查询project && env
    */
@@ -83,32 +114,9 @@ const Index = () => {
         ModuleEnum.UI_CASE,
         setModuleEnum,
       ).then();
+      queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true).then();
     }
   }, [currentProjectId]);
-
-  /**
-   * 如果是caseId 传递 这个证明是case 详情页
-   */
-  useEffect(() => {
-    if (caseId) {
-      uiCaseDetailById(caseId).then(async ({ code, data }) => {
-        if (code === 0) {
-          form.setFieldsValue(data);
-          setCurrentProjectId(data.project_id);
-        }
-      });
-      queryStepByCaseId(caseId).then(async ({ code, data }) => {
-        if (code === 0 && data) {
-          setLoading(false);
-          setUISteps(data);
-        }
-      });
-      setCurrentMode(1);
-    } else {
-      setCurrentMode(2);
-      setLoading(false);
-    }
-  }, [refresh, caseId]);
 
   //set case steps content
   useEffect(() => {
@@ -119,6 +127,7 @@ const Index = () => {
         step_id: item.id,
         content: (
           <CollapsibleUIStepCard
+            apiEnv={apiEnvs}
             caseId={caseId!}
             currentProjectId={currentProjectId}
             callBackFunc={handelRefresh}
@@ -330,7 +339,7 @@ const Index = () => {
             />
             <ProFormTreeSelect
               required
-              name="part_id"
+              name="module_id"
               label="所属模块"
               allowClear
               rules={[{ required: true, message: '所属模块必选' }]}

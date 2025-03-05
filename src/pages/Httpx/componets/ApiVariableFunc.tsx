@@ -61,7 +61,7 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
                 {item.key}
               </span>
             ),
-            value: `{{${item.key}}`,
+            value: `{{${item.key}}}`,
           };
         });
         setVarData(func);
@@ -180,6 +180,8 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
               if (selectValue && index) {
                 if (value) {
                   setValue?.(index, { value: value + selectValue });
+                } else {
+                  setValue?.(index, { value: selectValue });
                 }
               }
               setOpen(false);

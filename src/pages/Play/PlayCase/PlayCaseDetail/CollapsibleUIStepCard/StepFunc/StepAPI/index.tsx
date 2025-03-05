@@ -1,11 +1,11 @@
-import { queryEnv } from '@/api/base';
 import {
   addUIStepApi,
   detailUIStepApi,
   editUIStepApi,
   removeUIStepApi,
 } from '@/api/play/step';
-import { IUICaseStepAPI } from '@/pages/Play/componets/uiTypes';
+import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
+import { IUICaseStepAPI, IUICaseSteps } from '@/pages/Play/componets/uiTypes';
 import Assert from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Assert';
 import Body from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Body';
 import Extract from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Extract';
@@ -23,47 +23,40 @@ import { Button, Divider, Form, message, Tabs } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 interface ISelfProps {
-  stepId?: number;
+  stepInfo?: IUICaseSteps;
   callBackFunc: () => void;
   currentProjectId?: number;
+  apiEnv?: any[];
 }
 
 const StepApi: FC<ISelfProps> = ({
-  stepId,
-  currentProjectId,
+  stepInfo,
   callBackFunc,
+  currentProjectId,
+  apiEnv,
 }) => {
   const [apiForm] = Form.useForm<IUICaseStepAPI>();
   const { API_REQUEST_METHOD } = CONFIG;
   const [apiData, setApiData] = useState<IUICaseStepAPI>();
   const [disable, setDisable] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
-    [],
-  );
+  const [apiEnvs, setApiEnvs] = useState<
+    { label: string; value: number | null }[]
+  >([]);
   useEffect(() => {
-    if (stepId) {
-      detailUIStepApi({ stepId: stepId }).then(({ code, data }) => {
+    if (stepInfo && stepInfo.has_api) {
+      detailUIStepApi({ stepId: stepInfo.id }).then(({ code, data }) => {
         if (code === 0) {
           setApiData(data);
           apiForm.setFieldsValue(data);
         }
       });
     }
-  }, [stepId]);
+    if (currentProjectId) {
+      queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true).then();
+    }
+  }, [stepInfo, currentProjectId]);
 
-  useEffect(() => {
-    queryEnv().then(({ code, data }) => {
-      if (code === 0) {
-        const envs = data.map((item) => ({
-          label: item.name,
-          value: item.id,
-        }));
-        const noEnv = { label: '自定义', value: -1 };
-        setEnvs([noEnv, ...envs]);
-      }
-    });
-  }, []);
   useEffect(() => {
     if (apiData) {
       setDisable(true);
@@ -84,7 +77,7 @@ const StepApi: FC<ISelfProps> = ({
     setLoading(true);
     //新增
     const values = apiForm.getFieldsValue(true);
-    values.stepId = stepId;
+    values.stepId = stepInfo?.id;
     //修改
     if (apiData) {
       values.uid = apiData.uid;
@@ -190,7 +183,7 @@ const StepApi: FC<ISelfProps> = ({
                     <ProFormSelect
                       noStyle
                       name={'env_id'}
-                      options={envs}
+                      options={apiEnv}
                       showSearch={true}
                       required={true}
                       placeholder={'环境选择'}

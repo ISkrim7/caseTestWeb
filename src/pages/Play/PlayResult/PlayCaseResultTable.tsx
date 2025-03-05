@@ -114,11 +114,8 @@ const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
 
   return (
     <ProCard
-      title={'DeBug His'}
-      bordered={true}
-      defaultCollapsed={true}
+      title={'调试历史'}
       style={{ marginTop: 200, height: 'auto' }}
-      collapsible={true}
       extra={
         <Button
           type={'primary'}

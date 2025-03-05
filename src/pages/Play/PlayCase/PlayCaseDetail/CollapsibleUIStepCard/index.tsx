@@ -27,6 +27,7 @@ interface ISelfProps {
   uiStepInfo?: IUICaseSteps;
   collapsible?: boolean;
   callBackFunc: () => void;
+  apiEnv?: any[];
 }
 
 const Index: FC<ISelfProps> = ({
@@ -35,8 +36,10 @@ const Index: FC<ISelfProps> = ({
   callBackFunc,
   collapsible,
   currentProjectId,
+  apiEnv,
 }) => {
   const [openStepDrawer, setOpenStepDrawer] = useState(false);
+  const [openSteDetailDrawer, setOpenStepDetailDrawer] = useState(false);
   const copyUIStep = async () => {
     const { code } = await copyStep({
       caseId: caseId,
@@ -84,7 +87,7 @@ const Index: FC<ISelfProps> = ({
           color={'primary'}
           variant="filled"
           onClick={() => {
-            setOpenStepDrawer(true);
+            setOpenStepDetailDrawer(true);
           }}
         >
           DETAIL
@@ -97,7 +100,11 @@ const Index: FC<ISelfProps> = ({
           cancelText={'点错了'}
           onConfirm={removeUIStep}
         >
-          <Button color={'primary'} variant={'filled'}>
+          <Button
+            color={'danger'}
+            variant={'filled'}
+            style={{ marginRight: 10 }}
+          >
             <DeleteOutlined />
             DEL
           </Button>
@@ -115,9 +122,23 @@ const Index: FC<ISelfProps> = ({
         setOpen={setOpenStepDrawer}
       >
         <PlayStepDetail
-          stepId={uiStepInfo?.id!}
+          stepId={uiStepInfo?.id}
           func={() => {
             setOpenStepDrawer(false);
+            callBackFunc();
+          }}
+        />
+      </MyDrawer>
+      <MyDrawer
+        name={'Step Detail'}
+        width={'auto'}
+        open={openSteDetailDrawer}
+        setOpen={setOpenStepDetailDrawer}
+      >
+        <PlayStepDetail
+          uiStepInfo={uiStepInfo}
+          func={() => {
+            setOpenStepDetailDrawer(false);
             callBackFunc();
           }}
         />
@@ -150,9 +171,10 @@ const Index: FC<ISelfProps> = ({
           <Tabs tabPosition={'left'} size={'small'}>
             <Tabs.TabPane key={'1'} icon={<ApiOutlined />} tab={'接口请求'}>
               <StepAPI
-                stepId={uiStepInfo?.id}
-                currentProjectId={currentProjectId}
+                apiEnv={apiEnv}
+                stepInfo={uiStepInfo}
                 callBackFunc={callBackFunc}
+                currentProjectId={currentProjectId}
               />
             </Tabs.TabPane>
             <Tabs.TabPane

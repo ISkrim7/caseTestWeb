@@ -1,5 +1,5 @@
 import { queryMethods } from '@/api/play/method';
-import { getStepInfo, updateStep } from '@/api/play/step';
+import { updateStep } from '@/api/play/step';
 import { methodToEnum } from '@/pages/Play/componets/methodToEnum';
 import { IUICaseSteps, IUIMethod } from '@/pages/Play/componets/uiTypes';
 import {
@@ -15,10 +15,11 @@ import { FC, useEffect, useState } from 'react';
 
 interface ISelfProps {
   stepId?: number;
+  uiStepInfo?: IUICaseSteps;
   func: () => void;
 }
 
-const Index: FC<ISelfProps> = ({ stepId, func }) => {
+const Index: FC<ISelfProps> = ({ stepId, uiStepInfo, func }) => {
   const [form] = Form.useForm<IUICaseSteps>();
   const [methods, setMethods] = useState<IUIMethod[]>([]);
   const [methodEnum, setMethodEnum] = useState<any>();
@@ -31,21 +32,21 @@ const Index: FC<ISelfProps> = ({ stepId, func }) => {
   const [isCommonStep, setIsCommonStep] = useState(false);
   useEffect(() => {
     // 详情模式
-    if (currentStepId) {
-      getStepInfo(currentStepId).then(async ({ code, data }) => {
-        if (code === 0) {
-          form.setFieldsValue(data);
-          setIsCommonStep(data.is_common_step);
-          setCurrentMethod(
-            methods.find((item: any) => item.value === data.method),
-          );
-        }
-      });
+    if (uiStepInfo) {
+      // getStepInfo(currentStepId).then(async ({ code, data }) => {
+      //   if (code === 0) {
+      form.setFieldsValue(uiStepInfo);
+      setIsCommonStep(uiStepInfo.is_common_step);
+      setCurrentMethod(
+        methods.find((item: any) => item.value === uiStepInfo.method),
+      );
+      // }
+      // });
     } else {
       setMode(2);
     }
     return;
-  }, [currentStepId]);
+  }, [uiStepInfo]);
 
   useEffect(() => {
     queryMethods().then(async ({ code, data }) => {
@@ -56,13 +57,21 @@ const Index: FC<ISelfProps> = ({ stepId, func }) => {
       }
     });
   }, []);
-
-  useEffect(() => {
-    if (stepId) {
-      setMode(1);
-      setCurrentStepId(stepId);
-    }
-  }, [stepId]);
+  // useEffect(() => {
+  //   if (uiStepInfo){
+  //     form.setFieldsValue(uiStepInfo);
+  //     setIsCommonStep(uiStepInfo.is_common_step);
+  //     setCurrentMethod(
+  //       methods.find((item: any) => item.value === uiStepInfo.method),
+  //     );
+  //   }
+  // }, [uiStepInfo]);
+  // useEffect(() => {
+  //   if (stepId) {
+  //     setMode(1);
+  //     setCurrentStepId(stepId);
+  //   }
+  // }, [stepId]);
 
   const UpdateStep = async () => {
     const values = form.getFieldsValue(true);

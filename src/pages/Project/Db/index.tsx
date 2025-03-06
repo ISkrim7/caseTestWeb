@@ -1,11 +1,10 @@
 import { pageDBConfig, removeDBConfig } from '@/api/base/dbConfig';
-import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
-import DBForm from '@/pages/Project/Db/DBDrawer';
+import DBModel from '@/pages/Project/Db/DBModel';
 import { pageData } from '@/utils/somefunc';
 import { useAccess } from '@@/exports';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider } from 'antd';
+import { Divider } from 'antd';
 import { useRef, useState } from 'react';
 
 const Index = () => {
@@ -106,14 +105,14 @@ const Index = () => {
 
   return (
     <ProCard>
-      <MyDrawer name={''} width={'20%'} open={open} setOpen={setOpen}>
-        <DBForm onFinish={isReload} currentDBConfigId={currentDBConfig} />
-      </MyDrawer>
       <MyProTable
         toolBarRender={() => [
-          <Button type={'primary'} onClick={() => setOpen(true)}>
-            添加DB
-          </Button>,
+          <DBModel
+            callBack={isReload}
+            currentDBConfigId={currentDBConfig}
+            open={open}
+            setOpen={setOpen}
+          />,
         ]}
         headerTitle={'DB配置'}
         actionRef={actionRef}

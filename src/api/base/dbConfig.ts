@@ -77,3 +77,16 @@ export async function updateDBConfig(data: IDBConfig, options?: IObjGet) {
     ...(options || {}),
   });
 }
+
+/**
+ * page
+ * @param data
+ * @param options
+ */
+export async function testDBConfig(data: IDBConfig, options?: IObjGet) {
+  return request<IResponse<null>>('/api/project/config/testConnect', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+}

@@ -1,31 +1,33 @@
 import {
   getDBConfig,
   insertDBConfig,
+  testDBConfig,
   updateDBConfig,
 } from '@/api/base/dbConfig';
-import { queryProjects } from '@/components/CommonFunc';
 import { IDBConfig } from '@/pages/Project/types';
-import { ProCard, ProForm, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProCard, ProFormText } from '@ant-design/pro-components';
 import { ProFormSelect } from '@ant-design/pro-form';
 import { Button, Form, message } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 interface IProps {
-  onFinish: () => void;
+  callBack: () => void;
   currentDBConfigId?: string;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
 }
 
-const DBForm: FC<IProps> = ({ onFinish, currentDBConfigId }) => {
+const DBModel: FC<IProps> = ({
+  callBack,
+  currentDBConfigId,
+  open,
+  setOpen,
+}) => {
   const [form] = Form.useForm<IDBConfig>();
   const [currentType, setCurrentType] = useState<number>(1);
-  const [projects, setProjects] = useState<{ label: string; value: number }[]>(
-    [],
-  );
-  const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [config, setConfig] = useState<IDBConfig>();
-  useEffect(() => {
-    queryProjects(setProjects).then();
-  }, []);
+  const [canSave, setCanSave] = useState<boolean>(false);
+
   useEffect(() => {
     if (currentDBConfigId) {
       getDBConfig(currentDBConfigId).then(async ({ code, data }) => {
@@ -45,55 +47,65 @@ const DBForm: FC<IProps> = ({ onFinish, currentDBConfigId }) => {
         ({ code, msg }) => {
           if (code === 0) {
             message.success(msg);
-            onFinish();
+            callBack();
           }
         },
       );
     } else {
-      const { code, data, msg } = await insertDBConfig(values);
+      const { code, msg } = await insertDBConfig(values);
       if (code === 0) {
         message.success(msg);
-        onFinish();
+        callBack();
       }
     }
   };
+
+  const test = async () => {
+    const values = await form.validateFields();
+    const { code } = await testDBConfig(values);
+    if (code === 0) {
+      setCanSave(true);
+      message.success('connect success');
+    }
+  };
   return (
-    <ProCard
-      extra={
-        <Button type={'primary'} onClick={save}>
-          Save
-        </Button>
-      }
-    >
-      <ProForm form={form} submitter={false}>
-        <ProForm.Group>
-          <ProFormSelect
-            width={'md'}
-            options={projects}
-            label={'所属项目'}
-            name={'project_id'}
-            required={true}
-            onChange={(value) => {
-              setCurrentProjectId(value as number);
-            }}
-          />
-        </ProForm.Group>
-        <ProForm.Group>
-          <ProFormSelect
-            label={'类型'}
-            width={'md'}
-            initialValue={currentType}
-            name={'db_type'}
-            options={[
-              { label: 'mysql', value: 1 },
-              { label: 'redis', value: 3 },
-              { label: 'oracle', value: 2 },
-            ]}
-            onChange={(value: number) => {
-              setCurrentType(value);
-            }}
-          />
-        </ProForm.Group>
+    <ProCard>
+      <ModalForm
+        form={form}
+        open={open}
+        onOpenChange={setOpen}
+        trigger={<Button type="primary">Add DB</Button>}
+        submitter={{
+          render: () => {
+            return [
+              <Button htmlType="button" onClick={test} key="edit">
+                链接测试
+              </Button>,
+              <Button
+                disabled={canSave}
+                htmlType="button"
+                onClick={save}
+                key="read"
+              >
+                保存
+              </Button>,
+            ];
+          },
+        }}
+      >
+        <ProFormSelect
+          label={'类型'}
+          initialValue={currentType}
+          name={'db_type'}
+          options={[
+            { label: 'mysql', value: 1 },
+            { label: 'redis', value: 3 },
+            { label: 'oracle', value: 2 },
+          ]}
+          onChange={(value: number) => {
+            setCurrentType(value);
+          }}
+        />
         <ProFormText label={'name'} name={'db_name'} required={true} />
         <ProFormText label={'host'} name={'db_host'} required={true} />
         <ProFormText label={'port'} name={'db_port'} required={true} />
@@ -104,9 +116,9 @@ const DBForm: FC<IProps> = ({ onFinish, currentDBConfigId }) => {
           required={currentType === 1}
         />
         <ProFormText label={'database'} name={'db_database'} required={true} />
-      </ProForm>
+      </ModalForm>
     </ProCard>
   );
 };
 
-export default DBForm;
+export default DBModel;

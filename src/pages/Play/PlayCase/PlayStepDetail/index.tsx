@@ -14,34 +14,26 @@ import { Button, Form, message } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 interface ISelfProps {
-  stepId?: number;
   uiStepInfo?: IUICaseSteps;
   func: () => void;
 }
 
-const Index: FC<ISelfProps> = ({ stepId, uiStepInfo, func }) => {
+const Index: FC<ISelfProps> = ({ uiStepInfo, func }) => {
   const [form] = Form.useForm<IUICaseSteps>();
   const [methods, setMethods] = useState<IUIMethod[]>([]);
   const [methodEnum, setMethodEnum] = useState<any>();
   const [currentMethod, setCurrentMethod] = useState<IUIMethod>();
-  const [readOnly, setReadOnly] = useState(false);
   //1 详情  2 编辑
   const [mode, setMode] = useState<number>(1);
-  const [currentStepId, setCurrentStepId] = useState<number>();
 
-  const [isCommonStep, setIsCommonStep] = useState(false);
   useEffect(() => {
     // 详情模式
     if (uiStepInfo) {
-      // getStepInfo(currentStepId).then(async ({ code, data }) => {
-      //   if (code === 0) {
+      setMode(1);
       form.setFieldsValue(uiStepInfo);
-      setIsCommonStep(uiStepInfo.is_common_step);
       setCurrentMethod(
         methods.find((item: any) => item.value === uiStepInfo.method),
       );
-      // }
-      // });
     } else {
       setMode(2);
     }
@@ -57,25 +49,10 @@ const Index: FC<ISelfProps> = ({ stepId, uiStepInfo, func }) => {
       }
     });
   }, []);
-  // useEffect(() => {
-  //   if (uiStepInfo){
-  //     form.setFieldsValue(uiStepInfo);
-  //     setIsCommonStep(uiStepInfo.is_common_step);
-  //     setCurrentMethod(
-  //       methods.find((item: any) => item.value === uiStepInfo.method),
-  //     );
-  //   }
-  // }, [uiStepInfo]);
-  // useEffect(() => {
-  //   if (stepId) {
-  //     setMode(1);
-  //     setCurrentStepId(stepId);
-  //   }
-  // }, [stepId]);
 
   const UpdateStep = async () => {
     const values = form.getFieldsValue(true);
-    if (stepId || values.id) {
+    if (values.id) {
       updateStep(values).then(async ({ code, msg }) => {
         if (code === 0) {
           message.success(msg);
@@ -97,7 +74,9 @@ const Index: FC<ISelfProps> = ({ stepId, uiStepInfo, func }) => {
       case 2:
         return (
           <>
-            {stepId && <Button type={'primary'}>Cancel</Button>}
+            <Button type={'primary'} onClick={() => setMode(1)}>
+              Cancel
+            </Button>
             <Button
               onClick={UpdateStep}
               style={{ marginLeft: 10 }}
@@ -112,7 +91,7 @@ const Index: FC<ISelfProps> = ({ stepId, uiStepInfo, func }) => {
     }
   };
   return (
-    <ProCard extra={!isCommonStep ? <DetailExtra currentMode={mode} /> : null}>
+    <ProCard extra={<DetailExtra currentMode={mode} />}>
       <ProForm
         disabled={mode === 1}
         layout={'vertical'}
@@ -179,7 +158,6 @@ const Index: FC<ISelfProps> = ({ stepId, uiStepInfo, func }) => {
               name="locator"
               label="步骤目标元素定位"
               required={true}
-              readonly={readOnly}
               tooltip={'当方法选择不需要目标元素定位，可写入null'}
               placeholder={'#...'}
               rules={[{ required: true, message: '目标元素必填' }]}

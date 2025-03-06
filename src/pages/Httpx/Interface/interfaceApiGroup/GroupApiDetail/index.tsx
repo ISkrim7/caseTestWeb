@@ -235,7 +235,6 @@ const Index = () => {
         <InterfaceCaseChoiceApiTable
           currentGroupId={groupId}
           refresh={handleReload}
-          currentProjectId={currentProjectId}
         />
       </MyDrawer>
       <ProCard

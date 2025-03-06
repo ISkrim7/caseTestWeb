@@ -4,7 +4,6 @@ import {
   editUIStepApi,
   removeUIStepApi,
 } from '@/api/play/step';
-import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import { IUICaseStepAPI, IUICaseSteps } from '@/pages/Play/componets/uiTypes';
 import Assert from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Assert';
 import Body from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI/Body';
@@ -40,9 +39,9 @@ const StepApi: FC<ISelfProps> = ({
   const [apiData, setApiData] = useState<IUICaseStepAPI>();
   const [disable, setDisable] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [apiEnvs, setApiEnvs] = useState<
-    { label: string; value: number | null }[]
-  >([]);
+  // const [apiEnvs, setApiEnvs] = useState<
+  //   { label: string; value: number | null }[]
+  // >([]);
   useEffect(() => {
     if (stepInfo && stepInfo.has_api) {
       detailUIStepApi({ stepId: stepInfo.id }).then(({ code, data }) => {
@@ -51,9 +50,6 @@ const StepApi: FC<ISelfProps> = ({
           apiForm.setFieldsValue(data);
         }
       });
-    }
-    if (currentProjectId) {
-      queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true).then();
     }
   }, [stepInfo, currentProjectId]);
 
@@ -171,34 +167,39 @@ const StepApi: FC<ISelfProps> = ({
         <ProCard bodyStyle={{ padding: 0 }}>
           <Tabs size={'small'}>
             <Tabs.TabPane key={'a'} tab={'请求信息'}>
-              <ProForm.Group>
-                <ProFormText
-                  label={'步骤名称'}
-                  name={'name'}
-                  required={true}
-                  rules={[{ required: true, message: '步骤名称不能为空' }]}
-                />
-                <ProFormText
-                  addonBefore={
-                    <ProFormSelect
-                      noStyle
-                      name={'env_id'}
-                      options={apiEnv}
-                      showSearch={true}
-                      required={true}
-                      placeholder={'环境选择'}
-                    />
-                  }
-                  label={'URL'}
-                  name={'url'}
-                  width={'md'}
-                  rules={[
-                    { required: true, message: '请输入请求url' },
-                    { pattern: new RegExp('^\\/.*'), message: 'url 格式错误' },
-                  ]}
-                  addonAfter={addonAfter}
-                />
-              </ProForm.Group>
+              {apiEnv && (
+                <ProForm.Group>
+                  <ProFormText
+                    label={'步骤名称'}
+                    name={'name'}
+                    required={true}
+                    rules={[{ required: true, message: '步骤名称不能为空' }]}
+                  />
+                  <ProFormText
+                    addonBefore={
+                      <ProFormSelect
+                        noStyle
+                        name={'env_id'}
+                        options={apiEnv}
+                        showSearch={true}
+                        required={true}
+                        placeholder={'环境选择'}
+                      />
+                    }
+                    label={'URL'}
+                    name={'url'}
+                    width={'md'}
+                    rules={[
+                      { required: true, message: '请输入请求url' },
+                      {
+                        pattern: new RegExp('^\\/.*'),
+                        message: 'url 格式错误',
+                      },
+                    ]}
+                    addonAfter={addonAfter}
+                  />
+                </ProForm.Group>
+              )}
               <ProForm.Group>
                 <ProFormRadio.Group
                   required={true}

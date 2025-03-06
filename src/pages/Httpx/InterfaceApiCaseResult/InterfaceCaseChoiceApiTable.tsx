@@ -1,6 +1,9 @@
 import { IModuleEnum, IObjGet } from '@/api';
 import { pageInterApi } from '@/api/inter';
-import { selectCommonApis2Case } from '@/api/inter/interCase';
+import {
+  selectCommonApis2Case,
+  selectCommonApisCopy2Case,
+} from '@/api/inter/interCase';
 import { addInterfaceGroupApis } from '@/api/inter/interGroup';
 import { associationApisByTaskId } from '@/api/inter/interTask';
 import { queryProjectEnum } from '@/components/CommonFunc';
@@ -9,12 +12,11 @@ import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, message, Tag } from 'antd';
+import { Button, message, Space, Tag } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
-  currentProjectId?: number;
   currentCaseApiId?: string;
   currentGroupId?: string;
   currentTaskId?: string;
@@ -25,7 +27,6 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
   currentGroupId,
   currentCaseApiId,
   refresh,
-  currentProjectId,
   currentTaskId,
 }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
@@ -68,7 +69,6 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       onFilter: true,
       valueType: 'select',
       valueEnum: projectEnumMap,
-      initialValue: selectProjectId,
       fieldProps: {
         onSelect: (value: number) => {
           setSelectProjectId(value);
@@ -145,41 +145,62 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       // @ts-ignore
       tableAlertOptionRender={() => {
         return (
-          <Button
-            type={'primary'}
-            onClick={async () => {
-              if (currentCaseApiId) {
-                const { code, msg } = await selectCommonApis2Case({
-                  caseId: currentCaseApiId,
-                  commonApis: selectedRowKeys as number[],
-                });
-                if (code === 0) {
-                  message.success(msg);
-                  refresh?.();
+          <Space>
+            <Button
+              type={'primary'}
+              onClick={async () => {
+                if (currentCaseApiId) {
+                  const { code, msg } = await selectCommonApis2Case({
+                    caseId: currentCaseApiId,
+                    commonApis: selectedRowKeys as number[],
+                  });
+                  if (code === 0) {
+                    message.success(msg);
+                    refresh?.();
+                  }
+                } else if (currentTaskId) {
+                  const { code, msg } = await associationApisByTaskId({
+                    taskId: currentTaskId,
+                    apiIds: selectedRowKeys as number[],
+                  });
+                  if (code === 0) {
+                    message.success(msg);
+                    refresh?.();
+                  }
+                } else if (currentGroupId) {
+                  const { code, msg } = await addInterfaceGroupApis({
+                    groupId: currentGroupId,
+                    apiIds: selectedRowKeys as number[],
+                  });
+                  if (code === 0) {
+                    message.success(msg);
+                    refresh?.();
+                  }
                 }
-              } else if (currentTaskId) {
-                const { code, msg } = await associationApisByTaskId({
-                  taskId: currentTaskId,
-                  apiIds: selectedRowKeys as number[],
-                });
-                if (code === 0) {
-                  message.success(msg);
-                  refresh?.();
-                }
-              } else if (currentGroupId) {
-                const { code, msg } = await addInterfaceGroupApis({
-                  groupId: currentGroupId,
-                  apiIds: selectedRowKeys as number[],
-                });
-                if (code === 0) {
-                  message.success(msg);
-                  refresh?.();
-                }
-              }
-            }}
-          >
-            确认添加
-          </Button>
+              }}
+            >
+              引用添加
+            </Button>
+            {currentCaseApiId &&
+              currentGroupId === undefined &&
+              currentTaskId === undefined && (
+                <Button
+                  type={'primary'}
+                  onClick={async () => {
+                    const { code, msg } = await selectCommonApisCopy2Case({
+                      caseId: currentCaseApiId,
+                      commonApis: selectedRowKeys as number[],
+                    });
+                    if (code === 0) {
+                      message.success(msg);
+                      refresh?.();
+                    }
+                  }}
+                >
+                  复制添加
+                </Button>
+              )}
+          </Space>
         );
       }}
       rowSelection={rowSelection}

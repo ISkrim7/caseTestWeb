@@ -46,8 +46,7 @@ export const queryEnvByProjectIdFormApi = async (
   >,
   noEnv: boolean,
 ) => {
-  queryEnvBy({ project_id: projectId } as IEnv).then(({ code, data }) => {
-    console.log('data', data);
+  queryEnvBy({ project_id: projectId } as IEnv).then(async ({ code, data }) => {
     if (code === 0) {
       // 请求成功
       const envs = data.map((item) => ({

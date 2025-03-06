@@ -6,7 +6,7 @@ import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData, queryUIEnvEnum } from '@/utils/somefunc';
 import { history, useModel } from '@@/exports';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, message, Popconfirm, Tag } from 'antd';
+import { Button, message, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -53,6 +53,7 @@ const Index: FC<SelfProps> = ({
       key: 'uid',
       fixed: 'left',
       copyable: true,
+      width: '12%',
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
@@ -126,56 +127,53 @@ const Index: FC<SelfProps> = ({
       valueType: 'option',
       key: 'option',
       fixed: 'right',
-      render: (_, record, __) => {
-        return (
-          <>
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              key="view"
-              onClick={() => {
-                history.push(`/ui/case/detail/caseId=${record.id}`);
-              }}
-            >
-              详情
-            </a>
-            <Divider type={'vertical'} />
-            <a
-              onClick={async () => {
-                const { code, data, msg } = await copyUICase({
-                  caseId: record.uid,
+      width: '12%',
+      render: (_, record) => [
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          key="view"
+          onClick={() => {
+            history.push(`/ui/case/detail/caseId=${record.id}`);
+          }}
+        >
+          详情
+        </a>,
+        <a
+          onClick={async () => {
+            const { code, data, msg } = await copyUICase({
+              caseId: record.uid,
+            });
+            if (code === 0) {
+              history.push(`/ui/case/detail/caseId=${data.id}`);
+              message.success(msg);
+            }
+          }}
+        >
+          复制
+        </a>,
+        <>
+          {initialState?.currentUser?.id === record.creator ||
+          initialState?.currentUser?.isAdmin ? (
+            <Popconfirm
+              title={'确认删除？'}
+              okText={'确认'}
+              cancelText={'点错了'}
+              onConfirm={async () => {
+                const { code, msg } = await removeUICase({
+                  caseId: record.id,
                 });
                 if (code === 0) {
-                  history.push(`/ui/case/detail/caseId=${data.id}`);
                   message.success(msg);
+                  actionRef.current?.reload();
                 }
               }}
             >
-              复制
-            </a>
-            {initialState?.currentUser?.id === record.creator ||
-            initialState?.currentUser?.isAdmin ? (
-              <Popconfirm
-                title={'确认删除？'}
-                okText={'确认'}
-                cancelText={'点错了'}
-                onConfirm={async () => {
-                  const { code, msg } = await removeUICase({
-                    caseId: record.id,
-                  });
-                  if (code === 0) {
-                    message.success(msg);
-                    actionRef.current?.reload();
-                  }
-                }}
-              >
-                <Divider type={'vertical'} />
-                <a>删除</a>
-              </Popconfirm>
-            ) : null}
-          </>
-        );
-      },
+              <a>删除</a>
+            </Popconfirm>
+          ) : null}
+        </>,
+      ],
     },
   ];
 

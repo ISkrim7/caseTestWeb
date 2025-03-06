@@ -42,9 +42,13 @@ import {
   message,
   Tabs,
 } from 'antd';
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { history } from 'umi';
-
+interface IUIStepContent {
+  id: string;
+  step_id: number;
+  content: React.ReactNode;
+}
 const Index = () => {
   const { caseId } = useParams<{ caseId: string }>();
   const [projects, setProjects] = useState<{ label: string; value: number }[]>(
@@ -62,40 +66,14 @@ const Index = () => {
   >([]);
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
-  const [loading, setLoading] = useState(true);
-  const [uiStepsContent, setUIStepsContent] = useState<any[]>([]);
+  const [uiStepsContent, setUIStepsContent] = useState<IUIStepContent[]>([]);
   const [uiSteps, setUISteps] = useState<IUICaseSteps[]>([]);
-  const [uiStepsLength, setUIStepsLength] = useState<number>(0);
   const [stepIndex, setStepIndex] = useState<number>(0);
   const [openAddStepDrawer, setOpenAddStepDrawer] = useState(false);
   const [openChoiceStepDrawer, setOpenChoiceStepDrawer] = useState(false);
   const [refresh, setRefresh] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
   const [varsNum, setVarsNum] = useState(0);
-  /**
-   * 如果是caseId 传递 这个证明是case 详情页
-   */
-  useEffect(() => {
-    if (caseId) {
-      uiCaseDetailById(caseId).then(async ({ code, data }) => {
-        if (code === 0) {
-          form.setFieldsValue(data);
-          setCurrentProjectId(data.project_id);
-        }
-      });
-      queryStepByCaseId(caseId).then(async ({ code, data }) => {
-        if (code === 0 && data) {
-          console.log(data);
-          setLoading(false);
-          setUISteps(data);
-        }
-      });
-      setCurrentMode(1);
-    } else {
-      setCurrentMode(2);
-      setLoading(false);
-    }
-  }, [refresh, caseId]);
 
   /*
   查询project && env
@@ -104,52 +82,71 @@ const Index = () => {
     Promise.all([queryProjects(setProjects), queryUIEnvList(setEnvs)]).then();
   }, []);
 
-  /**
-   * 修改project 对应请求casePart
-   */
   useEffect(() => {
     if (currentProjectId) {
-      fetchModulesEnum(
-        currentProjectId,
-        ModuleEnum.UI_CASE,
-        setModuleEnum,
-      ).then();
-      queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true).then();
+      // 获取模块枚举和环境数据
+      Promise.all([
+        fetchModulesEnum(currentProjectId, ModuleEnum.UI_CASE, setModuleEnum),
+        queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true),
+      ]).then();
     }
   }, [currentProjectId]);
+  /**
+   * 如果是caseId 传递 这个证明是case 详情页
+   */
+  useEffect(() => {
+    if (caseId) {
+      // 获取 case 详情
+      uiCaseDetailById(caseId).then(async ({ code, data }) => {
+        if (code === 0) {
+          form.setFieldsValue(data);
+          setCurrentProjectId(data.project_id);
+        }
+      });
+      // 获取步骤数据
+      queryStepByCaseId(caseId).then(async ({ code, data }) => {
+        if (code === 0 && data) {
+          setUISteps(data);
+        }
+      });
+      setCurrentMode(1);
+    } else {
+      setCurrentMode(2);
+    }
+  }, [refresh, caseId]);
 
   //set case steps content
   useEffect(() => {
-    if (uiSteps) {
-      setUIStepsLength(uiSteps.length);
-      const init_data = uiSteps.map((item, index) => ({
-        id: index.toString(),
-        step_id: item.id,
-        content: (
-          <CollapsibleUIStepCard
-            apiEnv={apiEnvs}
-            caseId={caseId!}
-            currentProjectId={currentProjectId}
-            callBackFunc={handelRefresh}
-            collapsible={true} // 默认折叠
-            uiStepInfo={item}
-          />
-        ),
-      }));
-      setUIStepsContent(init_data);
+    if (uiSteps && uiSteps.length > 0) {
+      setUIStepsContent(
+        uiSteps.map((item, index) => ({
+          id: index.toString(),
+          step_id: item.id,
+          content: (
+            <CollapsibleUIStepCard
+              apiEnv={apiEnvs}
+              caseId={caseId!}
+              currentProjectId={currentProjectId}
+              callBackFunc={handelRefresh}
+              collapsible={true} // 默认折叠
+              uiStepInfo={item}
+            />
+          ),
+        })),
+      );
     }
-  }, [refresh, uiSteps, currentProjectId]);
+  }, [refresh, uiSteps, apiEnvs]);
   const onDragEnd = async (reorderedUIContents: any[]) => {
     if (caseId) {
       const reorderData = reorderedUIContents.map((item) => item.step_id);
       reOrderStep({ caseId: caseId, stepIds: reorderData }).then();
     }
   };
-  const handelRefresh = () => {
+  const handelRefresh = useCallback(() => {
     setOpenAddStepDrawer(false);
     setOpenChoiceStepDrawer(false);
     setRefresh(refresh + 1);
-  };
+  }, []);
 
   const SaveOrUpdateCaseInfo = async () => {
     const values = form.getFieldsValue(true);

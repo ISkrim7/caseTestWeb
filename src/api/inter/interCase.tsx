@@ -107,6 +107,22 @@ export const selectCommonApis2Case = async (
 };
 
 /**
+ * 选择公共apis 给 case
+ * @param data
+ * @param opt
+ */
+export const selectCommonApisCopy2Case = async (
+  data: { caseId: number | string; commonApis: number[] },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interface/case/selectCopyApis', {
+    method: 'POST',
+    data: data,
+    ...(opt || {}),
+  });
+};
+
+/**
  * 选择公共Group 给 case
  * @param data
  * @param opt

@@ -39,7 +39,7 @@ import {
   message,
   Tabs,
 } from 'antd';
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { history } from 'umi';
 
 const Index = () => {
@@ -114,9 +114,11 @@ const Index = () => {
     }
   }, [queryApis]);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setEditCase(editCase + 1);
-  };
+    setChoiceOpen(false);
+    setChoiceGroupOpen(false);
+  }, []);
 
   /**
    * 保存基本信息
@@ -286,7 +288,6 @@ const Index = () => {
         <InterfaceCaseChoiceApiTable
           currentCaseApiId={caseApiId}
           refresh={refresh}
-          currentProjectId={currentProjectId}
         />
       </MyDrawer>
       <ProCard>

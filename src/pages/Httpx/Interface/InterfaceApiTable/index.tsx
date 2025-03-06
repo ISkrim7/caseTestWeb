@@ -63,6 +63,18 @@ const Index: FC<SelfProps> = ({
       fixed: 'left',
     },
     {
+      title: '方法',
+      dataIndex: 'method',
+      valueType: 'select',
+      valueEnum: CONFIG.API_METHOD_ENUM,
+      search: false,
+      filters: true,
+      onFilter: true,
+      render: (_, record) => {
+        return <Tag color={'blue'}>{record.method}</Tag>;
+      },
+    },
+    {
       title: '优先级',
       dataIndex: 'level',
       valueType: 'select',
@@ -97,7 +109,7 @@ const Index: FC<SelfProps> = ({
       title: '操作',
       valueType: 'option',
       key: 'option',
-      width: '12%',
+      width: '14%',
       fixed: 'right',
       render: (_, record) => [
         <a
@@ -139,7 +151,7 @@ const Index: FC<SelfProps> = ({
       persistenceKey={perKey}
       columns={columns}
       rowKey={'id'}
-      x={100}
+      x={1000}
       actionRef={actionRef}
       request={fetchInterface}
       toolBarRender={() => [
@@ -150,7 +162,7 @@ const Index: FC<SelfProps> = ({
           }}
         >
           <PlusOutlined />
-          添加
+          添加接口
         </Button>,
       ]}
     />

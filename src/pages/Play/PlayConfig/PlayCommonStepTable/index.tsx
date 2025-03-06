@@ -18,7 +18,7 @@ const Index = () => {
   const [methodEnum, setMethodEnum] = useState<IObjGet>();
   const [addStepOpen, setAddStepOpen] = useState(false);
   const [stepDetailOpen, setStepDetailOpen] = useState(false);
-  const [currentStepId, setCurrentStepId] = useState<number>();
+  const [currentStep, setCurrentStep] = useState<IUICaseSteps>();
   const [mode, setMode] = useState<number>(1);
   useEffect(() => {
     queryMethods().then(async ({ code, data }) => {
@@ -93,7 +93,7 @@ const Index = () => {
         <a
           onClick={() => {
             setMode(1);
-            setCurrentStepId(record.id);
+            setCurrentStep(record);
             setStepDetailOpen(true);
           }}
         >
@@ -142,10 +142,10 @@ const Index = () => {
         open={stepDetailOpen}
         setOpen={setStepDetailOpen}
       >
-        <PlayStepDetail stepId={currentStepId} func={closeDrawer} />
+        <PlayStepDetail uiStepInfo={currentStep} func={closeDrawer} />
       </MyDrawer>
       <MyDrawer
-        name={'添加步骤'}
+        name={'添加公共步骤'}
         width={'auto'}
         open={addStepOpen}
         setOpen={setAddStepOpen}

@@ -1,4 +1,8 @@
 import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
+import {
+  FormEditableOnValueChange,
+  FormEditableOnValueRemove,
+} from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import SetKv2Query from '@/pages/Httpx/componets/setKv2Query';
 import { IInterfaceAPI, IParams } from '@/pages/Httpx/types';
 import {
@@ -9,39 +13,49 @@ import {
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Tag, Typography } from 'antd';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 
 const { Text } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  mode: number;
 }
 
-const InterParam: FC<SelfProps> = ({ form, mode }) => {
+const InterParam: FC<SelfProps> = ({ form }) => {
   const [paramsEditableKeys, setParamsEditableRowKeys] = useState<React.Key[]>(
     [],
   );
   const editorFormRef = useRef<EditableFormInstance<IParams>>();
 
-  useEffect(() => {
-    if (mode === 3) {
-      setParamsEditableRowKeys(
-        form.getFieldValue('params')?.map((item: any) => item.id),
-      );
-    } else {
-      setParamsEditableRowKeys([]);
-    }
-  }, [mode]);
-
   const columns: ProColumns<IParams>[] = [
     {
-      title: 'key',
+      title: 'Key',
+      width: '30%',
       dataIndex: 'key',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'Key 必填',
+          },
+        ],
+      },
     },
+
     {
-      title: 'value',
+      title: 'Value',
       dataIndex: 'value',
+      width: '30%',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'value 必填',
+          },
+        ],
+      },
       render: (text, record) => {
         if (record?.value?.includes('{{$')) {
           return <Tag color={'orange'}>{text}</Tag>;
@@ -81,20 +95,29 @@ const InterParam: FC<SelfProps> = ({ form, mode }) => {
       },
     },
     {
-      title: 'desc',
+      title: 'Desc',
       dataIndex: 'desc',
+      width: '20%',
     },
     {
-      title: 'opt',
+      title: 'Opt',
       valueType: 'option',
-      render: () => {
-        return null;
+      render: (_, record, __, action) => {
+        return [
+          <a
+            onClick={() => {
+              action?.startEditable?.(record.id);
+            }}
+          >
+            编辑
+          </a>,
+        ];
       },
     },
   ];
 
   return (
-    <ProForm form={form} submitter={false}>
+    <ProForm form={form} disabled={false} submitter={false}>
       <SetKv2Query
         callBack={(resultArray: any) => {
           form.setFieldValue('params', resultArray);
@@ -119,8 +142,14 @@ const InterParam: FC<SelfProps> = ({ form, mode }) => {
             type: 'multiple',
             editableKeys: paramsEditableKeys,
             onChange: setParamsEditableRowKeys, // Update editable keys
+            onDelete: async (key) => {
+              await FormEditableOnValueRemove(form, 'params', key);
+            },
+            onSave: async () => {
+              await FormEditableOnValueChange(form, 'params');
+            },
             actionRender: (_, __, dom) => {
-              return [dom.delete];
+              return [dom.save, dom.cancel, dom.delete];
             },
           }}
         />

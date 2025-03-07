@@ -93,13 +93,9 @@ const Index: FC<SelfProps> = ({
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
-  // const [projects, setProjects] = useState<{ label: string; value: number }[]>(
-  //   [],
-  // );
   const projects = useSelector(
     (state: { projects: { projects: any } }) => state.projects.projects,
   );
-
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
     [],
@@ -115,6 +111,7 @@ const Index: FC<SelfProps> = ({
   const [bodyLength, setBodyLength] = useState<number>();
   const [openDoc, setOpenDoc] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   /**
    * 对用例的新增与修改
    * 区别 公共新增修改 与 从用例新增与修改
@@ -122,43 +119,49 @@ const Index: FC<SelfProps> = ({
    * addFromGroup 从API GROUP新增与修改
    */
   const SaveOrUpdate = async () => {
+    const v = await interApiForm.validateFields();
+    console.log(v);
     const values = interApiForm.getFieldsValue(true);
 
     // 从用例中新增私有的API
-    values.is_common = addFromCase ? 0 : 1;
-    values.is_common = addFromGroup ? 0 : 1;
+    values.is_common = addFromCase || addFromGroup ? 0 : 1;
+    let successHandler = ({
+      code,
+      msg,
+    }: {
+      code: number;
+      msg: string;
+      data: any;
+    }) => {
+      if (code === 0) {
+        message.success(msg);
+        setCurrentMode(1);
+        return true;
+      }
+      return false;
+    };
     if (interId !== undefined || values.id !== undefined) {
       //修改
-      await updateInterApiById(values).then(({ code, msg }) => {
-        if (code === 0) {
-          message.success(msg);
-          setCurrentMode(1);
-        }
-      });
+      const { code, msg, data } = await updateInterApiById(values);
+      if (successHandler({ code, msg, data })) {
+        return;
+      }
     } else {
       //新增
-      await insertInterApi(values).then(async ({ code, data, msg }) => {
-        if (code === 0) {
-          message.success(msg);
-          setCurrentMode(1);
-          // 添加到Case中
-          if (caseApiId && data) {
-            await addApi2Case({ caseId: caseApiId, apiId: data.id }).then(
-              async () => {
-                refresh();
-              },
-            );
-          } else if (groupId && data) {
-            addInterfaceGroupApi({ groupId: groupId, apiId: data.id }).then(
-              async () => {
-                refresh();
-              },
-            );
-          } else {
-            history.push(`/interface/interApi/detail/interId=${data.id}`);
-          }
-        }
-      });
+      const { code, msg, data } = await insertInterApi(values);
+      if (!successHandler({ code, msg, data })) {
+        return;
+      }
+      // 添加到Case中
+      if (caseApiId && data) {
+        await addApi2Case({ caseId: caseApiId, apiId: data.id });
+        refresh();
+      } else if (groupId && data) {
+        await addInterfaceGroupApi({ groupId: groupId, apiId: data.id });
+        refresh();
+      } else {
+        history.push(`/interface/interApi/detail/interId=${data.id}`);
+      }
     }
   };
 
@@ -225,7 +228,6 @@ const Index: FC<SelfProps> = ({
   const setDataLength = (data: IInterfaceAPI) => {
     setHeadersLength(data?.headers?.length || 0);
     setQueryLength(data?.params?.length || 0);
-
     switch (data.body_type) {
       case 1:
         setBodyLength(1);
@@ -252,9 +254,6 @@ const Index: FC<SelfProps> = ({
     });
   };
 
-  const transCurl = async () => {
-    setIsModalOpen(true);
-  };
   const addonBefore = (
     <>
       <ProFormSelect
@@ -512,16 +511,18 @@ const Index: FC<SelfProps> = ({
               </ProCard>
             </Tabs.TabPane>
             <Tabs.TabPane key={'2'} icon={<ApiOutlined />} tab={'接口基础'}>
-              <span style={{ float: 'right' }}>
-                <CodeOutlined style={{ color: 'gray' }} />
-                <Button
-                  type={'link'}
-                  style={{ color: 'gray' }}
-                  onClick={transCurl}
-                >
-                  CURL 快速导入
-                </Button>
-              </span>
+              {currentMode === 2 && (
+                <span style={{ float: 'right' }}>
+                  <CodeOutlined style={{ color: 'gray' }} />
+                  <Button
+                    type={'link'}
+                    style={{ color: 'gray' }}
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    CURL 快速导入
+                  </Button>
+                </span>
+              )}
               <ProForm.Group>
                 <ProFormText
                   label={'接口名称'}
@@ -593,10 +594,10 @@ const Index: FC<SelfProps> = ({
               <ProCard bodyStyle={{ padding: 0 }}>
                 <Tabs defaultActiveKey={'1'} type="card">
                   <Tabs.TabPane key={'2'} tab={renderTab(1)}>
-                    <InterHeader form={interApiForm} mode={currentMode} />
+                    <InterHeader form={interApiForm} />
                   </Tabs.TabPane>
                   <Tabs.TabPane key={'1'} tab={renderTab(2)}>
-                    <InterParam form={interApiForm} mode={currentMode} />
+                    <InterParam form={interApiForm} />
                   </Tabs.TabPane>
                   <Tabs.TabPane key={'3'} tab={renderTab(3)}>
                     <InterBody form={interApiForm} mode={currentMode} />

@@ -1,4 +1,8 @@
 import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
+import {
+  FormEditableOnValueChange,
+  FormEditableOnValueRemove,
+} from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import { IBeforeParams, IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   EditableFormInstance,
@@ -9,7 +13,7 @@ import {
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Tag, Typography } from 'antd';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -22,15 +26,36 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
   const [beforeParamsEditableKeys, setBeforeParamsEditableRowKeys] =
     useState<React.Key[]>();
   const editorFormRef = useRef<EditableFormInstance<IBeforeParams>>();
+
   const beforeColumns: ProColumns<IBeforeParams>[] = [
     {
-      title: '变量名',
+      title: 'Key',
       dataIndex: 'key',
+      width: '30%',
       render: (_, record) => <Text strong>{record.key}</Text>,
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'Key 必填',
+          },
+        ],
+      },
     },
     {
-      title: '变量值',
+      title: 'Value',
       dataIndex: 'value',
+      width: '30%',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'value 必填',
+          },
+        ],
+      },
       render: (text, record) => {
         if (record?.value?.includes('{{$')) {
           return <Tag color="orange">{text}</Tag>;
@@ -70,29 +95,31 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
       },
     },
     {
-      title: '描述',
+      title: 'Desc',
       dataIndex: 'desc',
+      width: '20%',
     },
     {
       title: 'Opt',
       valueType: 'option',
-      render: () => {
-        return null;
+      width: '20%',
+      render: (_, record, __, action) => {
+        return [
+          <a
+            onClick={() => {
+              action?.startEditable?.(record.id);
+            }}
+          >
+            编辑
+          </a>,
+        ];
       },
     },
   ];
-  useEffect(() => {
-    if (mode === 3) {
-      setBeforeParamsEditableRowKeys(
-        form.getFieldValue('before_params')?.map((item: any) => item.id),
-      );
-    } else {
-      setBeforeParamsEditableRowKeys([]);
-    }
-  }, [mode]);
+
   return (
     <ProCard>
-      <ProForm form={form} submitter={false}>
+      <ProForm form={form} disabled={false} submitter={false}>
         <ProForm.Item name={'before_params'} trigger={'onValuesChange'}>
           <EditableProTable<IBeforeParams>
             editableFormRef={editorFormRef}
@@ -108,9 +135,15 @@ const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
             editable={{
               type: 'multiple',
               editableKeys: beforeParamsEditableKeys,
+              onDelete: async (key) => {
+                await FormEditableOnValueRemove(form, 'before_params', key);
+              },
               onChange: setBeforeParamsEditableRowKeys,
+              onSave: async () => {
+                await FormEditableOnValueChange(form, 'before_params');
+              },
               actionRender: (row, _, dom) => {
-                return [dom.delete];
+                return [dom.save, dom.cancel, dom.delete];
               },
             }}
           />

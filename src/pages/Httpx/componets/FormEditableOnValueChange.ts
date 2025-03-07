@@ -1,0 +1,43 @@
+import { updateInterApiById } from '@/api/inter';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
+import { FormInstance, message } from 'antd';
+
+export const FormEditableOnValueChange = async (
+  form: FormInstance<IInterfaceAPI>,
+  field: string,
+) => {
+  const InterfaceId = form.getFieldValue('id');
+  const fieldValues = await form.validateFields([field]);
+  console.log('====', fieldValues);
+  const { code, msg } = await updateInterApiById({
+    id: InterfaceId,
+    // @ts-ignore
+    [field]: fieldValues[field],
+  });
+  if (code === 0) {
+    message.success(msg);
+  }
+};
+
+export const FormEditableOnValueRemove = async (
+  form: FormInstance<IInterfaceAPI>,
+  field: string,
+  key: any,
+) => {
+  const InterfaceId = form.getFieldValue('id');
+  await form.validateFields([field]);
+  // @ts-ignore
+  const currentData = form.getFieldValue(field) || [];
+  const updatedData = currentData.filter((item: any) => item.id !== key);
+  form.setFieldsValue({
+    [field]: updatedData,
+  });
+  const { code, msg } = await updateInterApiById({
+    id: InterfaceId,
+    // @ts-ignore
+    [field]: updatedData,
+  });
+  if (code === 0) {
+    message.success(msg);
+  }
+};

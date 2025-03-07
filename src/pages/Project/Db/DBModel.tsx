@@ -25,18 +25,25 @@ const DBModel: FC<IProps> = ({
 }) => {
   const [form] = Form.useForm<IDBConfig>();
   const [currentType, setCurrentType] = useState<number>(1);
-  const [config, setConfig] = useState<IDBConfig>();
   const [canSave, setCanSave] = useState<boolean>(false);
 
   useEffect(() => {
+    // 详情模式 可修改
     if (currentDBConfigId) {
       getDBConfig(currentDBConfigId).then(async ({ code, data }) => {
         if (code === 0) {
           form.setFieldsValue(data);
-          setConfig(data);
+          setCanSave(true);
         }
       });
+    } else {
+      form.resetFields();
+      setCanSave(false);
     }
+    return () => {
+      setCanSave(false);
+      form.resetFields();
+    };
   }, [currentDBConfigId]);
 
   const save = async () => {
@@ -74,21 +81,40 @@ const DBModel: FC<IProps> = ({
         form={form}
         open={open}
         onOpenChange={setOpen}
-        trigger={<Button type="primary">Add DB</Button>}
+        trigger={
+          <Button
+            type="primary"
+            onClick={() => {
+              setCanSave(false);
+              form.resetFields();
+            }}
+          >
+            Add DB
+          </Button>
+        }
         submitter={{
           render: () => {
             return [
-              <Button htmlType="button" onClick={test} key="edit">
+              <Button
+                htmlType="button"
+                type={'primary'}
+                onClick={test}
+                key="edit"
+              >
                 链接测试
               </Button>,
-              <Button
-                disabled={canSave}
-                htmlType="button"
-                onClick={save}
-                key="read"
-              >
-                保存
-              </Button>,
+              <>
+                {canSave && (
+                  <Button
+                    type="primary"
+                    htmlType="button"
+                    onClick={save}
+                    key="read"
+                  >
+                    保存
+                  </Button>
+                )}
+              </>,
             ];
           },
         }}

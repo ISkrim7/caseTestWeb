@@ -1,12 +1,17 @@
+import {
+  FormEditableOnValueChange,
+  FormEditableOnValueRemove,
+} from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import { IExtracts, IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import {
+  EditableFormInstance,
   EditableProTable,
   ProColumns,
   ProForm,
 } from '@ant-design/pro-components';
 import { FormInstance, Tag } from 'antd';
-import React, { FC, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -17,14 +22,24 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
   const [extractsEditableKeys, setExtractsEditableRowKeys] = useState<
     React.Key[]
   >([]);
+  const editorFormRef = useRef<EditableFormInstance<IExtracts>>();
   const extractColumns: ProColumns<IExtracts>[] = [
     {
-      title: '变量名',
+      title: 'Key',
       dataIndex: 'key',
-      width: '30%',
+      width: '20%',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'Key 必填',
+          },
+        ],
+      },
     },
     {
-      title: '提取目标',
+      title: 'Target',
       dataIndex: 'target',
       valueType: 'select',
       width: '20%',
@@ -32,13 +47,31 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: '请选择提取目标',
+          },
+        ],
+      },
     },
     {
-      title: '提取语法',
+      title: 'Script',
       dataIndex: 'value',
-      tooltip: 'json&cookie:语法为jsonpath; text:语法为正则',
+      tooltip: 'json&cookie:语法为jsonpath; \n text:语法为正则',
       valueType: 'textarea',
-      width: '50%',
+      width: '40%',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'Script 必填',
+          },
+        ],
+      },
       fieldProps: {
         rows: 1,
       },
@@ -46,29 +79,26 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
     {
       title: 'Opt',
       valueType: 'option',
-      width: '10%',
-      render: (_: any, record: any) => {
-        return (
-          <>
-            {mode !== 1 ? (
-              <a
-                onClick={() => {
-                  setExtractsEditableRowKeys([record.id]);
-                }}
-              >
-                编辑
-              </a>
-            ) : null}
-          </>
-        );
+      width: '20%',
+      render: (_: any, record: IExtracts, __, action) => {
+        return [
+          <a
+            onClick={() => {
+              action?.startEditable?.(record.id);
+            }}
+          >
+            编辑
+          </a>,
+        ];
       },
     },
   ];
   return (
-    <ProForm form={form} submitter={false}>
+    <ProForm form={form} disabled={false} submitter={false}>
       <ProForm.Item name={'extracts'} trigger={'onValuesChange'}>
         <EditableProTable<IExtracts>
           rowKey={'id'}
+          editableFormRef={editorFormRef}
           toolBarRender={false}
           columns={extractColumns}
           recordCreatorProps={{
@@ -81,8 +111,14 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
             type: 'multiple',
             editableKeys: extractsEditableKeys,
             onChange: setExtractsEditableRowKeys,
+            onDelete: async (key) => {
+              await FormEditableOnValueRemove(form, 'extracts', key);
+            },
+            onSave: async () => {
+              return await FormEditableOnValueChange(form, 'extracts');
+            },
             actionRender: (row, _, dom) => {
-              return [dom.delete, dom.save, dom.cancel];
+              return [dom.save, dom.cancel, dom.delete];
             },
           }}
         />

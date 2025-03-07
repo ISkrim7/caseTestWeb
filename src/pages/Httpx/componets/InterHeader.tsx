@@ -1,5 +1,9 @@
 import { HeadersEnum } from '@/pages/Httpx/componets/APIEditEnum';
 import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
+import {
+  FormEditableOnValueChange,
+  FormEditableOnValueRemove,
+} from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import { IHeaders, IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   EditableFormInstance,
@@ -9,14 +13,13 @@ import {
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Select, Tag } from 'antd';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  mode: number;
 }
 
-const InterHeader: FC<SelfProps> = ({ form, mode }) => {
+const InterHeader: FC<SelfProps> = ({ form }) => {
   const [headersEditableKeys, setHeadersEditableRowKeys] =
     useState<React.Key[]>();
   const [headerData, setHeaderData] = useState<
@@ -26,15 +29,7 @@ const InterHeader: FC<SelfProps> = ({ form, mode }) => {
     }[]
   >([]);
   const editorFormRef = useRef<EditableFormInstance<IHeaders>>();
-  useEffect(() => {
-    if (mode === 3) {
-      setHeadersEditableRowKeys(
-        form.getFieldValue('headers')?.map((item: any) => item.id),
-      );
-    } else {
-      setHeadersEditableRowKeys([]);
-    }
-  }, [mode]);
+
   const handleHeaderSearch = (newValue: string) => {
     if (newValue) {
       const filteredOptions = Object.keys(HeadersEnum)
@@ -53,10 +48,19 @@ const InterHeader: FC<SelfProps> = ({ form, mode }) => {
   };
   const headerColumns: ProColumns<IHeaders>[] = [
     {
-      title: 'key',
+      title: 'Key',
       key: 'key',
       dataIndex: 'key',
       fixed: 'left',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'Key 必填',
+          },
+        ],
+      },
       renderFormItem: () => {
         return (
           <Select
@@ -74,9 +78,18 @@ const InterHeader: FC<SelfProps> = ({ form, mode }) => {
       },
     },
     {
-      title: 'value',
+      title: 'Value',
       key: 'value',
       dataIndex: 'value',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'Value 必填',
+          },
+        ],
+      },
       render: (text, record) => {
         if (record?.value?.includes('{{$')) {
           return <Tag color={'orange'}>{text}</Tag>;
@@ -116,22 +129,30 @@ const InterHeader: FC<SelfProps> = ({ form, mode }) => {
       },
     },
     {
-      title: 'desc',
+      title: 'Desc',
       key: 'desc',
       dataIndex: 'desc',
     },
     {
-      title: 'opt',
+      title: 'Opt',
       valueType: 'option',
       fixed: 'right',
-      render: () => {
-        return null;
+      render: (_, record, __, action) => {
+        return [
+          <a
+            onClick={() => {
+              action?.startEditable?.(record.id);
+            }}
+          >
+            编辑
+          </a>,
+        ];
       },
     },
   ];
 
   return (
-    <ProForm form={form} submitter={false}>
+    <ProForm form={form} disabled={false} submitter={false}>
       <ProForm.Item name={'headers'} trigger={'onValuesChange'}>
         <EditableProTable<IHeaders>
           editableFormRef={editorFormRef}
@@ -148,8 +169,14 @@ const InterHeader: FC<SelfProps> = ({ form, mode }) => {
             type: 'multiple',
             editableKeys: headersEditableKeys,
             onChange: setHeadersEditableRowKeys, // Update editable keys
+            onSave: async () => {
+              await FormEditableOnValueChange(form, 'headers');
+            },
+            onDelete: async (key) => {
+              await FormEditableOnValueRemove(form, 'headers', key);
+            },
             actionRender: (_, __, dom) => {
-              return [dom.delete];
+              return [dom.save, dom.cancel, dom.delete];
             },
           }}
         />

@@ -129,10 +129,7 @@ export const insertInterApi = async (
  * @param data
  * @param options
  */
-export const updateInterApiById = async (
-  data?: IInterfaceAPI,
-  options?: IObjGet,
-) => {
+export const updateInterApiById = async (data?: any, options?: IObjGet) => {
   return request<IResponse<null>>('/api/interface/update', {
     method: 'POST',
     data: data,

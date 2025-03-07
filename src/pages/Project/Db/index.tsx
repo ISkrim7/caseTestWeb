@@ -4,7 +4,7 @@ import DBModel from '@/pages/Project/Db/DBModel';
 import { pageData } from '@/utils/somefunc';
 import { useAccess } from '@@/exports';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
-import { Divider } from 'antd';
+import { Divider, Tag } from 'antd';
 import { useRef, useState } from 'react';
 
 const Index = () => {
@@ -23,7 +23,7 @@ const Index = () => {
 
   const columns: ProColumns[] = [
     {
-      title: 'db_type',
+      title: 'T',
       dataIndex: 'db_type',
       valueType: 'select',
       valueEnum: {
@@ -31,12 +31,14 @@ const Index = () => {
         2: { text: 'oracle', value: 2 },
         3: { text: 'redis', value: 3 },
       },
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
     },
     {
-      title: 'name',
+      title: 'Name',
       dataIndex: 'db_name',
       ellipsis: true,
-      width: '10%',
       formItemProps: {
         rules: [
           {
@@ -48,7 +50,7 @@ const Index = () => {
     },
 
     {
-      title: 'database',
+      title: 'Database',
       dataIndex: 'db_database',
       ellipsis: true,
       formItemProps: {
@@ -62,14 +64,14 @@ const Index = () => {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: '创建人',
+      title: 'Creator',
       dataIndex: 'creatorName',
       ellipsis: true,
       editable: false,
       search: false,
     },
     {
-      title: '操作',
+      title: 'Opt',
       valueType: 'option',
       key: 'option',
       render: (text, record, _, action) => {

@@ -1,42 +1,98 @@
-import { queryDBConfig } from '@/api/base/dbConfig';
+import { queryDBConfig, tryDBScript } from '@/api/base/dbConfig';
+import { updateInterApiById } from '@/api/inter';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import { IInterfaceAPI } from '@/pages/Httpx/types';
+import MyDrawer from '@/components/MyDrawer';
+import {
+  FormEditableOnValueChange,
+  FormEditableOnValueRemove,
+} from '@/pages/Httpx/componets/FormEditableOnValueChange';
+import { IBeforeSQLExtract, IInterfaceAPI } from '@/pages/Httpx/types';
 import { IDBConfig } from '@/pages/Project/types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import {
+  EditableFormInstance,
   EditableProTable,
   ProCard,
   ProForm,
   ProFormSelect,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { Button, FormInstance, Popover, Typography } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
+import {
+  Button,
+  FormInstance,
+  message,
+  Popover,
+  Space,
+  Typography,
+} from 'antd';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
-const { Title, Paragraph, Text, Link } = Typography;
+const { Paragraph, Text, Link } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  mode: number;
 }
 
 const InterBeforeSql: FC<SelfProps> = (props) => {
-  const { form, mode } = props;
+  const { form } = props;
   const [sqlValue, setSqlValue] = useState<string>();
-  const [readonly, setReadonly] = useState(false);
+  const editorFormRef = useRef<EditableFormInstance<IBeforeSQLExtract>>();
+
   const [beforeSQLParamsEditableKeys, setBeforeSQLParamsEditableRowKeys] =
     useState<React.Key[]>();
+  const [canTry, setCanTry] = useState<boolean>(false);
+  const [beforeDbId, setBeforeDbId] = useState<number>();
+  const [open, setOpen] = useState<boolean>(false);
+  const [tryData, setTryData] = useState<any>();
 
   useEffect(() => {
-    const sv = form.getFieldValue('before_sql');
-    if (sv) {
-      setSqlValue(sv);
+    const before_sql = form.getFieldValue('before_sql');
+    const before_db_id = form.getFieldValue('before_db_id');
+    if (before_db_id) {
+      setBeforeDbId(before_db_id);
+    }
+    if (before_sql) {
+      setSqlValue(before_sql);
     }
   }, []);
-  const handleOnChange = (value: string) => {
-    if (value) {
-      setSqlValue(value);
-      form.setFieldsValue({ before_sql: value });
+
+  useEffect(() => {
+    if (sqlValue) {
+      setCanTry(true);
+    } else {
+      setCanTry(false);
+    }
+  }, [sqlValue]);
+
+  const updateSqlValue = async () => {
+    const InterfaceId = form.getFieldValue('id');
+
+    if (sqlValue && beforeDbId && InterfaceId) {
+      const { code, msg } = await updateInterApiById({
+        id: InterfaceId,
+        // @ts-ignore
+        before_db_id: beforeDbId,
+        before_sql: sqlValue,
+      });
+      if (code === 0) {
+        message.success(msg);
+      }
+    }
+  };
+
+  const removeSqlValue = async () => {
+    const InterfaceId = form.getFieldValue('id');
+    form.setFieldValue('before_sql', null);
+    form.setFieldValue('before_db_id', null);
+    setSqlValue('');
+    const { code, msg } = await updateInterApiById({
+      id: InterfaceId,
+      // @ts-ignore
+      before_db_id: null,
+      before_sql: null,
+    });
+    if (code === 0) {
+      message.success(msg);
     }
   };
 
@@ -112,13 +168,26 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
             </li>
           </ul>
         </li>
+
+        <li>
+          <Text code>{'如果返回 一个单字符串 则不需要传递jsonpath '}</Text>
+        </li>
       </ul>
     </Paragraph>
   );
-  const beforeColumns: ProColumns[] = [
+  const beforeColumns: ProColumns<IBeforeSQLExtract>[] = [
     {
-      title: '变量名',
+      title: 'Key',
       dataIndex: 'key',
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: 'Key 必填',
+          },
+        ],
+      },
     },
     {
       title: 'JsonPath表达',
@@ -127,29 +196,36 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
     {
       title: 'Opt',
       valueType: 'option',
-      render: (_: any, record: any) => {
-        return (
-          <>
-            {mode !== 1 ? (
-              <a
-                onClick={() => {
-                  setBeforeSQLParamsEditableRowKeys([record.id]);
-                }}
-              >
-                编辑
-              </a>
-            ) : null}
-          </>
-        );
+      fixed: 'right',
+      render: (_, record, __, action) => {
+        return [
+          <a
+            onClick={() => {
+              console.log('edit', record.id);
+              action?.startEditable?.(record.id);
+            }}
+          >
+            编辑
+          </a>,
+        ];
       },
     },
   ];
 
   return (
     <ProCard split={'horizontal'}>
+      <MyDrawer name={'db'} open={open} setOpen={setOpen}>
+        <AceCodeEditor
+          value={tryData}
+          readonly={true}
+          _mode={'json'}
+          height={'100vh'}
+        />
+      </MyDrawer>
       <ProCard
         title={
           <ProFormSelect
+            disabled={false}
             noStyle={true}
             width={'md'}
             name={'before_db_id'}
@@ -167,6 +243,7 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
               return [];
             }}
             onChange={(value: number) => {
+              setBeforeDbId(value);
               form.setFieldsValue({
                 before_db_id: value,
               });
@@ -174,19 +251,55 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
           />
         }
         extra={
-          <Popover content={contentSQL}>
-            <Button type="primary">
-              在SQL语法中设置与使用变量
-              <QuestionCircleOutlined />
-            </Button>
-          </Popover>
+          <Space>
+            <>
+              {canTry && (
+                <Button
+                  disabled={false}
+                  type={'primary'}
+                  onClick={async () => {
+                    if (sqlValue && beforeDbId) {
+                      const { code, data } = await tryDBScript({
+                        db_id: beforeDbId,
+                        script: sqlValue,
+                      });
+                      if (code === 0) {
+                        setTryData(JSON.stringify(data, null, 2));
+                        setOpen(true);
+                      }
+                    }
+                  }}
+                >
+                  Try
+                  <Popover content={'SQL 不支持变量的调试'}>
+                    <QuestionCircleOutlined />
+                  </Popover>
+                </Button>
+              )}
+            </>
+            {canTry && (
+              <Space>
+                <Button disabled={false} onClick={updateSqlValue}>
+                  提交
+                </Button>
+                <Button disabled={false} onClick={removeSqlValue}>
+                  删除
+                </Button>
+              </Space>
+            )}
+            <Popover content={contentSQL}>
+              <Button type="primary">
+                在SQL语法中设置与使用变量
+                <QuestionCircleOutlined />
+              </Button>
+            </Popover>
+          </Space>
         }
       >
         <AceCodeEditor
           value={sqlValue}
-          onChange={handleOnChange}
+          onChange={(value) => setSqlValue(value)}
           height={'20vh'}
-          readonly={readonly}
           _mode={'mysql'}
         />
       </ProCard>
@@ -200,13 +313,12 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
           </Popover>
         }
       >
-        <ProForm form={form} submitter={false}>
+        <ProForm form={form} disabled={false} submitter={false}>
           <ProForm.Item name={'before_sql_extracts'} trigger={'onValuesChange'}>
-            <EditableProTable
-              name={'before_sql_extracts'}
+            <EditableProTable<IBeforeSQLExtract>
               rowKey={'id'}
               search={false}
-              // toolBarRender={() => [searchVariableButton]}
+              editableFormRef={editorFormRef}
               columns={beforeColumns}
               recordCreatorProps={{
                 newRecordType: 'dataSource',
@@ -218,6 +330,16 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
                 type: 'multiple',
                 editableKeys: beforeSQLParamsEditableKeys,
                 onChange: setBeforeSQLParamsEditableRowKeys,
+                onSave: async () => {
+                  await FormEditableOnValueChange(form, 'before_sql_extracts');
+                },
+                onDelete: async (key) => {
+                  await FormEditableOnValueRemove(
+                    form,
+                    'before_sql_extracts',
+                    key,
+                  );
+                },
                 actionRender: (row, _, dom) => {
                   return [dom.save, dom.delete, dom.cancel];
                 },

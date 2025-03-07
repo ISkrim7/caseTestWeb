@@ -16,6 +16,22 @@ export async function insertDBConfig(config: IDBConfig, options?: IObjGet) {
 }
 
 /**
+ * tru
+ * @param config
+ * @param options
+ */
+export async function tryDBScript(
+  config: { db_id: number; script: string },
+  options?: IObjGet,
+) {
+  return request<IResponse<any>>('/api/project/config/try', {
+    method: 'POST',
+    data: config,
+    ...(options || {}),
+  });
+}
+
+/**
  * page
  * @param data
  * @param options

@@ -138,6 +138,19 @@ export const updateInterApiById = async (data?: any, options?: IObjGet) => {
 };
 
 /**
+ * 修改api
+ * @param data
+ * @param options
+ */
+export const tryInterScript = async (data: string, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/interface/tryScript', {
+    method: 'POST',
+    data: { script: data },
+    ...(options || {}),
+  });
+};
+
+/**
  * 删除api
  * @param data
  * @param options

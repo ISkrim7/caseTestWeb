@@ -491,21 +491,21 @@ const Index: FC<SelfProps> = ({
                     icon={<UnorderedListOutlined />}
                     tab={'设置变量'}
                   >
-                    <InterBeforeParams form={interApiForm} mode={currentMode} />
+                    <InterBeforeParams form={interApiForm} />
                   </Tabs.TabPane>
                   <Tabs.TabPane
                     key={'2'}
                     icon={<PythonOutlined />}
                     tab={'添加脚本'}
                   >
-                    <InterBeforeScript form={interApiForm} mode={currentMode} />
+                    <InterBeforeScript form={interApiForm} />
                   </Tabs.TabPane>
                   <Tabs.TabPane
                     key={'3'}
                     icon={<CodeOutlined />}
                     tab={'添加SQL'}
                   >
-                    <InterBeforeSql form={interApiForm} mode={currentMode} />
+                    <InterBeforeSql form={interApiForm} />
                   </Tabs.TabPane>
                 </Tabs>
               </ProCard>

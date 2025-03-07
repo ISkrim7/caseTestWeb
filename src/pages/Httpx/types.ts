@@ -178,6 +178,12 @@ export interface IExtracts extends IBase {
   target?: string;
 }
 
+export interface IBeforeSQLExtract {
+  id: React.Key;
+  key?: string;
+  value?: string;
+}
+
 export interface IBeforeParams extends IBase {
   target?: string;
 }

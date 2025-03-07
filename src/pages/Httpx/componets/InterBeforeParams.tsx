@@ -19,10 +19,9 @@ const { Text } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  mode: number;
 }
 
-const InterBeforeParams: FC<SelfProps> = ({ form, mode }) => {
+const InterBeforeParams: FC<SelfProps> = ({ form }) => {
   const [beforeParamsEditableKeys, setBeforeParamsEditableRowKeys] =
     useState<React.Key[]>();
   const editorFormRef = useRef<EditableFormInstance<IBeforeParams>>();

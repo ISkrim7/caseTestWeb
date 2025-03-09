@@ -2,11 +2,19 @@ import { tryInterScript, updateInterApiById } from '@/api/inter';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import MyDrawer from '@/components/MyDrawer';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, FormInstance, message, Space, Typography } from 'antd';
+import {
+  Button,
+  FormInstance,
+  message,
+  Popover,
+  Space,
+  Typography,
+} from 'antd';
 import { FC, useEffect, useState } from 'react';
 
-const { Text, Title } = Typography;
+const { Text, Title, Paragraph } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -31,20 +39,44 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
       form.setFieldsValue({ before_script: value });
     }
   };
+
+  const Desc = (
+    <ul>
+      <li>
+        <Text type={'secondary'}>
+          like{' '}
+          <Text type={'secondary'} code copyable>
+            name = faker.name()
+          </Text>
+        </Text>
+      </li>
+      <li>
+        <Text type={'secondary'}>
+          所有{' '}
+          <Text type={'secondary'} code>
+            =
+          </Text>
+          前变量名 会被替换成变量
+        </Text>
+      </li>
+      <li>
+        <Text type={'secondary'}>非常规变量值将会被过滤</Text>
+      </li>
+    </ul>
+  );
   return (
     <>
       <MyDrawer name={'script response'} open={open} setOpen={setOpen}>
         <AceCodeEditor value={tryData} height={'100vh'} _mode={'json'} />
       </MyDrawer>
       <ProCard
-        title={<Title level={5}>编写py脚本 设置变量</Title>}
-        subTitle={
-          <Text style={{ marginLeft: 30 }} type={'secondary'}>
-            like{' '}
-            <Text type={'secondary'} code>
-              name = faker.name()
-            </Text>
-          </Text>
+        title={
+          <Title level={5}>
+            <Popover content={Desc}>
+              编写py脚本 设置变量{' '}
+              <QuestionCircleOutlined style={{ marginLeft: 20 }} />
+            </Popover>
+          </Title>
         }
         headerBordered
         extra={

@@ -34,6 +34,7 @@ import {
   FormOutlined,
   PythonOutlined,
   QuestionCircleOutlined,
+  SendOutlined,
   SettingOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons';
@@ -282,15 +283,6 @@ const Index: FC<SelfProps> = ({
         required={true}
         rules={[{ required: true, message: 'method 不能为空' }]}
       />
-      <Button
-        loading={tryLoading}
-        disabled={currentMode !== 1}
-        type={'primary'}
-        onClick={TryClick}
-        style={{ borderRadius: '10px', marginLeft: 40 }}
-      >
-        Try
-      </Button>
     </>
   );
 
@@ -476,7 +468,24 @@ const Index: FC<SelfProps> = ({
           </ProForm.Group>
         </ProCard>
         <ProCard>
-          <Tabs defaultActiveKey={'2'} type={'card'} size={'large'}>
+          <Tabs
+            defaultActiveKey={'2'}
+            type={'card'}
+            size={'large'}
+            tabBarExtraContent={
+              <Button
+                size={'middle'}
+                loading={tryLoading}
+                type={'primary'}
+                color={'danger'}
+                disabled={currentMode !== 1}
+                onClick={TryClick}
+              >
+                <SendOutlined />
+                Try
+              </Button>
+            }
+          >
             <Tabs.TabPane
               key={'1'}
               icon={<SettingOutlined />}

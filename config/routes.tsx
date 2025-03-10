@@ -70,6 +70,11 @@ export default [
         name: '数据库',
         component: '@/pages/Project/Db',
       },
+      {
+        path: '/project/push',
+        name: '推送配置',
+        component: '@/pages/Project/Push',
+      },
     ],
   },
 

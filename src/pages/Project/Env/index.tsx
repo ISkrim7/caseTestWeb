@@ -28,7 +28,6 @@ const Index = () => {
       title: '名称',
       dataIndex: 'name',
       ellipsis: true,
-      width: '10%',
       formItemProps: {
         rules: [
           {
@@ -42,13 +41,11 @@ const Index = () => {
       title: '描述',
       dataIndex: 'desc',
       ellipsis: true,
-      width: '10%',
     },
     {
       title: '路由',
       dataIndex: 'host',
       ellipsis: true,
-      width: '10%',
       formItemProps: {
         rules: [
           {
@@ -63,7 +60,6 @@ const Index = () => {
       title: '端口',
       dataIndex: 'port',
       ellipsis: true,
-      width: '10%',
     },
     {
       title: '创建人',
@@ -71,24 +67,6 @@ const Index = () => {
       ellipsis: true,
       editable: false,
       search: false,
-    },
-    {
-      title: '创建时间',
-      key: 'showTime',
-      dataIndex: 'create_time',
-      valueType: 'dateTime',
-      sorter: true,
-      hideInSearch: true,
-      editable: false,
-    },
-    {
-      title: '更新时间',
-      key: 'showTime',
-      dataIndex: 'update_time',
-      valueType: 'dateTime',
-      sorter: true,
-      hideInSearch: true,
-      editable: false,
     },
     {
       title: '操作',

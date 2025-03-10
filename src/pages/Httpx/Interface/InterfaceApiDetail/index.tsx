@@ -34,6 +34,7 @@ import {
   FormOutlined,
   PythonOutlined,
   QuestionCircleOutlined,
+  SaveOutlined,
   SendOutlined,
   SettingOutlined,
   UnorderedListOutlined,
@@ -333,6 +334,7 @@ const Index: FC<SelfProps> = ({
                   style={{ marginLeft: 10 }}
                   onClick={() => setCurrentMode(3)}
                 >
+                  <EditOutlined />
                   Edit
                 </Button>
               </>
@@ -352,6 +354,7 @@ const Index: FC<SelfProps> = ({
               style={{ marginLeft: 10 }}
               type={'primary'}
             >
+              <SaveOutlined />
               Save
             </Button>
           </>
@@ -360,6 +363,7 @@ const Index: FC<SelfProps> = ({
         return (
           <>
             <Button onClick={SaveOrUpdate} type={'primary'}>
+              <SaveOutlined />
               Save
             </Button>
             <Button style={{ marginLeft: 5 }} onClick={() => setCurrentMode(1)}>

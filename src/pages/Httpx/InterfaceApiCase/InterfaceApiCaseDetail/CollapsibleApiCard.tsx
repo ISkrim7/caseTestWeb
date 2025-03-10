@@ -126,18 +126,18 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
         <>
           <Space>
             {interfaceApiInfo.is_group ? (
-              <Tag color={'green-inverse'}>组</Tag>
-            ) : null}
-            {interfaceApiInfo.is_common ? (
-              <Tag color={'green-inverse'}>公</Tag>
-            ) : null}
+              <Tag color={'orange-inverse'}>组</Tag>
+            ) : interfaceApiInfo.is_common ? (
+              <Tag color={'blue-inverse'}>公</Tag>
+            ) : (
+              <Tag color={'green-inverse'}>私</Tag>
+            )}
             {interfaceApiInfo.is_group ? null : (
               <Button color={'primary'} variant="filled" onClick={copyApi}>
                 <CopyFilled />
                 Copy
               </Button>
             )}
-
             <Popconfirm
               title={'确认删除？'}
               description={'非公共Api&Group会彻底删除'}

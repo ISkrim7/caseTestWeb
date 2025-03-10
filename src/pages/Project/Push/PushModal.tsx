@@ -1,4 +1,4 @@
-import { insertPushConfig } from '@/api/base/pushConfig';
+import { insertPushConfig, updatePushConfig } from '@/api/base/pushConfig';
 import { IPushConfig } from '@/pages/Project/types';
 import {
   ModalForm,
@@ -7,20 +7,45 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { ProFormSelect } from '@ant-design/pro-form';
-import { Button, Form } from 'antd';
-import { useState } from 'react';
+import { Button, Form, message } from 'antd';
+import { FC, useEffect, useState } from 'react';
 
-const PushModal = () => {
+interface IProps {
+  callBack: () => void;
+  open?: boolean;
+  setOpen: (open: boolean) => void;
+  record?: IPushConfig;
+}
+
+const PushModal: FC<IProps> = ({ callBack, open, setOpen, record }) => {
   const [currentType, setCurrentType] = useState<number>(1);
   const [currentLabel, setCurrentLabel] = useState<string>('目标邮箱');
   const [form] = Form.useForm<IPushConfig>();
 
+  useEffect(() => {
+    if (record) {
+      form.setFieldsValue(record);
+    }
+  }, [record]);
   const saveOrUpdate = async () => {
     const values = await form.validateFields();
-    if (values) {
+
+    if (values && record) {
+      await updatePushConfig({ ...values, id: record.id }).then(
+        ({ code, msg }) => {
+          if (code === 0) {
+            message.success(msg);
+            callBack();
+            setOpen(false);
+          }
+        },
+      );
+    } else {
       const { code } = await insertPushConfig(values);
       if (code === 0) {
+        callBack();
         form.resetFields();
+        setOpen(false);
       }
     }
   };
@@ -28,12 +53,13 @@ const PushModal = () => {
     <ProCard>
       <ModalForm<IPushConfig>
         form={form}
+        open={open}
+        onOpenChange={setOpen}
         trigger={
           <Button
             type="primary"
             onClick={() => {
-              // setCanSave(false);
-              // form.resetFields();
+              form.resetFields();
             }}
           >
             Add Push

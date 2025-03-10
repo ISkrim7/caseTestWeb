@@ -1,18 +1,25 @@
-import { pagePushConfig } from '@/api/base/pushConfig';
+import { pagePushConfig, removePushConfig } from '@/api/base/pushConfig';
 import MyProTable from '@/components/Table/MyProTable';
 import PushModal from '@/pages/Project/Push/PushModal';
+import { IPushConfig } from '@/pages/Project/types';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
-import { Tag } from 'antd';
-import { useCallback, useRef } from 'react';
+import { Divider, Tag } from 'antd';
+import { useCallback, useRef, useState } from 'react';
 
 const Index = () => {
   const actionRef = useRef<ActionType>();
+  const [open, setOpen] = useState(false);
+  const [currentConfig, setCurrentConfig] = useState<IPushConfig | undefined>();
 
   const pageConfig = useCallback(async (values: any) => {
     const { code, data } = await pagePushConfig(values);
     return pageData(code, data);
   }, []);
+
+  const reload = async () => {
+    await actionRef.current?.reload();
+  };
   const columns: ProColumns[] = [
     {
       title: 'Type',
@@ -29,18 +36,59 @@ const Index = () => {
       },
     },
     {
+      title: 'Title',
+      dataIndex: 'push_name',
+    },
+    {
+      title: 'Desc',
+      dataIndex: 'push_desc',
+    },
+    {
       title: 'Value',
       dataIndex: 'push_value',
     },
     {
       title: 'Opt',
       valueType: 'option',
+      render: (text, record, _, action) => {
+        return (
+          <>
+            <a
+              key="editable"
+              onClick={() => {
+                setCurrentConfig(record);
+                setOpen(true);
+              }}
+            >
+              编辑
+            </a>
+            <Divider type="vertical" />
+            <a
+              onClick={async () => {
+                const { code } = await removePushConfig(record.id);
+                if (code === 0) {
+                  await reload();
+                }
+              }}
+            >
+              删除
+            </a>
+          </>
+        );
+      },
     },
   ];
   return (
     <ProCard>
       <MyProTable
-        toolBarRender={() => [<PushModal />]}
+        toolBarRender={() => [
+          <PushModal
+            callBack={reload}
+            record={currentConfig}
+            open={open}
+            setOpen={setOpen}
+          />,
+        ]}
         actionRef={actionRef}
         request={pageConfig}
         columns={columns}

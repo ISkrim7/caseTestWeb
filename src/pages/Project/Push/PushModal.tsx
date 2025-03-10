@@ -1,3 +1,5 @@
+import { insertPushConfig } from '@/api/base/pushConfig';
+import { IPushConfig } from '@/pages/Project/types';
 import {
   ModalForm,
   ProCard,
@@ -5,16 +7,27 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { ProFormSelect } from '@ant-design/pro-form';
-import { Button } from 'antd';
+import { Button, Form } from 'antd';
 import { useState } from 'react';
 
 const PushModal = () => {
   const [currentType, setCurrentType] = useState<number>(1);
   const [currentLabel, setCurrentLabel] = useState<string>('目标邮箱');
+  const [form] = Form.useForm<IPushConfig>();
 
+  const saveOrUpdate = async () => {
+    const values = await form.validateFields();
+    if (values) {
+      const { code } = await insertPushConfig(values);
+      if (code === 0) {
+        form.resetFields();
+      }
+    }
+  };
   return (
     <ProCard>
-      <ModalForm
+      <ModalForm<IPushConfig>
+        form={form}
         trigger={
           <Button
             type="primary"
@@ -26,6 +39,13 @@ const PushModal = () => {
             Add Push
           </Button>
         }
+        submitter={{
+          render: () => [
+            <Button type={'primary'} onClick={saveOrUpdate}>
+              保存
+            </Button>,
+          ],
+        }}
       >
         <ProFormText label={'配置名'} name={'push_name'} required={true} />
         <ProFormTextArea
@@ -37,7 +57,7 @@ const PushModal = () => {
           required={true}
           label={'推送类型'}
           initialValue={currentType}
-          name={'db_type'}
+          name={'push_type'}
           options={[
             { label: 'Email', value: 1 },
             { label: 'DingTalk', value: 2 },

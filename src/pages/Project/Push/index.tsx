@@ -1,11 +1,18 @@
+import { pagePushConfig } from '@/api/base/pushConfig';
 import MyProTable from '@/components/Table/MyProTable';
 import PushModal from '@/pages/Project/Push/PushModal';
+import { pageData } from '@/utils/somefunc';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
 import { Tag } from 'antd';
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 const Index = () => {
-  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发’
+  const actionRef = useRef<ActionType>();
+
+  const pageConfig = useCallback(async (values: any) => {
+    const { code, data } = await pagePushConfig(values);
+    return pageData(code, data);
+  }, []);
   const columns: ProColumns[] = [
     {
       title: 'Type',
@@ -22,8 +29,8 @@ const Index = () => {
       },
     },
     {
-      title: 'Key',
-      dataIndex: 'push_key',
+      title: 'Value',
+      dataIndex: 'push_value',
     },
     {
       title: 'Opt',
@@ -35,6 +42,7 @@ const Index = () => {
       <MyProTable
         toolBarRender={() => [<PushModal />]}
         actionRef={actionRef}
+        request={pageConfig}
         columns={columns}
         rowKey={'uid'}
       />

@@ -10,3 +10,10 @@ export interface IDBConfig extends IBaseField {
   db_database: string;
   project_id: number;
 }
+
+export interface IPushConfig extends IBaseField {
+  push_name: string;
+  push_type: number;
+  push_desc: string;
+  push_value: string;
+}

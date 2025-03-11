@@ -225,6 +225,13 @@ export default [
           '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultTable.tsx',
       },
       {
+        path: '/interface/task/report/detail/resultId=:resultId',
+        name: '任务执行历史详情',
+        hideInMenu: true,
+        component:
+          '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultDetail.tsx',
+      },
+      {
         path: '/interface/task/detail',
         name: '添加任务',
         component:

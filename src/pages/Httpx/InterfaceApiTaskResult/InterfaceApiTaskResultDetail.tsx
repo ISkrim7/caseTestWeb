@@ -13,20 +13,18 @@ import {
 import { ProCard, StatisticCard } from '@ant-design/pro-components';
 import { Col, Descriptions, Row, Tabs, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
+import { useParams } from 'umi';
 
 const DescriptionsItem = Descriptions.Item;
 
-interface Props {
-  taskResultId?: string | number;
-}
-
-const InterfaceApiTaskResultDetail: FC<Props> = ({ taskResultId }) => {
+const InterfaceApiTaskResultDetail: FC = () => {
+  const { resultId } = useParams<{ resultId: string }>();
   const [interfaceTaskResultInfo, setInterfaceTaskResultInfo] =
     useState<IInterfaceTaskResult>();
   const [rateNumber, setRateNumber] = useState(0);
   useEffect(() => {
-    if (taskResultId) {
-      getInterTaskResultDetail(taskResultId).then(async ({ code, data }) => {
+    if (resultId) {
+      getInterTaskResultDetail(resultId).then(async ({ code, data }) => {
         if (code === 0) {
           setInterfaceTaskResultInfo(data);
           const r =
@@ -36,7 +34,7 @@ const InterfaceApiTaskResultDetail: FC<Props> = ({ taskResultId }) => {
         }
       });
     }
-  }, [taskResultId]);
+  }, [resultId]);
   const PieData = [
     {
       type: '成功',
@@ -172,10 +170,10 @@ const InterfaceApiTaskResultDetail: FC<Props> = ({ taskResultId }) => {
       <ProCard bordered={false}>
         <Tabs defaultActiveKey={'1'}>
           <Tabs.TabPane tab={'API'} key="1">
-            <InterfaceApiResultTable taskResultId={taskResultId} />
+            <InterfaceApiResultTable taskResultId={resultId} />
           </Tabs.TabPane>
           <Tabs.TabPane tab={'API CASE'} key="2">
-            <InterfaceApiCaseResultTable taskResultId={taskResultId} />
+            <InterfaceApiCaseResultTable taskResultId={resultId} />
           </Tabs.TabPane>
         </Tabs>
       </ProCard>

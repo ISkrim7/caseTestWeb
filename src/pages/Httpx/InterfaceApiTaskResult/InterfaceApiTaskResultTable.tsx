@@ -5,9 +5,7 @@ import {
   removeInterTaskResultDetail,
 } from '@/api/inter/interTask';
 import { queryProjectEnum } from '@/components/CommonFunc';
-import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
-import InterfaceApiTaskResultDetail from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultDetail';
 import { IInterfaceTaskResult } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum, pageData } from '@/utils/somefunc';
@@ -21,8 +19,6 @@ interface SelfProps {
 
 const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-  const [openDetail, setOpenDetail] = useState<boolean>(false);
-  const [currentResultId, setCurrentResultId] = useState<number>();
   const [isFormTaskDetail, setIsFromTaskDetail] = useState(false);
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
@@ -164,8 +160,10 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
             <>
               <a
                 onClick={() => {
-                  setCurrentResultId(record.id);
-                  setOpenDetail(true);
+                  window.open(
+                    `/interface/task/report/detail/resultId=${record.id}`,
+                    '_blank',
+                  );
                 }}
               >
                 详情
@@ -208,14 +206,6 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
 
   return (
     <>
-      <MyDrawer
-        setOpen={setOpenDetail}
-        open={openDetail}
-        name={''}
-        width={'80%'}
-      >
-        <InterfaceApiTaskResultDetail taskResultId={currentResultId} />
-      </MyDrawer>
       <MyProTable
         // @ts-ignore
         // polling={polling}

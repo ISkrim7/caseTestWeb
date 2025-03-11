@@ -59,7 +59,7 @@ export async function pagePushConfig(values: any, options?: IObjGet) {
  * @param options
  */
 export async function queryPushConfig(options?: IObjGet) {
-  return request<IResponse<IPushConfig>>('/api/project/push/queryConfig', {
+  return request<IResponse<IPushConfig[]>>('/api/project/push/queryConfig', {
     method: 'GET',
     ...(options || {}),
   });

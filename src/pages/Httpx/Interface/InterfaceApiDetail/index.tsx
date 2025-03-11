@@ -42,6 +42,7 @@ import {
 import {
   ProCard,
   ProForm,
+  ProFormDigit,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
@@ -122,7 +123,6 @@ const Index: FC<SelfProps> = ({
    */
   const SaveOrUpdate = async () => {
     const v = await interApiForm.validateFields();
-    console.log(v);
     const values = interApiForm.getFieldsValue(true);
 
     // 从用例中新增私有的API
@@ -636,6 +636,16 @@ const Index: FC<SelfProps> = ({
                   </Tabs.TabPane>
                 </Tabs>
               </ProCard>
+            </Tabs.TabPane>
+            <Tabs.TabPane key={'6'} icon={<SettingOutlined />} tab={'压力测试'}>
+              <ProForm.Group>
+                <ProFormDigit
+                  label={'并发数'}
+                  width={'md'}
+                  name={'perf_user'}
+                />
+                <ProFormText label={'时长'} width={'md'} name={'perf_time'} />
+              </ProForm.Group>
             </Tabs.TabPane>
           </Tabs>
         </ProCard>

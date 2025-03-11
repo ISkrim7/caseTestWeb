@@ -1,7 +1,6 @@
 import { IUITask } from '@/pages/Play/componets/uiTypes';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { history, useParams } from '@@/exports';
-import { MailOutlined, WechatWorkOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -16,6 +15,7 @@ import { Button, Empty, Form, message } from 'antd';
 import { FC, useEffect, useState } from 'react';
 
 import { IModuleEnum } from '@/api';
+import { queryPushConfig } from '@/api/base/pushConfig';
 import {
   getTaskById,
   handelExecuteTask,
@@ -36,7 +36,6 @@ const Index = () => {
   const [tasKForm] = Form.useForm<IUITask>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
-  const [isSend, setIsSend] = useState(false);
   const [isAuto, setIsAuto] = useState(false);
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
@@ -63,7 +62,6 @@ const Index = () => {
         if (code === 0) {
           tasKForm.setFieldsValue(data);
           setCurrentProjectId(data.project_id);
-          setIsSend(data.is_send);
           setIsAuto(data.is_auto);
         }
       });
@@ -246,53 +244,20 @@ const Index = () => {
                 rules={[{ required: isAuto, message: '表达式必填' }]}
               />
             ) : null}
-          </ProForm.Group>
-          <ProForm.Group>
-            <ProFormSwitch
-              name={'is_send'}
-              label={'是否推送'}
-              checkedChildren="开"
-              unCheckedChildren="关"
-              initialValue={isSend}
-              fieldProps={{
-                onChange: (checked) => {
-                  setIsSend(checked);
-                },
+            <ProFormSelect
+              label={'推送方式'}
+              name={'push_id'}
+              width={'md'}
+              request={async () => {
+                const { code, data } = await queryPushConfig();
+                if (code === 0 && data.length > 0) {
+                  return data.map((item) => {
+                    return { label: item.push_name, value: item.id };
+                  });
+                }
+                return [];
               }}
             />
-            {isSend ? (
-              <>
-                <ProFormSelect
-                  label={'推送方式'}
-                  name={'send_type'}
-                  width={'md'}
-                  options={[
-                    {
-                      label: (
-                        <>
-                          <WechatWorkOutlined /> <span>企业微信群机器人</span>
-                        </>
-                      ),
-                      value: 1,
-                    },
-                    {
-                      label: (
-                        <>
-                          <MailOutlined /> <span>邮箱</span>
-                        </>
-                      ),
-                      value: 2,
-                      disabled: true,
-                    },
-                  ]}
-                />
-                <ProFormText.Password
-                  width={'md'}
-                  label={'key'}
-                  name={'send_key'}
-                />
-              </>
-            ) : null}
           </ProForm.Group>
         </ProForm>
       </ProCard>

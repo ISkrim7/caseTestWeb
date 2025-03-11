@@ -41,7 +41,6 @@ const Index = () => {
   const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [isAuto, setIsAuto] = useState<boolean>(false);
-  const [isSend, setIsSend] = useState<boolean>(false);
 
   useEffect(() => {
     if (taskId) {
@@ -175,6 +174,7 @@ const Index = () => {
                 onChange: (value) => {
                   setCurrentModuleId(value);
                 },
+                value: currentModuleId,
                 treeData: moduleEnum,
                 fieldNames: {
                   label: 'title',
@@ -202,7 +202,6 @@ const Index = () => {
               rules={[{ required: true, message: '用例优先级必选' }]}
             />
           </ProForm.Group>
-
           <ProForm.Group>
             <ProFormDigit
               label={'重试次数'}
@@ -226,7 +225,6 @@ const Index = () => {
               min={0}
             />
           </ProForm.Group>
-
           <ProForm.Group>
             <ProFormSwitch
               name={'is_auto'}
@@ -251,8 +249,6 @@ const Index = () => {
                 rules={[{ required: isAuto, message: '表达式必填' }]}
               />
             ) : null}
-          </ProForm.Group>
-          <ProForm.Group>
             <ProFormSelect
               label={'推送方式'}
               name={'push_id'}
@@ -268,6 +264,7 @@ const Index = () => {
               }}
             />
           </ProForm.Group>
+
           <ProForm.Group>
             <ProFormTextArea
               width={'md'}

@@ -32,9 +32,10 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number>();
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectModuleId, setSelectModuleId] = useState<number>();
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // 查询所有project 设置枚举
   useEffect(() => {

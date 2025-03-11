@@ -255,6 +255,11 @@ export default [
         name: '全局配置',
         component: '@/pages/Httpx/InterfaceConfig',
       },
+      {
+        path: '/interface/interApi/perf',
+        name: '压力测试',
+        component: '@/pages/Httpx/InterfacePerf',
+      },
       { component: '@/pages/404' },
     ],
   },

@@ -21,6 +21,7 @@ import InterDoc from '@/pages/Httpx/componets/InterDoc';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterHeader from '@/pages/Httpx/componets/InterHeader';
 import InterParam from '@/pages/Httpx/componets/InterParam';
+import InterPerf from '@/pages/Httpx/componets/InterPerf';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
 import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Httpx/types';
 import { CONFIG, ModuleEnum } from '@/utils/config';
@@ -42,7 +43,6 @@ import {
 import {
   ProCard,
   ProForm,
-  ProFormDigit,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
@@ -637,16 +637,15 @@ const Index: FC<SelfProps> = ({
                 </Tabs>
               </ProCard>
             </Tabs.TabPane>
-            <Tabs.TabPane key={'6'} icon={<SettingOutlined />} tab={'压力测试'}>
-              <ProForm.Group>
-                <ProFormDigit
-                  label={'并发数'}
-                  width={'md'}
-                  name={'perf_user'}
-                />
-                <ProFormText label={'时长'} width={'md'} name={'perf_time'} />
-              </ProForm.Group>
-            </Tabs.TabPane>
+            {interId && (
+              <Tabs.TabPane
+                key={'6'}
+                icon={<SettingOutlined />}
+                tab={'压力测试'}
+              >
+                <InterPerf interfaceId={interId} />
+              </Tabs.TabPane>
+            )}
           </Tabs>
         </ProCard>
       </ProForm>

@@ -266,3 +266,19 @@ export const deduplicationRecord = async (options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
+/**
+ * 新增api
+ * @param data
+ * @param options
+ */
+export const debugPerfInterApi = async (
+  data?: { interfaceId: string; perf_user: number; perf_duration: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceAPI>>('/api/interface/debugPerf', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};

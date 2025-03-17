@@ -1,51 +1,79 @@
+import { debugPerfInterApi } from '@/api/inter';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import { useModel } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
+import { Button } from 'antd';
 import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 
 function App() {
-  const [apsMessage, setApsMessage] = useState<string[]>([]);
+  const [logMessage, setLogMessage] = useState<string[]>([]);
   const { initialState } = useModel('@@initialState');
-  const [clientId, setClientId] = useState<any>(null);
-  const [value, setValue] = useState<string>();
 
   // @ts-ignore
   useEffect(() => {
-    const socket = io('ws://localhost:5050/ws', {
-      query: { clientId: initialState?.currentUser?.uid },
-      transports: ['websocket'],
-      path: '/ws/socket.io',
-    });
+    let socket: Socket | undefined;
+    const createSocket = () => {
+      socket = io('ws://localhost:5050/ws', {
+        query: { clientId: initialState?.currentUser?.uid },
+        transports: ['websocket'],
+        path: '/ws/socket.io',
+      });
 
-    // 获取客户端ID (假设返回的 clientId 会作为查询参数进行传递)
-    socket.on('connect', () => {
-      setClientId(socket.id);
-    });
+      socket.on('connect', () => {
+        console.log('connect socket');
+        // if (caseApiId) {
+        //   runApiCaseIo(caseApiId).then();
+        // }
+      });
 
-    // 监听 server 发送的消息
-    socket.on('message', (data) => {
-      console.log('Received message:', data);
-      setApsMessage((prevMessages) => [...prevMessages, data.data]);
-    });
+      socket.on('data_message', (data) => {
+        console.log('Received message:', data);
+        setLogMessage((prevMessages) => [...prevMessages, data]);
+      });
 
-    return () => socket.disconnect();
+      socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+      });
+    };
+    createSocket();
+    const cleanSocket = () => {
+      if (socket) {
+        socket.off('push_message');
+        socket.off('message');
+        socket.disconnect();
+      }
+    };
+    return () => {
+      cleanSocket();
+    };
   }, []);
 
   return (
     <ProCard split={'horizontal'}>
       <ProCard>
-        <h1>aps</h1>
-        <button>Click Me!</button>
-        <button
+        <Button
+          onClick={async () => {
+            const body = {
+              interfaceId: '397',
+              perf_user: 1,
+              perf_spawn_rate: 1,
+              perf_duration: '1',
+            };
+            await debugPerfInterApi(body);
+          }}
+        >
+          Click Me!
+        </Button>
+        <Button
           onClick={() => {
-            setApsMessage([]);
+            setLogMessage([]);
           }}
         >
           Clear
-        </button>
+        </Button>
         <AceCodeEditor
-          value={apsMessage.join('\n')}
+          value={logMessage.join('\n')}
           height="50vh"
           readonly={true}
         />

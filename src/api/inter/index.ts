@@ -276,7 +276,7 @@ export const debugPerfInterApi = async (
   data?: { interfaceId: string; perf_user: number; perf_duration: string },
   options?: IObjGet,
 ) => {
-  return request<IResponse<IInterfaceAPI>>('/api/interface/debugPerf', {
+  return request<IResponse<string>>('/api/interface/debugPerf', {
     method: 'POST',
     data: data,
     ...(options || {}),

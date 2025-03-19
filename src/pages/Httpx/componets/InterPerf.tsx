@@ -24,6 +24,7 @@ const InterPerf: FC<IProps> = ({ interfaceId }) => {
     const { code, data } = await debugPerfInterApi(body);
     if (code === 0) {
       console.log(data);
+      window.open(`/interface/interApi/perf/detail/perfId=${data}`);
     }
   };
   return (
@@ -78,10 +79,10 @@ const InterPerf: FC<IProps> = ({ interfaceId }) => {
             label={'时长'}
             width={'md'}
             name={'perf_duration'}
-            placeholder={'5s'}
+            placeholder={'5'}
             required
             fieldProps={{
-              suffix: <span>s</span>,
+              suffix: <span>分</span>,
             }}
             rules={[
               {

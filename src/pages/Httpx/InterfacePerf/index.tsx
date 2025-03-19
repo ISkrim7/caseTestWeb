@@ -1,7 +1,5 @@
-import { Line } from '@ant-design/charts';
+import PerfDetail from '@/pages/Httpx/InterfacePerf/PerfDetail';
 import { ProCard } from '@ant-design/pro-components';
-import { Card } from 'antd';
-import { useState } from 'react';
 
 const data = [
   {
@@ -78,73 +76,9 @@ const data = [
   },
 ];
 const Index = () => {
-  const [perfData, setPerfData] = useState(data);
-  // 处理数据，提取需要的字段
-  const chartData = data.map((item) => ({
-    time: item.time,
-    p05: item.response_time_percentile_05[1],
-    p95: item.response_time_percentile_095[1],
-    rps: item.current_rps[1],
-    failRate: item.current_fail_per_sec[1],
-    avgResponseTime: item.total_avg_response_time[1],
-    userCount: item.user_count[1],
-  }));
-  // 折线图配置
-  const lineConfig = {
-    data: perfData,
-    xField: 'time',
-    yField: 'value',
-    seriesField: 'type',
-    meta: {
-      time: { alias: '时间' },
-      value: { alias: '数值' },
-    },
-    legend: { position: 'top' },
-    smooth: true,
-    animation: {
-      appear: {
-        animation: 'path-in',
-        duration: 1000,
-      },
-    },
-  };
   return (
     <ProCard>
-      {/* 关键指标卡片 */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
-        <Card title="当前 RPS" bordered={false}>
-          {chartData.length > 0 ? chartData[chartData.length - 1].rps : 'N/A'}
-        </Card>
-        <Card title="平均响应时间" bordered={false}>
-          {chartData.length > 0
-            ? chartData[chartData.length - 1].avgResponseTime
-            : 'N/A'}{' '}
-          ms
-        </Card>
-        <Card title="并发用户数" bordered={false}>
-          {chartData.length > 0
-            ? chartData[chartData.length - 1].userCount
-            : 'N/A'}
-        </Card>
-      </div>
-      {/* 响应时间折线图 */}
-      <Card title="响应时间" bordered={false} style={{ marginBottom: '24px' }}>
-        <Line
-          {...lineConfig}
-          data={[
-            ...chartData.map((item) => ({
-              ...item,
-              type: 'P05',
-              value: item.p05,
-            })),
-            ...chartData.map((item) => ({
-              ...item,
-              type: 'P95',
-              value: item.p95,
-            })),
-          ]}
-        />
-      </Card>
+      <PerfDetail />
     </ProCard>
   );
 };

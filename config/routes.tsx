@@ -260,6 +260,12 @@ export default [
         name: '压力测试',
         component: '@/pages/Httpx/InterfacePerf',
       },
+      {
+        path: '/interface/interApi/perf/detail/perfId=:perfId',
+        name: '压力测试看板',
+        hideInMenu: true,
+        component: '@/pages/Httpx/InterfacePerf/PerfDetail',
+      },
       { component: '@/pages/404' },
     ],
   },

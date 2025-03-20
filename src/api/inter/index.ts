@@ -268,7 +268,7 @@ export const deduplicationRecord = async (options?: IObjGet) => {
 };
 
 /**
- * 新增api
+ * 压测
  * @param data
  * @param options
  */
@@ -279,6 +279,22 @@ export const debugPerfInterApi = async (
   return request<IResponse<string>>('/api/interface/debugPerf', {
     method: 'POST',
     data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * 停止压测
+ * @param data
+ * @param options
+ */
+export const stopPerfInterApi = async (
+  data?: { taskId: string },
+  options?: IObjGet,
+) => {
+  return request<IResponse<string>>('/api/interface/stopPerf', {
+    method: 'GET',
+    params: data,
     ...(options || {}),
   });
 };

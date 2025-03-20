@@ -1,15 +1,27 @@
+import { stopPerfInterApi } from '@/api/inter';
 import { useModel, useParams } from '@@/exports';
 import { Line, LineConfig } from '@ant-design/charts';
 import { ProCard } from '@ant-design/pro-components';
-import { Space, Typography } from 'antd';
+import { Button, Space, Typography } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
 const { Title } = Typography;
+
+const StatusColor: Record<string, string> = {
+  READY: '#ffa500',
+  SPAWNING: '#811546',
+  CLEANUP: '#fadd1d',
+  RUNNING: '#1dfa79',
+  STOPPED: '#ff0000',
+  STOPPING: '#fa1da2',
+  MISSING: '#dcdbd3',
+};
 const PerfDetail = () => {
   const { perfId } = useParams<{ perfId: string }>();
   const { initialState } = useModel('@@initialState');
   const [rpsData, setRpsData] = useState<any[]>([]);
+  const [status, setStatus] = useState<string>('READY');
   const [currentRps, setCurrentRps] = useState<number>(0);
   const [userCount, setUserCount] = useState<number>(0);
   const [requestNums, setRequestNums] = useState<number>(0);
@@ -35,6 +47,12 @@ const PerfDetail = () => {
         animation: 'path-in',
         duration: 1000,
       },
+    },
+    color: ({ type }) => {
+      if (type === 'RPS') return '#1dfa79';
+      if (type === '05th percentile') return '#faad14';
+      if (type === '95th percentile') return '#ff4d4f';
+      return '#1890ff';
     },
   };
   const rpsConfig = useMemo(
@@ -68,6 +86,7 @@ const PerfDetail = () => {
 
       socket.on('data_message', (data) => {
         // Incrementally update the data
+        setStatus(data.status);
         setCurrentRps(data.total_rps);
         setUserCount(data.user_count);
         setRequestNums(data.request_num);
@@ -79,21 +98,24 @@ const PerfDetail = () => {
           value: data.current_rps[1],
           type: 'RPS',
         };
-        const newData05 = {
-          time: data.response_time_percentile_05[0],
-          value: data.response_time_percentile_05[1],
-          type: '05th percentile',
-        };
-        const newData95 = {
-          time: data.response_time_percentile_095[0],
-          value: data.response_time_percentile_095[1],
-          type: '95th percentile',
-        };
-
         // 使用函数式更新，确保每次更新都是基于最新状态
         setRpsData((prev) => [...prev, newRpsData]);
-        setData05((prev) => [...prev, newData05]);
-        setData95((prev) => [...prev, newData95]);
+        if (data.response_time_percentile_05) {
+          const newData05 = {
+            time: data.response_time_percentile_05[0],
+            value: data.response_time_percentile_05[1],
+            type: '05th percentile',
+          };
+          setData05((prev) => [...prev, newData05]);
+        }
+        if (data.response_time_percentile_095) {
+          const newData95 = {
+            time: data.response_time_percentile_095[0],
+            value: data.response_time_percentile_095[1],
+            type: '95th percentile',
+          };
+          setData95((prev) => [...prev, newData95]);
+        }
       });
 
       socket.on('disconnect', () => {
@@ -114,11 +136,35 @@ const PerfDetail = () => {
   }, []);
 
   return (
-    <ProCard split={'horizontal'}>
-      <ProCard split={'vertical'}>
-        <ProCard split={'vertical'}>
-          <ProCard split={'horizontal'}>
-            <ProCard layout={'center'}>
+    <ProCard ghost bordered={false} split={'horizontal'} gutter={16}>
+      <ProCard
+        title={'Status'}
+        extra={
+          <Button
+            onClick={async () => {
+              if (perfId) {
+                await stopPerfInterApi({ taskId: perfId });
+              }
+            }}
+          >
+            Stop
+          </Button>
+        }
+      >
+        <Title
+          level={3}
+          style={{
+            color: StatusColor[status],
+            textShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+          }}
+        >
+          {status}
+        </Title>
+      </ProCard>
+      <ProCard split={'vertical'} bordered={false}>
+        <ProCard split={'vertical'} bordered={false}>
+          <ProCard split={'horizontal'} bordered={false}>
+            <ProCard layout={'center'} bordered={false} hoverable>
               <Space direction={'vertical'}>
                 <Title level={5}>Request Num</Title>
                 <Title
@@ -127,13 +173,14 @@ const PerfDetail = () => {
                     color: '#c21ce7',
                     marginTop: 20,
                     textAlign: 'center',
+                    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
                   }}
                 >
                   {requestNums}
                 </Title>
               </Space>
             </ProCard>
-            <ProCard layout={'center'}>
+            <ProCard layout={'center'} bordered={false} hoverable>
               <Space direction={'vertical'}>
                 <Title level={5}>Request Fail Num</Title>
                 <Title
@@ -142,13 +189,14 @@ const PerfDetail = () => {
                     color: 'green',
                     marginTop: 20,
                     textAlign: 'center',
+                    textShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
                   }}
                 >
                   {requestFailNum}
                 </Title>
               </Space>
             </ProCard>
-            <ProCard layout={'center'}>
+            <ProCard layout={'center'} bordered={false} hoverable>
               <Space direction={'vertical'}>
                 <Title level={5}>Max Response Time (ms)</Title>
                 <Title
@@ -164,8 +212,8 @@ const PerfDetail = () => {
               </Space>
             </ProCard>
           </ProCard>
-          <ProCard split={'horizontal'}>
-            <ProCard layout={'center'}>
+          <ProCard split={'horizontal'} bordered={false}>
+            <ProCard layout={'center'} bordered={false} hoverable>
               <Space direction={'vertical'}>
                 <Title level={5}>User Count</Title>
                 <Title
@@ -180,7 +228,7 @@ const PerfDetail = () => {
                 </Title>
               </Space>
             </ProCard>
-            <ProCard layout={'center'}>
+            <ProCard layout={'center'} bordered={false} hoverable>
               <Space direction={'vertical'}>
                 <Title level={5}>RPS</Title>
                 <Title
@@ -195,7 +243,7 @@ const PerfDetail = () => {
                 </Title>
               </Space>
             </ProCard>
-            <ProCard layout={'center'}>
+            <ProCard layout={'center'} bordered={false} hoverable>
               <Space direction={'vertical'}>
                 <Title level={5}>Avg Response Time (ms)</Title>
                 <Title

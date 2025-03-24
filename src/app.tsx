@@ -1,5 +1,5 @@
-import { IUser } from '@/api';
-import { currentUser } from '@/api/base';
+import { IModule, IModuleEnum, IUser } from '@/api';
+import { currentUser, queryProject } from '@/api/base';
 import RightContent from '@/components/RightContent';
 import { errorConfig } from '@/requestErrorConfig';
 import { getThem } from '@/utils/token';
@@ -12,13 +12,27 @@ import { history, RunTimeLayoutConfig } from 'umi';
 import defaultSetting from '../config/defaultSetting';
 
 const loginPath = '/userLogin';
-
+const loopData = (data: IModule[]): IModuleEnum[] => {
+  return data.map((item) => {
+    if (item.children) {
+      return {
+        title: item.title,
+        value: item.key,
+        children: loopData(item.children),
+      };
+    }
+    return { title: item.title, value: item.key };
+  });
+};
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: IUser;
   loading?: boolean;
+  projects?: { label: string; value: number }[];
   fetchUserInfo?: () => Promise<IUser | undefined>;
+  refreshProjects?: () => Promise<{ label: string; value: number }[]>; // 添加刷新方法
 }> {
+  //当前用户信息
   const fetchUserInfo = async () => {
     try {
       const res = await currentUser();
@@ -28,17 +42,46 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
+
+  // 查询项目（提取为独立函数，便于复用）
+  const fetchProjects = async (): Promise<
+    { label: string; value: number }[]
+  > => {
+    console.log('query projects from app');
+    try {
+      const { code, data } = await queryProject();
+      if (code === 0) {
+        return data.map((item) => ({
+          label: item.title,
+          value: item.id,
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error('Failed to fetch projects:', error);
+      return [];
+    }
+  };
+  const refreshProjects = async () => {
+    return await fetchProjects();
+  };
+
   // 如果不是登录页面，执行
   if (history.location.pathname !== loginPath) {
-    const currentUser = await fetchUserInfo();
+    const [currentUser, projects] = await Promise.all([
+      fetchUserInfo(),
+      fetchProjects(),
+    ]);
     return {
       fetchUserInfo,
       currentUser,
+      projects,
       settings: defaultSetting,
     };
   }
   return {
     fetchUserInfo,
+    refreshProjects, // 即使未登录也暴露方法
     settings: defaultSetting,
   };
 }

@@ -7,7 +7,6 @@ import {
   runApiCaseBack,
   setApiCase,
 } from '@/api/inter/interCase';
-import { queryProjects } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
@@ -19,7 +18,7 @@ import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/In
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
-import { useParams } from '@@/exports';
+import { useModel, useParams } from '@@/exports';
 import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import {
   ProCard,
@@ -51,9 +50,8 @@ const Index = () => {
   const topRef = useRef<HTMLElement>(null);
   const [apis, setApis] = useState<any[]>([]);
   const [step, setStep] = useState<number>(0);
-  const [projects, setProjects] = useState<{ label: string; value: number }[]>(
-    [],
-  );
+  const { initialState } = useModel('@@initialState');
+  const projects = initialState?.projects || [];
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentModuleId, setCurrentModuleId] = useState<number>();
@@ -83,7 +81,6 @@ const Index = () => {
     } else {
       setCurrentStatus(2);
     }
-    queryProjects(setProjects).then();
   }, [editCase]);
 
   useEffect(() => {

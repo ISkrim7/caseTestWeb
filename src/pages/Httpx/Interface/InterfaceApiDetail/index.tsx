@@ -134,18 +134,18 @@ const Index: FC<SelfProps> = ({
     }
   }, [currentProjectId]);
 
-  // 根据项目ID和部分ID设置表单值
-  useEffect(() => {
-    if (projectId) {
-      // 如果存在项目ID，则设置当前项目ID和表单的项目ID值
-      setCurrentProjectId(projectId);
-      interApiForm.setFieldValue('project_id', projectId);
-    }
-    if (moduleId) {
-      // 如果存在部分ID，则设置表单的部分ID值
-      interApiForm.setFieldValue('module_id', moduleId);
-    }
-  }, [projectId, moduleId]);
+  // // 根据项目ID和部分ID设置表单值
+  // useEffect(() => {
+  //   if (projectId) {
+  //     // 如果存在项目ID，则设置当前项目ID和表单的项目ID值
+  //     setCurrentProjectId(projectId);
+  //     interApiForm.setFieldValue('project_id', projectId);
+  //   }
+  //   if (moduleId) {
+  //     // 如果存在部分ID，则设置表单的部分ID值
+  //     interApiForm.setFieldValue('module_id', moduleId);
+  //   }
+  // }, [projectId, moduleId]);
 
   // 根据接口API信息 form Case 设置表单值
   useEffect(() => {
@@ -155,6 +155,8 @@ const Index: FC<SelfProps> = ({
       interApiForm.setFieldsValue(interfaceApiInfo); // 设置表单值
       setDataLength(interfaceApiInfo); // 设置数据长度
       setCurrentInterAPIId(interfaceApiInfo.id); // 设置当前接口API ID
+      setCurrentProjectId(interfaceApiInfo.project_id);
+      setCurrentEnvId(interfaceApiInfo.env_id);
     }
   }, [interfaceApiInfo]);
 

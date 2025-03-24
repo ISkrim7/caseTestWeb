@@ -59,7 +59,7 @@ import {
   Tabs,
   Tooltip,
 } from 'antd';
-import React, { Dispatch, FC, useCallback, useEffect, useState } from 'react';
+import React, { Dispatch, FC, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 
 interface SelfProps {
@@ -77,7 +77,6 @@ interface SelfProps {
 }
 
 const Index: FC<SelfProps> = ({
-  interfaceId,
   addFromCase = false,
   addFromGroup = false,
   projectId,
@@ -90,7 +89,6 @@ const Index: FC<SelfProps> = ({
   interfaceApiInfo,
 }) => {
   const dispatch = useDispatch();
-
   const { interId } = useParams<{ interId: string }>();
   const { API_LEVEL_SELECT, API_STATUS_SELECT, API_REQUEST_METHOD } = CONFIG;
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
@@ -114,6 +112,51 @@ const Index: FC<SelfProps> = ({
   const [bodyLength, setBodyLength] = useState<number>();
   const [openDoc, setOpenDoc] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 初始化接口详情和项目列表
+  useEffect(() => {
+    if (interId) {
+      setCurrentMode(1);
+      fetchInterfaceDetails(interId).then();
+    } else {
+      setCurrentMode(2);
+    }
+    // queryProjects(setProjects).then()
+    dispatch({ type: 'projects/fetchProjects' });
+  }, [interId]);
+
+  // 根据当前项目ID获取环境和用例部分
+  useEffect(() => {
+    // 如果存在当前项目ID，则获取环境列表和用例部分
+    if (currentProjectId) {
+      queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
+      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
+    }
+  }, [currentProjectId]);
+
+  // 根据项目ID和部分ID设置表单值
+  useEffect(() => {
+    if (projectId) {
+      // 如果存在项目ID，则设置当前项目ID和表单的项目ID值
+      setCurrentProjectId(projectId);
+      interApiForm.setFieldValue('project_id', projectId);
+    }
+    if (moduleId) {
+      // 如果存在部分ID，则设置表单的部分ID值
+      interApiForm.setFieldValue('module_id', moduleId);
+    }
+  }, [projectId, moduleId]);
+
+  // 根据接口API信息 form Case 设置表单值
+  useEffect(() => {
+    // 如果存在接口API信息，则设置当前模式、表单值、数据长度和当前接口API ID
+    if (interfaceApiInfo) {
+      setCurrentMode(1); // 设置当前模式为查看模式
+      interApiForm.setFieldsValue(interfaceApiInfo); // 设置表单值
+      setDataLength(interfaceApiInfo); // 设置数据长度
+      setCurrentInterAPIId(interfaceApiInfo.id); // 设置当前接口API ID
+    }
+  }, [interfaceApiInfo]);
 
   /**
    * 对用例的新增与修改
@@ -167,66 +210,14 @@ const Index: FC<SelfProps> = ({
     }
   };
 
-  const fetchInterfaceDetails = useCallback(
-    async (id: string | number) => {
-      const { code, data } = await detailInterApiById({ interfaceId: id });
-      if (code === 0) {
-        interApiForm.setFieldsValue(data);
-        setDataLength(data);
-        setCurrentProjectId(data.project_id);
-      }
-    },
-    [interApiForm],
-  );
-
-  // 初始化接口详情和项目列表
-  useEffect(() => {
-    if (interId) {
-      setCurrentMode(1);
-      fetchInterfaceDetails(interId).then();
-    } else if (interfaceId) {
-      setCurrentMode(1);
-      fetchInterfaceDetails(interfaceId).then();
-    } else {
-      setCurrentMode(2);
+  const fetchInterfaceDetails = async (id: string | number) => {
+    const { code, data } = await detailInterApiById({ interfaceId: id });
+    if (code === 0) {
+      interApiForm.setFieldsValue(data);
+      setDataLength(data);
+      setCurrentProjectId(data.project_id);
     }
-    // queryProjects(setProjects).then()
-    dispatch({ type: 'projects/fetchProjects' });
-  }, [interId, interfaceId, fetchInterfaceDetails, dispatch]);
-
-  // 根据当前项目ID获取环境和用例部分
-  useEffect(() => {
-    // 如果存在当前项目ID，则获取环境列表和用例部分
-    if (currentProjectId) {
-      queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
-      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
-    }
-  }, [currentProjectId]);
-
-  // 根据项目ID和部分ID设置表单值
-  useEffect(() => {
-    if (projectId) {
-      // 如果存在项目ID，则设置当前项目ID和表单的项目ID值
-      setCurrentProjectId(projectId);
-      interApiForm.setFieldValue('project_id', projectId);
-    }
-    if (moduleId) {
-      // 如果存在部分ID，则设置表单的部分ID值
-      interApiForm.setFieldValue('module_id', moduleId);
-    }
-  }, [projectId, moduleId, interApiForm]);
-
-  // 根据接口API信息设置表单值
-  useEffect(() => {
-    // 如果存在接口API信息，则设置当前模式、表单值、数据长度和当前接口API ID
-    if (interfaceApiInfo) {
-      setCurrentMode(1); // 设置当前模式为查看模式
-      interApiForm.setFieldsValue(interfaceApiInfo); // 设置表单值
-      setDataLength(interfaceApiInfo); // 设置数据长度
-      setCurrentInterAPIId(interfaceApiInfo.id); // 设置当前接口API ID
-    }
-  }, [interfaceApiInfo, interApiForm]);
-
+  };
   const setDataLength = (data: IInterfaceAPI) => {
     setHeadersLength(data?.headers?.length || 0);
     setQueryLength(data?.params?.length || 0);

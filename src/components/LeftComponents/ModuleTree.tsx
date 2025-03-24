@@ -209,12 +209,11 @@ const ModuleTree: FC<IProps> = (props) => {
   const TreeTitleRender = (tree: any) => {
     return (
       <div
-        onMouseOver={() => {
+        style={{ width: '100%' }}
+        onMouseOver={(event) => {
+          event.preventDefault();
           setCurrentModule(tree);
         }}
-        // onMouseLeave={() => {
-        //   setCurrentModule(null);
-        // }}
         onClick={() => {
           setCurrentModule(tree);
         }}
@@ -327,7 +326,7 @@ const ModuleTree: FC<IProps> = (props) => {
       />
 
       {modules.length > 0 ? (
-        <Space direction={'vertical'}>
+        <Space direction={'vertical'} size={'middle'}>
           <Search
             enterButton
             variant={'filled'}

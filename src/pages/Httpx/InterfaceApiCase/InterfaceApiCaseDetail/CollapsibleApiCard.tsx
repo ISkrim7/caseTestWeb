@@ -32,6 +32,8 @@ import { FC, useEffect, useState } from 'react';
 const { Text } = Typography;
 
 interface SelfProps {
+  top?: any;
+  step: number;
   projectId?: number;
   moduleId?: number;
   caseApiId?: string;
@@ -42,8 +44,9 @@ interface SelfProps {
 }
 
 const CollapsibleApiCard: FC<SelfProps> = (props) => {
-  const { interfaceApiInfo, groupId, caseApiId, refresh } = props;
+  const { interfaceApiInfo, top, groupId, caseApiId, refresh } = props;
   const [cardTitle, setCardTitle] = useState('');
+  const [cardMethod, setCardMethod] = useState('');
   const [cardSubTitle, setSubCardTitle] = useState('');
   const [addFormCase, setAddFormCase] = useState(false);
   const [addFormGroup, setAddFormGroup] = useState(false);
@@ -64,6 +67,7 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
     if (interfaceApiInfo) {
       setCardTitle(interfaceApiInfo.name);
       setSubCardTitle(interfaceApiInfo.url);
+      setCardMethod(interfaceApiInfo.method);
     }
   }, [interfaceApiInfo]);
 
@@ -177,18 +181,19 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
 
   return (
     <ProCard
+      ref={top}
       collapsibleIconRender={({ collapsed }) => (
-        <>
+        <Space>
           <UnorderedListOutlined style={{ color: '#c3cad4', marginLeft: 10 }} />{' '}
           {collapsed ? <RightOutlined /> : <DownOutlined />}
-        </>
+          <Tag color={'green-inverse'}>Step_{props.step}</Tag>
+        </Space>
       )}
-      // boxShadow={true}
       hoverable
       title={
-        <>
-          <Tag
-            color={'#108ee9'}
+        <Space>
+          <Tag color={'cyan'}>{cardMethod}</Tag>
+          <a
             style={{ marginLeft: 4 }}
             onClick={() => {
               window.open(
@@ -197,10 +202,14 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
             }}
           >
             {cardTitle}
-          </Tag>
-        </>
+          </a>
+        </Space>
       }
-      subTitle={<Text type={'secondary'}>{cardSubTitle}</Text>}
+      subTitle={
+        <Space>
+          <Text type={'secondary'}>{cardSubTitle}</Text>
+        </Space>
+      }
       style={{ borderRadius: '5px', marginTop: 10 }}
       collapsible={true}
       ghost={true}

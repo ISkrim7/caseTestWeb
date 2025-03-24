@@ -33,13 +33,14 @@ import {
   Button,
   Divider,
   Dropdown,
+  Empty,
   FloatButton,
   Form,
   MenuProps,
   message,
   Tabs,
 } from 'antd';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
 
 const Index = () => {
@@ -47,12 +48,12 @@ const Index = () => {
   const { API_LEVEL_SELECT, API_STATUS_SELECT, API_CASE_ERROR_STOP_OPT } =
     CONFIG;
   const [baseForm] = Form.useForm();
+  const topRef = useRef<HTMLElement>(null);
   const [apis, setApis] = useState<any[]>([]);
   const [step, setStep] = useState<number>(0);
   const [projects, setProjects] = useState<{ label: string; value: number }[]>(
     [],
   );
-
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentModuleId, setCurrentModuleId] = useState<number>();
@@ -62,6 +63,8 @@ const Index = () => {
   const [runOpen, setRunOpen] = useState(false);
   const [choiceOpen, setChoiceOpen] = useState(false);
   const [choiceGroupOpen, setChoiceGroupOpen] = useState(false);
+  const [addButtonDisabled, setAddButtonDisabled] = useState<boolean>(false);
+
   useEffect(() => {
     if (caseApiId) {
       baseInfoApiCase(caseApiId).then(({ code, data }) => {
@@ -97,10 +100,11 @@ const Index = () => {
     if (queryApis) {
       setStep(queryApis.length);
       const init = queryApis.map((item, index) => ({
-        id: index.toString(),
+        id: (index + 1).toString(),
         api_Id: item.id,
         content: (
           <CollapsibleApiCard
+            step={index + 1}
             collapsible={true}
             refresh={refresh}
             interfaceApiInfo={item}
@@ -114,11 +118,19 @@ const Index = () => {
     }
   }, [queryApis]);
 
-  const refresh = useCallback(async () => {
+  // 使用 useEffect 确保在 apis 更新后执行滚动操作
+  useEffect(() => {
+    if (apis.length > 0) {
+      topRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [apis]); // 监听 apis 更新
+
+  const refresh = async () => {
     setEditCase(editCase + 1);
     setChoiceOpen(false);
     setChoiceGroupOpen(false);
-  }, []);
+    setAddButtonDisabled(false);
+  };
 
   /**
    * 保存基本信息
@@ -222,13 +234,16 @@ const Index = () => {
         async ({ code }) => {
           if (code === 0) {
             console.log('reorder success');
+            await refresh();
           }
         },
       );
     }
   };
-  const AddEmptyApiForm = () => {
+  const AddEmptyApiForm = async () => {
+    setAddButtonDisabled(true);
     const currStep = step + 1;
+
     setStep(currStep);
     setApis((prev) => [
       ...prev,
@@ -236,6 +251,8 @@ const Index = () => {
         id: currStep.toString(),
         content: (
           <CollapsibleApiCard
+            top={topRef}
+            step={currStep}
             collapsible={false}
             refresh={refresh}
             caseApiId={caseApiId}
@@ -260,7 +277,11 @@ const Index = () => {
               Choice API
             </Button>
             <Divider type={'vertical'} />
-            <Button type={'primary'} onClick={AddEmptyApiForm}>
+            <Button
+              type={'primary'}
+              disabled={addButtonDisabled}
+              onClick={AddEmptyApiForm}
+            >
               Add API
             </Button>
           </>
@@ -370,16 +391,25 @@ const Index = () => {
         </ProForm>
       </ProCard>
       <ProCard extra={<ApisCardExtra current={currentStatus} />}>
-        <Tabs defaultActiveKey={'2'} defaultValue={'2'}>
+        <Tabs
+          defaultActiveKey={'2'}
+          defaultValue={'2'}
+          size={'large'}
+          type={'card'}
+        >
           <Tabs.TabPane key={'1'} tab={'Vars'}>
             <InterfaceApiCaseVars currentCaseId={caseApiId} />
           </Tabs.TabPane>
           <Tabs.TabPane key={'2'} tab={`API (${apis.length})`}>
-            <MyDraggable
-              items={apis}
-              setItems={setApis}
-              dragEndFunc={onDragEnd}
-            />
+            {apis.length === 0 ? (
+              <Empty />
+            ) : (
+              <MyDraggable
+                items={apis}
+                setItems={setApis}
+                dragEndFunc={onDragEnd}
+              />
+            )}
           </Tabs.TabPane>
         </Tabs>
       </ProCard>

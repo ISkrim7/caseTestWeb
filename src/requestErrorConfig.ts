@@ -35,7 +35,7 @@ const responseInterceptors = async (response: any) => {
     if (response.data.msg) {
       message.error(response.data.msg);
     }
-    if (data.code === 6000 || data.code === 3000) {
+    if (data.code === 4000) {
       clearToken();
       history.push(loginPath);
     }

@@ -4,6 +4,7 @@ import EmptyProject from '@/components/LeftComponents/EmptyProject';
 import ModuleTree from '@/components/LeftComponents/ModuleTree';
 import ProjectSelect from '@/components/LeftComponents/ProjectSelect';
 import { ProCard } from '@ant-design/pro-components';
+import { Space } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
@@ -33,9 +34,9 @@ const Index: FC<SelfProps> = (props) => {
   }, []);
 
   return (
-    <ProCard style={{ height: 'auto' }}>
+    <ProCard style={{ height: 'auto' }} bodyStyle={{ padding: 5 }}>
       {projects.length > 0 ? (
-        <>
+        <Space direction={'vertical'}>
           <ProjectSelect
             projects={projects}
             currentProjectId={currentProjectId}
@@ -46,7 +47,7 @@ const Index: FC<SelfProps> = (props) => {
             currentProjectId={currentProjectId}
             setCurrentModuleId={setCurrentModuleId}
           />
-        </>
+        </Space>
       ) : (
         <EmptyProject />
       )}

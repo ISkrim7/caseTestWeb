@@ -7,6 +7,7 @@ import {
   runApiCaseBack,
   setApiCase,
 } from '@/api/inter/interCase';
+import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
@@ -38,6 +39,7 @@ import {
   MenuProps,
   message,
   Tabs,
+  TabsProps,
 } from 'antd';
 import { FC, useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
@@ -53,6 +55,7 @@ const Index = () => {
   const { initialState } = useModel('@@initialState');
   const projects = initialState?.projects || [];
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
+  const [apiModuleEnum, setAPIModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentStatus, setCurrentStatus] = useState(1);
@@ -62,58 +65,62 @@ const Index = () => {
   const [choiceOpen, setChoiceOpen] = useState(false);
   const [choiceGroupOpen, setChoiceGroupOpen] = useState(false);
   const [addButtonDisabled, setAddButtonDisabled] = useState<boolean>(false);
-
+  const [apiEnvs, setApiEnvs] = useState<
+    { label: string; value: number | null }[]
+  >([]);
   useEffect(() => {
     if (caseApiId) {
-      baseInfoApiCase(caseApiId).then(({ code, data }) => {
-        if (code === 0) {
-          baseForm.setFieldsValue(data);
-          setCurrentProjectId(data.project_id);
-          setCurrentModuleId(data.module_id);
+      Promise.all([
+        baseInfoApiCase(caseApiId),
+        queryApisByCaseId(caseApiId),
+      ]).then(([baseInfo, apisInfo]) => {
+        if (baseInfo.code === 0) {
+          baseForm.setFieldsValue(baseInfo.data);
+          setCurrentProjectId(baseInfo.data.project_id);
+          setCurrentModuleId(baseInfo.data.module_id);
         }
-      });
-
-      queryApisByCaseId(caseApiId).then(({ code, data }) => {
-        if (code === 0) {
-          setQueryApis(data);
+        if (apisInfo.code === 0) {
+          setQueryApis(apisInfo.data);
         }
       });
     } else {
       setCurrentStatus(2);
     }
-  }, [editCase]);
+  }, [editCase, caseApiId]);
 
   useEffect(() => {
     if (currentProjectId) {
-      fetchModulesEnum(
-        currentProjectId,
-        ModuleEnum.API_CASE,
-        setModuleEnum,
-      ).then();
+      Promise.all([
+        fetchModulesEnum(currentProjectId, ModuleEnum.API_CASE, setModuleEnum),
+        fetchModulesEnum(currentProjectId, ModuleEnum.API, setAPIModuleEnum),
+        queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true),
+      ]).then();
     }
   }, [currentProjectId]);
 
   useEffect(() => {
-    if (queryApis) {
+    if (queryApis && apiModuleEnum && apiEnvs) {
       setStep(queryApis.length);
       const init = queryApis.map((item, index) => ({
         id: (index + 1).toString(),
         api_Id: item.id,
         content: (
           <CollapsibleApiCard
+            apiEnvs={apiEnvs}
+            apiModule={apiModuleEnum}
+            moduleId={currentModuleId}
+            projectId={currentProjectId}
             step={index + 1}
             collapsible={true}
             refresh={refresh}
             interfaceApiInfo={item}
             caseApiId={caseApiId}
-            moduleId={currentModuleId}
-            projectId={currentProjectId}
           />
         ),
       }));
       setApis(init);
     }
-  }, [queryApis]);
+  }, [queryApis, apiEnvs, apiModuleEnum, caseApiId]); // 确保所有相关变量在依赖数组中
 
   // 使用 useEffect 确保在 apis 更新后执行滚动操作
   useEffect(() => {
@@ -240,7 +247,6 @@ const Index = () => {
   const AddEmptyApiForm = async () => {
     setAddButtonDisabled(true);
     const currStep = step + 1;
-
     setStep(currStep);
     setApis((prev) => [
       ...prev,
@@ -248,6 +254,7 @@ const Index = () => {
         id: currStep.toString(),
         content: (
           <CollapsibleApiCard
+            apiEnvs={apiEnvs}
             top={topRef}
             step={currStep}
             collapsible={false}
@@ -288,6 +295,31 @@ const Index = () => {
     }
   };
 
+  const APIStepItems: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Vars',
+      children: <InterfaceApiCaseVars currentCaseId={caseApiId} />,
+    },
+    {
+      key: '2',
+      label: `API (${apis.length})`,
+      children: (
+        <>
+          {apis.length === 0 ? (
+            <Empty />
+          ) : (
+            <MyDraggable
+              items={apis}
+              setItems={setApis}
+              dragEndFunc={onDragEnd}
+            />
+          )}
+        </>
+      ),
+    },
+  ];
+
   return (
     <ProCard
       split={'horizontal'}
@@ -300,10 +332,15 @@ const Index = () => {
         />
       </MyDrawer>
       <MyDrawer name={''} open={choiceGroupOpen} setOpen={setChoiceGroupOpen}>
-        <GroupApiChoiceTable refresh={refresh} currentCaseId={caseApiId!} />
+        <GroupApiChoiceTable
+          projectId={currentProjectId}
+          refresh={refresh}
+          currentCaseId={caseApiId!}
+        />
       </MyDrawer>
       <MyDrawer name={''} open={choiceOpen} setOpen={setChoiceOpen}>
         <InterfaceCaseChoiceApiTable
+          projectId={currentProjectId}
           currentCaseApiId={caseApiId}
           refresh={refresh}
         />
@@ -329,10 +366,12 @@ const Index = () => {
               required
               name="module_id"
               label="所属模块"
-              allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
                 treeData: moduleEnum,
+                onChange: (value) => {
+                  setCurrentModuleId(value as number);
+                },
                 fieldNames: {
                   label: 'title',
                 },
@@ -393,22 +432,8 @@ const Index = () => {
           defaultValue={'2'}
           size={'large'}
           type={'card'}
-        >
-          <Tabs.TabPane key={'1'} tab={'Vars'}>
-            <InterfaceApiCaseVars currentCaseId={caseApiId} />
-          </Tabs.TabPane>
-          <Tabs.TabPane key={'2'} tab={`API (${apis.length})`}>
-            {apis.length === 0 ? (
-              <Empty />
-            ) : (
-              <MyDraggable
-                items={apis}
-                setItems={setApis}
-                dragEndFunc={onDragEnd}
-              />
-            )}
-          </Tabs.TabPane>
-        </Tabs>
+          items={APIStepItems}
+        />
       </ProCard>
       {caseApiId ? <InterfaceApiCaseResultTable apiCaseId={caseApiId} /> : null}
       <FloatButton.BackTop />

@@ -7,7 +7,7 @@ import MyDrawer from '@/components/MyDrawer';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
-import { pageData } from '@/utils/somefunc';
+import { queryData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import {
   ActionType,
@@ -18,16 +18,21 @@ import { Button, Divider, message, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useRef, useState } from 'react';
 
 interface IAssociationApisProps {
+  currentProjectId?: number;
   currentTaskId?: string;
 }
 
-const AssociationApis: FC<IAssociationApisProps> = ({ currentTaskId }) => {
+const AssociationApis: FC<IAssociationApisProps> = ({
+  currentTaskId,
+  currentProjectId,
+}) => {
   const actionRef = useRef<ActionType>();
   const [choiceApiOpen, setChoiceApiOpen] = useState<boolean>(false);
+
   const queryApisByTask = useCallback(async () => {
     if (currentTaskId) {
       const { code, data } = await queryAssociationApisByTaskId(currentTaskId);
-      return pageData(code, data);
+      return queryData(code, data);
     }
   }, [currentTaskId]);
   const handleDragSortEnd = async (
@@ -36,7 +41,6 @@ const AssociationApis: FC<IAssociationApisProps> = ({ currentTaskId }) => {
     newDataSource: IInterfaceAPI[],
   ) => {
     const reorderIds: number[] = newDataSource.map((item) => item.id);
-    console.log('排序后的数据', newDataSource);
     if (currentTaskId) {
       const { code, msg } = await reorderAssociationApisByTaskId({
         taskId: currentTaskId,
@@ -136,6 +140,7 @@ const AssociationApis: FC<IAssociationApisProps> = ({ currentTaskId }) => {
     <>
       <MyDrawer name={''} open={choiceApiOpen} setOpen={setChoiceApiOpen}>
         <InterfaceCaseChoiceApiTable
+          projectId={currentProjectId}
           currentTaskId={currentTaskId}
           refresh={actionRef.current?.reload}
         />
@@ -147,7 +152,6 @@ const AssociationApis: FC<IAssociationApisProps> = ({ currentTaskId }) => {
           </Button>,
         ]}
         actionRef={actionRef}
-        // @ts-ignore
         columns={columns}
         rowKey="id"
         search={false}

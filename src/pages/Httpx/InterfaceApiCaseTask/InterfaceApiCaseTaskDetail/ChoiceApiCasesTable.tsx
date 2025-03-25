@@ -23,8 +23,9 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
   currentTaskId,
   reload,
 }) => {
-  const [selectProjectId, setSelectProjectId] = useState<number>();
-  const [selectModuleId, setSelectModuleId] = useState<number>();
+  const [selectProjectId, setSelectProjectId] = useState<number | undefined>(
+    currentProjectId,
+  );
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -32,23 +33,20 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
   useEffect(() => {
     queryProjectEnum(setProjectEnumMap).then();
   }, []);
-  useEffect(() => {
-    if (currentProjectId) {
-      setSelectProjectId(currentProjectId);
-    }
-  }, [currentProjectId]);
+
   useEffect(() => {
     if (selectProjectId) {
       fetchModulesEnum(
         selectProjectId,
         ModuleEnum.API_CASE,
         setModuleEnum,
-      ).then((r) => {});
+      ).then();
     }
   }, [selectProjectId]);
   const pageInterfaceCase = useCallback(async (params: any, sort: any) => {
     const { code, data } = await pageInterApiCase({
       ...params,
+      project_id: currentProjectId,
       module_type: ModuleEnum.API_CASE,
       sort: sort,
     });
@@ -67,17 +65,11 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
       title: '项目',
       dataIndex: 'project_id',
       hideInTable: true,
-      filters: true,
-      onFilter: true,
       valueType: 'select',
       valueEnum: projectEnumMap,
-      initialValue: selectProjectId,
+      initialValue: selectProjectId?.toString(),
       fieldProps: {
-        defaultValue: selectProjectId,
-        onSelect: (value: number) => {
-          setSelectProjectId(value);
-          setSelectModuleId(undefined);
-        },
+        disabled: true,
       },
     },
     {
@@ -85,12 +77,7 @@ const ChoiceApiCasesTable: FC<IChoiceApiCasesTableProps> = ({
       dataIndex: 'module_id',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectModuleId,
       fieldProps: {
-        value: selectModuleId,
-        onSelect: (value: number) => {
-          setSelectModuleId(value);
-        },
         treeData: moduleEnum,
         fieldNames: {
           label: 'title',

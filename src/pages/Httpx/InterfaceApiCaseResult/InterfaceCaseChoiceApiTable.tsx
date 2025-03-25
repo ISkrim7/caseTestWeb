@@ -17,6 +17,7 @@ import { TableRowSelection } from 'antd/es/table/interface';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
+  projectId?: number;
   currentCaseApiId?: string;
   currentGroupId?: string;
   currentTaskId?: string;
@@ -24,15 +25,17 @@ interface SelfProps {
 }
 
 const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
+  projectId,
   currentGroupId,
   currentCaseApiId,
   refresh,
   currentTaskId,
 }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-  const [selectProjectId, setSelectProjectId] = useState<number>();
+  const [selectProjectId, setSelectProjectId] = useState<number | undefined>(
+    projectId,
+  );
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
-  const [selectModuleId, setSelectModuleId] = useState<number>();
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -43,9 +46,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
   }, []);
   useEffect(() => {
     if (selectProjectId) {
-      fetchModulesEnum(selectProjectId, ModuleEnum.API, setModuleEnum).then(
-        (r) => {},
-      );
+      fetchModulesEnum(selectProjectId, ModuleEnum.API, setModuleEnum).then();
     }
   }, [selectProjectId]);
 
@@ -53,6 +54,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
     const searchData = {
       ...params,
       //只查询公共api
+      project_id: projectId,
       module_type: ModuleEnum.API,
       is_common: 1,
       sort: sort,
@@ -66,15 +68,11 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       title: '项目',
       dataIndex: 'project_id',
       hideInTable: true,
-      filters: true,
-      onFilter: true,
       valueType: 'select',
       valueEnum: projectEnumMap,
+      initialValue: selectProjectId?.toString(),
       fieldProps: {
-        onSelect: (value: number) => {
-          setSelectProjectId(value);
-          setSelectModuleId(undefined);
-        },
+        disabled: true,
       },
     },
     {
@@ -82,12 +80,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       dataIndex: 'module_id',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectModuleId,
       fieldProps: {
-        value: selectModuleId,
-        onSelect: (value: number) => {
-          setSelectModuleId(value);
-        },
         treeData: moduleEnum,
         fieldNames: {
           label: 'title',

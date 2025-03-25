@@ -1,3 +1,4 @@
+import { IModuleEnum } from '@/api';
 import { updateInterApiById } from '@/api/inter';
 import { copyApi2Case, removeApi2Case } from '@/api/inter/interCase';
 import {
@@ -34,13 +35,15 @@ const { Text } = Typography;
 interface SelfProps {
   top?: any;
   step: number;
-  projectId?: number;
-  moduleId?: number;
   caseApiId?: string;
   groupId?: string;
+  projectId?: number;
+  moduleId?: number;
+  apiEnvs?: { label: string; value: number | null }[];
+  apiModule?: IModuleEnum[];
   interfaceApiInfo?: IInterfaceAPI;
   refresh: () => void;
-  collapsible?: boolean;
+  collapsible: boolean;
 }
 
 const CollapsibleApiCard: FC<SelfProps> = (props) => {

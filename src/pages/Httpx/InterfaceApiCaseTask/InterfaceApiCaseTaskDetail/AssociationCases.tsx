@@ -7,7 +7,7 @@ import MyDrawer from '@/components/MyDrawer';
 import ChoiceApiCasesTable from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/ChoiceApiCasesTable';
 import { IInterfaceAPICase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
-import { pageData } from '@/utils/somefunc';
+import { queryData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import {
   ActionType,
@@ -19,10 +19,13 @@ import { FC, useCallback, useRef, useState } from 'react';
 
 interface IInterfaceApiCaseTaskDetailProps {
   currentTaskId?: string;
+  currentProjectId?: number;
+
   reload: () => void;
 }
 
 const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
+  currentProjectId,
   currentTaskId,
   reload,
 }) => {
@@ -33,7 +36,7 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
       const { code, data } = await queryAssociationCasesByTaskId({
         taskId: currentTaskId,
       });
-      return pageData(code, data);
+      return queryData(code, data);
     }
   }, [currentTaskId]);
 
@@ -157,6 +160,7 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
         setOpen={setChoiceApiCaseOpen}
       >
         <ChoiceApiCasesTable
+          currentProjectId={currentProjectId}
           currentTaskId={currentTaskId}
           reload={actionRef.current?.reload}
         />

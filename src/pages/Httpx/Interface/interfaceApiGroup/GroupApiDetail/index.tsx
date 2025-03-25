@@ -90,10 +90,11 @@ const Index = () => {
       setStepApiIndex(queryApis.length);
       setApisContent(
         queryApis.map((item, index) => ({
-          id: index.toString(),
+          id: (index + 1).toString(),
           api_Id: item.id,
           content: (
             <CollapsibleApiCard
+              step={index + 1}
               collapsible={true}
               refresh={handleReload}
               interfaceApiInfo={item}
@@ -148,6 +149,7 @@ const Index = () => {
         id: currStep.toString(),
         content: (
           <CollapsibleApiCard
+            step={currStep}
             collapsible={false}
             refresh={handleReload}
             projectId={currentProjectId}

@@ -24,6 +24,7 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
   const [refresh, setRefresh] = useState<number>(0);
 
   const queryUICasesByTask = useCallback(async () => {
+    console.log('========', currentTaskId);
     if (currentTaskId) {
       const { code, data } = await queryAssociationUICasesByTaskId({
         taskId: currentTaskId,

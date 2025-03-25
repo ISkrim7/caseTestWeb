@@ -26,7 +26,7 @@ import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/Inter
 import { IInterfaceAPI, ITryResponseInfo } from '@/pages/Httpx/types';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
-import { useSelector } from '@@/exports';
+import { useModel } from '@@/exports';
 import {
   ApiOutlined,
   CheckCircleOutlined,
@@ -48,7 +48,6 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { useDispatch } from '@umijs/plugins/libs/dva';
 import {
   Button,
   FloatButton,
@@ -73,38 +72,39 @@ interface SelfProps {
   groupId?: string;
   interfaceApiInfo?: IInterfaceAPI;
   refresh: () => void;
-  interfaceId?: number;
+  apiEnvs?: { label: string; value: number | null }[];
+  apiModule?: IModuleEnum[];
 }
 
 const Index: FC<SelfProps> = ({
   addFromCase = false,
   addFromGroup = false,
-  projectId,
   setTitle,
   setSubCardTitle,
-  moduleId,
   caseApiId,
   groupId,
+  projectId,
+  moduleId,
   refresh,
   interfaceApiInfo,
+  apiEnvs,
+  apiModule,
 }) => {
-  const dispatch = useDispatch();
   const { interId } = useParams<{ interId: string }>();
   const { API_LEVEL_SELECT, API_STATUS_SELECT, API_REQUEST_METHOD } = CONFIG;
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
-  const projects = useSelector(
-    (state: { projects: { projects: any } }) => state.projects.projects,
-  );
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
-    [],
+    apiEnvs || [],
   );
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
+  const { initialState } = useModel('@@initialState');
+  const projects = initialState?.projects || [];
   const [script, setScript] = useState();
   const [currentEnvId, setCurrentEnvId] = useState<number>();
   const [tryLoading, setTryLoading] = useState(false);
-  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
   const [currentInterAPIId, setCurrentInterAPIId] = useState<number>();
   const [headersLength, setHeadersLength] = useState<number>();
@@ -121,31 +121,19 @@ const Index: FC<SelfProps> = ({
     } else {
       setCurrentMode(2);
     }
-    // queryProjects(setProjects).then()
-    dispatch({ type: 'projects/fetchProjects' });
   }, [interId]);
 
   // 根据当前项目ID获取环境和用例部分
   useEffect(() => {
-    // 如果存在当前项目ID，则获取环境列表和用例部分
-    if (currentProjectId) {
+    if (apiEnvs && apiModule) {
+      setEnvs(apiEnvs);
+      setModuleEnum(apiModule);
+    }
+    if (currentProjectId && !apiEnvs && !apiModule) {
       queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
       fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
     }
-  }, [currentProjectId]);
-
-  // // 根据项目ID和部分ID设置表单值
-  // useEffect(() => {
-  //   if (projectId) {
-  //     // 如果存在项目ID，则设置当前项目ID和表单的项目ID值
-  //     setCurrentProjectId(projectId);
-  //     interApiForm.setFieldValue('project_id', projectId);
-  //   }
-  //   if (moduleId) {
-  //     // 如果存在部分ID，则设置表单的部分ID值
-  //     interApiForm.setFieldValue('module_id', moduleId);
-  //   }
-  // }, [projectId, moduleId]);
+  }, [currentProjectId, apiEnvs, apiModule]);
 
   // 根据接口API信息 form Case 设置表单值
   useEffect(() => {
@@ -158,7 +146,11 @@ const Index: FC<SelfProps> = ({
       setCurrentProjectId(interfaceApiInfo.project_id);
       setCurrentEnvId(interfaceApiInfo.env_id);
     }
-  }, [interfaceApiInfo]);
+    if (projectId && moduleId) {
+      interApiForm.setFieldValue('project_id', projectId);
+      interApiForm.setFieldValue('module_id', moduleId);
+    }
+  }, [interfaceApiInfo, projectId, moduleId]);
 
   /**
    * 对用例的新增与修改
@@ -167,9 +159,8 @@ const Index: FC<SelfProps> = ({
    * addFromGroup 从API GROUP新增与修改
    */
   const SaveOrUpdate = async () => {
-    const v = await interApiForm.validateFields();
+    await interApiForm.validateFields();
     const values = interApiForm.getFieldsValue(true);
-
     // 从用例中新增私有的API
     values.is_common = addFromCase || addFromGroup ? 0 : 1;
     let successHandler = ({
@@ -378,6 +369,7 @@ const Index: FC<SelfProps> = ({
       }
     }
   };
+
   return (
     <ProCard
       split={'horizontal'}
@@ -415,7 +407,6 @@ const Index: FC<SelfProps> = ({
           <ProForm.Group>
             <ProFormSelect
               width={'md'}
-              hidden={addFromCase}
               options={projects}
               label={'所属项目'}
               name={'project_id'}
@@ -428,8 +419,6 @@ const Index: FC<SelfProps> = ({
               required
               name="module_id"
               label="所属模块"
-              hidden={addFromCase}
-              allowClear
               rules={[{ required: true, message: '所属模块必选' }]}
               fieldProps={{
                 treeData: moduleEnum,
@@ -449,7 +438,6 @@ const Index: FC<SelfProps> = ({
               initialValue={'P1'}
               options={API_LEVEL_SELECT}
               required={true}
-              hidden={addFromCase}
               rules={[{ required: true, message: '用例优先级必选' }]}
             />
             <ProFormSelect
@@ -459,7 +447,6 @@ const Index: FC<SelfProps> = ({
               width={'md'}
               options={API_STATUS_SELECT}
               required={true}
-              hidden={addFromCase}
               rules={[{ required: true, message: '用例状态必须选' }]}
             />
           </ProForm.Group>

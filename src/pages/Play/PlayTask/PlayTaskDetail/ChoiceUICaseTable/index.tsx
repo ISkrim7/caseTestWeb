@@ -33,9 +33,11 @@ const Index: FC<SelfProps> = ({ currentTaskId, refresh }) => {
 
   useEffect(() => {
     if (selectProjectId) {
-      fetchModulesEnum(selectProjectId, ModuleEnum.UI_CASE, setModuleEnum).then(
-        (r) => {},
-      );
+      fetchModulesEnum(
+        selectProjectId,
+        ModuleEnum.UI_CASE,
+        setModuleEnum,
+      ).then();
     }
   }, [selectProjectId]);
   const columns: ProColumns<IUICase>[] = [

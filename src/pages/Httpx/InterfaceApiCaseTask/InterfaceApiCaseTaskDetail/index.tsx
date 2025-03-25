@@ -6,14 +6,13 @@ import {
   insertApiTask,
   updateApiTaskBaseInfo,
 } from '@/api/inter/interTask';
-import { queryProjects } from '@/components/CommonFunc';
 import AssociationApis from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationApis';
 import AssociationCases from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskDetail/AssociationCases';
 import InterfaceApiTaskResultTable from '@/pages/Httpx/InterfaceApiTaskResult/InterfaceApiTaskResultTable';
 import { IInterfaceAPITask } from '@/pages/Httpx/types';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
-import { useParams } from '@@/exports';
+import { useModel, useParams } from '@@/exports';
 import {
   ProCard,
   ProForm,
@@ -30,13 +29,13 @@ import { history } from 'umi';
 
 const Index = () => {
   const { taskId } = useParams<{ taskId: string }>();
+  const { initialState } = useModel('@@initialState');
+  const projects = initialState?.projects || [];
   const [taskForm] = Form.useForm<IInterfaceAPITask>();
   const { API_LEVEL_SELECT } = CONFIG;
   const [currentStatus, setCurrentStatus] = useState(1);
   const [editTsk, setEditTask] = useState<number>(0);
-  const [projects, setProjects] = useState<{ label: string; value: number }[]>(
-    [],
-  );
+
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
@@ -55,7 +54,6 @@ const Index = () => {
     } else {
       setCurrentStatus(2);
     }
-    queryProjects(setProjects).then();
   }, [editTsk]);
 
   useEffect(() => {
@@ -287,12 +285,19 @@ const Index = () => {
             <Tabs defaultActiveKey="1" size={'large'}>
               <Tabs.TabPane tab={'单API用例表'} key="1">
                 <ProCard>
-                  <AssociationApis currentTaskId={taskId} />
+                  <AssociationApis
+                    currentTaskId={taskId}
+                    currentProjectId={currentProjectId}
+                  />
                 </ProCard>
               </Tabs.TabPane>
               <Tabs.TabPane tab={'业务流用例表'} key="2">
                 <ProCard>
-                  <AssociationCases currentTaskId={taskId} reload={refresh} />
+                  <AssociationCases
+                    currentTaskId={taskId}
+                    reload={refresh}
+                    currentProjectId={currentProjectId}
+                  />
                 </ProCard>
               </Tabs.TabPane>
             </Tabs>

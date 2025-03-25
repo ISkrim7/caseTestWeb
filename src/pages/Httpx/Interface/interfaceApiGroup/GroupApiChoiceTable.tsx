@@ -13,28 +13,39 @@ import { TableRowSelection } from 'antd/es/table/interface';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
+  projectId?: number;
   currentCaseId: string;
   refresh?: () => void;
 }
 
 const GroupApiChoiceTable: FC<SelfProps> = (props) => {
-  const { currentCaseId, refresh } = props;
+  const { currentCaseId, refresh, projectId } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-  const [selectProjectId, setSelectProjectId] = useState<number>();
-  const [selectModuleId, setSelectModuleId] = useState<number>();
+  const [selectProjectId, setSelectProjectId] = useState<number | undefined>(
+    projectId,
+  );
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
+  const fetchInterfaceGroup = useCallback(
+    async (params: any) => {
+      const { code, data } = await pageInterfaceGroup({
+        ...params,
+        project_id: projectId,
+        module_type: ModuleEnum.API,
+      });
+      return pageData(code, data);
+    },
+    [projectId],
+  );
   // 查询所有project 设置枚举
   useEffect(() => {
     queryProjectEnum(setProjectEnumMap).then();
   }, []);
   useEffect(() => {
     if (selectProjectId) {
-      fetchModulesEnum(selectProjectId, ModuleEnum.API, setModuleEnum).then(
-        (r) => {},
-      );
+      fetchModulesEnum(selectProjectId, ModuleEnum.API, setModuleEnum).then();
     }
   }, [selectProjectId]);
   const columns: ProColumns<IInterfaceGroup>[] = [
@@ -42,16 +53,11 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
       title: '项目',
       dataIndex: 'project_id',
       hideInTable: true,
-      filters: true,
-      onFilter: true,
       valueType: 'select',
       valueEnum: projectEnumMap,
-      initialValue: selectProjectId,
+      initialValue: selectProjectId?.toString(),
       fieldProps: {
-        onSelect: (value: number) => {
-          setSelectProjectId(value);
-          setSelectModuleId(undefined);
-        },
+        disabled: true,
       },
     },
     {
@@ -59,12 +65,7 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
       dataIndex: 'module_id',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectModuleId,
       fieldProps: {
-        value: selectModuleId,
-        onSelect: (value: number) => {
-          setSelectModuleId(value);
-        },
         treeData: moduleEnum,
         fieldNames: {
           label: 'title',
@@ -109,13 +110,7 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
       setSelectedRowKeys(newSelectedRowKeys);
     },
   };
-  const fetchInterfaceGroup = useCallback(async (params: any) => {
-    const { code, data } = await pageInterfaceGroup({
-      ...params,
-      module_type: ModuleEnum.API,
-    });
-    return pageData(code, data);
-  }, []);
+
   return (
     <MyProTable
       // @ts-ignore

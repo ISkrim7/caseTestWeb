@@ -1,4 +1,4 @@
-import { IEnv } from '@/api';
+import { IEnv, IModule, IModuleEnum } from '@/api';
 import { queryEnvBy, queryProject } from '@/api/base';
 import React from 'react';
 
@@ -60,5 +60,18 @@ export const queryEnvByProjectIdFormApi = async (
         setter(envs); // 设置环境列表
       }
     }
+  });
+};
+
+export const loopModule = (data: IModule[]): IModuleEnum[] => {
+  return data.map((item) => {
+    if (item.children) {
+      return {
+        title: item.title,
+        value: item.key,
+        children: loopModule(item.children),
+      };
+    }
+    return { title: item.title, value: item.key };
   });
 };

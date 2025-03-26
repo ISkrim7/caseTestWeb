@@ -199,9 +199,15 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
           <a
             style={{ marginLeft: 4 }}
             onClick={() => {
-              window.open(
-                `/interface/interApi/detail/interId=${interfaceApiInfo?.id}`,
-              );
+              if (interfaceApiInfo?.is_group) {
+                return window.open(
+                  `/interface/group/detail/groupId=${interfaceApiInfo?.group_id}`,
+                );
+              } else {
+                window.open(
+                  `/interface/interApi/detail/interId=${interfaceApiInfo?.id}`,
+                );
+              }
             }}
           >
             {cardTitle}

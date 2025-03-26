@@ -540,7 +540,7 @@ const Index: FC<SelfProps> = ({
                       pattern:
                         currentEnvId === -1
                           ? new RegExp('/^(http://|https://).+/;')
-                          : new RegExp('^\\/.*'),
+                          : undefined,
                       message: 'url 格式错误',
                     },
                   ]}

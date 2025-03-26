@@ -7,7 +7,7 @@ import {
   tryInterfaceGroup,
   updateInterfaceGroup,
 } from '@/api/inter/interGroup';
-import { queryProjects } from '@/components/CommonFunc';
+import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
@@ -20,7 +20,7 @@ import {
 } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
-import { useParams } from '@@/exports';
+import { useModel, useParams } from '@@/exports';
 import {
   ProCard,
   ProForm,
@@ -42,26 +42,26 @@ const Index = () => {
   const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
   const [choiceOpen, setChoiceOpen] = useState(false);
   const [stepApiIndex, setStepApiIndex] = useState<number>(0);
-
-  const [projects, setProjects] = useState<{ label: string; value: number }[]>(
-    [],
-  );
+  const { initialState } = useModel('@@initialState');
+  const projects = initialState?.projects || [];
   const [tryResponses, setTryResponses] = useState<ITryResponseInfo[]>([]);
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [reload, setReload] = useState(0);
-
+  const [apiEnvs, setApiEnvs] = useState<
+    { label: string; value: number | null }[]
+  >([]);
   const handleReload = async () => {
     setReload(reload + 1);
   };
-  useEffect(() => {
-    queryProjects(setProjects).then();
-  }, []);
 
   useEffect(() => {
     if (currentProjectId) {
-      fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
+      Promise.all([
+        fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum),
+        queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true),
+      ]).then();
     }
   }, [currentProjectId]);
 
@@ -69,9 +69,9 @@ const Index = () => {
     if (groupId) {
       getInterfaceGroup(groupId).then(async ({ code, data }) => {
         if (code === 0) {
-          setCurrentProjectId(data.project_id);
-          setCurrentModuleId(data.part_id);
           groupForm.setFieldsValue(data);
+          setCurrentProjectId(data.project_id);
+          setCurrentModuleId(data.module_id);
           setCurrentStatus(1);
         }
       });
@@ -83,10 +83,10 @@ const Index = () => {
     } else {
       setCurrentStatus(2);
     }
-  }, [reload]);
+  }, [reload, groupId]);
 
   useEffect(() => {
-    if (queryApis) {
+    if (queryApis && moduleEnum && apiEnvs) {
       setStepApiIndex(queryApis.length);
       setApisContent(
         queryApis.map((item, index) => ({
@@ -95,6 +95,8 @@ const Index = () => {
           content: (
             <CollapsibleApiCard
               step={index + 1}
+              apiEnvs={apiEnvs}
+              apiModule={moduleEnum}
               collapsible={true}
               refresh={handleReload}
               interfaceApiInfo={item}
@@ -106,7 +108,7 @@ const Index = () => {
         })),
       );
     }
-  }, [queryApis]);
+  }, [queryApis, moduleEnum, apiEnvs]);
   const saveBaseInfo = async () => {
     const values = await groupForm.validateFields();
     if (groupId) {
@@ -149,6 +151,7 @@ const Index = () => {
         id: currStep.toString(),
         content: (
           <CollapsibleApiCard
+            apiEnvs={apiEnvs}
             step={currStep}
             collapsible={false}
             refresh={handleReload}

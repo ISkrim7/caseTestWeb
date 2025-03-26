@@ -1,4 +1,4 @@
-import { IModule, IModuleEnum, IUser } from '@/api';
+import { IUser } from '@/api';
 import { currentUser, queryProject } from '@/api/base';
 import RightContent from '@/components/RightContent';
 import { errorConfig } from '@/requestErrorConfig';
@@ -12,18 +12,7 @@ import { history, RunTimeLayoutConfig } from 'umi';
 import defaultSetting from '../config/defaultSetting';
 
 const loginPath = '/userLogin';
-const loopData = (data: IModule[]): IModuleEnum[] => {
-  return data.map((item) => {
-    if (item.children) {
-      return {
-        title: item.title,
-        value: item.key,
-        children: loopData(item.children),
-      };
-    }
-    return { title: item.title, value: item.key };
-  });
-};
+
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: IUser;
@@ -38,6 +27,7 @@ export async function getInitialState(): Promise<{
       const res = await currentUser();
       return res.data;
     } catch (error) {
+      console.log('===', error);
       history.push(loginPath);
     }
     return undefined;
@@ -55,6 +45,8 @@ export async function getInitialState(): Promise<{
           label: item.title,
           value: item.id,
         }));
+      } else if (code === 4000) {
+        history.push(loginPath);
       }
       return [];
     } catch (error) {

@@ -25,16 +25,14 @@ const requestInterceptors = async (url: string, options: RequestConfig) => {
     options: { ...options, interceptors: true },
   };
 };
-const loginPath = '/login';
+const loginPath = '/userLogin';
 
 const responseInterceptors = async (response: any) => {
   const data = response.data;
 
   if (data.code !== 0) {
     console.log('responseInterceptors', data);
-    if (response.data.msg) {
-      message.error(response.data.msg);
-    }
+    message.error(data.msg);
     if (data.code === 4000) {
       clearToken();
       history.push(loginPath);

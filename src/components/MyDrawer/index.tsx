@@ -15,9 +15,7 @@ const Index: FC<SelfProps> = (props) => {
 
   return (
     <Drawer
-      style={{
-        padding: 0,
-      }}
+      bodyStyle={{ padding: 0 }}
       open={open}
       destroyOnClose={true}
       height={'auto'}

@@ -43,7 +43,7 @@ const Index: FC<SelfProps> = (props) => {
         }
       });
 
-      socket.on('message', ({ code, data }) => {
+      socket.on('ui_message', ({ code, data }) => {
         console.log('Received message:', data);
         if (code === 0) {
           setLogMessage((prevMessages) => [...prevMessages, data]);

@@ -7,10 +7,7 @@ import {
   uiCaseDetailById,
 } from '@/api/play';
 import { reOrderStep } from '@/api/play/step';
-import {
-  queryEnvByProjectIdFormApi,
-  queryProjects,
-} from '@/components/CommonFunc';
+import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import AddStep from '@/pages/Play/componets/AddStep';
@@ -22,7 +19,7 @@ import PlayCaseResultDetail from '@/pages/Play/PlayResult/PlayCaseResultDetail';
 import PlayCaseResultTable from '@/pages/Play/PlayResult/PlayCaseResultTable';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum, queryUIEnvList } from '@/utils/somefunc';
-import { useParams } from '@@/exports';
+import { useModel, useParams } from '@@/exports';
 import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import {
   ProCard,
@@ -42,18 +39,19 @@ import {
   message,
   Tabs,
 } from 'antd';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
+
 interface IUIStepContent {
   id: string;
   step_id: number;
   content: React.ReactNode;
 }
+
 const Index = () => {
   const { caseId } = useParams<{ caseId: string }>();
-  const [projects, setProjects] = useState<{ label: string; value: number }[]>(
-    [],
-  );
+  const { initialState } = useModel('@@initialState');
+  const projects = initialState?.projects || [];
   const [form] = Form.useForm<IUICase>();
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
@@ -75,11 +73,33 @@ const Index = () => {
   const [runOpen, setRunOpen] = useState(false);
   const [varsNum, setVarsNum] = useState(0);
 
+  /**
+   * 如果是caseId 传递 这个证明是case 详情页
+   */
+  useEffect(() => {
+    if (caseId) {
+      Promise.all([
+        uiCaseDetailById(caseId), // 获取 case 详情
+        queryStepByCaseId(caseId), // 获取步骤数据
+      ]).then(([detail, steps]) => {
+        if (detail.code === 0) {
+          form.setFieldsValue(detail.data);
+          setCurrentProjectId(detail.data.project_id);
+        }
+        if (steps.code === 0 && steps) {
+          setUISteps(steps.data);
+        }
+      });
+    } else {
+      setCurrentMode(2);
+    }
+  }, [refresh, caseId]);
+
   /*
   查询project && env
    */
   useEffect(() => {
-    Promise.all([queryProjects(setProjects), queryUIEnvList(setEnvs)]).then();
+    Promise.all([queryUIEnvList(setEnvs)]).then();
   }, []);
 
   useEffect(() => {
@@ -91,39 +111,17 @@ const Index = () => {
       ]).then();
     }
   }, [currentProjectId]);
-  /**
-   * 如果是caseId 传递 这个证明是case 详情页
-   */
-  useEffect(() => {
-    if (caseId) {
-      // 获取 case 详情
-      uiCaseDetailById(caseId).then(async ({ code, data }) => {
-        if (code === 0) {
-          form.setFieldsValue(data);
-          setCurrentProjectId(data.project_id);
-        }
-      });
-      // 获取步骤数据
-      queryStepByCaseId(caseId).then(async ({ code, data }) => {
-        if (code === 0 && data) {
-          setUISteps(data);
-        }
-      });
-      setCurrentMode(1);
-    } else {
-      setCurrentMode(2);
-    }
-  }, [refresh, caseId]);
 
   //set case steps content
   useEffect(() => {
     if (uiSteps && uiSteps.length > 0) {
       setUIStepsContent(
         uiSteps.map((item, index) => ({
-          id: index.toString(),
+          id: (index + 1).toString(),
           step_id: item.id,
           content: (
             <CollapsibleUIStepCard
+              step={index + 1}
               apiEnv={apiEnvs}
               caseId={caseId!}
               currentProjectId={currentProjectId}
@@ -142,11 +140,11 @@ const Index = () => {
       reOrderStep({ caseId: caseId, stepIds: reorderData }).then();
     }
   };
-  const handelRefresh = useCallback(() => {
+  const handelRefresh = async () => {
+    setRefresh(refresh + 1);
     setOpenAddStepDrawer(false);
     setOpenChoiceStepDrawer(false);
-    setRefresh(refresh + 1);
-  }, []);
+  };
 
   const SaveOrUpdateCaseInfo = async () => {
     const values = form.getFieldsValue(true);

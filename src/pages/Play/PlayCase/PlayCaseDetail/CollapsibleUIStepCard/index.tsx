@@ -18,8 +18,18 @@ import {
   UnorderedListOutlined,
 } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Space, Tabs, Tag } from 'antd';
+import {
+  Button,
+  message,
+  Popconfirm,
+  Space,
+  Tabs,
+  Tag,
+  Typography,
+} from 'antd';
 import { FC, useState } from 'react';
+
+const { Text } = Typography;
 
 interface ISelfProps {
   caseId: string;
@@ -28,6 +38,7 @@ interface ISelfProps {
   collapsible?: boolean;
   callBackFunc: () => void;
   apiEnv?: any[];
+  step: number;
 }
 
 const Index: FC<ISelfProps> = ({
@@ -37,6 +48,7 @@ const Index: FC<ISelfProps> = ({
   collapsible,
   currentProjectId,
   apiEnv,
+  step,
 }) => {
   const [openStepDrawer, setOpenStepDrawer] = useState(false);
   const [openSteDetailDrawer, setOpenStepDetailDrawer] = useState(false);
@@ -122,7 +134,7 @@ const Index: FC<ISelfProps> = ({
         setOpen={setOpenStepDrawer}
       >
         <PlayStepDetail
-          stepId={uiStepInfo?.id}
+          uiStepInfo={uiStepInfo}
           func={() => {
             setOpenStepDrawer(false);
             callBackFunc();
@@ -151,6 +163,9 @@ const Index: FC<ISelfProps> = ({
               style={{ color: '#c3cad4', marginLeft: 10 }}
             />{' '}
             {collapsed ? <RightOutlined /> : <DownOutlined />}
+            <Tag color={'green-inverse'} style={{ marginLeft: 4 }}>
+              Step_{step}
+            </Tag>
           </>
         )}
         hoverable
@@ -158,7 +173,11 @@ const Index: FC<ISelfProps> = ({
         ghost={true}
         style={{ borderRadius: '5px', marginTop: 10 }}
         defaultCollapsed={collapsible}
-        subTitle={<span>{uiStepInfo?.description}</span>}
+        subTitle={
+          <Space>
+            <Text type={'secondary'}>{uiStepInfo?.description}</Text>
+          </Space>
+        }
         title={
           <>
             <Tag color={'#108ee9'} style={{ marginLeft: 4 }}>

@@ -55,7 +55,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
         }
       });
 
-      socket.on('message', ({ code, data }) => {
+      socket.on('api_message', ({ code, data }) => {
         console.log('Received message:', data);
         if (code === 0) {
           setLogMessage((prevMessages) => [...prevMessages, data]);

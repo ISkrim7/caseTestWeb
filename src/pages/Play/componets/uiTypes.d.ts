@@ -190,6 +190,7 @@ export interface IUICaseStepSQL {
   id: number;
   uid: string;
   sql_str: string;
+  db_id: number;
   b_or_a: number;
   description: string;
   create_time: string;

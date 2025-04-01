@@ -12,10 +12,8 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { FormInstance, Tag, Typography } from 'antd';
+import { FormInstance, Tag } from 'antd';
 import React, { FC, useRef, useState } from 'react';
-
-const { Text } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -26,7 +24,6 @@ const InterParam: FC<SelfProps> = ({ form }) => {
     [],
   );
   const editorFormRef = useRef<EditableFormInstance<IParams>>();
-
   const columns: ProColumns<IParams>[] = [
     {
       title: 'Key',
@@ -117,7 +114,7 @@ const InterParam: FC<SelfProps> = ({ form }) => {
   ];
 
   return (
-    <ProForm form={form} disabled={false} submitter={false}>
+    <ProForm disabled={false} submitter={false} form={form}>
       <SetKv2Query
         callBack={(resultArray: any) => {
           form.setFieldValue('params', resultArray);

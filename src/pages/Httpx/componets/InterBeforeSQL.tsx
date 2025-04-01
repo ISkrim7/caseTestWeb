@@ -27,7 +27,7 @@ import {
 } from 'antd';
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-const { Paragraph, Text, Link } = Typography;
+const { Paragraph, Text } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;

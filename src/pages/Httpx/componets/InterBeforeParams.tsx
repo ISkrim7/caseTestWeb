@@ -118,7 +118,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form }) => {
 
   return (
     <ProCard>
-      <ProForm form={form} disabled={false} submitter={false}>
+      <>
         <ProForm.Item name={'before_params'} trigger={'onValuesChange'}>
           <EditableProTable<IBeforeParams>
             editableFormRef={editorFormRef}
@@ -147,7 +147,7 @@ const InterBeforeParams: FC<SelfProps> = ({ form }) => {
             }}
           />
         </ProForm.Item>
-      </ProForm>
+      </>
     </ProCard>
   );
 };

@@ -152,7 +152,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
   ];
 
   return (
-    <ProForm form={form} disabled={false} submitter={false}>
+    <>
       <ProForm.Item name={'headers'} trigger={'onValuesChange'}>
         <EditableProTable<IHeaders>
           editableFormRef={editorFormRef}
@@ -181,7 +181,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
           }}
         />
       </ProForm.Item>
-    </ProForm>
+    </>
   );
 };
 

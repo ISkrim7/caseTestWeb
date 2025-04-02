@@ -313,7 +313,7 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
           </Popover>
         }
       >
-        <ProForm form={form} disabled={false} submitter={false}>
+        <>
           <ProForm.Item name={'before_sql_extracts'} trigger={'onValuesChange'}>
             <EditableProTable<IBeforeSQLExtract>
               rowKey={'id'}
@@ -346,7 +346,7 @@ const InterBeforeSql: FC<SelfProps> = (props) => {
               }}
             />
           </ProForm.Item>
-        </ProForm>
+        </>
       </ProCard>
     </ProCard>
   );

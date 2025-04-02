@@ -11,24 +11,18 @@ import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDraggable from '@/components/MyDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
+import ApiCaseBaseForm from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/ApiCaseBaseForm';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
 import InterfaceApiCaseVars from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/InterfaceApiCaseVars';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { CONFIG, ModuleEnum } from '@/utils/config';
+import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
-import { useModel, useParams } from '@@/exports';
+import { useParams } from '@@/exports';
 import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import {
-  ProCard,
-  ProForm,
-  ProFormSelect,
-  ProFormText,
-  ProFormTextArea,
-  ProFormTreeSelect,
-} from '@ant-design/pro-components';
+import { ProCard, ProForm } from '@ant-design/pro-components';
 import {
   Button,
   Divider,
@@ -46,14 +40,10 @@ import { history } from 'umi';
 
 const Index = () => {
   const { caseApiId } = useParams<{ caseApiId: string }>();
-  const { API_LEVEL_SELECT, API_STATUS_SELECT, API_CASE_ERROR_STOP_OPT } =
-    CONFIG;
   const [baseForm] = Form.useForm();
   const topRef = useRef<HTMLElement>(null);
   const [apis, setApis] = useState<any[]>([]);
   const [step, setStep] = useState<number>(0);
-  const { initialState } = useModel('@@initialState');
-  const projects = initialState?.projects || [];
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [apiModuleEnum, setAPIModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
@@ -351,79 +341,11 @@ const Index = () => {
           form={baseForm}
           submitter={false}
         >
-          <ProForm.Group>
-            <ProFormSelect
-              width={'md'}
-              options={projects}
-              label={'所属项目'}
-              name={'project_id'}
-              required={true}
-              onChange={(value) => {
-                setCurrentProjectId(value as number);
-              }}
-            />
-            <ProFormTreeSelect
-              required
-              name="module_id"
-              label="所属模块"
-              rules={[{ required: true, message: '所属模块必选' }]}
-              fieldProps={{
-                treeData: moduleEnum,
-                onChange: (value) => {
-                  setCurrentModuleId(value as number);
-                },
-                fieldNames: {
-                  label: 'title',
-                },
-                filterTreeNode: true,
-              }}
-              width={'md'}
-            />
-          </ProForm.Group>
-          <ProForm.Group>
-            <ProFormText
-              width={'md'}
-              name="title"
-              label="用例标题"
-              required={true}
-              rules={[{ required: true, message: '用例标题必填' }]}
-            />
-            <ProFormSelect
-              name="level"
-              label="优先级"
-              width={'md'}
-              initialValue={'P1'}
-              options={API_LEVEL_SELECT}
-              required={true}
-              rules={[{ required: true, message: '用例优先级必选' }]}
-            />
-            <ProFormSelect
-              name="status"
-              label="用例状态"
-              initialValue={'DEBUG'}
-              width={'md'}
-              options={API_STATUS_SELECT}
-              required={true}
-              rules={[{ required: true, message: '用例状态必须选' }]}
-            />
-          </ProForm.Group>
-          <ProForm.Group>
-            <ProFormTextArea
-              width={'md'}
-              name="desc"
-              label="用例描述"
-              required={true}
-              rules={[{ required: true, message: '用例描述必填' }]}
-            />
-            <ProFormSelect
-              width={'md'}
-              name="error_stop"
-              label="错误停止"
-              initialValue={0}
-              required={true}
-              options={API_CASE_ERROR_STOP_OPT}
-            />
-          </ProForm.Group>
+          <ApiCaseBaseForm
+            setCurrentProjectId={setCurrentProjectId}
+            setCurrentModuleId={setCurrentModuleId}
+            moduleEnum={moduleEnum}
+          />
         </ProForm>
       </ProCard>
       <ProCard extra={<ApisCardExtra current={currentStatus} />}>

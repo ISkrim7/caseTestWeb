@@ -106,7 +106,7 @@ const FormData: FC<SelfProps> = ({ form }) => {
     },
   ];
   return (
-    <ProForm form={form} disabled={false} submitter={false}>
+    <>
       <SetKv2Query
         callBack={(resultArray: any) => {
           form.setFieldValue('data', resultArray);
@@ -141,7 +141,7 @@ const FormData: FC<SelfProps> = ({ form }) => {
           }}
         />
       </ProForm.Item>
-    </ProForm>
+    </>
   );
 };
 

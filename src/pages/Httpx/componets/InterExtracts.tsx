@@ -94,7 +94,7 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
     },
   ];
   return (
-    <ProForm form={form} disabled={false} submitter={false}>
+    <>
       <ProForm.Item name={'extracts'} trigger={'onValuesChange'}>
         <EditableProTable<IExtracts>
           rowKey={'id'}
@@ -123,7 +123,7 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
           }}
         />
       </ProForm.Item>
-    </ProForm>
+    </>
   );
 };
 

@@ -114,7 +114,7 @@ const InterParam: FC<SelfProps> = ({ form }) => {
   ];
 
   return (
-    <ProForm disabled={false} submitter={false} form={form}>
+    <>
       <SetKv2Query
         callBack={(resultArray: any) => {
           form.setFieldValue('params', resultArray);
@@ -151,7 +151,7 @@ const InterParam: FC<SelfProps> = ({ form }) => {
           }}
         />
       </ProForm.Item>
-    </ProForm>
+    </>
   );
 };
 

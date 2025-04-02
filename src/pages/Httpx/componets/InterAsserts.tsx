@@ -135,7 +135,7 @@ const InterAsserts: FC<SelfProps> = ({ form, mode }) => {
     },
   ];
   return (
-    <ProForm form={form} disabled={false} submitter={false}>
+    <>
       <ProForm.Item name={'asserts'} trigger={'onValuesChange'}>
         <EditableProTable<IAsserts>
           rowKey={'id'}
@@ -164,7 +164,7 @@ const InterAsserts: FC<SelfProps> = ({ form, mode }) => {
           }}
         />
       </ProForm.Item>
-    </ProForm>
+    </>
   );
 };
 

@@ -71,6 +71,11 @@ export default [
         component: '@/pages/Project/Db',
       },
       {
+        path: '/project/pasConfig',
+        name: '调度任务',
+        component: '@/pages/Project/Aps',
+      },
+      {
         path: '/project/push',
         name: '推送配置',
         component: '@/pages/Project/Push',

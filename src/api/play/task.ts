@@ -32,16 +32,6 @@ export const setUITaskSwitch = async (
 };
 
 /**
- * 查看任务
- * @param opt
- */
-export const allUIJobs = async (opt?: IObjGet) => {
-  return request<IResponse<IUITask[]>>('/api/ui/task/job/list', {
-    method: 'GET',
-    ...opt,
-  });
-};
-/**
  * 下次运行时间
  * @param body
  * @param options

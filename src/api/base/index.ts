@@ -8,6 +8,7 @@ import {
   ISearch,
   IUser,
 } from '@/api';
+import { IUITask } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request/request';
 import React from 'react';
 
@@ -290,5 +291,36 @@ export const uploadAvatar = async (file: any, options?: IObjGet) => {
     data: file,
     requestType: 'form',
     ...(options || {}),
+  });
+};
+
+/**
+ * 查看任务
+ * @param opt
+ */
+export const allJobs = async (opt?: IObjGet) => {
+  return request<IResponse<IUITask[]>>('/api/aps/job/list', {
+    method: 'GET',
+    ...opt,
+  });
+};
+
+/**
+ * 查看任务
+ * @param opt
+ */
+/**
+ * 启动关闭任务
+ * @param data
+ * @param opt
+ */
+export const setSwitch = async (
+  data: { tag: string; uid: string; switch: boolean },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/aps/job/set_switch', {
+    method: 'POST',
+    data,
+    ...opt,
   });
 };

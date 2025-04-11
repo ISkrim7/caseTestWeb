@@ -28,6 +28,18 @@ const AssertColumns: ProColumns<IAsserts>[] = [
     render: (text) => <Tag color={'blue'}>{text}</Tag>,
   },
   {
+    title: '提取',
+    dataIndex: 'extraOpt',
+    key: 'extraOpt',
+    render: (text) => <Tag color={'blue'}>{text}</Tag>,
+  },
+  {
+    title: '语法',
+    dataIndex: 'extraValue',
+    key: 'extraValue',
+    render: (text) => <Tag color={'blue'}>{text}</Tag>,
+  },
+  {
     title: '预计结果',
     dataIndex: 'expect',
     key: 'expect',
@@ -67,18 +79,6 @@ const AssertColumns: ProColumns<IAsserts>[] = [
     },
   },
 
-  {
-    title: '提取',
-    dataIndex: 'extraOpt',
-    key: 'extraOpt',
-    render: (text) => <Tag color={'blue'}>{text}</Tag>,
-  },
-  {
-    title: '语法',
-    dataIndex: 'extraValue',
-    key: 'extraValue',
-    render: (text) => <Tag color={'blue'}>{text}</Tag>,
-  },
   {
     title: '测试结果',
     dataIndex: 'result',

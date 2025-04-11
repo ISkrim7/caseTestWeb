@@ -14,7 +14,7 @@ import {
   ProColumns,
   ProForm,
 } from '@ant-design/pro-components';
-import { FormInstance } from 'antd';
+import { FormInstance, Tag } from 'antd';
 import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -42,6 +42,9 @@ const InterAsserts: FC<SelfProps> = ({ form, mode }) => {
             message: '提取方式 必选',
           },
         ],
+      },
+      render: (_, record) => {
+        return <Tag color={'blue'}>{record.extraOpt}</Tag>;
       },
     },
     {

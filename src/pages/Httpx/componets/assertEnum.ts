@@ -30,7 +30,6 @@ export const ExtraOpt = {
   },
   re: {
     text: 're',
-    disabled: true,
   },
 };
 export const TYPE_ENUM = {

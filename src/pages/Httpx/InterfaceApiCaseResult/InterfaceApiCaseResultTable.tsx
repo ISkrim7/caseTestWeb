@@ -59,7 +59,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
       valueType: 'select',
       valueEnum: { SUCCESS: { text: '成功' }, ERROR: { text: '失败' } },
       render: (_, record) => (
-        <Tag color={record.result === 'SUCCESS' ? 'green' : 'warning'}>
+        <Tag color={record.result === 'SUCCESS' ? 'green' : 'error'}>
           {record.result}
         </Tag>
       ),
@@ -81,6 +81,14 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         RUNNING: { text: '运行中', status: 'Processing' },
         OVER: { text: '完成', status: 'Success' },
       },
+    },
+
+    {
+      title: '执行时间',
+      dataIndex: 'startTime',
+      valueType: 'dateTime',
+      key: 'startTime',
+      render: (_, record) => <Tag color={'blue'}>{record.startTime}</Tag>,
     },
     {
       title: '执行人',

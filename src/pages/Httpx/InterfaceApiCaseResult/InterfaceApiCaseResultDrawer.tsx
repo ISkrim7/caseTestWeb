@@ -1,11 +1,12 @@
 import { caseAPIResultDetail, runApiCaseIo } from '@/api/inter/interCase';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
+import MyTabs from '@/components/MyTabs';
 import InterfaceApiCaseResultBaseInfo from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultBaseInfo';
 import InterfaceApiResultResponses from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiResultResponses';
 import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { useModel } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
-import { Tabs } from 'antd';
+import { TabsProps } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
@@ -111,29 +112,40 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
       isCancelled = true;
     };
   }, [caseResultId]);
+
+  const items: TabsProps['items'] = [
+    {
+      label: '基本信息',
+      key: '1',
+      children: (
+        <InterfaceApiCaseResultBaseInfo caseResultInfo={caseResultInfo} />
+      ),
+    },
+    {
+      label: '请求日志',
+      key: '2',
+      children: (
+        <AceCodeEditor
+          value={logMessage.join('\n')}
+          height="100vh"
+          wrap={false}
+          readonly={true}
+        />
+      ),
+    },
+    {
+      label: '步骤详情',
+      key: '3',
+      children: <InterfaceApiResultResponses caseResultId={caseResultId} />,
+    },
+  ];
   return (
     <ProCard>
-      <Tabs
+      <MyTabs
+        items={items}
         tabPosition={'left'}
-        title={`运行结果`}
-        style={{ width: '100%', height: '100vh' }}
-        size={'large'}
         defaultActiveKey={defaultActiveKey}
-      >
-        <Tabs.TabPane tab={'基本信息'} key={'1'} disabled={tabDisabled}>
-          <InterfaceApiCaseResultBaseInfo caseResultInfo={caseResultInfo} />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={'请求日志'} key={'2'}>
-          <AceCodeEditor
-            value={logMessage.join('\n')}
-            height="100vh"
-            readonly={true}
-          />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={'步骤详情'} key={'3'} disabled={tabDisabled}>
-          <InterfaceApiResultResponses caseResultId={caseResultId} />
-        </Tabs.TabPane>
-      </Tabs>
+      />
     </ProCard>
   );
 };

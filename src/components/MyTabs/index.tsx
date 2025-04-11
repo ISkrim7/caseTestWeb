@@ -7,6 +7,7 @@ interface IProps {
   tabBarExtraContent?: React.ReactNode;
   items: Tab[];
   tabPosition?: 'top' | 'left';
+  title?: string;
 }
 
 const Index: FC<IProps> = ({
@@ -14,9 +15,11 @@ const Index: FC<IProps> = ({
   tabPosition = 'top',
   items,
   tabBarExtraContent,
+  title,
 }) => {
   return (
     <Tabs
+      title={title}
       type={'card'}
       size={'large'}
       tabPosition={tabPosition}

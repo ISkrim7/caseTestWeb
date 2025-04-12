@@ -100,8 +100,16 @@ const FormData: FC<SelfProps> = ({ form }) => {
     {
       title: 'Opt',
       valueType: 'option',
-      render: () => {
-        return null;
+      render: (_, record, __, action) => {
+        return [
+          <a
+            onClick={() => {
+              action?.startEditable?.(record.id);
+            }}
+          >
+            编辑
+          </a>,
+        ];
       },
     },
   ];
@@ -136,7 +144,7 @@ const FormData: FC<SelfProps> = ({ form }) => {
             },
             onChange: setDataEditableRowKeys, // Update editable keys
             actionRender: (_, __, dom) => {
-              return [dom.delete];
+              return [dom.delete, dom.save, dom.cancel];
             },
           }}
         />

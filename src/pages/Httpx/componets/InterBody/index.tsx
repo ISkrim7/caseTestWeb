@@ -1,3 +1,4 @@
+import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import FormData from '@/pages/Httpx/componets/InterBody/FormData';
 import JsonBody from '@/pages/Httpx/componets/InterBody/JsonBody';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
@@ -33,12 +34,15 @@ const Index: FC<SelfProps> = (props) => {
         return <JsonBody {...props} />;
       case 2:
         return <FormData {...props} />;
+      case 3:
+        return <FormData {...props} />;
     }
   };
 
-  const onGroupChange = (e: RadioChangeEvent) => {
+  const onGroupChange = async (e: RadioChangeEvent) => {
     setBodyType(e.target.value);
     props.form.setFieldValue('body_type', e.target.value);
+    await FormEditableOnValueChange(props.form, 'body_type', false);
   };
   return (
     <>
@@ -49,7 +53,7 @@ const Index: FC<SelfProps> = (props) => {
       >
         <Radio value={0}>none</Radio>
         <Radio value={2}>form-data</Radio>
-        {/*<Radio value={3}>urlencoded</Radio>*/}
+        <Radio value={3}>urlencoded</Radio>
         <Radio value={1}>json</Radio>
       </Radio.Group>
       {BodyMap()}

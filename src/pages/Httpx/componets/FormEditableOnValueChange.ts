@@ -5,6 +5,7 @@ import { FormInstance, message } from 'antd';
 export const FormEditableOnValueChange = async (
   form: FormInstance<IInterfaceAPI>,
   field: string,
+  no_message: boolean = true,
 ) => {
   const InterfaceId = form.getFieldValue('id');
   const fieldValues = await form.validateFields([field]);
@@ -14,7 +15,7 @@ export const FormEditableOnValueChange = async (
     // @ts-ignore
     [field]: fieldValues[field],
   });
-  if (code === 0) {
+  if (code === 0 && no_message) {
     message.success(msg);
   }
 };

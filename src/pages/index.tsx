@@ -167,52 +167,24 @@ export default function IndexPage() {
               statistic={{
                 title: <Title level={5}>{'API Case'}</Title>,
                 value: weekData.apis,
-                description: (
-                  <Statistic
-                    title="周同比"
-                    value={`${weekData.apis?.toString()} %`}
-                    trend={weekData.apis_growth >= 0 ? 'up' : 'down'}
-                  />
-                ),
               }}
             />
             <StatisticCard
               statistic={{
                 title: <Title level={5}>{'API Task'}</Title>,
                 value: weekData.api_task,
-                description: (
-                  <Statistic
-                    title="周同比"
-                    value={`${weekData.api_task_growth?.toString()} %`}
-                    trend={weekData.api_task_growth >= 0 ? 'up' : 'down'}
-                  />
-                ),
               }}
             />
             <StatisticCard
               statistic={{
                 title: <Title level={5}>{'UI Case'}</Title>,
                 value: weekData.uis,
-                description: (
-                  <Statistic
-                    title="周同比"
-                    value={`${weekData.uis_growth?.toString()} %`}
-                    trend={weekData.uis_growth >= 0 ? 'up' : 'down'}
-                  />
-                ),
               }}
             />
             <StatisticCard
               statistic={{
                 title: <Title level={5}>{'UI Task'}</Title>,
                 value: weekData.ui_task,
-                description: (
-                  <Statistic
-                    title="周同比"
-                    value={`${weekData.ui_task_growth?.toString()} %`}
-                    trend={weekData.ui_task_growth >= 0 ? 'up' : 'down'}
-                  />
-                ),
               }}
             />
           </StatisticCard.Group>

@@ -45,6 +45,7 @@ export interface IInterfaceAPI extends IBaseField {
   params: IParams[] | [];
   body: any;
   data: any;
+  files: any;
   asserts: IAsserts[];
   extracts: IExtracts[];
   project_id: number;

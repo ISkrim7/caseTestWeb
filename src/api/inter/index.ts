@@ -12,7 +12,20 @@ import { request } from '@@/plugin-request/request';
  * @param options
  */
 export const uploadInterApi = async (data: any, options?: IObjGet) => {
-  return request<IResponse<any>>('/api/interface/upload', {
+  return request<IResponse<any>>('/api/file/interface/upload', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * page api
+ * @param data
+ * @param options
+ */
+export const uploadInterApiData = async (data: any, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/file/interface/data/upload', {
     method: 'POST',
     data: data,
     ...(options || {}),

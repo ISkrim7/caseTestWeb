@@ -169,6 +169,7 @@ export interface IParams extends IBase {}
 
 export interface IFromData extends IBase {
   content_type?: string;
+  value_type?: string;
 }
 
 export interface IHeaders extends IBase {}

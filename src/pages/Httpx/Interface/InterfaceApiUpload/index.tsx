@@ -68,14 +68,6 @@ const Index = () => {
         message.success(msg);
       }
     }
-
-    // 发送请求（例如使用 fetch 或 axios）
-    // const response = await fetch('/your-api-endpoint', {
-    //   method: 'POST',
-    //   body: data,
-    // });
-    // const result = await response.json();
-    // console.log('Response:', result); // 打印返回的响应
   };
 
   return (

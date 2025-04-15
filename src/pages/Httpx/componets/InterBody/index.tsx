@@ -1,5 +1,5 @@
 import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
-import FormData from '@/pages/Httpx/componets/InterBody/FormData';
+import APIFormData from '@/pages/Httpx/componets/InterBody/APIFormData';
 import JsonBody from '@/pages/Httpx/componets/InterBody/JsonBody';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { ProCard } from '@ant-design/pro-components';
@@ -33,9 +33,9 @@ const Index: FC<SelfProps> = (props) => {
       case 1:
         return <JsonBody {...props} />;
       case 2:
-        return <FormData {...props} />;
+        return <APIFormData type={'form_data'} {...props} />;
       case 3:
-        return <FormData {...props} />;
+        return <APIFormData type={'urlencoded'} {...props} />;
     }
   };
 

@@ -1,3 +1,4 @@
+import { uploadInterApiData } from '@/api/inter';
 import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import {
   FormEditableOnValueChange,
@@ -10,6 +11,7 @@ import {
   EditableProTable,
   ProForm,
   ProFormText,
+  ProFormUploadButton,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { FormInstance, Tag, Typography } from 'antd';
@@ -18,13 +20,38 @@ import React, { FC, useRef, useState } from 'react';
 const { Text } = Typography;
 
 interface SelfProps {
+  type: string;
   form: FormInstance<IInterfaceAPI>;
 }
 
-const FormData: FC<SelfProps> = ({ form }) => {
+const APIFormData: FC<SelfProps> = ({ form }) => {
   const [dataEditableKeys, setDataEditableRowKeys] = useState<React.Key[]>();
   const editorFormRef = useRef<EditableFormInstance<IFromData>>();
 
+  const uploadData = async (info: any, index: number) => {
+    const formData = new FormData();
+    const file = info.fileList[0]?.originFileObj;
+    console.log('file', file);
+    formData.append('data_file', file || null); // 选择了一个文件，放入 FormData
+    formData.append('interfaceId', form.getFieldValue('uid'));
+
+    //
+    const { code, data, msg } = await uploadInterApiData(formData);
+    if (code === 0) {
+      // 更新当前行的数据
+      const currentData = form.getFieldValue('data');
+      const newData = currentData.map((item: any) =>
+        item.id === index ? { ...item, value: data } : item,
+      );
+
+      // 更新表单和编辑状态
+      form.setFieldsValue({ data: newData });
+      editorFormRef.current?.setRowData?.(index, {
+        ...currentData[index],
+        value: data,
+      });
+    }
+  };
   const columns: ProColumns<IFromData>[] = [
     {
       title: 'Key',
@@ -45,15 +72,6 @@ const FormData: FC<SelfProps> = ({ form }) => {
       title: 'value',
       dataIndex: 'value',
       width: '30%',
-      formItemProps: {
-        required: true,
-        rules: [
-          {
-            required: true,
-            message: 'value 必填',
-          },
-        ],
-      },
       render: (text, record) => {
         if (record?.value?.includes('{{$')) {
           return <Tag color={'orange'}>{text}</Tag>;
@@ -61,30 +79,52 @@ const FormData: FC<SelfProps> = ({ form }) => {
           return <Tag color={'blue'}>{text}</Tag>;
         }
       },
-      renderFormItem: (_, { record }) => {
+      renderFormItem: ({ index }, { record }) => {
         return (
           <ProFormText
             noStyle
             name={'value'}
             fieldProps={{
               suffix: (
-                <ApiVariableFunc
-                  value={record?.value}
-                  index={record?.id}
-                  setValue={(index, newData) => {
-                    editorFormRef.current?.setRowData?.(index, newData);
-                    // 更新表单数据
-                    form.setFieldsValue({
-                      data: form
-                        .getFieldValue('data')
-                        .map((item: any) =>
-                          item.id === index
-                            ? { ...item, value: newData.value }
-                            : item,
-                        ),
-                    });
-                  }}
-                />
+                <>
+                  <ProFormUploadButton
+                    noStyle
+                    name="value"
+                    label="上传文件"
+                    max={1}
+                    fieldProps={{
+                      listType: 'text',
+                      fileList: record?.value
+                        ? [
+                            {
+                              uid: '-1',
+                              name: record.value,
+                              status: 'done',
+                            },
+                          ]
+                        : [],
+                      beforeUpload: () => false, // 阻止自动上传
+                      onChange: (info) => uploadData(info, index),
+                    }}
+                  />{' '}
+                  <ApiVariableFunc
+                    value={record?.value}
+                    index={record?.id}
+                    setValue={(index, newData) => {
+                      editorFormRef.current?.setRowData?.(index, newData);
+                      // 更新表单数据
+                      form.setFieldsValue({
+                        data: form
+                          .getFieldValue('data')
+                          .map((item: any) =>
+                            item.id === index
+                              ? { ...item, value: newData.value }
+                              : item,
+                          ),
+                      });
+                    }}
+                  />
+                </>
               ),
               value: record?.value,
             }}
@@ -131,6 +171,7 @@ const FormData: FC<SelfProps> = ({ form }) => {
             newRecordType: 'dataSource',
             record: () => ({
               id: Date.now(),
+              value_type: 'text',
             }),
           }}
           editable={{
@@ -153,4 +194,4 @@ const FormData: FC<SelfProps> = ({ form }) => {
   );
 };
 
-export default FormData;
+export default APIFormData;

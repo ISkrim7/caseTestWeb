@@ -1,3 +1,4 @@
+import { ExtraOpt } from '@/pages/Httpx/componets/assertEnum';
 import {
   FormEditableOnValueChange,
   FormEditableOnValueRemove,
@@ -27,7 +28,7 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
     {
       title: 'Key',
       dataIndex: 'key',
-      width: '20%',
+      width: '10%',
       formItemProps: {
         required: true,
         rules: [
@@ -42,7 +43,7 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
       title: 'Target',
       dataIndex: 'target',
       valueType: 'select',
-      width: '20%',
+      width: '10%',
       valueEnum: CONFIG.EXTRACT_TARGET_ENUM,
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
@@ -58,9 +59,30 @@ const InterExtracts: FC<SelfProps> = ({ form, mode }) => {
       },
     },
     {
+      title: '提取方式',
+      dataIndex: 'extraOpt',
+      valueEnum: ExtraOpt,
+      valueType: 'select',
+      width: '10%',
+
+      initialValue: ExtraOpt.jmespath.text,
+      formItemProps: {
+        required: true,
+        rules: [
+          {
+            required: true,
+            message: '提取方式 必选',
+          },
+        ],
+      },
+      render: (_, record) => {
+        return <Tag color={'blue'}>{record.extraOpt}</Tag>;
+      },
+    },
+    {
       title: 'Script',
       dataIndex: 'value',
-      tooltip: 'json&cookie:语法为jsonpath; \n text:语法为正则',
+      tooltip: 'json&cookie:语法为jsonpath&jemspath; \n text:语法为正则',
       valueType: 'textarea',
       width: '40%',
       formItemProps: {

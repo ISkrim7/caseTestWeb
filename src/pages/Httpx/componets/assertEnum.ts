@@ -28,6 +28,9 @@ export const ExtraOpt = {
   jsonpath: {
     text: 'jsonpath',
   },
+  jmespath: {
+    text: 'jmespath',
+  },
   re: {
     text: 're',
   },

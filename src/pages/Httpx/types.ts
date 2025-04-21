@@ -176,6 +176,7 @@ export interface IHeaders extends IBase {}
 
 export interface IExtracts extends IBase {
   target?: string;
+  extraOpt?: string;
 }
 
 export interface IBeforeSQLExtract {

@@ -34,6 +34,7 @@ const InterAsserts: FC<SelfProps> = ({ form, mode }) => {
       dataIndex: 'extraOpt',
       valueEnum: ExtraOpt,
       valueType: 'select',
+      initialValue: ExtraOpt.jmespath.text,
       formItemProps: {
         required: true,
         rules: [

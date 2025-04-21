@@ -28,7 +28,7 @@ const APIFormData: FC<SelfProps> = ({ form }) => {
   const [dataEditableKeys, setDataEditableRowKeys] = useState<React.Key[]>();
   const editorFormRef = useRef<EditableFormInstance<IFromData>>();
 
-  const uploadData = async (info: any, index: number) => {
+  const uploadData = async (info: any, index: number | undefined) => {
     const formData = new FormData();
     const file = info.fileList[0]?.originFileObj;
     console.log('file', file);
@@ -46,8 +46,8 @@ const APIFormData: FC<SelfProps> = ({ form }) => {
 
       // 更新表单和编辑状态
       form.setFieldsValue({ data: newData });
-      editorFormRef.current?.setRowData?.(index, {
-        ...currentData[index],
+      editorFormRef.current?.setRowData?.(index!, {
+        ...currentData[index!],
         value: data,
       });
     }

@@ -38,7 +38,6 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
       setTabDisabled(false);
     }
   }, [caseResultId]);
-
   // 核心逻辑，处理socket连接相关，根据openStatus和caseApiId来建立或清理连接
   useEffect(() => {
     let socket: Socket | undefined;

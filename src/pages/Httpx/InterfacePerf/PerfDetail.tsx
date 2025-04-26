@@ -74,7 +74,7 @@ const PerfDetail = () => {
   useEffect(() => {
     let socket: Socket | undefined;
     const createSocket = () => {
-      socket = io('ws://localhost:5050/ws', {
+      socket = io('ws://127.0.0.1:5050/ws', {
         query: { clientId: initialState?.currentUser?.uid },
         transports: ['websocket'],
         path: '/ws/socket.io',
@@ -84,7 +84,8 @@ const PerfDetail = () => {
         console.log('connect socket');
       });
 
-      socket.on('data_message', (data) => {
+      socket.on('api_message', (data) => {
+        console.log(data);
         // Incrementally update the data
         setStatus(data.status);
         setCurrentRps(data.total_rps);

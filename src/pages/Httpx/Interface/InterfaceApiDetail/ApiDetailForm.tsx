@@ -131,6 +131,26 @@ const ApiDetailForm: FC<IProps> = (props) => {
       children: <InterBody form={interApiForm} mode={currentMode} />,
     },
   ];
+
+  /**
+   * 导入curl 只有首次创建 渲染
+   */
+  const InputCURL = (
+    <>
+      {currentMode === 2 && (
+        <span style={{ float: 'right' }}>
+          <CodeOutlined style={{ color: 'gray' }} />
+          <Button
+            type={'link'}
+            style={{ color: 'gray' }}
+            onClick={() => setIsModalOpen(true)}
+          >
+            CURL 快速导入
+          </Button>
+        </span>
+      )}
+    </>
+  );
   return (
     <>
       <Modal
@@ -148,18 +168,7 @@ const ApiDetailForm: FC<IProps> = (props) => {
           value={script}
         />
       </Modal>
-      {currentMode === 2 && (
-        <span style={{ float: 'right' }}>
-          <CodeOutlined style={{ color: 'gray' }} />
-          <Button
-            type={'link'}
-            style={{ color: 'gray' }}
-            onClick={() => setIsModalOpen(true)}
-          >
-            CURL 快速导入
-          </Button>
-        </span>
-      )}
+      {InputCURL}
       <ProForm.Group>
         <ProFormText
           disabled={currentMode === 1}

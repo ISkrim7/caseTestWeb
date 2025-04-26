@@ -44,6 +44,21 @@ export const pageInterApi = async (data: any, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
+/**
+ * 接口导出
+ * @param moduleId
+ * @param opt
+ */
+export const outPutInter2Yaml = async (moduleId: number, opt?: IObjGet) => {
+  return request<IResponse<Blob>>('/api/interface/apisInfo/yaml', {
+    method: 'GET',
+    params: { moduleId: moduleId },
+    ...(opt || {
+      responseType: 'blob', // 重要：告诉axios我们期望二进制数据
+    }),
+  });
+};
 /**
  * page api
  * @param data

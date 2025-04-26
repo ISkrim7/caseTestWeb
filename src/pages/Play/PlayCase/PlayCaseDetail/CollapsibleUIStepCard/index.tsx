@@ -104,7 +104,6 @@ const Index: FC<ISelfProps> = ({
         >
           DETAIL
         </Button>
-
         <Popconfirm
           title={'确认删除？'}
           description={'非公共步骤会彻底删除'}

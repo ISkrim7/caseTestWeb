@@ -42,10 +42,14 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
   useEffect(() => {
     let socket: Socket | undefined;
     const createSocket = () => {
-      socket = io('ws://localhost:5050/ws', {
-        query: { clientId: initialState?.currentUser?.uid },
+      socket = io('ws://localhost:5050/api_namespace', {
+        query: {
+          clientId: initialState?.currentUser?.uid,
+          EIO: 4,
+        },
+        upgrade: false, // 禁止降级
         transports: ['websocket'],
-        path: '/ws/socket.io',
+        path: '/socket.io',
       });
 
       socket.on('connect', () => {

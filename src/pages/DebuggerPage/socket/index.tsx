@@ -1,3 +1,4 @@
+import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import MyTabs from '@/components/MyTabs';
 import SocketAceMsg from '@/pages/DebuggerPage/socket/SocketAceMsg';
 import SocketEvent from '@/pages/DebuggerPage/socket/SocketEvent';
@@ -10,11 +11,13 @@ import { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
 function App() {
-  const [socket, setSocket] = useState<Socket | null>(null);
   const { initialState } = useModel('@@initialState');
   const currentUser = initialState?.currentUser;
-  const [socketUrl, setSocketUrl] = useState<string>();
-  const [socketMsg, setSocketMsg] = useState<string>();
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [socketUrl, setSocketUrl] = useState<string>(
+    'ws://localhost:5050?clientId=' + currentUser?.uid,
+  );
+  const [logMessage, setLogMessage] = useState<any>();
 
   useEffect(() => {
     return () => {
@@ -57,6 +60,13 @@ function App() {
     });
   };
 
+  const onMsgCallback = async (data: any) => {
+    if (typeof data === 'object') {
+      setLogMessage(JSON.stringify(data));
+    } else {
+      setLogMessage(data);
+    }
+  };
   const socketItems: TabsProps['items'] = [
     {
       key: '1',
@@ -68,13 +78,16 @@ function App() {
       key: '2',
       label: '事件',
       icon: <PushpinOutlined />,
-      children: <SocketEvent socket={socket} />,
+      children: <SocketEvent socket={socket} callback={onMsgCallback} />,
     },
   ];
   return (
     <ProCard split="horizontal">
       <ProCard>
         <Input.Search
+          placeholder="请输入 Socket URL"
+          allowClear
+          value={socketUrl}
           addonBefore={<Connection theme="outline" />}
           enterButton={
             <Button type={'primary'} onClick={onConnect}>
@@ -88,6 +101,10 @@ function App() {
       </ProCard>
       <ProCard>
         <MyTabs defaultActiveKey={'1'} items={socketItems} />
+      </ProCard>
+
+      <ProCard style={{ marginTop: 20 }} title={'实时响应'}>
+        <AceCodeEditor _mode={'json'} value={logMessage} />
       </ProCard>
     </ProCard>
   );

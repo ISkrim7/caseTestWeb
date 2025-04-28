@@ -3,21 +3,21 @@ import {
   EditableProTable,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { Tag } from 'antd';
 import React, { FC, useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
 
 interface ISocketEventProps {
-  event: string;
-  listen: boolean;
+  event_name: string;
+  listen_switch: boolean;
   desc?: string;
 }
 
 interface SelfProps {
   socket: Socket | null;
+  callback: (data: any) => Promise<void>;
 }
 
-const SocketEvent: FC<SelfProps> = ({ socket }) => {
+const SocketEvent: FC<SelfProps> = ({ socket, callback }) => {
   const [dataSource, setDataSource] = React.useState<
     readonly ISocketEventProps[]
   >([]);
@@ -28,29 +28,33 @@ const SocketEvent: FC<SelfProps> = ({ socket }) => {
   const columns: ProColumns<ISocketEventProps>[] = [
     {
       title: '事件名',
-      dataIndex: 'event',
-      key: 'event',
+      dataIndex: 'event_name',
       width: '40%',
-      render: (text: any, record: any, index: number) => {
-        return <Tag color={'blue'}>{text}</Tag>;
-      },
     },
     {
       title: '监听',
-      dataIndex: 'listen',
-      key: 'listen',
+      dataIndex: 'listen_switch',
       valueType: 'switch',
       width: '20%',
-    },
-    {
-      title: '描述',
-      dataIndex: 'desc',
-      key: 'desc',
-      width: '40%',
+      fieldProps: (form, { rowKey, rowIndex }) => {
+        const record = dataSource[rowIndex];
+        return {
+          checkedChildren: '开启',
+          unCheckedChildren: '关闭',
+          disabled: !socket?.connected || !record?.event_name,
+          onChange: (checked: boolean, event: Event) => {
+            if (checked) {
+              socket?.on(record.event_name, callback);
+            } else {
+              socket?.off(record.event_name);
+            }
+          },
+        };
+      },
     },
   ];
   return (
-    <EditableProTable<ISocketEventProps>
+    <EditableProTable
       editableFormRef={editorFormRef}
       dataSource={dataSource}
       rowKey={'id'}
@@ -59,6 +63,8 @@ const SocketEvent: FC<SelfProps> = ({ socket }) => {
         newRecordType: 'dataSource',
         record: () => ({
           id: Date.now(),
+          listen_switch: false,
+          event_name: 'message',
         }),
       }}
       onChange={setDataSource}

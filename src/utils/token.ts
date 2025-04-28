@@ -10,11 +10,9 @@ export function clearToken() {
   return localStorage.clear();
 }
 
-
-
 export const setThem = (t: string) => {
-  return localStorage.setItem('them', t);
+  return localStorage.setItem('theme', t);
 };
 export const getThem = () => {
-  return localStorage.getItem('them');
+  return localStorage.getItem('theme');
 };

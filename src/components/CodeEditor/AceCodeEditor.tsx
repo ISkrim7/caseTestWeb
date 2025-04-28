@@ -4,9 +4,11 @@ import 'ace-builds/src-noconflict/mode-json.js';
 import 'ace-builds/src-noconflict/mode-mysql.js';
 import 'ace-builds/src-noconflict/mode-python.js';
 import 'ace-builds/src-noconflict/mode-text.js';
+import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/theme-twilight';
 import { FC, useState } from 'react';
 import AceEditor from 'react-ace';
+import { useModel } from 'umi';
 
 interface selfProps {
   value?: any;
@@ -31,6 +33,12 @@ const AceCodeEditor: FC<selfProps> = (props) => {
     wrap = true,
   } = props;
   const [mode, setMode] = useState(_mode);
+  const { initialState, setInitialState } = useModel('@@initialState');
+  const currentTheme = initialState?.theme || 'light'; // 统一使用 theme 拼写
+  // 直接使用 currentTheme 决定 UI
+  const editorTheme = currentTheme === 'realDark' ? 'twilight' : 'ambiance';
+  console.log(editorTheme);
+
   return (
     // @param onChange - 当代码内容发生变化时的回调函数
     // @param showGutter - 是否显示行号
@@ -41,7 +49,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
     // @param setOptions - 编辑器的配置选项
     <AceEditor
       style={{ borderRadius: 10 }}
-      theme="twilight"
+      theme={editorTheme}
       mode={mode}
       readOnly={readonly || false}
       height={height || '100%'}
@@ -67,11 +75,12 @@ const AceCodeEditor: FC<selfProps> = (props) => {
         tabSize: 4,
         behavioursEnabled: true,
         readOnly: readonly || false,
-        enableLiveAutocompletion: false,
+        enableLiveAutocompletion: true,
         autoScrollEditorIntoView: true,
         useWorker: true,
         useSoftTabs: true,
       }}
+      key={`${editorTheme}-${mode}`} // 关键修复：添加key强制重新渲染
     />
   );
 };

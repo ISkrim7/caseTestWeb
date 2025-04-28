@@ -2,7 +2,7 @@ import 'ace-builds/src-noconflict/ace';
 import 'ace-builds/src-noconflict/mode-html.js';
 import 'ace-builds/src-noconflict/mode-json.js';
 import 'ace-builds/src-noconflict/theme-twilight';
-import { Button, message, Select } from 'antd';
+import { Button, Input, message, Select, Space } from 'antd';
 import { FC, useState } from 'react';
 import AceEditor from 'react-ace';
 import { Socket } from 'socket.io-client';
@@ -14,7 +14,7 @@ interface SelfProps {
 const SocketAceMsg: FC<SelfProps> = ({ socket }) => {
   const [msgMode, setMsgMode] = useState<string>('text');
   const [socketMsg, setSocketMsg] = useState<string>();
-
+  const [eventName, setEventName] = useState<string>('message');
   const sendSocketMsg = async () => {
     console.log(socket);
     if (!socket || !socket?.connected) {
@@ -26,7 +26,7 @@ const SocketAceMsg: FC<SelfProps> = ({ socket }) => {
       return;
     }
     if (socket?.connected) {
-      socket.emit('message', socketMsg);
+      socket.emit(eventName, socketMsg);
     }
   };
 
@@ -89,9 +89,15 @@ const SocketAceMsg: FC<SelfProps> = ({ socket }) => {
             setMsgMode(value);
           }}
         />
-        <Button style={{ marginLeft: 'auto' }} onClick={sendSocketMsg}>
-          Send
-        </Button>
+        <div style={{ marginLeft: 'auto' }}>
+          <Space>
+            <Input
+              defaultValue={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+            />
+            <Button onClick={sendSocketMsg}>Send</Button>
+          </Space>
+        </div>
       </div>
     </div>
   );

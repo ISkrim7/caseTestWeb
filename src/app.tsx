@@ -2,16 +2,16 @@ import { IUser } from '@/api';
 import { currentUser, queryProject } from '@/api/base';
 import RightContent from '@/components/RightContent';
 import { errorConfig } from '@/requestErrorConfig';
-import { getThem } from '@/utils/token';
 import { RequestConfig } from '@@/plugin-request/request';
 import { PageLoading } from '@ant-design/pro-components';
 import { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { ConfigProvider } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { history, RunTimeLayoutConfig } from 'umi';
 import defaultSetting from '../config/defaultSetting';
 
 const loginPath = '/userLogin';
+type ThemeType = 'realDark' | 'light';
 
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
@@ -20,7 +20,17 @@ export async function getInitialState(): Promise<{
   projects?: { label: string; value: number }[];
   fetchUserInfo?: () => Promise<IUser | undefined>;
   refreshProjects?: () => Promise<{ label: string; value: number }[]>; // 添加刷新方法
+  theme?: ThemeType; //主题
+  setTheme?: (theme: ThemeType) => void; // 新增设置主题方法
 }> {
+  // 获取主题函数 - 从 localStorage 读取或使用默认值
+  const getTheme = () => {
+    return localStorage.getItem('theme') || 'light'; // 确保 key 一致
+  };
+  const setTheme = (theme: string): ThemeType => {
+    localStorage.setItem('theme', theme); // 持久化到 localStorage
+    return theme as ThemeType;
+  };
   //当前用户信息
   const fetchUserInfo = async () => {
     try {
@@ -37,7 +47,6 @@ export async function getInitialState(): Promise<{
   const fetchProjects = async (): Promise<
     { label: string; value: number }[]
   > => {
-    console.log('query projects from app');
     try {
       const { code, data } = await queryProject();
       if (code === 0) {
@@ -68,12 +77,16 @@ export async function getInitialState(): Promise<{
       fetchUserInfo,
       currentUser,
       projects,
+      theme: getTheme(), // 初始化时从存储读取
+      setTheme, // 暴露设置主题方法
       settings: defaultSetting,
     };
   }
   return {
     fetchUserInfo,
     refreshProjects, // 即使未登录也暴露方法
+    theme: getTheme(), // 初始化时从存储读取
+    setTheme, // 暴露设置主题方法
     settings: defaultSetting,
   };
 }
@@ -84,15 +97,18 @@ export const layout: RunTimeLayoutConfig = ({
   setInitialState,
 }) => {
   const [coll, setColl] = useState(false);
-  const [currentThem, setCurrentThem] = useState<any>();
   console.log('==current_user==', initialState?.currentUser?.username);
+  const currentThem = initialState?.theme || 'light';
 
-  useEffect(() => {
-    const them = getThem();
-    if (them) {
-      setCurrentThem(them);
-    }
-  }, []);
+  const toggleTheme = () => {
+    const newTheme = currentThem === 'light' ? 'realDark' : 'light';
+    initialState?.setTheme?.(newTheme);
+    setInitialState({
+      ...initialState,
+      theme: newTheme,
+    });
+  };
+
   return {
     navTheme: currentThem,
     disableContentMargin: true,
@@ -121,8 +137,8 @@ export const layout: RunTimeLayoutConfig = ({
     rightContentRender: () => (
       <RightContent
         coll={coll}
-        initialState={initialState}
-        setInitialState={setInitialState}
+        currentTheme={currentThem} // 只传递当前主题值
+        toggleTheme={toggleTheme} // 只传递切换函数
       />
     ),
     ...initialState?.settings,

@@ -1,54 +1,44 @@
-import { getThem, setThem } from '@/utils/token';
 import { Space, Switch } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import Avatar from './AvatarDropdown';
 
+type ThemeType = 'realDark' | 'light';
+
 interface SelfProps {
-  initialState: any;
-  setInitialState: any;
   coll: boolean;
+  currentTheme: string;
+  toggleTheme: (t: ThemeType) => void;
 }
 
 const GlobalHeaderRight: FC<SelfProps> = ({
   coll,
-  initialState,
-  setInitialState,
+  currentTheme,
+  toggleTheme,
 }) => {
-  const [defaultChecked, setDefaultChecked] = useState<boolean>(false); // true light false dark
+  // 根据当前主题初始化 Switch 状态
+  const [switchChecked, setSwitchChecked] = useState<boolean>(
+    currentTheme === 'realDark',
+  );
+
+  // 当外部 currentTheme 变化时同步更新 Switch 状态
   useEffect(() => {
-    const them = getThem();
-    console.log('====right========', them);
-    if (them && them === 'realDark') {
-      setDefaultChecked(true);
-    } else {
-      setDefaultChecked(false);
-    }
-  }, []);
-  const onChange = (checked: boolean) => {
-    console.log('====', checked);
-    setDefaultChecked(checked);
-    if (checked) {
-      setThem('realDark');
-    } else {
-      setThem('light');
-    }
-    const newSettings = {
-      ...initialState.settings,
-      navTheme: checked ? 'realDark' : 'light',
-    };
-    setInitialState({ ...initialState, settings: newSettings });
+    setSwitchChecked(currentTheme === 'realDark');
+  }, [currentTheme]);
+
+  const handleThemeChange = (checked: boolean) => {
+    setSwitchChecked(checked);
+    toggleTheme(checked ? 'realDark' : 'light');
   };
   return (
     <Space direction={!coll ? 'horizontal' : 'vertical'}>
       <Avatar coll={coll} />
       {!coll && (
         <Switch
-          value={defaultChecked}
-          defaultChecked={defaultChecked}
+          checked={switchChecked} // 使用 controlled component
           style={{ marginLeft: 10 }}
           checkedChildren={'🌛'}
           unCheckedChildren={'🌞'}
-          onChange={onChange}
+          onChange={handleThemeChange}
         />
       )}
     </Space>

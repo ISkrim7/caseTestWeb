@@ -1,5 +1,6 @@
 import {
   copyInterApiById,
+  outPutInter2Yaml,
   pageInterApi,
   removeInterApiById,
 } from '@/api/inter';
@@ -7,9 +8,9 @@ import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
-import { PlusOutlined } from '@ant-design/icons';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Popconfirm, Tag } from 'antd';
+import { Button, message, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef } from 'react';
 import { history } from 'umi';
 
@@ -163,6 +164,19 @@ const Index: FC<SelfProps> = ({
         >
           <PlusOutlined />
           添加接口
+        </Button>,
+        <Button
+          type={'primary'}
+          onClick={async () => {
+            if (currentModuleId) {
+              await outPutInter2Yaml(currentModuleId);
+            } else {
+              message.warning('请选择模块');
+            }
+          }}
+        >
+          <DownOutlined />
+          接口导出
         </Button>,
       ]}
     />

@@ -3,6 +3,7 @@ import {
   ProCard,
   ProForm,
   ProFormDigit,
+  ProFormDigitRange,
   ProFormText,
 } from '@ant-design/pro-components';
 import { Button, Form } from 'antd';
@@ -90,6 +91,24 @@ const InterPerf: FC<IProps> = ({ interfaceId }) => {
                 message: '请输入并发时常',
               },
             ]}
+          />
+          <ProFormDigitRange
+            tooltip={'输入一个时间范围，每个User请求等待将会随机选择'}
+            label="请求等待时间"
+            name="wait_range"
+            separator="-"
+            placeholder={['Min', 'Max']}
+            separatorWidth={60}
+            rules={[
+              {
+                required: true,
+                message: '请输入请求等待时间',
+              },
+            ]}
+            initialValue={[0, 0]}
+            fieldProps={{
+              suffix: <span>秒</span>,
+            }}
           />
         </ProForm.Group>
       </ProForm>

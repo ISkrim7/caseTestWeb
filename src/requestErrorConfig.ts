@@ -27,8 +27,32 @@ const requestInterceptors = async (url: string, options: RequestConfig) => {
 };
 const loginPath = '/userLogin';
 
+const isBlob = async (response: any) => {
+  if (response.data instanceof Blob) {
+    // 从响应头获取文件名或使用默认文件名
+    const contentDisposition = response.headers['content-disposition'];
+    const finalFileName = contentDisposition?.match(/filename="?(.+)"?/)?.pop();
+
+    // 创建下载链接
+    const url = window.URL.createObjectURL(response.data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = finalFileName;
+    document.body.appendChild(link);
+    link.click();
+
+    // 清理
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }, 100);
+  }
+};
+
 const responseInterceptors = async (response: any) => {
   const data = response.data;
+
+  await isBlob(response);
 
   if (data.code !== 0) {
     console.log('responseInterceptors', data);

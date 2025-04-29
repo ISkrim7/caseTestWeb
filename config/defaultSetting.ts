@@ -6,10 +6,10 @@ const Settings: LayoutSettings & {
   logo?: string;
   apiUrl?: string;
 } = {
-  // 修改左上角的 logo
+  logo: '/icons/logo.png',
   colorPrimary: '#1677ff',
   // 设置标题的 title
-  title: 'Case Hub',
+  title: 'Case.Hub',
   layout: 'side',
   menu: {
     type: 'sub',

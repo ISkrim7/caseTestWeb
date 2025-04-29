@@ -138,7 +138,6 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
         <AceCodeEditor
           value={logMessage.join('\n')}
           height="100vh"
-          wrap={false}
           readonly={true}
         />
       ),

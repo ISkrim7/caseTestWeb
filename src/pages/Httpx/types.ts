@@ -100,6 +100,7 @@ export interface IInterfaceAPITask extends IBaseField {
 }
 
 export interface ITryResponseInfo extends IBaseField {
+  request_time: string;
   interfaceID: number;
   interfaceGroupId: number;
   interfaceName: string;
@@ -222,6 +223,7 @@ export interface IVariable {
 }
 
 export interface IInterfaceResultByCase {
+  startTime: string;
   groupId: number | null;
   groupName: string;
   groupDesc: string;

@@ -5,10 +5,8 @@ import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/theme-ambiance';
-import 'ace-builds/src-noconflict/theme-cloud_editor_dark';
-import 'ace-builds/src-noconflict/theme-solarized_light';
 import 'ace-builds/src-noconflict/theme-twilight';
+import 'ace-builds/src-noconflict/theme-xcode';
 import { FC, useRef } from 'react';
 import AceEditor from 'react-ace';
 import { useModel } from 'umi';
@@ -35,8 +33,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
   } = props;
   const { initialState } = useModel('@@initialState');
   const currentTheme = initialState?.theme || 'light'; // 统一使用 theme 拼写
-  const editorTheme =
-    currentTheme === 'realDark' ? 'twilight' : 'solarized_light';
+  const editorTheme = currentTheme === 'realDark' ? 'twilight' : 'xcode';
 
   return (
     // @param onChange - 当代码内容发生变化时的回调函数

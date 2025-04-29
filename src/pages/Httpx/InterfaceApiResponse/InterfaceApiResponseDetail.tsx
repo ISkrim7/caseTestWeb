@@ -6,7 +6,7 @@ import RespProTable from '@/pages/Httpx/InterfaceApiResponse/RespProTable';
 import { IInterfaceResultByCase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
-import { Tabs, Tag, Typography } from 'antd';
+import { Space, Tabs, Tag, Typography } from 'antd';
 import { FC, useState } from 'react';
 
 const { Text } = Typography;
@@ -23,28 +23,134 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
 
   const tabExtra = (response: IInterfaceResultByCase) => {
     if (!response.response_status) return null;
-    const { response_status, useTime } = response;
+    const { response_status, useTime, startTime } = response;
     const { color, text = '' } = API_STATUS[response_status!] || {
       color: '#F56C6C',
       text: '',
     };
     return (
-      <div>
-        <span>
-          Method:
-          <span style={{ color: color, marginLeft: 8, marginRight: 8 }}>
-            {response.request_method}
-          </span>
-          Status_Code:
-          <span style={{ color, marginLeft: 8, marginRight: 8 }}>
-            {response_status}
-            <span> {text}</span>
-          </span>
-          <span style={{ marginLeft: 8, marginRight: 8 }}>
-            Use_Time: <span style={{ color: '#67C23A' }}>{useTime}</span>
-          </span>
-        </span>
-      </div>
+      <Space
+        size={12}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          rowGap: 8,
+          padding: '8px 12px',
+          backgroundColor: '#f8f9fa',
+          borderRadius: 6,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 12,
+            fontSize: 14,
+          }}
+        >
+          {/* Method 标签 */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span
+              style={{
+                color: '#6c757d',
+                fontWeight: 500,
+                marginRight: 4,
+              }}
+            >
+              Method:
+            </span>
+            <span
+              style={{
+                color: color,
+                fontWeight: 600,
+                padding: '2px 8px',
+                backgroundColor: `${color}10`,
+                borderRadius: 4,
+              }}
+            >
+              {response.request_method}
+            </span>
+          </div>
+
+          {/* Status Code 标签 */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span
+              style={{
+                color: '#6c757d',
+                fontWeight: 500,
+                marginRight: 4,
+              }}
+            >
+              Status:
+            </span>
+            <span
+              style={{
+                color: color,
+                fontWeight: 600,
+                padding: '2px 8px',
+                backgroundColor: `${color}10`,
+                borderRadius: 4,
+              }}
+            >
+              {response_status}
+              {text && <span style={{ marginLeft: 4 }}>{text}</span>}
+            </span>
+          </div>
+
+          {/* Time 标签组 */}
+          <div
+            style={{
+              display: 'flex',
+              gap: 12,
+              alignItems: 'center',
+            }}
+          >
+            {/* Request Time */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span
+                style={{
+                  color: '#6c757d',
+                  fontWeight: 500,
+                  marginRight: 4,
+                }}
+              >
+                Request_Time:
+              </span>
+              <span
+                style={{
+                  color: '#67C23A',
+                  fontWeight: 600,
+                }}
+              >
+                {startTime}
+              </span>
+            </div>
+
+            {/* Use Time */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span
+                style={{
+                  color: '#6c757d',
+                  fontWeight: 500,
+                  marginRight: 4,
+                }}
+              >
+                Latency:
+              </span>
+              <span
+                style={{
+                  color: '#67C23A',
+                  fontWeight: 600,
+                }}
+              >
+                {useTime}ms
+              </span>
+            </div>
+          </div>
+        </div>
+      </Space>
     );
   };
 
@@ -67,12 +173,14 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   const setDesc = (text: string) => {
     return text?.length > 8 ? text?.slice(0, 8) + '...' : text;
   };
+
   return (
     <div>
       {responses?.map((item: any, index: number) => {
         if (item.groupId) {
           return (
             <ProCard
+              key={index}
               bodyStyle={{ padding: 10 }}
               extra={tabExtra(item)}
               bordered

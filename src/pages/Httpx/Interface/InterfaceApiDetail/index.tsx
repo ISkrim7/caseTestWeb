@@ -10,11 +10,11 @@ import { addInterfaceGroupApi } from '@/api/inter/interGroup';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
-import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterDoc from '@/pages/Httpx/componets/InterDoc';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterPerf from '@/pages/Httpx/componets/InterPerf';
+import ApiAfterItems from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiAfterItems';
 import ApiBaseForm from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiBaseForm';
 import ApiBeforeItems from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiBeforeItems';
 import ApiDetailForm from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiDetailForm';
@@ -27,7 +27,6 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   FormOutlined,
-  PythonOutlined,
   QuestionCircleOutlined,
   SaveOutlined,
   SendOutlined,
@@ -40,7 +39,6 @@ import {
   Form,
   message,
   Spin,
-  Tabs,
   TabsProps,
   Tooltip,
 } from 'antd';
@@ -298,13 +296,7 @@ const Index: FC<SelfProps> = ({
       label: '后置动作',
       icon: <FormOutlined />,
       children: (
-        <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
-          <Tabs tabPosition={'left'}>
-            <Tabs.TabPane key={'1'} icon={<PythonOutlined />} tab={'添加脚本'}>
-              <InterAfterScript form={interApiForm} mode={currentMode} />
-            </Tabs.TabPane>
-          </Tabs>
-        </ProCard>
+        <ApiAfterItems interApiForm={interApiForm} currentMode={currentMode} />
       ),
     },
     ...(interId

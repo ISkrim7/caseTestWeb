@@ -10,7 +10,7 @@ import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Tag } from 'antd';
-import { FC, useCallback, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
@@ -24,17 +24,29 @@ const Index: FC<SelfProps> = ({
   perKey,
 }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     actionRef.current?.reload();
   }, [currentModuleId, currentProjectId]);
+
+  // 使用useCallback优化请求函数
   const fetchInterfaceGroup = useCallback(
     async (params: any) => {
-      const { code, data } = await pageInterfaceGroup({
-        ...params,
-        module_id: currentModuleId,
-        module_type: ModuleEnum.API,
-      });
-      return pageData(code, data);
+      try {
+        setLoading(true);
+        const { code, data } = await pageInterfaceGroup({
+          ...params,
+          module_id: currentModuleId,
+          module_type: ModuleEnum.API,
+        });
+        return pageData(code, data);
+      } catch (error) {
+        console.error('获取接口组列表失败:', error);
+        return { success: false, data: [] };
+      } finally {
+        setLoading(false);
+      }
     },
     [currentModuleId],
   );
@@ -122,6 +134,7 @@ const Index: FC<SelfProps> = ({
       persistenceKey={perKey}
       columns={columns}
       rowKey={'id'}
+      loading={loading}
       x={800}
       actionRef={actionRef}
       request={fetchInterfaceGroup}

@@ -67,6 +67,7 @@ const Index: FC<SelfProps> = ({
       title: '方法',
       dataIndex: 'method',
       valueType: 'select',
+      key: 'method',
       valueEnum: CONFIG.API_METHOD_ENUM,
       search: false,
       filters: true,
@@ -78,6 +79,7 @@ const Index: FC<SelfProps> = ({
     {
       title: '优先级',
       dataIndex: 'level',
+      key: 'level',
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
       search: false,
@@ -91,6 +93,7 @@ const Index: FC<SelfProps> = ({
       title: '状态',
       dataIndex: 'status',
       valueType: 'select',
+      key: 'status',
       search: false,
       filters: true,
       onFilter: true,
@@ -102,6 +105,7 @@ const Index: FC<SelfProps> = ({
     {
       title: '创建人',
       dataIndex: 'creatorName',
+      key: 'creatorName',
       render: (_, record) => {
         return <Tag color={'orange'}>{record.creatorName}</Tag>;
       },

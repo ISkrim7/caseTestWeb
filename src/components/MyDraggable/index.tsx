@@ -48,11 +48,11 @@ const Index: FC<ISelfProps> = (props) => {
               //   : (currentTheme === 'realDark' ? '#1a202c' : '#fff'),
               background: snapshot.isDraggingOver
                 ? currentTheme === 'realDark'
-                  ? '#2C3E50'
-                  : '#F0F2F5'
+                  ? '#c2a5de'
+                  : '#cacfd6'
                 : currentTheme === 'realDark'
-                ? '#1A2634'
-                : '#FFFFFF',
+                ? '#f0eaf5'
+                : '#f9f5ec',
               padding: '10px',
               borderRadius: '10px',
               border: items.length === 0 ? 0 : '1px solid #e0e0e0',

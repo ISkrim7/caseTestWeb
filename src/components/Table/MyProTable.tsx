@@ -1,13 +1,13 @@
 import titleName from '@/components/TitleName';
-import { ActionType, ProCard, ProTable } from '@ant-design/pro-components';
+import { ProCard, ProTable } from '@ant-design/pro-components';
+import { SearchConfig } from '@ant-design/pro-table/es/components/Form/FormRender';
 import { OptionsFunctionType } from '@ant-design/pro-table/es/components/ToolBar';
-import { ProColumns } from '@ant-design/pro-table/lib/typing';
+import type { ActionType, ProColumns } from '@ant-design/pro-table/lib/typing';
 import { TablePaginationConfig, TableProps } from 'antd';
 import { TableProps as RcTableProps } from 'rc-table/lib/Table';
 import { FC, MutableRefObject } from 'react';
 
-// @ts-ignore
-interface SelfProps extends ProTableProps<any> {
+interface SelfProps {
   headerTitle?: string;
   columns: ProColumns[];
   request?: (params: any, sort: any) => Promise<any>;
@@ -49,6 +49,19 @@ const MyProTable: FC<SelfProps> = (props) => {
     ...otherProps
   } = props;
 
+  // 默认分页配置
+  const defaultPagination: TablePaginationConfig = {
+    showQuickJumper: true,
+    defaultPageSize: 20,
+    showSizeChanger: true,
+    pageSizeOptions: ['10', '20', '50', '100'],
+  };
+
+  // 默认搜索配置
+  const defaultSearchConfig: SearchConfig = {
+    labelWidth: 'auto',
+    showHiddenNum: true,
+  };
   return (
     <ProCard style={{ height: height }}>
       <ProTable
@@ -72,19 +85,7 @@ const MyProTable: FC<SelfProps> = (props) => {
         }}
         rowKey={rowKey}
         rowSelection={rowSelection || false}
-        search={
-          search
-            ? {
-                // layout: 'vertical',
-                // split: true,
-                // filterType: 'query',
-                labelWidth: 'auto',
-                // span: 6,
-                showHiddenNum: true,
-                // defaultCollapsed: false,
-              }
-            : false
-        }
+        search={search ? defaultSearchConfig : false}
         options={{
           density: true,
           setting: {
@@ -92,13 +93,7 @@ const MyProTable: FC<SelfProps> = (props) => {
           },
           reload: reload || true,
         }}
-        pagination={
-          pagination || {
-            showQuickJumper: true,
-            defaultPageSize: 20,
-            showSizeChanger: true,
-          }
-        }
+        pagination={pagination || defaultPagination}
         dateFormatter="string"
         headerTitle={headerTitle ? titleName(headerTitle) : null}
         toolBarRender={toolBarRender}

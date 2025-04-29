@@ -10,135 +10,132 @@ import { useState } from 'react';
 import { history, RunTimeLayoutConfig } from 'umi';
 import defaultSetting from '../config/defaultSetting';
 
+// 常量定义
 const loginPath = '/userLogin';
+const THEME_KEY = 'app-theme';
 type ThemeType = 'realDark' | 'light';
 
-export async function getInitialState(): Promise<{
+// 类型定义
+interface InitialState {
   settings?: Partial<LayoutSettings>;
   currentUser?: IUser;
   loading?: boolean;
   projects?: { label: string; value: number }[];
   fetchUserInfo?: () => Promise<IUser | undefined>;
-  refreshProjects?: () => Promise<{ label: string; value: number }[]>; // 添加刷新方法
-  theme?: ThemeType; //主题
-  setTheme?: (theme: ThemeType) => void; // 新增设置主题方法
-}> {
-  // 获取主题函数 - 从 localStorage 读取或使用默认值
-  const getTheme = () => {
-    return localStorage.getItem('theme') || 'light'; // 确保 key 一致
-  };
-  const setTheme = (theme: string): ThemeType => {
-    localStorage.setItem('theme', theme); // 持久化到 localStorage
-    return theme as ThemeType;
-  };
-  //当前用户信息
-  const fetchUserInfo = async () => {
-    try {
-      const res = await currentUser();
-      return res.data;
-    } catch (error) {
-      console.log('===', error);
+  refreshProjects?: () => Promise<{ label: string; value: number }[]>;
+  theme?: ThemeType;
+  setTheme?: (theme: ThemeType) => void;
+}
+
+// 主题相关工具函数
+const themeUtils = {
+  getTheme: (): ThemeType => {
+    return (localStorage.getItem(THEME_KEY) as ThemeType) || 'light';
+  },
+  setTheme: (theme: ThemeType): void => {
+    localStorage.setItem(THEME_KEY, theme);
+  },
+};
+
+// 数据获取函数
+const fetchUserInfo = async (): Promise<IUser | undefined> => {
+  try {
+    const res = await currentUser();
+    return res.data;
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+    history.push(loginPath);
+    return undefined;
+  }
+};
+
+const fetchProjects = async (): Promise<{ label: string; value: number }[]> => {
+  try {
+    const { code, data } = await queryProject();
+    if (code === 0) {
+      return data.map((item) => ({
+        label: item.title,
+        value: item.id,
+      }));
+    }
+    if (code === 4000) {
       history.push(loginPath);
     }
-    return undefined;
+    return [];
+  } catch (error) {
+    console.error('获取项目列表失败:', error);
+    return [];
+  }
+};
+
+export async function getInitialState(): Promise<InitialState> {
+  const baseState = {
+    fetchUserInfo,
+    refreshProjects: fetchProjects,
+    theme: themeUtils.getTheme(),
+    setTheme: themeUtils.setTheme,
+    settings: defaultSetting,
   };
 
-  // 查询项目（提取为独立函数，便于复用）
-  const fetchProjects = async (): Promise<
-    { label: string; value: number }[]
-  > => {
-    try {
-      const { code, data } = await queryProject();
-      if (code === 0) {
-        return data.map((item) => ({
-          label: item.title,
-          value: item.id,
-        }));
-      } else if (code === 4000) {
-        history.push(loginPath);
-      }
-      return [];
-    } catch (error) {
-      console.error('Failed to fetch projects:', error);
-      return [];
-    }
-  };
-  const refreshProjects = async () => {
-    return await fetchProjects();
-  };
-
-  // 如果不是登录页面，执行
   if (history.location.pathname !== loginPath) {
     const [currentUser, projects] = await Promise.all([
       fetchUserInfo(),
       fetchProjects(),
     ]);
+
     return {
-      fetchUserInfo,
+      ...baseState,
       currentUser,
       projects,
-      theme: getTheme(), // 初始化时从存储读取
-      setTheme, // 暴露设置主题方法
-      settings: defaultSetting,
     };
   }
-  return {
-    fetchUserInfo,
-    refreshProjects, // 即使未登录也暴露方法
-    theme: getTheme(), // 初始化时从存储读取
-    setTheme, // 暴露设置主题方法
-    settings: defaultSetting,
-  };
+
+  return baseState;
 }
 
-// ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({
   initialState,
   setInitialState,
 }) => {
-  const [coll, setColl] = useState(false);
-  console.log('==current_user==', initialState?.currentUser?.username);
-  const currentThem = initialState?.theme || 'light';
+  const [collapsed, setCollapsed] = useState(false);
+  const currentTheme = initialState?.theme || 'light';
 
-  const toggleTheme = () => {
-    const newTheme = currentThem === 'light' ? 'realDark' : 'light';
+  const handleToggleTheme = () => {
+    const newTheme = currentTheme === 'light' ? 'realDark' : 'light';
     initialState?.setTheme?.(newTheme);
-    setInitialState({
-      ...initialState,
+    setInitialState((prev) => ({
+      ...prev,
       theme: newTheme,
-    });
+    }));
+  };
+
+  const handlePageChange = () => {
+    if (!initialState?.currentUser && history.location.pathname !== loginPath) {
+      history.push(loginPath);
+    }
   };
 
   return {
-    navTheme: currentThem,
+    navTheme: currentTheme,
     disableContentMargin: true,
-    defaultCollapsed: coll,
-    onCollapse: (collapsed) => {
-      setColl(collapsed);
-    },
+    defaultCollapsed: collapsed,
+    onCollapse: setCollapsed,
     breakpoint: false,
     waterMarkProps: {
       content: initialState?.currentUser?.username,
     },
-    onPageChange: () => {
-      const { location } = history;
-      console.log('===onPageChange===', location.pathname);
-      // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
-        history.push(loginPath);
-      }
-    },
-    // 自定义 403 页面
-    unAccessible: <div>unAccessible</div>,
-    childrenRender: (children) => {
-      if (initialState?.loading) return <PageLoading />;
-      return <ConfigProvider>{children}</ConfigProvider>;
-    },
+    onPageChange: handlePageChange,
+    unAccessible: <div>无访问权限</div>,
+    childrenRender: (children) => (
+      <ConfigProvider>
+        {initialState?.loading ? <PageLoading /> : children}
+      </ConfigProvider>
+    ),
     rightContentRender: () => (
       <RightContent
-        coll={coll}
-        currentTheme={currentThem} // 只传递当前主题值
-        toggleTheme={toggleTheme} // 只传递切换函数
+        collapsed={collapsed}
+        currentTheme={currentTheme}
+        toggleTheme={handleToggleTheme}
       />
     ),
     ...initialState?.settings,

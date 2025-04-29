@@ -5,7 +5,7 @@ import InterfaceApiTableNoModule from '@/pages/Httpx/Interface/InterfaceApiTable
 import InterfaceApiUpload from '@/pages/Httpx/Interface/InterfaceApiUpload';
 import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
-import { Splitter } from 'antd';
+import { Splitter, TabsProps } from 'antd';
 import { useState } from 'react';
 
 const Index = () => {
@@ -14,6 +14,47 @@ const Index = () => {
   const PerKey = 'InterfaceApi';
   const PerKeyNoPart = 'InterfaceApiNoPart';
   const PerGroupKey = 'InterfaceGroupApi';
+
+  const TabItems: TabsProps['items'] = [
+    {
+      key: 'api',
+      label: 'Common API',
+      children: (
+        <InterfaceApiTable
+          currentProjectId={currentProjectId}
+          currentModuleId={currentModuleId}
+          perKey={PerKey}
+        />
+      ),
+    },
+
+    {
+      key: 'group',
+      label: 'Group API',
+      children: (
+        <GroupApiTable
+          currentProjectId={currentProjectId}
+          currentModuleId={currentModuleId}
+          perKey={PerGroupKey}
+        />
+      ),
+    },
+    {
+      key: 'no part',
+      label: 'No Part API',
+      children: (
+        <InterfaceApiTableNoModule
+          currentProjectId={currentProjectId}
+          perKey={PerKeyNoPart}
+        />
+      ),
+    },
+    {
+      key: 'upload',
+      label: 'Upload API',
+      children: <InterfaceApiUpload />,
+    },
+  ];
 
   return (
     <ProCard
@@ -41,32 +82,9 @@ const Index = () => {
             bodyStyle={{ padding: 0 }}
             tabs={{
               type: 'card',
+              items: TabItems,
             }}
-          >
-            <ProCard.TabPane key="api" tab="Common API">
-              <InterfaceApiTable
-                currentProjectId={currentProjectId}
-                currentModuleId={currentModuleId}
-                perKey={PerKey}
-              />
-            </ProCard.TabPane>
-            <ProCard.TabPane key="case" tab="Group APIs">
-              <GroupApiTable
-                currentProjectId={currentProjectId}
-                currentModuleId={currentModuleId}
-                perKey={PerGroupKey}
-              />
-            </ProCard.TabPane>
-            <ProCard.TabPane key="not_part_api" tab="No Part APIs">
-              <InterfaceApiTableNoModule
-                currentProjectId={currentProjectId}
-                perKey={PerKeyNoPart}
-              />
-            </ProCard.TabPane>
-            <ProCard.TabPane key="upload" tab="Upload API">
-              <InterfaceApiUpload />
-            </ProCard.TabPane>
-          </ProCard>
+          />
         </Splitter.Panel>
       </Splitter>
     </ProCard>

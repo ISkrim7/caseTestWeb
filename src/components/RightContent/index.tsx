@@ -5,13 +5,13 @@ import Avatar from './AvatarDropdown';
 type ThemeType = 'realDark' | 'light';
 
 interface SelfProps {
-  coll: boolean;
+  collapsed: boolean;
   currentTheme: string;
   toggleTheme: (t: ThemeType) => void;
 }
 
 const GlobalHeaderRight: FC<SelfProps> = ({
-  coll,
+  collapsed,
   currentTheme,
   toggleTheme,
 }) => {
@@ -30,9 +30,9 @@ const GlobalHeaderRight: FC<SelfProps> = ({
     toggleTheme(checked ? 'realDark' : 'light');
   };
   return (
-    <Space direction={!coll ? 'horizontal' : 'vertical'}>
-      <Avatar coll={coll} />
-      {!coll && (
+    <Space direction={!collapsed ? 'horizontal' : 'vertical'}>
+      <Avatar coll={collapsed} />
+      {!collapsed && (
         <Switch
           checked={switchChecked} // 使用 controlled component
           style={{ marginLeft: 10 }}

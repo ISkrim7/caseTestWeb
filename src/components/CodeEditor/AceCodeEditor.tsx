@@ -1,8 +1,15 @@
 import 'ace-builds/src-noconflict/ace';
 import 'ace-builds/src-noconflict/ext-language_tools';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-xcode';
-import { FC } from 'react';
+import 'ace-builds/src-noconflict/mode-html';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/mode-python';
+import 'ace-builds/src-noconflict/mode-sql';
+import 'ace-builds/src-noconflict/mode-text';
+import 'ace-builds/src-noconflict/theme-ambiance';
+import 'ace-builds/src-noconflict/theme-cloud_editor_dark';
+import 'ace-builds/src-noconflict/theme-solarized_light';
+import 'ace-builds/src-noconflict/theme-twilight';
+import { FC, useRef } from 'react';
 import AceEditor from 'react-ace';
 import { useModel } from 'umi';
 
@@ -16,6 +23,8 @@ interface selfProps {
 }
 
 const AceCodeEditor: FC<selfProps> = (props) => {
+  const editorRef = useRef<any>(null);
+
   const {
     value,
     readonly,
@@ -24,11 +33,10 @@ const AceCodeEditor: FC<selfProps> = (props) => {
     _mode = 'json',
     gutter = true,
   } = props;
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { initialState } = useModel('@@initialState');
   const currentTheme = initialState?.theme || 'light'; // 统一使用 theme 拼写
-  // 直接使用 currentTheme 决定 UI
-  const editorTheme = currentTheme === 'realDark' ? 'twilight' : 'ambiance';
-  console.log(editorTheme);
+  const editorTheme =
+    currentTheme === 'realDark' ? 'twilight' : 'solarized_light';
 
   return (
     // @param onChange - 当代码内容发生变化时的回调函数
@@ -39,7 +47,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
     // @param editorProps - 编辑器的其他属性设置
     // @param setOptions - 编辑器的配置选项
     <AceEditor
-      style={{ borderRadius: 10 }}
+      style={{ borderRadius: 20 }}
       theme={editorTheme}
       mode={_mode}
       readOnly={readonly || false}
@@ -53,7 +61,6 @@ const AceCodeEditor: FC<selfProps> = (props) => {
       enableBasicAutocompletion={true} //启用基本自动补全
       enableLiveAutocompletion={true} //启用实时自动补全
       wrapEnabled={true} // 是否启用代码自动换行
-      enableSnippets={true} //摘要
       highlightActiveLine={true}
       editorProps={{
         $blockScrolling: true,
@@ -74,7 +81,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
         useWorker: true,
         useSoftTabs: true,
       }}
-      key={`${editorTheme}-${_mode}`} // 关键修复：添加key强制重新渲染
+      key={`${editorTheme}_${_mode}`} // 关键修复：添加key强制重新渲染
     />
   );
 };

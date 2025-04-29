@@ -1,4 +1,3 @@
-import { clearToken } from '@/utils/token';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, MenuProps, Spin } from 'antd';
 import React from 'react';
@@ -51,14 +50,12 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ coll }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-
       label: (
         <a
           target="_blank"
           onClick={() => {
             setInitialState((s) => ({ ...s, currentUser: undefined }));
-            clearToken();
-            history.push('/login');
+            history.push('/userLogin');
             return;
           }}
         >

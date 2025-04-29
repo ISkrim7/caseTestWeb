@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
 import { ProCard } from '@ant-design/pro-components';
-import { Tabs } from 'antd';
+import { TabsProps } from 'antd';
 
-import UserInfo from '@/pages/User/Center/components/userInfo';
+import MyTabs from '@/components/MyTabs';
 import SetPwd from '@/pages/User/Center/components/setPwd';
+import UserInfo from '@/pages/User/Center/components/userInfo';
 
 const Index = () => {
-  const [activeKey, setActiveKey] = useState('2');
-
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: '修改密码',
+      children: <SetPwd />,
+    },
+    {
+      key: '2',
+      label: '信息',
+      children: <UserInfo />,
+    },
+  ];
   return (
     <>
       <ProCard bordered style={{ height: '100vh' }}>
-        <Tabs
+        <MyTabs
+          title={'用户中心'}
           tabPosition={'left'}
-          activeKey={activeKey}
-          onChange={(key) => {
-            setActiveKey(key);
-          }}
-        >
-          <Tabs.TabPane key={'2'} tab={'信息'}>
-            <UserInfo />
-          </Tabs.TabPane>
-          <Tabs.TabPane key={'1'} tab={'修改密码'}>
-            <SetPwd />
-          </Tabs.TabPane>
-        </Tabs>
+          defaultActiveKey={'2'}
+          items={items}
+        />
       </ProCard>
     </>
   );

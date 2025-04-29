@@ -15,16 +15,16 @@ const JsonBody: FC<SelfProps> = ({ form, mode }) => {
   const [showError, setShowError] = useState(false);
   const [readonly, setReadonly] = useState(false);
 
-  useEffect(() => {
-    console.log(mode);
-    if (mode) {
-      if (mode === 1) {
-        setReadonly(true);
-      } else {
-        setReadonly(false);
-      }
-    }
-  }, [mode]);
+  // useEffect(() => {
+  //   console.log(mode);
+  //   if (mode) {
+  //     if (mode === 1) {
+  //       setReadonly(true);
+  //     } else {
+  //       setReadonly(false);
+  //     }
+  //   }
+  // }, [mode]);
   useEffect(() => {
     const body = form.getFieldValue('body');
     if (body) {
@@ -48,7 +48,7 @@ const JsonBody: FC<SelfProps> = ({ form, mode }) => {
       } else {
         form.setFieldValue('body', null);
       }
-    }, 1000); // 延迟1秒钟进行验证
+    }, 2000); // 延迟1秒钟进行验证
   };
   return (
     <ProCard bodyStyle={{ padding: 0 }} style={{ marginTop: 8 }}>
@@ -58,7 +58,7 @@ const JsonBody: FC<SelfProps> = ({ form, mode }) => {
         onChange={handleOnChange}
         height={'50vh'}
         readonly={readonly}
-        _mode={'python'}
+        _mode={'json'}
       />
     </ProCard>
   );

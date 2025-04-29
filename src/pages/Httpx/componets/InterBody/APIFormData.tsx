@@ -31,7 +31,6 @@ const APIFormData: FC<SelfProps> = ({ form }) => {
   const uploadData = async (info: any, index: number | undefined) => {
     const formData = new FormData();
     const file = info.fileList[0]?.originFileObj;
-    console.log('file', file);
     formData.append('data_file', file || null); // 选择了一个文件，放入 FormData
     formData.append('interfaceId', form.getFieldValue('uid'));
 

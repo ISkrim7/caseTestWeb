@@ -97,7 +97,7 @@ export const layout: RunTimeLayoutConfig = ({
   initialState,
   setInitialState,
 }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const currentTheme = initialState?.theme || 'light';
 
   const handleToggleTheme = () => {

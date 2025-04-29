@@ -1,12 +1,8 @@
 import 'ace-builds/src-noconflict/ace';
-import 'ace-builds/src-noconflict/mode-html.js';
-import 'ace-builds/src-noconflict/mode-json.js';
-import 'ace-builds/src-noconflict/mode-mysql.js';
-import 'ace-builds/src-noconflict/mode-python.js';
-import 'ace-builds/src-noconflict/mode-text.js';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import 'ace-builds/src-noconflict/theme-twilight';
-import { FC, useState } from 'react';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/theme-xcode';
+import { FC } from 'react';
 import AceEditor from 'react-ace';
 import { useModel } from 'umi';
 
@@ -16,8 +12,6 @@ interface selfProps {
   height?: string;
   onChange?: (value: string) => void;
   _mode?: string;
-  showLineNumbers?: boolean;
-  wrap?: boolean;
   gutter?: boolean;
 }
 
@@ -27,12 +21,9 @@ const AceCodeEditor: FC<selfProps> = (props) => {
     readonly,
     height = '30vh',
     onChange,
-    showLineNumbers = true,
     _mode = 'json',
     gutter = true,
-    wrap = true,
   } = props;
-  const [mode, setMode] = useState(_mode);
   const { initialState, setInitialState } = useModel('@@initialState');
   const currentTheme = initialState?.theme || 'light'; // 统一使用 theme 拼写
   // 直接使用 currentTheme 决定 UI
@@ -50,7 +41,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
     <AceEditor
       style={{ borderRadius: 10 }}
       theme={editorTheme}
-      mode={mode}
+      mode={_mode}
       readOnly={readonly || false}
       height={height || '100%'}
       width={'100%'}
@@ -59,7 +50,10 @@ const AceCodeEditor: FC<selfProps> = (props) => {
       onChange={onChange}
       showGutter={gutter} //是否显示行号
       showPrintMargin={true}
-      wrapEnabled={wrap} // 是否启用代码自动换行
+      enableBasicAutocompletion={true} //启用基本自动补全
+      enableLiveAutocompletion={true} //启用实时自动补全
+      wrapEnabled={true} // 是否启用代码自动换行
+      enableSnippets={true} //摘要
       highlightActiveLine={true}
       editorProps={{
         $blockScrolling: true,
@@ -68,9 +62,9 @@ const AceCodeEditor: FC<selfProps> = (props) => {
         $enableMultiselect: true,
       }}
       setOptions={{
-        showLineNumbers: showLineNumbers,
+        showLineNumbers: true,
         highlightActiveLine: true,
-        cursorStyle: 'smooth',
+        cursorStyle: 'ace',
         highlightSelectedWord: true,
         tabSize: 4,
         behavioursEnabled: true,
@@ -80,7 +74,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
         useWorker: true,
         useSoftTabs: true,
       }}
-      key={`${editorTheme}-${mode}`} // 关键修复：添加key强制重新渲染
+      key={`${editorTheme}-${_mode}`} // 关键修复：添加key强制重新渲染
     />
   );
 };

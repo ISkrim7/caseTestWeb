@@ -31,16 +31,14 @@ const GlobalHeaderRight: FC<SelfProps> = ({
   };
   return (
     <Space direction={!collapsed ? 'horizontal' : 'vertical'}>
+      <Switch
+        checked={switchChecked}
+        style={{ marginLeft: 10 }}
+        checkedChildren={'🌛'}
+        unCheckedChildren={'🌞'}
+        onChange={handleThemeChange}
+      />
       <Avatar coll={collapsed} />
-      {!collapsed && (
-        <Switch
-          checked={switchChecked} // 使用 controlled component
-          style={{ marginLeft: 10 }}
-          checkedChildren={'🌛'}
-          unCheckedChildren={'🌞'}
-          onChange={handleThemeChange}
-        />
-      )}
     </Space>
   );
 };

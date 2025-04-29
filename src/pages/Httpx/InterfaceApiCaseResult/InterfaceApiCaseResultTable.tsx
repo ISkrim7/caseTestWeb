@@ -42,12 +42,14 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     {
       title: '结果ID',
       dataIndex: 'uid',
+      key: 'uid',
       width: '6%',
       render: (_, record) => <Tag color={'blue'}>{record.uid}</Tag>,
     },
     {
       title: '执行用例',
       dataIndex: 'interfaceCaseName',
+      key: 'interfaceCaseName',
       render: (_, record) => (
         <Tag color={'blue'}>{record.interfaceCaseName}</Tag>
       ),
@@ -56,6 +58,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     {
       title: '测试结果',
       dataIndex: 'result',
+      key: 'result',
       valueType: 'select',
       valueEnum: { SUCCESS: { text: '成功' }, ERROR: { text: '失败' } },
       render: (_, record) => (
@@ -77,6 +80,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     {
       title: '状态',
       dataIndex: 'status',
+      key: 'status',
       valueEnum: {
         RUNNING: { text: '运行中', status: 'Processing' },
         OVER: { text: '完成', status: 'Success' },
@@ -151,7 +155,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         )
       }
     >
-      <MyDrawer name={''} width={'75%'} open={open} setOpen={setOpen}>
+      <MyDrawer name={''} width={'80%'} open={open} setOpen={setOpen}>
         <InterfaceApiCaseResultDrawer
           currentCaseResultId={currentCaseResultId}
         />

@@ -43,16 +43,13 @@ const Index: FC<ISelfProps> = (props) => {
             ref={provided.innerRef}
             {...provided.droppableProps}
             style={{
-              // background: snapshot.isDraggingOver
-              //   ? (currentTheme === 'realDark' ? '#2d3748' : '#f4f5f7')
-              //   : (currentTheme === 'realDark' ? '#1a202c' : '#fff'),
               background: snapshot.isDraggingOver
                 ? currentTheme === 'realDark'
                   ? '#c2a5de'
-                  : '#cacfd6'
+                  : '#f9f5ec'
                 : currentTheme === 'realDark'
-                ? '#f0eaf5'
-                : '#f9f5ec',
+                ? '#7c817c'
+                : '#f0eaf5',
               padding: '10px',
               borderRadius: '10px',
               border: items.length === 0 ? 0 : '1px solid #e0e0e0',

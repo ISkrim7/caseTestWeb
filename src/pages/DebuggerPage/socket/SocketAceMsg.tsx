@@ -1,10 +1,6 @@
-import 'ace-builds/src-noconflict/ace';
-import 'ace-builds/src-noconflict/mode-html.js';
-import 'ace-builds/src-noconflict/mode-json.js';
-import 'ace-builds/src-noconflict/theme-twilight';
+import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import { Button, Input, message, Select, Space } from 'antd';
 import { FC, useState } from 'react';
-import AceEditor from 'react-ace';
 import { Socket } from 'socket.io-client';
 
 interface SelfProps {
@@ -35,39 +31,10 @@ const SocketAceMsg: FC<SelfProps> = ({ socket }) => {
   };
   return (
     <div>
-      <AceEditor
-        style={{ borderRadius: 10 }}
-        theme="twilight"
-        mode={msgMode}
-        readOnly={false}
-        height={'40vh'}
-        width={'100%'}
+      <AceCodeEditor
+        _mode={msgMode}
         value={socketMsg}
-        fontSize={14}
         onChange={onSocketMsgChange}
-        showGutter={true} //是否显示行号
-        showPrintMargin={true}
-        wrapEnabled={true} // 是否启用代码自动换行
-        highlightActiveLine={true}
-        editorProps={{
-          $blockScrolling: true,
-          $highlightPending: true,
-          $highlightTagPending: true,
-          $enableMultiselect: true,
-        }}
-        setOptions={{
-          showLineNumbers: true,
-          highlightActiveLine: true,
-          cursorStyle: 'smooth',
-          highlightSelectedWord: true,
-          tabSize: 4,
-          behavioursEnabled: true,
-          readOnly: false,
-          enableLiveAutocompletion: false,
-          autoScrollEditorIntoView: true,
-          useWorker: true,
-          useSoftTabs: true,
-        }}
       />
       <div
         style={{

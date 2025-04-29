@@ -315,7 +315,7 @@ const Index = () => {
       split={'horizontal'}
       extra={<DetailExtra currentStatus={currentStatus} />}
     >
-      <MyDrawer name={''} open={runOpen} setOpen={setRunOpen}>
+      <MyDrawer name={''} width={'80%'} open={runOpen} setOpen={setRunOpen}>
         <InterfaceApiCaseResultDrawer
           openStatus={runOpen}
           caseApiId={caseApiId!}

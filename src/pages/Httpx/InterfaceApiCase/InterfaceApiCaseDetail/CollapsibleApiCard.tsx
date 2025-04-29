@@ -50,26 +50,21 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
   const { interfaceApiInfo, top, groupId, caseApiId, refresh } = props;
   const [cardTitle, setCardTitle] = useState('');
   const [cardMethod, setCardMethod] = useState('');
-  const [cardSubTitle, setSubCardTitle] = useState('');
-  const [addFormCase, setAddFormCase] = useState(false);
-  const [addFormGroup, setAddFormGroup] = useState(false);
+  const [cardSubTitle, setCardSubTitle] = useState('');
 
+  const [isCaseForm, setIsCaseForm] = useState(false);
+  const [isGroupForm, setIsGroupForm] = useState(false);
+
+  // Effects
   useEffect(() => {
-    if (groupId) {
-      setAddFormGroup(true);
-      setAddFormCase(false);
-    } else if (caseApiId) {
-      setAddFormGroup(false);
-      setAddFormCase(true);
-    } else {
-      setAddFormGroup(false);
-      setAddFormCase(false);
-    }
+    setIsGroupForm(!!groupId);
+    setIsCaseForm(!!caseApiId);
   }, [groupId, caseApiId]);
+
   useEffect(() => {
     if (interfaceApiInfo) {
       setCardTitle(interfaceApiInfo.name);
-      setSubCardTitle(interfaceApiInfo.url);
+      setCardSubTitle(interfaceApiInfo.url);
       setCardMethod(interfaceApiInfo.method);
     }
   }, [interfaceApiInfo]);
@@ -221,7 +216,6 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
       }
       style={{ borderRadius: '5px', marginTop: 10 }}
       collapsible={true}
-      ghost={true}
       defaultCollapsed={props.collapsible}
       extra={extraButton}
     >
@@ -231,9 +225,9 @@ const CollapsibleApiCard: FC<SelfProps> = (props) => {
         <InterfaceApiDetail
           {...props}
           setTitle={setCardTitle}
-          setSubCardTitle={setSubCardTitle}
-          addFromCase={addFormCase}
-          addFromGroup={addFormGroup}
+          setSubCardTitle={setCardSubTitle}
+          addFromCase={isCaseForm}
+          addFromGroup={isGroupForm}
         />
       )}
     </ProCard>

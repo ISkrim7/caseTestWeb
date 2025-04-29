@@ -68,18 +68,20 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ coll }) => {
     },
   ];
   return (
-    <Dropdown menu={{ items }}>
-      <div>
-        <Avatar
-          size="small"
-          style={{ backgroundColor: '#f56a00' }}
-          src={currentUser.avatar}
-          alt="avatar"
-        >
-          {currentUser.username[0]}
-        </Avatar>
-      </div>
-    </Dropdown>
+    <div style={{ marginLeft: 10 }}>
+      <Dropdown menu={{ items }}>
+        <div>
+          <Avatar
+            size="small"
+            style={{ backgroundColor: '#f56a00' }}
+            src={currentUser.avatar}
+            alt="avatar"
+          >
+            {currentUser.username[0]}
+          </Avatar>
+        </div>
+      </Dropdown>
+    </div>
   );
 };
 

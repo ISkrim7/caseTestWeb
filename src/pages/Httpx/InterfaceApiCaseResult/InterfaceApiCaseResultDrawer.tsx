@@ -5,6 +5,11 @@ import InterfaceApiCaseResultBaseInfo from '@/pages/Httpx/InterfaceApiCaseResult
 import InterfaceApiResultResponses from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiResultResponses';
 import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { useModel } from '@@/exports';
+import {
+  InfoCircleOutlined,
+  MessageOutlined,
+  OrderedListOutlined,
+} from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { TabsProps } from 'antd';
 import { FC, useEffect, useState } from 'react';
@@ -120,6 +125,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
     {
       label: '基本信息',
       key: '1',
+      icon: <InfoCircleOutlined />,
       children: (
         <InterfaceApiCaseResultBaseInfo caseResultInfo={caseResultInfo} />
       ),
@@ -127,6 +133,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
     {
       label: '请求日志',
       key: '2',
+      icon: <MessageOutlined />,
       children: (
         <AceCodeEditor
           value={logMessage.join('\n')}
@@ -139,6 +146,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
     {
       label: '步骤详情',
       key: '3',
+      icon: <OrderedListOutlined />,
       children: <InterfaceApiResultResponses caseResultId={caseResultId} />,
     },
   ];

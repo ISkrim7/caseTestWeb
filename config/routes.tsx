@@ -289,6 +289,11 @@ export default [
         name: 'table',
         component: '@/pages/DebuggerPage/Debugge',
       },
+      {
+        path: '/debugger/mind',
+        name: 'mind',
+        component: '@/pages/DebuggerPage/Mind',
+      },
     ],
   },
   {

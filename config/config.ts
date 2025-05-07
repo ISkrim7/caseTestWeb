@@ -26,6 +26,7 @@ export default defineConfig({
   dva: {},
   hash: true,
   access: {},
+  plugins: [],
   manifest: {
     basePath: '/',
   },

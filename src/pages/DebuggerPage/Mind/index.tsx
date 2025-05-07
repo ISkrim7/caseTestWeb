@@ -1,6 +1,6 @@
 import { createNode, GraphConfig, Root } from '@/pages/DebuggerPage/Mind/node';
 import { ProCard } from '@ant-design/pro-components';
-import { Cell, Edge, Graph, Node, ObjectExt, Shape } from '@antv/x6';
+import { Cell, Graph, Node, ObjectExt, Shape } from '@antv/x6';
 import { Keyboard } from '@antv/x6-plugin-keyboard';
 import { useEffect, useRef } from 'react';
 import './index.less';
@@ -117,14 +117,16 @@ const Index = () => {
       // 第一个子节点，放置在父节点下方
       childY = parentPosition.y;
     } else {
-      // 后续子节点，根据顺序调整 Y 坐标
-      if (totalChildren % 2 === 0) {
-        // 偶数子节点放在父节点上方
-        childY = parentPosition.y + childSpacing;
-      } else {
-        // 奇数子节点放在父节点下方
-        childY = parentPosition.y - childSpacing;
-      }
+      // 如果有多个子节点，计算均分的 Y 坐标
+      const spacing = childSpacing * (totalChildren - 1); // 总间隔
+      const startY = parentPosition.y - spacing / 2; // 起始位置在父节点上方
+      childNum.map((node: Node) => {
+        node.setPosition(
+          node.getPosition().x,
+          node.getPosition().y + childSpacing,
+        );
+      });
+      childY = startY + (totalChildren - 1) * childSpacing; // 计算当前子节点的 Y 坐标
     }
 
     const childX = parentPosition.x + 200; // 始终保持子节点在父节点右侧
@@ -167,7 +169,7 @@ const Index = () => {
     const edges = graph.getEdges(); // 获取图中的所有边
 
     // 过滤出所有从该节点出发的边，并获取目标节点ID
-    const childNodes: Edge[] = edges
+    const childNodes: Node[] = edges
       .filter((edge) => edge.source.cell === nodeId) // 筛选出该节点作为起始节点的边
       .map((edge) => edge.target.cell); // 获取目标节点的ID
     return childNodes;

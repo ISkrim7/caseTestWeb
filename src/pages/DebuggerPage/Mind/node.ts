@@ -1,3 +1,5 @@
+import { Graph, Node, ObjectExt, Shape } from '@antv/x6';
+
 /**
  * container	HTMLElement	✓	画布的容器。
  * width	number		画布宽度，默认使用容器宽度。	-
@@ -25,19 +27,48 @@
  * createCellView	(cell: Cell) => CellView | null | undefined		是自定义元素的视图。
  */
 export const GraphConfig = {
-  width: 800,
-  height: 600,
-  grid: true,
-  panning: true,
-  mousewheel: false, // 鼠标滑轮
-  background: {
-    color: '#fffbe6', // 设置画布背景颜色
+  translating: { restrict: true }, // 限制节点只能在画布范围内移动
+  grid: true, // 开启网格
+  autoResize: true,
+  background: { color: '#fffbe6' }, // 设置画布背景颜色
+  mousewheel: {
+    enabled: true, // 允许滚轮缩放
+    zoomAtMousePosition: true, // 以鼠标位置为中心缩放
+    modifiers: 'ctrl', // 需要按住 `ctrl` 键才可缩放
+    minScale: 0.5, // 最小缩放比例
+    maxScale: 2, // 最大缩放比例（保持一致）
+  },
+  scaling: {
+    min: 0.5, // 画布最小缩放值
+    max: 2, // 画布最大缩放值
+  },
+  panning: {
+    enabled: true, // 允许拖动画布
+    modifiers: 'alt', // 按住 `alt` 键拖动画布
+  },
+  resizing: {
+    enabled: true,
+    minWidth: 60,
+    minHeight: 30,
+    maxWidth: 300,
+    maxHeight: 200,
   },
   connecting: {
-    connectionPoint: 'anchor',
-    allowLoop: false, //是否允许创建循环连线，即边的起始节点和终止节点为同一节点，默认为 true 。
-    allowBlank: false, //是否允许连接到画布空白位置的点，默认为 true。
-    snap: true,
+    router: {
+      name: 'manhattan', // 直角连接方式
+      args: { padding: 10, avoid: true }, // 自动避开其他节点
+    },
+    connector: {
+      name: 'rounded', // 圆角连接线
+      args: { radius: 8 }, // 圆角半径
+    },
+    snap: { radius: 20 }, // 连接点吸附半径
+    connectionPoint: 'anchor', // 连接桩类型
+    allowBlank: false, // 禁止连接到空白区域
+    allowEdge: false, // 禁止边连接到另一条边
+    allowNode: false, // 禁止边连接到节点中心
+    allowPort: true, // 仅允许连接到连接桩
+    highlight: true, // 高亮显示可连接点
   },
   selecting: {
     enabled: true,
@@ -46,29 +77,64 @@ export const GraphConfig = {
   snapping: {
     enabled: true,
   },
+  // 连接时的高亮效果
+  highlighting: {
+    magnetAdsorbed: {
+      name: 'stroke',
+      args: {
+        attrs: {
+          fill: '#028FA6',
+          stroke: '#028FA6',
+        },
+      },
+    },
+  },
+  interacting: {
+    nodeMovable: true,
+    edgeMovable: true,
+    edgeResizable: true,
+  },
 };
 
-export const createNode = (label: string = '子主题', x: number, y: number) => {
+//钩子函数
+Shape.Rect.config({
+  propHooks: {
+    rx(metadata) {
+      const { rx, ...others } = metadata;
+      if (rx != null) {
+        ObjectExt.setByPath(others, 'attrs/body/rx', rx);
+      }
+      return others;
+    },
+    ry(metadata) {
+      const { ry, ...others } = metadata;
+      if (ry != null) {
+        ObjectExt.setByPath(others, 'attrs/body/ry', ry);
+      }
+      return others;
+    },
+  },
+});
+
+export const createNode = (label: string, x: number, y: number) => {
   return {
-    x: x,
-    y: y,
+    x,
+    y,
     id: Date.now().toString(),
     width: 120,
     height: 40,
-    rx: 10,
-    ry: 15,
+    shape: 'rect',
     label: label,
     attrs: {
       body: {
-        stroke: '#1677ff',
-        strokeWidth: 2,
-        fill: '#1677ff',
+        fill: '#ffffff',
+        stroke: '#8f8f8f',
         rx: 6,
         ry: 6,
       },
       label: {
-        fill: '#e4e9f1', // 文字颜色
-        fontSize: 13, // 文字大小
+        text: 'Editable Label',
+        fontSize: 14,
       },
     },
     tools: ['node-editor'],
@@ -113,7 +179,7 @@ export const createNode = (label: string = '子主题', x: number, y: number) =>
   };
 };
 export const Root = {
-  x: 100,
+  x: 50,
   y: 300,
   id: 'root',
   width: 120,
@@ -121,8 +187,11 @@ export const Root = {
   rx: 10,
   ry: 15,
   label: '中心主题',
+  shape: 'rect',
   attrs: {
     body: {
+      refWidth: '100%', // 宽度跟随节点
+      refHeight: '100%', // 高度跟随节点
       stroke: '#1677ff',
       strokeWidth: 2,
       fill: '#1677ff',
@@ -130,10 +199,26 @@ export const Root = {
       ry: 6,
     },
     label: {
+      text: '中心主题',
+      refX: '50%', // 水平居中
+      refY: '50%', // 垂直居中
+      textAnchor: 'middle', // 文本居中
+      textVerticalAnchor: 'middle',
       fill: '#e4e9f1', // 文字颜色
       fontSize: 13, // 文字大小
       background: '#1677ff',
+      textWrap: {
+        text: '中心主题',
+        width: -16, // 宽度=节点宽度-16px
+        height: -16, // 高度=节点高度-16px
+        ellipsis: true,
+        breakWord: true,
+      },
     },
+  },
+  data: {
+    // 用于保存原始文本
+    originalLabel: '中心主题',
   },
   tools: ['node-editor'],
   ports: {
@@ -158,68 +243,36 @@ export const Root = {
       },
     ],
   },
+  editable: true,
+  resizable: true, // 允许调整大小
+  labelAutoSize: true, // 自动调整大小
 };
-// export const createMindNode = (id: string, label: string, x: number, y: number) => {
-//   return new Shape.Rect({
-//     id,
-//     x,
-//     y,
-//     width: 120,
-//     height: 40,
-//     rx: 10,
-//     ry: 15,
-//     shape: 'react-shape',
-//     tools: ['node-editor'], //可编辑
-//     attrs: {
-//       body: {
-//         stroke: '#8f8f8f',
-//         strokeWidth: 1,
-//         fill: '#fff',
-//         rx: 6,
-//         ry: 6,
-//       },
-//       label: {
-//         text: label,    // 文本
-//         fill: '#333',    // 文字颜色
-//         fontSize: 13,    // 文字大小
-//       },
-//     },
-//   });
-// };
 
-export const addChildNode = () => {};
-
-// // 添加子节点
-// const addChildNode = useCallback(
-//   (parentNode: Shape) => {
-//     if (!graph) return;
-//     const parentId = parentNode.id;
-//     const childId = `${parentId}-${Date.now()}`;
-//     const parentPosition = parentNode.getPosition();
-//     const childX = parentPosition.x + 200;
-//     const childY = parentPosition.y;
-//     const childLabel = '子主题';
-//
-//     const childNode = createMindNode(childId, childLabel, childX, childY);
-//     graph.addNode(childNode);
-//
-//     // 添加连接线
-//     graph.addEdge({
-//       source: { cell: parentId },
-//       target: { cell: childId },
-//       attrs: {
-//         line: {
-//           stroke: '#A2B1C3',
-//           strokeWidth: 2,
-//           targetMarker: {
-//             name: 'block',
-//             width: 12,
-//             height: 8,
-//           },
-//         },
-//       },
-//     });
-//
-//   },
-//   [graph],
-// );
+/**
+ * 添加连接线
+ * @param graph
+ * @param parentNode
+ * @param childNode
+ */
+export const addEdge = (graph: Graph, parentNode: Node, childNode: Node) => {
+  graph.addEdge({
+    source: {
+      cell: parentNode,
+      port: 'right-port',
+    },
+    target: {
+      cell: childNode,
+      port: 'left-port',
+    },
+    connector: {
+      attrs: {
+        line: {
+          stroke: '#2666FB', // 连接线颜色
+          strokeWidth: 1, // 线条宽度
+          targetMarker: { name: 'block', width: 12, height: 8 }, // 目标端箭头
+        },
+      },
+    },
+    zIndex: -1, // 确保连线在节点下方
+  });
+};

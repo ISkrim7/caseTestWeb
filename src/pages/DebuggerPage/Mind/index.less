@@ -6,13 +6,32 @@
 
   .app-content {
     flex: 1;
-    height: 500px;
+    height: 100vh;
     margin-right: 8px;
     margin-left: 8px;
     box-shadow: 0 0 10px 1px #e9e9e9;
   }
 }
 
+/* 确保节点有足够的边距 */
 .x6-node {
-  transition: transform 0.3s ease;
+  margin: 10px;
+}
+
+/* 连线样式 */
+.x6-edge path {
+  stroke-linecap: square;
+  transition: d 0.3s ease;
+}
+/* 确保选择框不遮挡节点 */
+.x6-widget-selection-box {
+  pointer-events: none !important;
+  opacity: 0.3;
+}
+
+/* 文本编辑器样式 */
+.x6-node-editor {
+  background: transparent !important;
+  border: 2px solid #1677ff !important;
+  border-radius: 4px;
 }

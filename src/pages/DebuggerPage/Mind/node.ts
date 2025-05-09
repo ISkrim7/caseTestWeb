@@ -133,8 +133,12 @@ export const createNode = (label: string, x: number, y: number) => {
         ry: 6,
       },
       label: {
-        text: 'Editable Label',
+        text: label,
         fontSize: 14,
+        textWrap: {
+          breakWord: true,
+          wordBreak: 'break-all',
+        },
       },
     },
     tools: ['node-editor'],

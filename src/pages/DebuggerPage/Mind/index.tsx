@@ -13,6 +13,7 @@ import { Scroller } from '@antv/x6-plugin-scroller';
 import { Selection } from '@antv/x6-plugin-selection';
 
 import { bindShortcuts } from '@/pages/DebuggerPage/Mind/bindShortcuts';
+import { Button } from 'antd';
 import { useEffect, useRef } from 'react';
 import './index.less';
 
@@ -67,9 +68,6 @@ const MindMap = () => {
       selectedNodeRef.current?.attr('body/stroke', '#8f8f8f');
       selectedNodeRef.current = node;
     });
-    graph.on('node:change:attrs', ({ node }) => {
-      console.log(node.attr('label/text'));
-    });
 
     //  单机 修改边框颜色
     graph.on('node:click', ({ node }) => {
@@ -77,7 +75,6 @@ const MindMap = () => {
       selectedNodeRef.current = node;
       node.attr('body/stroke', '#1677ff');
     });
-    graph.on('node:embedding', ({ node }) => {});
 
     //  空白单机
     graph.on('blank:click', () => {
@@ -194,8 +191,17 @@ const MindMap = () => {
     };
   };
 
+  const toJson = () => {
+    const graph = graphRef.current;
+    if (!graph) return;
+    const j = graph.toJSON();
+    console.log(j);
+  };
   return (
-    <ProCard id={'canvas_root'}>
+    <ProCard
+      id={'canvas_root'}
+      extra={<Button onClick={toJson}>to json</Button>}
+    >
       <div className="node-editor-tool-app">
         <div className="app-content" ref={containerRef} />
       </div>

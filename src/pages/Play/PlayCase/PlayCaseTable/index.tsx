@@ -77,22 +77,23 @@ const Index: FC<SelfProps> = ({
     },
     {
       title: 'level',
+      key: 'level',
       dataIndex: 'level',
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
-      // render: (_, record) => {
-      //   return (
-      //     <Tag color={CONFIG.RENDER_CASE_LEVEL[record.level].color}>
-      //       {CONFIG.RENDER_CASE_LEVEL[record.level].text}
-      //     </Tag>
-      //   );
-      // },
+      render: (_, record) => {
+        return (
+          <Tag color={CONFIG.RENDER_CASE_LEVEL[record.level].color}>
+            {CONFIG.RENDER_CASE_LEVEL[record.level].text}
+          </Tag>
+        );
+      },
     },
     {
       title: 'step num',
       dataIndex: 'step_num',
       hideInSearch: true,
-      key: 'title',
+      key: 'step_num',
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
@@ -101,24 +102,27 @@ const Index: FC<SelfProps> = ({
       title: 'status',
       dataIndex: 'status',
       valueType: 'select',
+      key: 'status',
       valueEnum: CONFIG.CASE_STATUS_ENUM,
-      // render: (_, record) => {
-      //   return (
-      //     <Tag color={CONFIG.RENDER_CASE_STATUS[record.status].color}>
-      //       {CONFIG.RENDER_CASE_STATUS[record.status].text}
-      //     </Tag>
-      //   );
-      // },
+      render: (_, record) => {
+        return (
+          <Tag color={CONFIG.RENDER_CASE_STATUS[record.status].color}>
+            {CONFIG.RENDER_CASE_STATUS[record.status].text}
+          </Tag>
+        );
+      },
     },
     {
       title: 'creator',
       dataIndex: 'creatorName',
+      key: 'creatorName',
       render: (text) => <Tag>{text}</Tag>,
     },
     {
       title: 'create time',
       dataIndex: 'create_time',
       valueType: 'date',
+      key: 'create_time',
       sorter: true,
       search: false,
     },
@@ -140,6 +144,7 @@ const Index: FC<SelfProps> = ({
           详情
         </a>,
         <a
+          key="copy"
           onClick={async () => {
             const { code, data, msg } = await copyUICase({
               caseId: record.uid,
@@ -156,6 +161,7 @@ const Index: FC<SelfProps> = ({
           {initialState?.currentUser?.id === record.creator ||
           initialState?.currentUser?.isAdmin ? (
             <Popconfirm
+              key="delete_firm"
               title={'确认删除？'}
               okText={'确认'}
               cancelText={'点错了'}
@@ -169,7 +175,7 @@ const Index: FC<SelfProps> = ({
                 }
               }}
             >
-              <a>删除</a>
+              <a key="delete">删除</a>
             </Popconfirm>
           ) : null}
         </>,

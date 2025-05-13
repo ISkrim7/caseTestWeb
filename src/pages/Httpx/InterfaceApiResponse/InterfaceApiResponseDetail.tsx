@@ -173,7 +173,19 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   const setDesc = (text: string) => {
     return text?.length > 8 ? text?.slice(0, 8) + '...' : text;
   };
-
+  // 添加组状态计算函数全错组才标记ERROR
+  const calculateGroupStatus = (groupData: IInterfaceResultByCase[]) => {
+    if (groupData.every((i) => i.result === 'ERROR')) return 'ERROR';
+    if (groupData.some((i) => i.result === 'SUCCESS')) return 'SUCCESS';
+    return 'WARNING';
+  };
+  // 新增组状态判断函数
+  const getGroupStatus = (groupData: IInterfaceResultByCase[]) => {
+    // 只要有一个ERROR即视为失败
+    return groupData.some((item) => item.result === 'ERROR')
+      ? 'ERROR'
+      : 'SUCCESS';
+  };
   return (
     <div>
       {responses?.map((item: any, index: number) => {
@@ -190,9 +202,9 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                   <Tag color={'blue'}>组</Tag>
                   <Tag
                     color={
-                      item.result?.toLowerCase() === 'error'
-                        ? '#f50'
-                        : '#87d068'
+                      //item.result?.toLowerCase() === 'error'
+                      //calculateGroupStatus(item.data) === 'ERROR'
+                      getGroupStatus(item.data) === 'ERROR' ? '#f50' : '#87d068'
                     }
                   >
                     {item.groupName}

@@ -94,7 +94,8 @@ const Index: FC<SelfProps> = ({
           <>
             <a
               onClick={() => {
-                window.open(`/interface/group/detail/groupId=${record.id}`);
+                //window.open(`/interface/group/detail/groupId=${record.id}`);
+                history.push(`/interface/group/detail/groupId=${record.id}`);
               }}
             >
               详情

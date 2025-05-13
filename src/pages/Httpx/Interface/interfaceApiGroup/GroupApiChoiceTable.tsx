@@ -58,6 +58,10 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
       initialValue: selectProjectId?.toString(),
       fieldProps: {
         disabled: true,
+        onChange: (val: string) => {
+          const projectId = val ? Number(val) : undefined;
+          setSelectProjectId(projectId);
+        },
       },
     },
     {

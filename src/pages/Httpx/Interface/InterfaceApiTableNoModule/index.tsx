@@ -12,6 +12,7 @@ import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, Popconfirm, Space, Tag, TreeSelect } from 'antd';
 import { TableRowSelection } from 'antd/es/table/interface';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { history } from 'umi';
 
 interface SelfProps {
   currentProjectId?: number;
@@ -94,7 +95,9 @@ const Index: FC<SelfProps> = (props) => {
           <>
             <a
               onClick={() => {
-                window.open(`/interface/interApi/detail/interId=${record.id}`);
+                //window.open(`/interface/interApi/detail/interId=${record.id}`);
+                // 添加接口按钮修改（原 window.open 改为路由跳转）
+                history.push(`/interface/interApi/detail/interId=${record.id}`);
               }}
             >
               详情

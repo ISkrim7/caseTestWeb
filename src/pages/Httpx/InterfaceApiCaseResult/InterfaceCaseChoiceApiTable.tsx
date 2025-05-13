@@ -72,7 +72,11 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
       valueEnum: projectEnumMap,
       initialValue: selectProjectId?.toString(),
       fieldProps: {
-        disabled: true,
+        //disabled: true,
+        onChange: (val: string) => {
+          const projectId = val ? Number(val) : undefined;
+          setSelectProjectId(projectId);
+        },
       },
     },
     {

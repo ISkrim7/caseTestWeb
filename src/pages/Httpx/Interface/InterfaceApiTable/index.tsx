@@ -163,7 +163,9 @@ const Index: FC<SelfProps> = ({
         <Button
           type={'primary'}
           onClick={() => {
-            window.open('/interface/interApi/detail');
+            /*window.open('/interface/interApi/detail');*/
+            // 添加接口按钮修改（原 window.open 改为路由跳转）
+            history.push('/interface/interApi/detail');
           }}
         >
           <PlusOutlined />

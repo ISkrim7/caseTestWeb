@@ -8,7 +8,6 @@ const typeContent = (T: any) => {
     return (
       <AceCodeEditor
         gutter={false}
-        showLineNumbers={false}
         value={JSON.stringify(T, null, 2)}
         readonly={true}
         height={'40px'}
@@ -22,21 +21,22 @@ const typeContent = (T: any) => {
 };
 const AssertColumns: ProColumns<IAsserts>[] = [
   {
-    title: '断言描述',
-    dataIndex: 'desc',
+    title: '目标',
+    dataIndex: 'assert_target',
+    key: 'assert_target',
     valueType: 'text',
     render: (text) => <Tag color={'blue'}>{text}</Tag>,
   },
   {
     title: '提取',
-    dataIndex: 'extraOpt',
-    key: 'extraOpt',
+    dataIndex: 'assert_extract',
+    key: 'assert_extract',
     render: (text) => <Tag color={'blue'}>{text}</Tag>,
   },
   {
     title: '语法',
-    dataIndex: 'extraValue',
-    key: 'extraValue',
+    dataIndex: 'assert_text',
+    key: 'assert_text',
     render: (text) => <Tag color={'blue'}>{text}</Tag>,
   },
   {
@@ -45,34 +45,19 @@ const AssertColumns: ProColumns<IAsserts>[] = [
     key: 'expect',
     valueType: 'jsonCode',
     render: (_text, record) => {
-      if (record.extraValueType === 'object') {
-        return (
-          <AceCodeEditor
-            value={record.expect}
-            readonly={true}
-            height={'80px'}
-            showLineNumbers={false}
-          />
-        );
-      } else if (record.extraValueType === 'bool') {
-        return (
-          <Tag color={record.expect === 'true' ? 'green' : 'red'}>
-            {record.expect}
-          </Tag>
-        );
-      } else {
-        return <span>{record.expect}</span>;
-      }
+      return <span>{record.assert_value}</span>;
     },
   },
   {
     title: '断言方法',
-    dataIndex: 'assertOpt',
+    dataIndex: 'assert_opt',
+    key: 'assert_opt',
     render: (text) => <Tag color={'blue'}>{text}</Tag>,
   },
   {
     title: '实际结果',
     dataIndex: 'actual',
+    key: 'actual',
     valueType: 'textarea',
     render: (_text, record) => {
       return typeContent(record.actual);

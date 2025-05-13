@@ -10,6 +10,7 @@ import { addInterfaceGroupApi } from '@/api/inter/interGroup';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
+import InterAssertList from '@/pages/Httpx/componets/InterAssertList';
 import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterDoc from '@/pages/Httpx/componets/InterDoc';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
@@ -290,6 +291,12 @@ const Index: FC<SelfProps> = ({
       label: '断言',
       icon: <CheckCircleOutlined />,
       children: <InterAsserts form={interApiForm} mode={currentMode} />,
+    },
+    {
+      key: '8',
+      label: '断言',
+      icon: <CheckCircleOutlined />,
+      children: <InterAssertList form={interApiForm} />,
     },
     {
       key: '5',

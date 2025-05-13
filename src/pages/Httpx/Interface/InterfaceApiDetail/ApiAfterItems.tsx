@@ -17,13 +17,17 @@ const ApiAfterItems: FC<SelfProps> = (props) => {
   const AfterItems: TabsProps['items'] = [
     {
       key: '1',
-      label: <Tooltip title="依次执行 设置变量、脚本、SQL">前置操作</Tooltip>,
+      label: <Tooltip title="依次执行 设置变量、脚本、SQL">后操作</Tooltip>,
       icon: <SettingOutlined />,
       children: <InterAfterScript form={interApiForm} mode={currentMode} />,
     },
   ];
   return (
-    <ProCard style={{ marginTop: 10 }} bodyStyle={{ padding: 0 }}>
+    <ProCard
+      bodyStyle={{
+        padding: 0,
+      }}
+    >
       <MyTabs tabPosition={'left'} items={AfterItems} defaultActiveKey={'1'} />
     </ProCard>
   );

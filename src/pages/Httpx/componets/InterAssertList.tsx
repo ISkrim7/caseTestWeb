@@ -1,4 +1,6 @@
 import { ExtraOpt } from '@/pages/Httpx/componets/assertEnum';
+import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
+import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { EditOutlined, SaveOutlined } from '@ant-design/icons';
 import {
   ProCard,
@@ -9,12 +11,8 @@ import {
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Space } from 'antd';
-import { FC, useEffect, useState } from 'react';
-
-interface ISelfProps {
-  apiId: number;
-}
+import { FormInstance, Space, Tag } from 'antd';
+import { FC, useState } from 'react';
 
 const AssertOpt = {
   '==': {
@@ -56,41 +54,27 @@ const AssertTarget = {
     text: 'Response Text',
   },
 };
-const data = [
-  {
-    assert_target: 'body',
-    assert_extract: 'jsonpath',
-    assert_opt: '==',
-    assert_text: '$.code',
-    assert_value: 'hello',
-  },
-  {
-    assert_target: 'header',
-    assert_extract: 'jmespath',
-    assert_opt: '==',
-    assert_text: '$.msg',
-    assert_value: 12313231,
-  },
-];
 
-const Demo: FC<ISelfProps> = ({ apiId = 42 }) => {
-  const [assertForm] = ProForm.useForm();
+interface ISelfProps {
+  form: FormInstance<IInterfaceAPI>;
+}
+
+const InterAssertList: FC<ISelfProps> = ({ form }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // 当前正在编辑的行索引
 
-  const onSubmit = async () => {
-    const values = await assertForm.validateFields();
-    console.log(values);
-  };
-
-  useEffect(() => {
-    assertForm.setFieldsValue({
-      asserts: data,
-    });
-  }, [data]);
   // 处理编辑按钮的点击
   const handleEdit = (index: number) => {
-    console.log('hand', index);
     setEditingIndex(index);
+  };
+
+  const save = async () => {
+    try {
+      await form.validateFields();
+    } catch (e) {
+      return;
+    }
+    setEditingIndex(null); // 取消编辑
+    await FormEditableOnValueChange(form, 'asserts');
   };
   return (
     <>
@@ -98,24 +82,25 @@ const Demo: FC<ISelfProps> = ({ apiId = 42 }) => {
         name="asserts"
         creatorButtonProps={{
           creatorButtonText: '添加断言',
+          type: 'primary',
         }}
-        copyIconProps={{
-          tooltipText: '复制当前行',
+        onAfterAdd={async (params, index) => {
+          if (index) {
+            setEditingIndex(index);
+          }
         }}
+        onAfterRemove={async () => {
+          await FormEditableOnValueChange(form, 'asserts');
+        }}
+        copyIconProps={{ tooltipText: '复制当前行' }}
         itemRender={({ listDom, action }, { record, index }) => (
           <ProCard
             bordered
-            title={`断言_${index + 1}`}
+            title={<Tag color={'geekblue-inverse'}>{`断言_${index + 1}`}</Tag>}
             extra={
               <Space>
                 {editingIndex === index ? (
-                  <SaveOutlined
-                    disabled={false}
-                    onClick={() => {
-                      setEditingIndex(null); // 取消编辑
-                      // 在此保存已编辑的数据，或者进行其他处理
-                    }}
-                  />
+                  <SaveOutlined disabled={false} onClick={save} />
                 ) : (
                   <EditOutlined
                     disabled={false}
@@ -129,21 +114,16 @@ const Demo: FC<ISelfProps> = ({ apiId = 42 }) => {
             {listDom}
           </ProCard>
         )}
-        creatorRecord={{
-          assert_target: AssertTarget.body.text,
-          assert_extract: ExtraOpt.jmespath.text,
-          assert_opt: '==',
-        }}
-        initialValue={[
-          {
-            assert_target: AssertTarget.body.text,
+        creatorRecord={() => {
+          return {
+            assert_text: undefined,
             assert_extract: ExtraOpt.jmespath.text,
             assert_opt: '==',
-          },
-        ]}
+          };
+        }}
         alwaysShowItemLabel
       >
-        {(f, index, action) => {
+        {(_, index, __) => {
           return (
             <>
               <ProForm.Group>
@@ -155,14 +135,21 @@ const Demo: FC<ISelfProps> = ({ apiId = 42 }) => {
                   valueEnum={AssertTarget}
                   disabled={editingIndex !== index} // 根据编辑状态禁用该项
                 />
-                <ProFormSelect
-                  width="md"
-                  allowClear={false}
-                  name="assert_extract"
-                  label="提取"
-                  valueEnum={ExtraOpt}
-                  disabled={editingIndex !== index} // 根据编辑状态禁用该项
-                />
+                <ProFormDependency name={['assert_target']}>
+                  {({ assert_target }) => {
+                    return (
+                      <ProFormSelect
+                        hidden={assert_target === 'status_code'}
+                        width="md"
+                        allowClear={false}
+                        name="assert_extract"
+                        label="提取"
+                        valueEnum={ExtraOpt}
+                        disabled={editingIndex !== index} // 根据编辑状态禁用该项
+                      />
+                    );
+                  }}
+                </ProFormDependency>
               </ProForm.Group>
               <ProFormDependency name={['assert_target']}>
                 {({ assert_target }) => {
@@ -208,4 +195,4 @@ const Demo: FC<ISelfProps> = ({ apiId = 42 }) => {
   );
 };
 
-export default Demo;
+export default InterAssertList;

@@ -104,9 +104,13 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
             collapsible={true}
             collapsibleIconRender={({ collapsed }) => (
               <Space style={{ marginRight: 10 }}>
-                <ProFormSwitch noStyle />
+                <ProFormSwitch
+                  noStyle
+                  name={'assert_switch'}
+                  style={{ color: 'orange' }}
+                  initialValue={true}
+                />
                 {collapsed ? <RightOutlined /> : <DownOutlined />}
-                {/*<Tag color={'green-inverse'}>Step_{props.step}</Tag>*/}
               </Space>
             )}
             bordered
@@ -127,9 +131,9 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
                   placeholder={'请输入断言标题'}
                   allowClear={false}
                   required
+                  initialValue={record?.assert_name || `断言_${index + 1}`}
                   fieldProps={{
-                    defaultValue: record?.assert_name || `断言_${index + 1}`,
-                    variant: 'underlined',
+                    variant: 'borderless',
                   }}
                 />
               ) : null
@@ -153,6 +157,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
         )}
         creatorRecord={() => {
           return {
+            assert_switch: true,
             assert_text: undefined,
             assert_extract: ExtraOpt.jmespath.text,
             assert_opt: '==',

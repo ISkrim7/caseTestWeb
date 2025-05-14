@@ -69,7 +69,8 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
 
   const save = async () => {
     try {
-      await form.validateFields();
+      const v = await form.validateFields();
+      console.log(v);
     } catch (e) {
       return;
     }
@@ -82,7 +83,6 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
         name="asserts"
         creatorButtonProps={{
           creatorButtonText: '添加断言',
-          type: 'primary',
         }}
         onAfterAdd={async (params, index) => {
           if (index) {
@@ -95,8 +95,32 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
         copyIconProps={{ tooltipText: '复制当前行' }}
         itemRender={({ listDom, action }, { record, index }) => (
           <ProCard
+            collapsible={true}
             bordered
-            title={<Tag color={'geekblue-inverse'}>{`断言_${index + 1}`}</Tag>}
+            headerBordered
+            title={
+              <Tag
+                color={'orange-inverse'}
+                hidden={editingIndex === index} // 编辑时隐藏
+              >
+                {record?.assert_name || `断言_${index + 1}`}
+              </Tag>
+            }
+            subTitle={
+              editingIndex === index ? ( // 仅在编辑时显示
+                <ProFormText
+                  name={'assert_name'} // 关键：绑定到数组项
+                  noStyle
+                  placeholder={'请输入断言标题'}
+                  allowClear={false}
+                  required
+                  fieldProps={{
+                    defaultValue: record?.assert_name || `断言_${index + 1}`,
+                    variant: 'underlined',
+                  }}
+                />
+              ) : null
+            }
             extra={
               <Space>
                 {editingIndex === index ? (

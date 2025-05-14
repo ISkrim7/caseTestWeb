@@ -11,7 +11,6 @@ import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
 import InterAssertList from '@/pages/Httpx/componets/InterAssertList';
-import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
 import InterDoc from '@/pages/Httpx/componets/InterDoc';
 import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
 import InterPerf from '@/pages/Httpx/componets/InterPerf';
@@ -288,12 +287,6 @@ const Index: FC<SelfProps> = ({
     },
     {
       key: '4',
-      label: '断言',
-      icon: <CheckCircleOutlined />,
-      children: <InterAsserts form={interApiForm} mode={currentMode} />,
-    },
-    {
-      key: '8',
       label: '断言',
       icon: <CheckCircleOutlined />,
       children: <InterAssertList form={interApiForm} />,

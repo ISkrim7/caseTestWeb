@@ -1,7 +1,12 @@
 import { ExtraOpt } from '@/pages/Httpx/componets/assertEnum';
 import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { EditOutlined, SaveOutlined } from '@ant-design/icons';
+import {
+  DownOutlined,
+  EditOutlined,
+  RightOutlined,
+  SaveOutlined,
+} from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -9,6 +14,7 @@ import {
   ProFormGroup,
   ProFormList,
   ProFormSelect,
+  ProFormSwitch,
   ProFormText,
 } from '@ant-design/pro-components';
 import { FormInstance, Space, Tag } from 'antd';
@@ -96,6 +102,13 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
         itemRender={({ listDom, action }, { record, index }) => (
           <ProCard
             collapsible={true}
+            collapsibleIconRender={({ collapsed }) => (
+              <Space style={{ marginRight: 10 }}>
+                <ProFormSwitch noStyle />
+                {collapsed ? <RightOutlined /> : <DownOutlined />}
+                {/*<Tag color={'green-inverse'}>Step_{props.step}</Tag>*/}
+              </Space>
+            )}
             bordered
             headerBordered
             title={

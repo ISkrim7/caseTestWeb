@@ -2,10 +2,12 @@ import { ExtraOpt } from '@/pages/Httpx/componets/assertEnum';
 import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import {
+  CopyTwoTone,
+  DeleteTwoTone,
   DownOutlined,
-  EditOutlined,
+  EditTwoTone,
   RightOutlined,
-  SaveOutlined,
+  SaveTwoTone,
 } from '@ant-design/icons';
 import {
   ProCard,
@@ -17,7 +19,7 @@ import {
   ProFormSwitch,
   ProFormText,
 } from '@ant-design/pro-components';
-import { FormInstance, Space, Tag } from 'antd';
+import { FormInstance, Space, Tag, Tooltip } from 'antd';
 import { FC, useState } from 'react';
 
 const AssertOpt = {
@@ -75,8 +77,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
 
   const save = async () => {
     try {
-      const v = await form.validateFields();
-      console.log(v);
+      await form.validateFields();
     } catch (e) {
       return;
     }
@@ -90,7 +91,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
         creatorButtonProps={{
           creatorButtonText: '添加断言',
         }}
-        onAfterAdd={async (params, index) => {
+        onAfterAdd={async (_, index) => {
           if (index) {
             setEditingIndex(index);
           }
@@ -98,7 +99,11 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
         onAfterRemove={async () => {
           await FormEditableOnValueChange(form, 'asserts');
         }}
-        copyIconProps={{ tooltipText: '复制当前行' }}
+        copyIconProps={{ tooltipText: '复制当前行', Icon: CopyTwoTone }}
+        deleteIconProps={{
+          Icon: DeleteTwoTone,
+          tooltipText: '不需要这行了',
+        }}
         itemRender={({ listDom, action }, { record, index }) => (
           <ProCard
             collapsible={true}
@@ -106,6 +111,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
               <Space style={{ marginRight: 10 }}>
                 <ProFormSwitch
                   noStyle
+                  disabled={index !== editingIndex}
                   name={'assert_switch'}
                   style={{ color: 'orange' }}
                   initialValue={true}
@@ -141,12 +147,20 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
             extra={
               <Space>
                 {editingIndex === index ? (
-                  <SaveOutlined disabled={false} onClick={save} />
+                  <Tooltip title="保存">
+                    <SaveTwoTone
+                      twoToneColor={'#c7920a'}
+                      disabled={false}
+                      onClick={save}
+                    />
+                  </Tooltip>
                 ) : (
-                  <EditOutlined
-                    disabled={false}
-                    onClick={() => handleEdit(index)}
-                  />
+                  <Tooltip title="编辑">
+                    <EditTwoTone
+                      disabled={false}
+                      onClick={() => handleEdit(index)}
+                    />
+                  </Tooltip>
                 )}
                 {action}
               </Space>

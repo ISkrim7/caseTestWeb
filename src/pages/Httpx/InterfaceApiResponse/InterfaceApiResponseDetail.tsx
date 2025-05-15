@@ -6,7 +6,7 @@ import RespProTable from '@/pages/Httpx/InterfaceApiResponse/RespProTable';
 import { IInterfaceResultByCase } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
-import { Space, Tabs, Tag, Typography } from 'antd';
+import { Badge, Divider, Space, Tabs, Tag, Tooltip, Typography } from 'antd';
 import { FC, useState } from 'react';
 
 const { Text } = Typography;
@@ -169,6 +169,60 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
       );
     }
   };
+  // 在文件顶部添加类型检测函数
+  const detectContentType = (content: string) => {
+    if (/^{.*}$/.test(content) || /^\[.*\]$/.test(content)) return 'json';
+    if (/(<html|<!DOCTYPE html>)/i.test(content)) return 'html';
+    if (/(<xml|<?xml)/i.test(content)) return 'xml';
+    return 'text';
+  };
+
+  const renderRequestBody = (item: IInterfaceResultByCase) => {
+    const { request_txt } = item;
+    // 在renderRequestBody中添加二进制内容判断
+    if (request_txt?.startsWith('[Binary Content')) {
+      return (
+        <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 4 }}>
+          <Text type="secondary">{request_txt}</Text>
+        </div>
+      );
+    }
+    // 在renderRequestBody开始处添加
+    if (!request_txt) {
+      return (
+        <div style={{ padding: 16 }}>
+          <Text type="secondary">No request body</Text>
+        </div>
+      );
+    }
+    // 在解析前添加长度判断
+    const MAX_LENGTH = 50000;
+    if (request_txt.length > MAX_LENGTH) {
+      return (
+        <AceCodeEditor
+          value={`${request_txt.substring(
+            0,
+            MAX_LENGTH,
+          )}\n\n[内容过长已截断，完整内容长度：${request_txt.length}字节]`}
+          _mode="text"
+          readonly={true}
+        />
+      );
+    }
+    try {
+      const jsonValue = JSON.parse(request_txt);
+      const value = JSON.stringify(jsonValue, null, 2);
+      return <AceCodeEditor value={value} readonly={true} />;
+    } catch (e) {
+      return (
+        <AceCodeEditor
+          value={request_txt}
+          _mode={detectContentType(request_txt)}
+          readonly={true}
+        />
+      );
+    }
+  };
 
   const setDesc = (text: string) => {
     return text?.length > 8 ? text?.slice(0, 8) + '...' : text;
@@ -196,7 +250,8 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
               bodyStyle={{ padding: 10 }}
               extra={tabExtra(item)}
               bordered
-              style={{ borderRadius: '5px', marginTop: 5 }}
+              //style={{ borderRadius: '5px', marginTop: 5 }}
+              /*
               title={
                 <>
                   <Tag color={'blue'}>组</Tag>
@@ -211,6 +266,60 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                   </Tag>
                   <Text type={'secondary'}>{setDesc(item.groupDesc)}</Text>
                 </>
+              }
+              */
+
+              style={{
+                borderRadius: '5px',
+                marginTop: 5,
+                overflow: 'visible', // 防止内容被裁剪
+              }}
+              headStyle={{
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '12px 16px',
+              }}
+              title={
+                <div className="group-header-container">
+                  {/* 组标识 */}
+                  <Tag color="blue" className="group-tag">
+                    组
+                  </Tag>
+
+                  {/* 组名称 */}
+                  <Tooltip title={item.groupName}>
+                    <Tag
+                      className="group-name-tag"
+                      color={
+                        getGroupStatus(item.data) === 'ERROR'
+                          ? '#f50'
+                          : '#87d068'
+                      }
+                    >
+                      <span className="truncate-text">{item.groupName}</span>
+                    </Tag>
+                  </Tooltip>
+
+                  {/* 组描述 */}
+                  <Tooltip title={item.groupDesc}>
+                    <Text type="secondary" className="group-description">
+                      {item.groupDesc}
+                    </Text>
+                  </Tooltip>
+
+                  {/* 添加视觉分隔线 */}
+                  <Divider type="vertical" className="header-divider" />
+
+                  {/* 状态指示器 */}
+                  <Badge
+                    status={
+                      getGroupStatus(item.data) === 'ERROR'
+                        ? 'error'
+                        : 'success'
+                    }
+                    text={`状态：${getGroupStatus(item.data)}`}
+                  />
+                </div>
               }
               headerBordered
               collapsible
@@ -254,6 +363,10 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
               >
                 <Tabs.TabPane tab={TabTitle('请求头')} key={'1'}>
                   <RequestHeaders header={item.request_head} />
+                </Tabs.TabPane>
+                // 在Tabs组件内添加新的TabPane（放在请求头之后）
+                <Tabs.TabPane tab={TabTitle('请求体')} key={'6'}>
+                  {renderRequestBody(item)}
                 </Tabs.TabPane>
                 <Tabs.TabPane tab={TabTitle('响应头')} key={'2'}>
                   <RequestHeaders header={item.response_head} />

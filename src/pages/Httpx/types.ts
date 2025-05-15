@@ -239,6 +239,7 @@ export interface IInterfaceResultByCase {
   response_head: IObjGet;
   request_head: IObjGet;
   request_method: string;
+  request_txt: string;
   startId: number;
   starterName: string;
   useTime: string;

@@ -334,6 +334,7 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
               extra={tabExtra(item)}
               bordered
               style={{ borderRadius: '5px', marginTop: 5 }}
+              /*
               title={
                 <>
                   <Tag color={'blue'}>API</Tag>
@@ -348,6 +349,58 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                   </Tag>
                   <Text type={'secondary'}>{setDesc(item.interfaceDesc)}</Text>
                 </>
+              }
+              */
+              // 修改位置：单个API对应的ProCard组件
+              title={
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    flexWrap: 'wrap',
+                    rowGap: 4,
+                  }}
+                >
+                  {/* API标识 */}
+                  <Tag color={'blue'} style={{ marginRight: 0 }}>
+                    API
+                  </Tag>
+
+                  {/* API名称带状态颜色 */}
+                  <Tooltip title={item.interfaceName}>
+                    <Tag
+                      color={
+                        item.result?.toLowerCase() === 'error'
+                          ? '#f50'
+                          : '#87d068'
+                      }
+                      style={{
+                        maxWidth: 180,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {item.interfaceName}
+                    </Tag>
+                  </Tooltip>
+
+                  {/* 描述信息 */}
+                  <Tooltip title={item.interfaceDesc}>
+                    <Text
+                      type={'secondary'}
+                      style={{
+                        maxWidth: 200,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {setDesc(item.interfaceDesc)}
+                    </Text>
+                  </Tooltip>
+                </div>
               }
               headerBordered
               collapsible

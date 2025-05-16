@@ -1,5 +1,6 @@
-import { ExtraOpt } from '@/pages/Httpx/componets/assertEnum';
+import MyDrawer from '@/components/MyDrawer';
 import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
+import JsonPathTool from '@/pages/Httpx/componets/JsonPathTool';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   CopyTwoTone,
@@ -8,6 +9,7 @@ import {
   EditTwoTone,
   RightOutlined,
   SaveTwoTone,
+  ToolOutlined,
 } from '@ant-design/icons';
 import {
   ProCard,
@@ -50,7 +52,7 @@ const AssertOpt = {
 };
 const AssertTarget = {
   status_code: {
-    text: '状态码',
+    text: 'Response Status Code',
   },
   body: {
     text: 'Response Json',
@@ -62,6 +64,17 @@ const AssertTarget = {
     text: 'Response Text',
   },
 };
+const ExtraOpt = {
+  jsonpath: {
+    text: 'Jsonpath',
+  },
+  jmespath: {
+    text: 'Jmespath',
+  },
+  re: {
+    text: 'Re',
+  },
+};
 
 interface ISelfProps {
   form: FormInstance<IInterfaceAPI>;
@@ -69,7 +82,7 @@ interface ISelfProps {
 
 const InterAssertList: FC<ISelfProps> = ({ form }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null); // 当前正在编辑的行索引
-
+  const [showTools, setShowTools] = useState(false);
   // 处理编辑按钮的点击
   const handleEdit = (index: number) => {
     setEditingIndex(index);
@@ -86,6 +99,9 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
   };
   return (
     <>
+      <MyDrawer name={''} open={showTools} setOpen={setShowTools}>
+        <JsonPathTool />
+      </MyDrawer>
       <ProFormList
         name="asserts"
         creatorButtonProps={{
@@ -173,13 +189,12 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
           return {
             assert_switch: true,
             assert_text: undefined,
-            assert_extract: ExtraOpt.jmespath.text,
             assert_opt: '==',
           };
         }}
         alwaysShowItemLabel
       >
-        {(_, index, __) => {
+        {(_, index, list) => {
           return (
             <>
               <ProForm.Group>
@@ -190,9 +205,24 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
                   width={'lg'}
                   valueEnum={AssertTarget}
                   disabled={editingIndex !== index} // 根据编辑状态禁用该项
+                  onChange={(value) => {
+                    console.log('tart', value);
+                    if (value === 'text') {
+                      list.setCurrentRowData({ assert_extract: 're' });
+                    } else if (value === 'status_code') {
+                      list.setCurrentRowData({ assert_extract: null });
+                    } else {
+                      list.setCurrentRowData({
+                        assert_extract: ExtraOpt.jsonpath.text,
+                      });
+                    }
+                  }}
                 />
                 <ProFormDependency name={['assert_target']}>
                   {({ assert_target }) => {
+                    // 动态生成 options
+                    const filteredOptions =
+                      assert_target === 'text' ? { re: ExtraOpt.re } : ExtraOpt;
                     return (
                       <ProFormSelect
                         hidden={assert_target === 'status_code'}
@@ -200,7 +230,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
                         allowClear={false}
                         name="assert_extract"
                         label="提取"
-                        valueEnum={ExtraOpt}
+                        valueEnum={filteredOptions}
                         disabled={editingIndex !== index} // 根据编辑状态禁用该项
                       />
                     );
@@ -218,6 +248,11 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
                         label="表达式"
                         placeholder="请输入表达式"
                         disabled={editingIndex !== index} // 根据编辑状态禁用该项
+                        fieldProps={{
+                          suffix: (
+                            <ToolOutlined onClick={() => setShowTools(true)} />
+                          ),
+                        }}
                       />
                       <ProFormSelect
                         width="md"

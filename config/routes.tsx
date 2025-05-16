@@ -299,6 +299,11 @@ export default [
         name: 'List',
         component: '@/pages/DebuggerPage/ProList',
       },
+      {
+        path: '/debugger/jp',
+        name: 'Jsonpath',
+        component: '@/pages/Httpx/componets/JsonPathTool.tsx',
+      },
     ],
   },
   {

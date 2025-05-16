@@ -12,7 +12,7 @@ import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
 import InterAssertList from '@/pages/Httpx/componets/InterAssertList';
 import InterDoc from '@/pages/Httpx/componets/InterDoc';
-import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
+import InterExtractList from '@/pages/Httpx/componets/InterExtractList';
 import InterPerf from '@/pages/Httpx/componets/InterPerf';
 import ApiAfterItems from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiAfterItems';
 import ApiBaseForm from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiBaseForm';
@@ -283,7 +283,7 @@ const Index: FC<SelfProps> = ({
       key: '3',
       label: '出参提取',
       icon: <EditOutlined />,
-      children: <InterExtracts form={interApiForm} mode={currentMode} />,
+      children: <InterExtractList form={interApiForm} />,
     },
     {
       key: '4',

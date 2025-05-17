@@ -36,6 +36,7 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
     setEditingIndex(index);
   };
   const save = async () => {
+    console.log('===========');
     try {
       await form.validateFields();
     } catch (e) {

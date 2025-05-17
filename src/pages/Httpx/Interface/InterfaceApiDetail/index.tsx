@@ -11,6 +11,7 @@ import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
 import InterAssertList from '@/pages/Httpx/componets/InterAssertList';
+import InterAuth from '@/pages/Httpx/componets/InterAuth';
 import InterDoc from '@/pages/Httpx/componets/InterDoc';
 import InterExtractList from '@/pages/Httpx/componets/InterExtractList';
 import InterPerf from '@/pages/Httpx/componets/InterPerf';
@@ -27,6 +28,8 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   FormOutlined,
+  KeyOutlined,
+  LineChartOutlined,
   QuestionCircleOutlined,
   SaveOutlined,
   SendOutlined,
@@ -280,6 +283,12 @@ const Index: FC<SelfProps> = ({
       ),
     },
     {
+      key: '7',
+      label: '认证',
+      icon: <KeyOutlined />,
+      children: <InterAuth form={interApiForm} />,
+    },
+    {
       key: '3',
       label: '出参提取',
       icon: <EditOutlined />,
@@ -304,7 +313,7 @@ const Index: FC<SelfProps> = ({
           {
             key: '6',
             label: '压力测试',
-            icon: <SettingOutlined />,
+            icon: <LineChartOutlined />,
             children: <InterPerf interfaceId={interId} />,
           },
         ]

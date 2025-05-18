@@ -23,7 +23,7 @@ const InterPerf: FC<IProps> = ({ interfaceId }) => {
       ...values,
     };
     const { code, data } = await debugPerfInterApi(body);
-    if (code === 0) {
+    if (code === 0 && data) {
       console.log(data);
       window.open(`/interface/interApi/perf/detail/perfId=${data}`);
     }

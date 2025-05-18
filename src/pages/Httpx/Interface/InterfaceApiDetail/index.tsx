@@ -286,6 +286,7 @@ const Index: FC<SelfProps> = ({
       key: '7',
       label: '认证',
       icon: <KeyOutlined />,
+      disabled: true,
       children: <InterAuth form={interApiForm} />,
     },
     {

@@ -61,6 +61,7 @@ const Index: FC<ISelfProps> = (props) => {
               <Draggable key={item.id} draggableId={item.id} index={index}>
                 {(provided) => (
                   <div
+                    key={item.id}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}

@@ -33,6 +33,7 @@ import {
   Button,
   Divider,
   Dropdown,
+  Empty,
   FloatButton,
   Form,
   MenuProps,
@@ -137,7 +138,9 @@ const Index = () => {
   const onDragEnd = async (reorderedUIContents: any[]) => {
     if (caseId) {
       const reorderData = reorderedUIContents.map((item) => item.step_id);
-      reOrderStep({ caseId: caseId, stepIds: reorderData }).then();
+      reOrderStep({ caseId: caseId, stepIds: reorderData }).then(async () =>
+        setRefresh(refresh + 1),
+      );
     }
   };
   const handelRefresh = async () => {
@@ -392,11 +395,15 @@ const Index = () => {
             key={'2'}
           >
             <ProCard>
-              <MyDraggable
-                items={uiStepsContent}
-                setItems={setUIStepsContent}
-                dragEndFunc={onDragEnd}
-              />
+              {uiSteps.length > 0 ? (
+                <MyDraggable
+                  items={uiStepsContent}
+                  setItems={setUIStepsContent}
+                  dragEndFunc={onDragEnd}
+                />
+              ) : (
+                <Empty description={'暂无数据'} />
+              )}
             </ProCard>
           </Tabs.TabPane>
         </Tabs>

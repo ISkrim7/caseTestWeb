@@ -191,11 +191,13 @@ export interface IBeforeParams extends IBase {
 }
 
 export interface IAsserts {
-  asserOpt?: string;
-  expect?: any;
-  extraOpt?: string;
-  extraValue?: string;
-  extraValueType?: string;
+  assert_switch: boolean;
+  assert_name: string;
+  assert_target?: string;
+  assert_extract?: string;
+  assert_opt?: string;
+  assert_value?: any;
+  assert_text?: any;
   result?: string;
   actual?: any;
   desc?: string;

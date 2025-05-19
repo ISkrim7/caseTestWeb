@@ -10,9 +10,10 @@ import { addInterfaceGroupApi } from '@/api/inter/interGroup';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
-import InterAsserts from '@/pages/Httpx/componets/InterAsserts';
+import InterAssertList from '@/pages/Httpx/componets/InterAssertList';
+import InterAuth from '@/pages/Httpx/componets/InterAuth';
 import InterDoc from '@/pages/Httpx/componets/InterDoc';
-import InterExtracts from '@/pages/Httpx/componets/InterExtracts';
+import InterExtractList from '@/pages/Httpx/componets/InterExtractList';
 import InterPerf from '@/pages/Httpx/componets/InterPerf';
 import ApiAfterItems from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiAfterItems';
 import ApiBaseForm from '@/pages/Httpx/Interface/InterfaceApiDetail/ApiBaseForm';
@@ -27,6 +28,8 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   FormOutlined,
+  KeyOutlined,
+  LineChartOutlined,
   QuestionCircleOutlined,
   SaveOutlined,
   SendOutlined,
@@ -280,16 +283,23 @@ const Index: FC<SelfProps> = ({
       ),
     },
     {
+      key: '7',
+      label: '认证',
+      icon: <KeyOutlined />,
+      disabled: true,
+      children: <InterAuth form={interApiForm} />,
+    },
+    {
       key: '3',
       label: '出参提取',
       icon: <EditOutlined />,
-      children: <InterExtracts form={interApiForm} mode={currentMode} />,
+      children: <InterExtractList form={interApiForm} />,
     },
     {
       key: '4',
       label: '断言',
       icon: <CheckCircleOutlined />,
-      children: <InterAsserts form={interApiForm} mode={currentMode} />,
+      children: <InterAssertList form={interApiForm} />,
     },
     {
       key: '5',
@@ -304,7 +314,7 @@ const Index: FC<SelfProps> = ({
           {
             key: '6',
             label: '压力测试',
-            icon: <SettingOutlined />,
+            icon: <LineChartOutlined />,
             children: <InterPerf interfaceId={interId} />,
           },
         ]

@@ -71,7 +71,7 @@ export default [
         component: '@/pages/Project/Db',
       },
       {
-        path: '/project/pasConfig',
+        path: '/project/apsConfig',
         name: '调度任务',
         component: '@/pages/Project/Aps',
       },
@@ -293,6 +293,16 @@ export default [
         path: '/debugger/mind',
         name: 'mind',
         component: '@/pages/DebuggerPage/Mind',
+      },
+      {
+        path: '/debugger/plist',
+        name: 'List',
+        component: '@/pages/DebuggerPage/ProList',
+      },
+      {
+        path: '/debugger/jp',
+        name: 'Jsonpath',
+        component: '@/pages/Httpx/componets/JsonPathTool.tsx',
       },
     ],
   },

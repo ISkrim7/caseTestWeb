@@ -32,7 +32,6 @@ const FuncScriptDesc = () => {
     <ProCard
       title={'内置函数'}
       subTitle={'用于前后置 Py脚本编写使用'}
-      bodyStyle={{ padding: 0 }}
       headerBordered={true}
     >
       <ProList<IFuncMap>

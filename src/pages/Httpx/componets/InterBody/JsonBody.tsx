@@ -15,16 +15,16 @@ const JsonBody: FC<SelfProps> = ({ form, mode }) => {
   const [showError, setShowError] = useState(false);
   const [readonly, setReadonly] = useState(false);
 
-  // useEffect(() => {
-  //   console.log(mode);
-  //   if (mode) {
-  //     if (mode === 1) {
-  //       setReadonly(true);
-  //     } else {
-  //       setReadonly(false);
-  //     }
-  //   }
-  // }, [mode]);
+  useEffect(() => {
+    console.log(mode);
+    if (mode) {
+      if (mode === 1) {
+        setReadonly(true);
+      } else {
+        setReadonly(false);
+      }
+    }
+  }, [mode]);
   useEffect(() => {
     const body = form.getFieldValue('body');
     if (body) {

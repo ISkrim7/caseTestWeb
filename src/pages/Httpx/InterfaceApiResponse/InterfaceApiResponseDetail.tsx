@@ -178,7 +178,23 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   };
 
   const renderRequestBody = (item: IInterfaceResultByCase) => {
-    const { request_txt } = item;
+    //const { request_txt } = item;
+    let { request_txt } = item;
+    // 新增：解码URL编码内容
+    try {
+      // 尝试解析为JSON
+      const jsonValue = JSON.parse(request_txt);
+      // 对JSON内特定字段进行解码（这里以url字段为例）
+      if (jsonValue.url) {
+        jsonValue.url = decodeURIComponent(jsonValue.url);
+      }
+      const value = JSON.stringify(jsonValue, null, 2);
+      return <AceCodeEditor value={value} readonly={true} />;
+    } catch (e) {
+      // 保留原始内容当解码失败时
+      // 非JSON内容整体解码
+      request_txt = decodeURIComponent(request_txt);
+    }
     // 在renderRequestBody中添加二进制内容判断
     if (request_txt?.startsWith('[Binary Content')) {
       return (

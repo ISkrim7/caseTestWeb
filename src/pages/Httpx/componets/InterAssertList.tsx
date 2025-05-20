@@ -66,13 +66,13 @@ const AssertTarget = {
 };
 const ExtraOpt = {
   jsonpath: {
-    text: 'Jsonpath',
+    text: 'jsonpath',
   },
   jmespath: {
-    text: 'Jmespath',
+    text: 'jmespath',
   },
   re: {
-    text: 'Re',
+    text: 're',
   },
 };
 

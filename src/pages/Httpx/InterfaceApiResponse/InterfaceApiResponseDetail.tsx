@@ -13,6 +13,7 @@ const { Text } = Typography;
 
 interface SelfProps {
   responses?: any[];
+  keyPrefix?: string; // 新增key前缀prop
 }
 
 const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
@@ -259,10 +260,14 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   return (
     <div>
       {responses?.map((item: any, index: number) => {
+        const uniqueKey = item.groupId
+          ? `group-${item.groupId}`
+          : `api-${item.interfaceId || index}`;
         if (item.groupId) {
           return (
             <ProCard
-              key={index}
+              //key={index}
+              key={uniqueKey} // 使用组合key
               bodyStyle={{ padding: 10 }}
               extra={tabExtra(item)}
               bordered
@@ -341,12 +346,16 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
               collapsible
               defaultCollapsed
             >
-              <InterfaceApiResponseDetail responses={item.data} />
+              <InterfaceApiResponseDetail
+                responses={item.data}
+                keyPrefix={uniqueKey} // 添加key前缀以保证嵌套key唯一性
+              />
             </ProCard>
           );
         } else {
           return (
             <ProCard
+              key={uniqueKey}
               extra={tabExtra(item)}
               bordered
               style={{ borderRadius: '5px', marginTop: 5 }}
@@ -429,33 +438,54 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                   newActiveKeys[index] = key;
                   setActiveKeys(newActiveKeys);
                 }}
-              >
-                <Tabs.TabPane tab={TabTitle('请求头')} key={'1'}>
-                  <RequestHeaders header={item.request_head} />
-                </Tabs.TabPane>
-                // 在Tabs组件内添加新的TabPane（放在请求头之后）
-                <Tabs.TabPane tab={TabTitle('请求体')} key={'6'}>
-                  {renderRequestBody(item)}
-                </Tabs.TabPane>
-                <Tabs.TabPane tab={TabTitle('响应头')} key={'2'}>
-                  <RequestHeaders header={item.response_head} />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab={TabTitle('响应体')} key={'3'}>
-                  {renderResponseBody(item)}
-                </Tabs.TabPane>
-                <Tabs.TabPane tab={TabTitle('变量与响应参数提取')} key={'4'}>
-                  <RespProTable
-                    columns={ResponseExtractColumns}
-                    dataSource={item.extracts}
-                  />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab={TabTitle('断言')} key={'5'}>
-                  <RespProTable
-                    columns={AssertColumns}
-                    dataSource={item.asserts}
-                  />
-                </Tabs.TabPane>
-              </Tabs>
+                items={[
+                  {
+                    key: '1',
+                    label: TabTitle('请求头'),
+                    children: (
+                      <RequestHeaders
+                        key={`${uniqueKey}-req-headers`}
+                        header={item.request_head}
+                      />
+                    ),
+                  },
+                  {
+                    key: '6',
+                    label: TabTitle('请求体'),
+                    children: renderRequestBody(item),
+                  },
+                  {
+                    key: '2',
+                    label: TabTitle('响应头'),
+                    children: <RequestHeaders header={item.response_head} />,
+                  },
+                  {
+                    key: '3',
+                    label: TabTitle('响应体'),
+                    children: renderResponseBody(item),
+                  },
+                  {
+                    key: '4',
+                    label: TabTitle('变量与响应参数提取'),
+                    children: (
+                      <RespProTable
+                        columns={ResponseExtractColumns}
+                        dataSource={item.extracts}
+                      />
+                    ),
+                  },
+                  {
+                    key: '5',
+                    label: TabTitle('断言'),
+                    children: (
+                      <RespProTable
+                        columns={AssertColumns}
+                        dataSource={item.asserts}
+                      />
+                    ),
+                  },
+                ]}
+              />
             </ProCard>
           );
         }

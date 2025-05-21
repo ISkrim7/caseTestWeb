@@ -51,7 +51,19 @@ const JsonBody: FC<SelfProps> = ({ form, mode }) => {
     }, 2000); // 延迟1秒钟进行验证
   };
   return (
-    <ProCard bodyStyle={{ padding: 0 }} style={{ marginTop: 8 }}>
+    <ProCard
+      bodyStyle={{ padding: 0 }}
+      style={{ marginTop: 8 }}
+      extra={
+        <a
+          onClick={() =>
+            handleOnChange(JSON.stringify(form.getFieldValue('body'), null, 2))
+          }
+        >
+          格式化
+        </a>
+      }
+    >
       {showError && <p style={{ color: 'red' }}>JSON 格式错误，请检查。</p>}
       <AceCodeEditor
         value={body}

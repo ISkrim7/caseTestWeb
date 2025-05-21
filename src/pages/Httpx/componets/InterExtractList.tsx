@@ -16,7 +16,7 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { FormInstance, Space, Tag, Tooltip } from 'antd';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 const EXTRACT_TARGET_OPTION = [
   { label: 'ResponseJson', value: 6 },
@@ -30,13 +30,19 @@ interface ISelfProps {
 }
 
 const InterExtractList: FC<ISelfProps> = ({ form }) => {
-  const [editingIndex, setEditingIndex] = useState<number | null>(null); // 当前正在编辑的行索引
+  const [editingIndex, setEditingIndex] = useState<number | null>(0); // 当前正在编辑的行索引
+
+  useEffect(() => {
+    const extracts = form.getFieldValue('extracts');
+    if (extracts?.length === 0) {
+      setEditingIndex(0);
+    } else setEditingIndex(null);
+  }, []);
 
   const handleEdit = (index: number) => {
     setEditingIndex(index);
   };
   const save = async () => {
-    console.log('===========');
     try {
       await form.validateFields();
     } catch (e) {
@@ -71,7 +77,7 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
             title={
               <Tag
                 color={'orange-inverse'}
-                hidden={editingIndex === index} // 编辑时隐藏
+                // hidden={editingIndex === index} // 编辑时隐藏
               >
                 {record?.key || '变量'}
               </Tag>
@@ -104,6 +110,7 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
         alwaysShowItemLabel
       >
         {(_, index, list) => {
+          console.log('==curr', index);
           return (
             <>
               <ProFormText
@@ -112,9 +119,7 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
                 width={'md'}
                 rules={[{ required: true, message: '请输入变量名' }]}
                 placeholder={'请输入变量名'}
-                fieldProps={{
-                  disabled: editingIndex !== index,
-                }}
+                disabled={editingIndex !== index}
               />
               <ProForm.Group>
                 <ProFormSelect
@@ -125,9 +130,7 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
                   placeholder={'请选择提取目标'}
                   options={EXTRACT_TARGET_OPTION}
                   required
-                  fieldProps={{
-                    disabled: editingIndex !== index,
-                  }}
+                  disabled={editingIndex !== index}
                   rules={[{ required: true, message: '请选择提取目标' }]}
                 />
                 <ProFormSelect

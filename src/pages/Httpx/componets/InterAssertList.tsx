@@ -22,7 +22,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { FormInstance, Space, Tag, Tooltip } from 'antd';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 const AssertOpt = {
   '==': {
@@ -64,25 +64,28 @@ const AssertTarget = {
     text: 'Response Text',
   },
 };
-const ExtraOpt = {
-  jsonpath: {
-    text: 'Jsonpath',
-  },
-  jmespath: {
-    text: 'Jmespath',
-  },
-  re: {
-    text: 'Re',
-  },
-};
+
+const ExtractOptions = [
+  { label: 'Jsonpath', value: 'jsonpath' },
+  { label: 'Jmespath', value: 'jmespath' },
+  { label: 'Re', value: 're' },
+];
 
 interface ISelfProps {
   form: FormInstance<IInterfaceAPI>;
 }
 
 const InterAssertList: FC<ISelfProps> = ({ form }) => {
-  const [editingIndex, setEditingIndex] = useState<number | null>(null); // 当前正在编辑的行索引
+  const [editingIndex, setEditingIndex] = useState<number | null>(0); // 当前正在编辑的行索引
   const [showTools, setShowTools] = useState(false);
+
+  useEffect(() => {
+    const asserts = form.getFieldValue('asserts');
+    if (asserts?.length === 0) {
+      setEditingIndex(0);
+    } else setEditingIndex(null);
+  }, []);
+
   // 处理编辑按钮的点击
   const handleEdit = (index: number) => {
     setEditingIndex(index);
@@ -127,7 +130,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
               <Space style={{ marginRight: 10 }}>
                 <ProFormSwitch
                   noStyle
-                  disabled={index !== editingIndex}
+                  disabled={editingIndex !== index} // 根据编辑状态禁用该项
                   name={'assert_switch'}
                   style={{ color: 'orange' }}
                   initialValue={true}
@@ -206,14 +209,13 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
                   valueEnum={AssertTarget}
                   disabled={editingIndex !== index} // 根据编辑状态禁用该项
                   onChange={(value) => {
-                    console.log('tart', value);
                     if (value === 'text') {
                       list.setCurrentRowData({ assert_extract: 're' });
                     } else if (value === 'status_code') {
                       list.setCurrentRowData({ assert_extract: null });
                     } else {
                       list.setCurrentRowData({
-                        assert_extract: ExtraOpt.jsonpath.text,
+                        assert_extract: 'jsonpath',
                       });
                     }
                   }}
@@ -222,7 +224,9 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
                   {({ assert_target }) => {
                     // 动态生成 options
                     const filteredOptions =
-                      assert_target === 'text' ? { re: ExtraOpt.re } : ExtraOpt;
+                      assert_target === 'text'
+                        ? [{ value: 're', label: 'Re' }]
+                        : ExtractOptions;
                     return (
                       <ProFormSelect
                         hidden={assert_target === 'status_code'}
@@ -230,7 +234,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
                         allowClear={false}
                         name="assert_extract"
                         label="提取"
-                        valueEnum={filteredOptions}
+                        options={filteredOptions}
                         disabled={editingIndex !== index} // 根据编辑状态禁用该项
                       />
                     );

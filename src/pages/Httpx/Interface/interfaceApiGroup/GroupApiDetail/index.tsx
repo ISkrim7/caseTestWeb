@@ -30,7 +30,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, Form, message } from 'antd';
+import { Button, Divider, Form, message, Modal } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
 
@@ -128,7 +128,7 @@ const Index = () => {
       }
     }
   };
-  const onDragEnd = (reorderedAPIContents: any[]) => {
+  const onDragEnd1 = (reorderedAPIContents: any[]) => {
     setApisContent(reorderedAPIContents);
     if (groupId) {
       const reorderData = reorderedAPIContents.map((item) => item.api_Id);
@@ -140,6 +140,62 @@ const Index = () => {
         },
       );
     }
+  };
+
+  const [originalApisContent, setOriginalApisContent] = useState<any[]>([]);
+  useEffect(() => {
+    if (queryApis && moduleEnum && apiEnvs) {
+      setStepApiIndex(queryApis.length);
+      setApisContent(
+        queryApis.map((item, index) => ({
+          id: (index + 1).toString(),
+          api_Id: item.id,
+          content: (
+            <CollapsibleApiCard
+              step={index + 1}
+              apiEnvs={apiEnvs}
+              apiModule={moduleEnum}
+              collapsible={true}
+              refresh={handleReload}
+              interfaceApiInfo={item}
+              groupId={groupId}
+              moduleId={currentModuleId}
+              projectId={currentProjectId}
+            />
+          ),
+        })),
+      );
+      setOriginalApisContent([...apisContent]); // 保存原始顺序
+    }
+  }, [queryApis, moduleEnum, apiEnvs]);
+  const onDragEnd = async (reorderedAPIContents: any[]) => {
+    Modal.confirm({
+      title: '确认排序',
+      content: '您确定要应用当前的API排序吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        setApisContent(reorderedAPIContents);
+        if (groupId) {
+          const reorderData = reorderedAPIContents.map((item) => item.api_Id);
+          const { code } = await reorderInterfaceGroupApis({
+            groupId,
+            apiIds: reorderData,
+          });
+          if (code === 0) {
+            message.success('排序成功');
+          } else {
+            message.error('排序失败');
+            // 恢复原始排序的逻辑
+            setApisContent([...originalApisContent]);
+          }
+        }
+      },
+      onCancel: () => {
+        // 恢复原始排序的逻辑
+        setApisContent([...originalApisContent]);
+      },
+    });
   };
 
   const AddEmptyApiForm = () => {

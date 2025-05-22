@@ -1,6 +1,14 @@
-import { useModel } from '@@/exports';
-import React, { FC } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { HolderOutlined } from '@ant-design/icons';
+import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Button } from 'antd';
+import React, { FC, useContext, useMemo } from 'react';
 
 interface ISelfProps {
   items: any[];
@@ -8,78 +16,91 @@ interface ISelfProps {
   dragEndFunc: (data: any[]) => void;
 }
 
-const Index: FC<ISelfProps> = (props) => {
-  const { items, setItems, dragEndFunc } = props;
+const RowContext = React.createContext<{
+  setActivatorNodeRef?: (element: HTMLElement | null) => void;
+  listeners?: any;
+}>({});
 
-  const { initialState, setInitialState } = useModel('@@initialState');
-  const currentTheme = initialState?.theme || 'light'; // 统一使用 theme 拼写
-  // 直接使用 currentTheme 决定 UI
-  const editorTheme = currentTheme === 'realDark' ? 'twilight' : 'ambiance';
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return; // 拖拽没有放置，退出
-    // 重新排序 items 和 formData
-    const reorderedUIContents = reorder(
-      items,
-      result.source.index,
-      result.destination.index,
-    );
-    setItems(reorderedUIContents);
-    dragEndFunc(reorderedUIContents);
-  };
-
-  const reorder = (list: any[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
-
+const DragHandle = () => {
+  const { setActivatorNodeRef, listeners } = useContext(RowContext);
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable" direction="vertical">
-        {(provided, snapshot) => (
-          <div
-            key={`${editorTheme}-${items}`} // 关键修复：添加key强制重新渲染
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            style={{
-              background: snapshot.isDraggingOver
-                ? currentTheme === 'realDark'
-                  ? '#c2a5de'
-                  : '#f9f5ec'
-                : currentTheme === 'realDark'
-                ? '#7c817c'
-                : '#f0eaf5',
-              padding: '10px',
-              borderRadius: '10px',
-              border: items.length === 0 ? 0 : '1px solid #e0e0e0',
-              // transition: 'background-color 0.2s ease',
-              transition: 'background-color 0.3s ease-in-out',
-            }}
-          >
-            {items.map((item, index) => (
-              <Draggable key={item.id} draggableId={item.id} index={index}>
-                {(provided) => (
-                  <div
-                    key={item.id}
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    style={{
-                      ...provided.draggableProps.style,
-                    }}
-                  >
-                    {item.content}
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <Button
+      type="text"
+      size="small"
+      icon={<HolderOutlined />}
+      style={{ cursor: 'move' }}
+      ref={setActivatorNodeRef}
+      {...listeners}
+    />
   );
 };
 
-export default Index;
+const SortableRow: FC<{ id: string; children: React.ReactNode }> = ({
+  id,
+  children,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Translate.toString(transform),
+    transition: transition || undefined,
+    position: 'relative',
+    ...(isDragging ? { zIndex: 9999 } : {}),
+  };
+
+  const contextValue = useMemo(
+    () => ({ setActivatorNodeRef, listeners }),
+    [setActivatorNodeRef, listeners],
+  );
+
+  return (
+    <RowContext.Provider value={contextValue}>
+      <div ref={setNodeRef} style={style} {...attributes}>
+        {children}
+      </div>
+    </RowContext.Provider>
+  );
+};
+
+const MyDraggable: FC<ISelfProps> = ({ items, setItems, dragEndFunc }) => {
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+      const newItems = arrayMove(items, oldIndex, newIndex);
+      setItems(newItems);
+      dragEndFunc(newItems);
+    }
+  };
+
+  return (
+    <DndContext onDragEnd={handleDragEnd}>
+      <SortableContext
+        items={items.map((item) => item.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {items.map((item) => (
+            <SortableRow key={item.id} id={item.id}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <DragHandle />
+                {item.content}
+              </div>
+            </SortableRow>
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
+  );
+};
+
+export default MyDraggable;

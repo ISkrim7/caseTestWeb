@@ -12,7 +12,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { FormInstance, Select, Tag } from 'antd';
+import { FormInstance, Modal, Select, Tag } from 'antd';
 import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -162,14 +162,50 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
           recordCreatorProps={{
             newRecordType: 'dataSource',
             record: () => ({
-              id: Date.now(),
+              //id: Date.now(),
+              id: Date.now() + Math.random().toString(36).slice(2),
             }),
           }}
           editable={{
             type: 'multiple',
             editableKeys: headersEditableKeys,
             onChange: setHeadersEditableRowKeys, // Update editable keys
-            onSave: async () => {
+            //onSave: async () => {
+            //  await FormEditableOnValueChange(form, 'headers');
+            //},
+            onSave: async (key, row) => {
+              let newRow = { ...row };
+              const trimmedKey = newRow.key?.trim();
+              const trimmedValue = newRow.value?.trim();
+              const hasWhitespace =
+                newRow.key !== trimmedKey || newRow.value !== trimmedValue;
+              if (hasWhitespace) {
+                const confirmed = await new Promise((resolve) => {
+                  Modal.confirm({
+                    title: '提示',
+                    content: '检测到首尾空格，是否自动去除？',
+                    okText: '是',
+                    cancelText: '否',
+                    onOk: () => resolve(true),
+                    onCancel: () => resolve(false),
+                  });
+                });
+                if (confirmed) {
+                  newRow = {
+                    ...newRow,
+                    key: trimmedKey,
+                    value: trimmedValue,
+                  };
+                  // 正确使用row.id作为行唯一标识
+                  editorFormRef.current?.setRowData?.(row.id, newRow);
+                  // 同步更新表单数据
+                  const headers = form.getFieldValue('headers') || [];
+                  const newHeaders = headers.map((item: IHeaders) =>
+                    item.id === row.id ? newRow : item,
+                  );
+                  form.setFieldsValue({ headers: newHeaders });
+                }
+              }
               await FormEditableOnValueChange(form, 'headers');
             },
             onDelete: async (key) => {

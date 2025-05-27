@@ -8,15 +8,24 @@ export const FormEditableOnValueChange = async (
   no_message: boolean = true,
 ) => {
   const InterfaceId = form.getFieldValue('id');
-  const fieldValues = await form.validateFields([field]);
-  console.log('====', InterfaceId, fieldValues);
-  const { code, msg } = await updateInterApiById({
-    id: InterfaceId,
-    // @ts-ignore
-    [field]: fieldValues[field],
-  });
-  if (code === 0 && no_message) {
-    message.success(msg);
+  // 新增校验：无 ID 时不发送请求
+  if (!InterfaceId) {
+    console.warn('未找到接口 ID，跳过自动保存');
+    return;
+  }
+  try {
+    const fieldValues = await form.validateFields([field]);
+    console.log('====', InterfaceId, fieldValues);
+    const { code, msg } = await updateInterApiById({
+      id: InterfaceId,
+      // @ts-ignore
+      [field]: fieldValues[field],
+    });
+    if (code === 0 && no_message) {
+      message.success(msg);
+    }
+  } catch (error) {
+    console.error('自动保存失败:', error);
   }
 };
 

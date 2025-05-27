@@ -101,6 +101,7 @@ export default [
     path: '/ui',
     name: 'UI自动化',
     icon: 'RobotOutlined',
+    access: 'isAdmin',
     routes: [
       {
         path: '/ui/cases',
@@ -253,6 +254,7 @@ export default [
       {
         path: '/interface/interApi/record',
         name: '接口录制',
+        access: 'isAdmin',
         component: '@/pages/Httpx/InterfaceApiRecord',
       },
       {
@@ -263,6 +265,7 @@ export default [
       {
         path: '/interface/interApi/perf',
         name: '压力测试',
+        access: 'isAdmin',
         component: '@/pages/Httpx/InterfacePerf',
       },
       {
@@ -278,6 +281,7 @@ export default [
     name: '调试',
     path: '/debugger',
     icon: 'BugOutlined',
+    access: 'isAdmin',
     routes: [
       {
         path: '/debugger/socket',

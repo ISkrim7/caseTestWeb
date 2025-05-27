@@ -1,4 +1,3 @@
-import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import APIFormData from '@/pages/Httpx/componets/InterBody/APIFormData';
 import JsonBody from '@/pages/Httpx/componets/InterBody/JsonBody';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
@@ -42,7 +41,7 @@ const Index: FC<SelfProps> = (props) => {
   const onGroupChange = async (e: RadioChangeEvent) => {
     setBodyType(e.target.value);
     props.form.setFieldValue('body_type', e.target.value);
-    await FormEditableOnValueChange(props.form, 'body_type', false);
+    //await FormEditableOnValueChange(props.form, 'body_type', false);
   };
   return (
     <>

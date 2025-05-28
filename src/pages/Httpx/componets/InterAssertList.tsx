@@ -64,7 +64,6 @@ const AssertTarget = {
     text: 'Response Text',
   },
 };
-
 const ExtractOptions = [
   { label: 'Jsonpath', value: 'jsonpath' },
   { label: 'Jmespath', value: 'jmespath' },
@@ -81,7 +80,7 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
 
   useEffect(() => {
     const asserts = form.getFieldValue('asserts');
-    if (asserts?.length === 0) {
+    if (asserts === null || asserts?.length === 0) {
       setEditingIndex(0);
     } else setEditingIndex(null);
   }, []);

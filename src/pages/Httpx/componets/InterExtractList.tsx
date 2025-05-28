@@ -34,7 +34,7 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
 
   useEffect(() => {
     const extracts = form.getFieldValue('extracts');
-    if (extracts?.length === 0) {
+    if (extracts === null || extracts?.length === 0) {
       setEditingIndex(0);
     } else setEditingIndex(null);
   }, []);
@@ -113,14 +113,16 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
           console.log('==curr', index);
           return (
             <>
-              <ProFormText
-                name={'key'}
-                label={'变量名'}
-                width={'md'}
-                rules={[{ required: true, message: '请输入变量名' }]}
-                placeholder={'请输入变量名'}
-                disabled={editingIndex !== index}
-              />
+              <ProForm.Group>
+                <ProFormText
+                  name={'key'}
+                  label={'变量名'}
+                  width={'md'}
+                  rules={[{ required: true, message: '请输入变量名' }]}
+                  placeholder={'请输入变量名'}
+                  disabled={editingIndex !== index}
+                />
+              </ProForm.Group>
               <ProForm.Group>
                 <ProFormSelect
                   name={'target'}
@@ -142,10 +144,15 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
                   valueEnum={ExtraOpt}
                   disabled={editingIndex !== index} // 根据编辑状态禁用该项
                 />
+              </ProForm.Group>
+              <ProForm.Group>
                 <ProFormTextArea
+                  nostyle
                   fieldProps={{
                     rows: 1,
                   }}
+                  required
+                  rules={[{ required: true, message: '请输入提取语法' }]}
                   placeholder={'输入提取语法 如$.name'}
                   disabled={editingIndex !== index} // 根据编辑状态禁用该项
                   name={'value'}

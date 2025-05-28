@@ -6,6 +6,7 @@ import {
   ProFormDigitRange,
   ProFormText,
 } from '@ant-design/pro-components';
+import { ProFormUploadDragger } from '@ant-design/pro-form';
 import { Button, Form } from 'antd';
 import { FC } from 'react';
 
@@ -17,12 +18,26 @@ const InterPerf: FC<IProps> = ({ interfaceId }) => {
   const [form] = Form.useForm();
 
   const onFinish = async () => {
-    const values = await form.validateFields();
-    const body = {
-      interfaceId: interfaceId,
-      ...values,
-    };
-    const { code, data } = await debugPerfInterApi(body);
+    try {
+      await form.validateFields();
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+    const values = form.getFieldsValue(true);
+    console.log(values);
+    const formData = new FormData();
+    const api_file = values.api_file;
+    if (api_file && api_file.length > 0) {
+      formData.append('api_file', api_file[0].originFileObj);
+    }
+    formData.append('interfaceId', interfaceId);
+    formData.append('wait_range', values.wait_range);
+    formData.append('perf_user', values.perf_user);
+    formData.append('perf_spawn_rate', values.perf_spawn_rate);
+    formData.append('perf_duration', values.perf_duration);
+    console.log(formData);
+    const { code, data } = await debugPerfInterApi(formData);
     if (code === 0 && data) {
       console.log(data);
       window.open(`/interface/interApi/perf/detail/perfId=${data}`);
@@ -109,6 +124,15 @@ const InterPerf: FC<IProps> = ({ interfaceId }) => {
             fieldProps={{
               suffix: <span>秒</span>,
             }}
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormUploadDragger
+            accept=".txt,.csv" // 限制文件类型
+            max={1}
+            description={'上传变量替换附件'}
+            label="变量附件"
+            name="api_file"
           />
         </ProForm.Group>
       </ProForm>

@@ -8,15 +8,17 @@ export const FormEditableOnValueChange = async (
   no_message: boolean = true,
 ) => {
   const InterfaceId = form.getFieldValue('id');
-  const fieldValues = await form.validateFields([field]);
-  console.log('====', InterfaceId, fieldValues);
-  const { code, msg } = await updateInterApiById({
-    id: InterfaceId,
-    // @ts-ignore
-    [field]: fieldValues[field],
-  });
-  if (code === 0 && no_message) {
-    message.success(msg);
+  if (InterfaceId) {
+    const fieldValues = await form.validateFields([field]);
+    console.log('====', InterfaceId, fieldValues);
+    const { code, msg } = await updateInterApiById({
+      id: InterfaceId,
+      // @ts-ignore
+      [field]: fieldValues[field],
+    });
+    if (code === 0 && no_message) {
+      message.success(msg);
+    }
   }
 };
 

@@ -10,6 +10,7 @@ import { CodeOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
+  ProFormDigit,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
@@ -205,19 +206,21 @@ const ApiDetailForm: FC<IProps> = (props) => {
             { label: '否', value: 0 },
           ]}
         />
-        <ProFormText
+        <ProFormDigit
           disabled={currentMode === 1}
           width={'sm'}
           label={'请求超时(s)'}
-          name={'connectTimeout'}
+          name={'connect_timeout'}
           initialValue={6}
+          min={0}
         />
-        <ProFormText
+        <ProFormDigit
           width={'sm'}
           disabled={currentMode === 1}
           label={'响应超时(s)'}
           initialValue={6}
-          name={'responseTimeout'}
+          min={0}
+          name={'response_timeout'}
         />
       </ProForm.Group>
       <ProForm.Group>

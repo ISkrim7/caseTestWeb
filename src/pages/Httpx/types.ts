@@ -44,6 +44,7 @@ export interface IInterfaceAPI extends IBaseField {
   headers: IHeaders[] | [];
   params: IParams[] | [];
   body: any;
+  raw_type: 'json' | 'text';
   data: any;
   files: any;
   asserts: IAsserts[];

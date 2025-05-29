@@ -74,7 +74,7 @@ const PerfDetail = () => {
   useEffect(() => {
     let socket: Socket | undefined;
     const createSocket = () => {
-      socket = io('ws://localhost:5050/api_namespace', {
+      socket = io('ws://localhost:5050/api_perf_ns', {
         query: {
           clientId: initialState?.currentUser?.uid,
           EIO: 4,

@@ -14,9 +14,7 @@ const JsonBody: FC<SelfProps> = ({ form, mode }) => {
   const timeoutRef = useRef<any>(null);
   const [showError, setShowError] = useState(false);
   const [readonly, setReadonly] = useState(false);
-
   useEffect(() => {
-    console.log(mode);
     if (mode) {
       if (mode === 1) {
         setReadonly(true);

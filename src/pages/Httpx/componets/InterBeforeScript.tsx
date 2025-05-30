@@ -7,9 +7,11 @@ import { ProCard } from '@ant-design/pro-components';
 import {
   Button,
   FormInstance,
+  List,
   message,
   Popover,
   Space,
+  Splitter,
   Typography,
 } from 'antd';
 import { FC, useEffect, useState } from 'react';
@@ -20,6 +22,34 @@ interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
 }
 
+const demoScript = [
+  {
+    label: '设置一个变量',
+    value: 'key = 1',
+  },
+  {
+    label: '获取时间戳 （内置）',
+    value:
+      "ts = timestamp(); # 参数params ['+1s', '-1s', '+1m', '-1m', '+1h', '-1h']",
+    desc: 'return 1748590765290',
+  },
+  {
+    label: '获取日期 （内置）',
+    value:
+      "date_value = date() #参数: ['+1d', '-1d', '+1m', '-1m', '+1y', '-1y'] ",
+    desc: 'return 2025-05-30 ',
+  },
+  {
+    label: '打印',
+    value: 'log("xx")',
+    desc: '打印内容、只适用于业务日志',
+  },
+  {
+    label: 'faker 生成随机数据',
+    value: 'name = faker.pystr()',
+    desc: 'return xxx',
+  },
+];
 const InterBeforeScript: FC<SelfProps> = ({ form }) => {
   const [scriptData, setScriptData] = useState<any>();
   const [showButton, setShowButton] = useState(false);
@@ -64,6 +94,17 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
       </li>
     </ul>
   );
+
+  const useDemoScript = (value: string) => {
+    setScriptData((prev: string) => {
+      if (prev === undefined) {
+        return value;
+      } else {
+        return prev + '\n' + value;
+      }
+    });
+    form.setFieldsValue({ before_script: scriptData });
+  };
   return (
     <>
       <MyDrawer name={'script response'} open={open} setOpen={setOpen}>
@@ -140,12 +181,48 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
           </Space>
         }
       >
-        <AceCodeEditor
-          value={scriptData}
-          onChange={handleOnChange}
-          height={'40vh'}
-          _mode={'python'}
-        />
+        <Splitter style={{ height: '100%' }}>
+          <Splitter.Panel
+            collapsible={true}
+            defaultSize="80%"
+            min="80%"
+            max="100%"
+          >
+            <ProCard style={{ height: '100%' }} bodyStyle={{ padding: 0 }}>
+              <AceCodeEditor
+                value={scriptData}
+                onChange={handleOnChange}
+                height={'60vh'}
+                _mode={'python'}
+              />
+            </ProCard>
+          </Splitter.Panel>
+          <Splitter.Panel
+            collapsible={true}
+            defaultSize="20%"
+            min="0%"
+            max="20%"
+          >
+            <ProCard style={{ height: '100%' }}>
+              <List
+                itemLayout="horizontal"
+                dataSource={demoScript}
+                renderItem={(item, index) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      title={
+                        <a onClick={() => useDemoScript(item.value)}>
+                          {item.label}
+                        </a>
+                      }
+                      description={item.desc || ''}
+                    />
+                  </List.Item>
+                )}
+              />
+            </ProCard>
+          </Splitter.Panel>
+        </Splitter>
       </ProCard>
     </>
   );

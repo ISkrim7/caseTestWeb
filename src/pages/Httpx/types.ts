@@ -58,6 +58,9 @@ export interface IInterfaceAPI extends IBaseField {
   before_sql: string;
   before_sql_extracts: { key: string; jP: string; id: any }[];
   after_script: string;
+  after_db_id: number;
+  after_sql: string;
+  after_sql_extracts: { key: string; jP: string; id: any }[];
   before_params: IBeforeParams[] | [];
   follow_redirects: boolean;
   is_common: number;
@@ -186,6 +189,12 @@ export interface IBeforeSQLExtract {
   value?: string;
 }
 
+export interface IAfterSQLExtract {
+  id: React.Key;
+  key?: string;
+  value?: string;
+}
+
 export interface IBeforeParams extends IBase {
   target?: string;
 }
@@ -248,4 +257,15 @@ export interface IInterfaceResultByCase {
   result?: 'SUCCESS' | 'ERROR';
   extracts: IExtract[];
   asserts: any;
+  // SQL执行结果
+  before_sql_result?: any[];
+  after_sql_result?: any[];
+
+  // 提取变量
+  before_vars?: Record<string, any>;
+  after_vars?: Record<string, any>;
+
+  // 提取配置
+  before_sql_extracts?: Array<{ key: string; jp: string }>;
+  after_sql_extracts?: Array<{ key: string; jp: string }>;
 }

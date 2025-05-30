@@ -1,7 +1,12 @@
 import MyTabs from '@/components/MyTabs';
 import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
+import InterAfterSql from '@/pages/Httpx/componets/InterAfterSql'; // 新增
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { EditOutlined, FieldTimeOutlined } from '@ant-design/icons';
+import {
+  DatabaseOutlined,
+  EditOutlined,
+  FieldTimeOutlined,
+} from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { FormInstance, TabsProps, Tooltip } from 'antd';
 import { FC } from 'react';
@@ -26,6 +31,13 @@ const ApiAfterItems: FC<SelfProps> = (props) => {
       label: <Tooltip title="只适用于业务场景中,调试不生效">等待</Tooltip>,
       icon: <FieldTimeOutlined />,
       children: null,
+    },
+    // 新增SQL标签页
+    {
+      key: '3',
+      label: <Tooltip title="执行数据库操作并提取变量">后置SQL</Tooltip>,
+      icon: <DatabaseOutlined />,
+      children: <InterAfterSql form={interApiForm} />,
     },
   ];
   return (

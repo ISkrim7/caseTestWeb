@@ -16,6 +16,20 @@ interface SelfProps {
   keyPrefix?: string; // 新增key前缀prop
 }
 
+const SQL_RESULT_STYLE = {
+  header: {
+    background: '#f8f9fa',
+    padding: '8px 12px',
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+  content: {
+    border: '1px solid #e8e8e8',
+    borderRadius: 4,
+    marginTop: 8,
+  },
+};
+
 const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   const { API_STATUS } = CONFIG;
   const [activeKeys, setActiveKeys] = useState(
@@ -482,6 +496,111 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                         columns={AssertColumns}
                         dataSource={item.asserts}
                       />
+                    ),
+                  },
+                  // 在Tabs的items数组中新增以下两个Tab项（放在断言Tab之后）
+                  {
+                    key: '7',
+                    label: TabTitle('前置SQL'),
+                    children: (
+                      <div style={SQL_RESULT_STYLE.content}>
+                        {item.before_sql_result ? (
+                          <>
+                            <div style={SQL_RESULT_STYLE.header}>
+                              <Text strong>原始数据</Text>
+                            </div>
+                            <AceCodeEditor
+                              value={JSON.stringify(
+                                item.before_sql_result,
+                                null,
+                                2,
+                              )}
+                              readonly
+                              _mode="json"
+                            />
+                            {item.before_sql_extracts?.length > 0 && (
+                              <>
+                                <Divider style={{ margin: '16px 0' }} />
+                                <div style={SQL_RESULT_STYLE.header}>
+                                  <Text strong>变量提取</Text>
+                                </div>
+                                <RespProTable
+                                  columns={[
+                                    { title: 'Key', dataIndex: 'key' },
+                                    {
+                                      title: 'Value',
+                                      dataIndex: 'value',
+                                      render: (v) => <Text code>{v}</Text>,
+                                    },
+                                  ]}
+                                  dataSource={item.before_sql_extracts.map(
+                                    (e: { key: string | number }) => ({
+                                      key: e.key,
+                                      value: item.before_vars?.[e.key],
+                                    }),
+                                  )}
+                                />
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <div style={{ padding: 16, textAlign: 'center' }}>
+                            <Text type="secondary">未配置前置SQL</Text>
+                          </div>
+                        )}
+                      </div>
+                    ),
+                  },
+                  {
+                    key: '8',
+                    label: TabTitle('后置SQL'),
+                    children: (
+                      <div style={SQL_RESULT_STYLE.content}>
+                        {item.after_sql_result ? (
+                          <>
+                            <div style={SQL_RESULT_STYLE.header}>
+                              <Text strong>原始数据</Text>
+                            </div>
+                            <AceCodeEditor
+                              value={JSON.stringify(
+                                item.after_sql_result,
+                                null,
+                                2,
+                              )}
+                              readonly
+                              _mode="json"
+                            />
+                            {item.after_sql_extracts?.length > 0 && (
+                              <>
+                                <Divider style={{ margin: '16px 0' }} />
+                                <div style={SQL_RESULT_STYLE.header}>
+                                  <Text strong>变量提取</Text>
+                                </div>
+                                <RespProTable
+                                  columns={[
+                                    { title: 'Key', dataIndex: 'key' },
+                                    {
+                                      title: 'Value',
+                                      dataIndex: 'value',
+                                      render: (v) => <Text code>{v}</Text>,
+                                    },
+                                  ]}
+                                  dataSource={item.after_sql_extracts.map(
+                                    (e: { key: string | number }) => ({
+                                      key: e.key,
+                                      value: item.after_vars?.[e.key],
+                                    }),
+                                  )}
+                                />
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <div style={{ padding: 16, textAlign: 'center' }}>
+                            <Text type="secondary">未配置后置SQL</Text>
+                          </div>
+                        )}
+                      </div>
                     ),
                   },
                 ]}

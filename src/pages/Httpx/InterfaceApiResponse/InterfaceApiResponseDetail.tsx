@@ -271,6 +271,32 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
       ? 'ERROR'
       : 'SUCCESS';
   };
+  // 添加在组件内部（render之前）
+  const formatSqlResult = (data: any) => {
+    if (!data) return '';
+
+    try {
+      // 尝试解析为JSON
+      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+
+      // 创建按原始键顺序排序的新对象
+      const orderedData = Array.isArray(parsed)
+        ? parsed.map((item) => {
+            const orderedItem: Record<string, any> = {};
+            // 保持原始键顺序
+            Object.keys(item).forEach((key) => {
+              orderedItem[key] = item[key];
+            });
+            return orderedItem;
+          })
+        : parsed;
+
+      return JSON.stringify(orderedData, null, 2);
+    } catch (e) {
+      return typeof data === 'string' ? data : JSON.stringify(data);
+    }
+  };
+
   return (
     <div>
       {responses?.map((item: any, index: number) => {
@@ -510,11 +536,12 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                               <Text strong>原始数据</Text>
                             </div>
                             <AceCodeEditor
-                              value={JSON.stringify(
-                                item.before_sql_result,
-                                null,
-                                2,
-                              )}
+                              // value={JSON.stringify(
+                              //   item.before_sql_result,
+                              //   null,
+                              //   2,
+                              // )}
+                              value={formatSqlResult(item.before_sql_result)}
                               readonly
                               _mode="json"
                             />
@@ -542,6 +569,41 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                                 />
                               </>
                             )}
+                            {/* 变量提取部分 */}
+                            {item.before_vars && (
+                              <>
+                                <Divider style={{ margin: '16px 0' }} />
+                                <div style={SQL_RESULT_STYLE.header}>
+                                  <Text strong>变量提取</Text>
+                                </div>
+                                <RespProTable
+                                  columns={[
+                                    { title: 'Key', dataIndex: 'key' },
+                                    {
+                                      title: 'Value',
+                                      dataIndex: 'value',
+                                      render: (v) => (
+                                        <Text code>
+                                          {v === null ? 'null' : v}
+                                        </Text>
+                                      ),
+                                    },
+                                  ]}
+                                  dataSource={
+                                    typeof item.before_vars === 'string'
+                                      ? Object.entries(
+                                          JSON.parse(item.before_vars),
+                                        ).map(([key, value]) => ({
+                                          key,
+                                          value,
+                                        }))
+                                      : Object.entries(item.before_vars).map(
+                                          ([key, value]) => ({ key, value }),
+                                        )
+                                  }
+                                />
+                              </>
+                            )}
                           </>
                         ) : (
                           <div style={{ padding: 16, textAlign: 'center' }}>
@@ -556,43 +618,70 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                     label: TabTitle('后置SQL'),
                     children: (
                       <div style={SQL_RESULT_STYLE.content}>
-                        {item.after_sql_result ? (
+                        {/* 判断是否有配置后置SQL */}
+                        {item.after_sql_result !== undefined ||
+                        item.after_vars !== undefined ? (
                           <>
+                            {/* 原始数据部分 */}
                             <div style={SQL_RESULT_STYLE.header}>
                               <Text strong>原始数据</Text>
                             </div>
-                            <AceCodeEditor
-                              value={JSON.stringify(
-                                item.after_sql_result,
-                                null,
-                                2,
-                              )}
-                              readonly
-                              _mode="json"
-                            />
-                            {item.after_sql_extracts?.length > 0 && (
-                              <>
-                                <Divider style={{ margin: '16px 0' }} />
-                                <div style={SQL_RESULT_STYLE.header}>
-                                  <Text strong>变量提取</Text>
-                                </div>
-                                <RespProTable
-                                  columns={[
-                                    { title: 'Key', dataIndex: 'key' },
-                                    {
-                                      title: 'Value',
-                                      dataIndex: 'value',
-                                      render: (v) => <Text code>{v}</Text>,
-                                    },
-                                  ]}
-                                  dataSource={item.after_sql_extracts.map(
-                                    (e: { key: string | number }) => ({
-                                      key: e.key,
-                                      value: item.after_vars?.[e.key],
-                                    }),
-                                  )}
-                                />
-                              </>
+
+                            {item.after_sql_result ? (
+                              <AceCodeEditor
+                                value={formatSqlResult(item.after_sql_result)}
+                                readonly
+                                _mode="json"
+                              />
+                            ) : (
+                              <div style={{ padding: 16, textAlign: 'center' }}>
+                                <Text type="secondary">
+                                  {item.after_sql_result === null
+                                    ? 'SQL执行成功但无返回数据'
+                                    : 'SQL执行结果为空'}
+                                </Text>
+                              </div>
+                            )}
+
+                            {/* 变量提取部分 */}
+                            <Divider style={{ margin: '16px 0' }} />
+                            <div style={SQL_RESULT_STYLE.header}>
+                              <Text strong>变量提取</Text>
+                            </div>
+
+                            {item.after_vars &&
+                            Object.keys(item.after_vars).length > 0 ? (
+                              <RespProTable
+                                columns={[
+                                  { title: 'Key', dataIndex: 'key' },
+                                  {
+                                    title: 'Value',
+                                    dataIndex: 'value',
+                                    render: (v) => (
+                                      <Text code>
+                                        {v === null ? 'null' : v}
+                                      </Text>
+                                    ),
+                                  },
+                                ]}
+                                dataSource={
+                                  typeof item.after_vars === 'string'
+                                    ? Object.entries(
+                                        JSON.parse(item.after_vars),
+                                      ).map(([key, value]) => ({ key, value }))
+                                    : Object.entries(item.after_vars).map(
+                                        ([key, value]) => ({ key, value }),
+                                      )
+                                }
+                              />
+                            ) : (
+                              <div style={{ padding: 16, textAlign: 'center' }}>
+                                <Text type="secondary">
+                                  {item.after_vars === null
+                                    ? 'SQL执行成功但未提取到变量'
+                                    : '未配置变量提取规则'}
+                                </Text>
+                              </div>
                             )}
                           </>
                         ) : (

@@ -21,7 +21,11 @@ import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
-import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import {
+  ArrowRightOutlined,
+  LeftOutlined,
+  PlayCircleOutlined,
+} from '@ant-design/icons';
 import { ProCard, ProForm } from '@ant-design/pro-components';
 import {
   Button,
@@ -180,6 +184,14 @@ const Index = () => {
       case 1:
         return (
           <div style={{ display: 'flex' }}>
+            {/* 新增返回按钮 */}
+            <Button
+              onClick={() => history.back()}
+              icon={<LeftOutlined />}
+              style={{ marginRight: 10 }}
+            >
+              返回
+            </Button>
             <Dropdown.Button
               menu={{ items, onClick: onMenuClick }}
               icon={<PlayCircleOutlined />}

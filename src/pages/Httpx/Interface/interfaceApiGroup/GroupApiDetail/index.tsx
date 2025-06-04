@@ -21,6 +21,7 @@ import {
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useModel, useParams } from '@@/exports';
+import { LeftOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -236,6 +237,14 @@ const Index = () => {
       case 1:
         return (
           <div style={{ display: 'flex' }}>
+            {/* 新增返回按钮 */}
+            <Button
+              onClick={() => history.back()}
+              icon={<LeftOutlined />}
+              style={{ marginRight: 10 }}
+            >
+              返回
+            </Button>
             <Button onClick={TryGroup}>Try</Button>
             <Button
               type={'primary'}

@@ -29,6 +29,7 @@ import {
   EditOutlined,
   FormOutlined,
   KeyOutlined,
+  LeftOutlined,
   LineChartOutlined,
   QuestionCircleOutlined,
   SaveOutlined,
@@ -207,6 +208,14 @@ const Index: FC<SelfProps> = ({
       case 1:
         return (
           <>
+            {/* 新增返回按钮 */}
+            <Button
+              onClick={() => history.back()}
+              icon={<LeftOutlined />}
+              style={{ marginRight: 10 }}
+            >
+              返回
+            </Button>
             {interId ||
             ((caseApiId !== undefined || groupId !== undefined) &&
               interfaceApiInfo?.is_common === 0) ? (

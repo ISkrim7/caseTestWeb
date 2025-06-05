@@ -74,10 +74,14 @@ const PerfDetail = () => {
   useEffect(() => {
     let socket: Socket | undefined;
     const createSocket = () => {
-      socket = io('ws://127.0.0.1:5050/ws', {
-        query: { clientId: initialState?.currentUser?.uid },
+      socket = io('ws://localhost:5050/api_perf_ns', {
+        query: {
+          clientId: initialState?.currentUser?.uid,
+          EIO: 4,
+        },
+        upgrade: false, // 禁止降级
         transports: ['websocket'],
-        path: '/ws/socket.io',
+        path: '/socket.io',
       });
 
       socket.on('connect', () => {

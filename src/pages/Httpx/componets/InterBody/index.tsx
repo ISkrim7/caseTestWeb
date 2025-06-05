@@ -1,8 +1,8 @@
 import APIFormData from '@/pages/Httpx/componets/InterBody/APIFormData';
 import JsonBody from '@/pages/Httpx/componets/InterBody/JsonBody';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
-import { ProCard } from '@ant-design/pro-components';
-import { FormInstance, Radio } from 'antd';
+import { ProCard, ProFormSelect } from '@ant-design/pro-components';
+import { FormInstance, Radio, Space } from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import { FC, useEffect, useState } from 'react';
 
@@ -53,7 +53,28 @@ const Index: FC<SelfProps> = (props) => {
         <Radio value={0}>none</Radio>
         <Radio value={2}>form-data</Radio>
         <Radio value={3}>urlencoded</Radio>
-        <Radio value={1}>json</Radio>
+        <Space>
+          <Radio value={1}>raw</Radio>
+          <ProFormSelect
+            hidden={bodyType !== 1}
+            noStyle
+            onChange={async (value) => {
+              props.form.setFieldValue('raw_type', value);
+              await FormEditableOnValueChange(props.form, 'raw_type', false);
+            }}
+            options={[
+              {
+                label: 'JSON',
+                value: 'json',
+              },
+              {
+                label: 'Text',
+                value: 'text',
+              },
+            ]}
+            name={'raw_type'}
+          />
+        </Space>
       </Radio.Group>
       {BodyMap()}
     </>

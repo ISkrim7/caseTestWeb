@@ -82,12 +82,22 @@ const Index = () => {
           return (
             <Col span={8} key={index}>
               <ProCard
-                onClick={async () => await onClick(item.value)}
                 bordered={true}
-                hoverable={true}
+                onClick={async () => await onClick(item.value)}
+                hoverable
                 type="inner"
                 headerBordered={true}
-                style={{ marginBlockStart: 16, borderRadius: 16 }}
+                style={{
+                  marginBlockStart: 16,
+                  borderRadius: 16,
+                  // 选中时添加背景色和阴影
+                  backgroundColor:
+                    currentValue === item.value ? '#f0f7ff' : 'transparent',
+                  boxShadow:
+                    currentValue === item.value
+                      ? '0 4px 12px rgba(24, 144, 255, 0.2)'
+                      : 'none',
+                }}
               >
                 <Space>
                   {item.icon}

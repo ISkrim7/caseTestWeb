@@ -22,7 +22,9 @@ import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
 import {
+  AlignLeftOutlined,
   ArrowRightOutlined,
+  FieldTimeOutlined,
   LeftOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons';
@@ -36,6 +38,7 @@ import {
   Form,
   MenuProps,
   message,
+  Space,
   Tabs,
   TabsProps,
 } from 'antd';
@@ -167,18 +170,11 @@ const Index = () => {
     }
   };
 
-  const items = [
-    {
-      key: '1',
-      label: '后台运行',
-      icon: <ArrowRightOutlined />,
-    },
-    {
-      key: '2',
-      label: '实时日志运行',
-      icon: <ArrowRightOutlined />,
-    },
-  ];
+  const onAddStepClick: MenuProps['onClick'] = (e) => {
+    const { key } = e;
+    console.log(key);
+  };
+
   const DetailExtra: FC<{ currentStatus: number }> = ({ currentStatus }) => {
     switch (currentStatus) {
       case 1:
@@ -193,7 +189,21 @@ const Index = () => {
               返回
             </Button>
             <Dropdown.Button
-              menu={{ items, onClick: onMenuClick }}
+              menu={{
+                items: [
+                  {
+                    key: '1',
+                    label: '后台运行',
+                    icon: <ArrowRightOutlined />,
+                  },
+                  {
+                    key: '2',
+                    label: '实时日志运行',
+                    icon: <ArrowRightOutlined />,
+                  },
+                ],
+                onClick: onMenuClick,
+              }}
               icon={<PlayCircleOutlined />}
             >
               Run By
@@ -274,15 +284,13 @@ const Index = () => {
     switch (current) {
       case 1:
         return (
-          <>
+          <Space>
             <Button type={'primary'} onClick={() => setChoiceGroupOpen(true)}>
               Choice Group
             </Button>
-            <Divider type={'vertical'} />
             <Button type={'primary'} onClick={() => setChoiceOpen(true)}>
               Choice API
             </Button>
-            <Divider type={'vertical'} />
             <Button
               type={'primary'}
               disabled={addButtonDisabled}
@@ -290,7 +298,22 @@ const Index = () => {
             >
               Add API
             </Button>
-          </>
+            <Dropdown.Button
+              menu={{
+                items: [
+                  {
+                    key: 'wait',
+                    label: '等待',
+                    icon: <FieldTimeOutlined style={{ color: 'orange' }} />,
+                  },
+                ],
+                onClick: onAddStepClick,
+              }}
+              icon={<AlignLeftOutlined />}
+            >
+              Add Step
+            </Dropdown.Button>
+          </Space>
         );
       default:
         return null;

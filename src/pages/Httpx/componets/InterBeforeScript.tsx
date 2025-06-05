@@ -103,6 +103,7 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
         return prev + '\n' + value;
       }
     });
+    setShowButton(true);
     form.setFieldsValue({ before_script: scriptData });
   };
   return (

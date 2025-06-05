@@ -21,12 +21,7 @@ import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
-import {
-  AlignLeftOutlined,
-  ArrowRightOutlined,
-  FieldTimeOutlined,
-  PlayCircleOutlined,
-} from '@ant-design/icons';
+import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { ProCard, ProForm } from '@ant-design/pro-components';
 import {
   Button,
@@ -289,21 +284,21 @@ const Index = () => {
             >
               Add API
             </Button>
-            <Dropdown.Button
-              menu={{
-                items: [
-                  {
-                    key: 'wait',
-                    label: '等待',
-                    icon: <FieldTimeOutlined style={{ color: 'orange' }} />,
-                  },
-                ],
-                onClick: onAddStepClick,
-              }}
-              icon={<AlignLeftOutlined />}
-            >
-              Add Step
-            </Dropdown.Button>
+            {/*<Dropdown.Button*/}
+            {/*  menu={{*/}
+            {/*    items: [*/}
+            {/*      {*/}
+            {/*        key: 'wait',*/}
+            {/*        label: '等待',*/}
+            {/*        icon: <FieldTimeOutlined style={{ color: 'orange' }} />,*/}
+            {/*      },*/}
+            {/*    ],*/}
+            {/*    onClick: onAddStepClick,*/}
+            {/*  }}*/}
+            {/*  icon={<AlignLeftOutlined />}*/}
+            {/*>*/}
+            {/*  Add Step*/}
+            {/*</Dropdown.Button>*/}
           </Space>
         );
       default:

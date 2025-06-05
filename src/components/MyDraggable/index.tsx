@@ -45,11 +45,11 @@ const Index: FC<ISelfProps> = (props) => {
             style={{
               background: snapshot.isDraggingOver
                 ? currentTheme === 'realDark'
-                  ? '#c2a5de'
-                  : '#f9f5ec'
+                  ? '#887b58'
+                  : '#d5e85d'
                 : currentTheme === 'realDark'
-                ? '#7c817c'
-                : '#f0eaf5',
+                ? '#949494'
+                : '#f6eee3',
               padding: '10px',
               borderRadius: '10px',
               border: items.length === 0 ? 0 : '1px solid #e0e0e0',

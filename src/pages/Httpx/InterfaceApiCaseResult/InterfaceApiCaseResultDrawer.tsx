@@ -43,6 +43,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
       setTabDisabled(false);
     }
   }, [caseResultId]);
+
   // 核心逻辑，处理socket连接相关，根据openStatus和caseApiId来建立或清理连接
   useEffect(() => {
     let socket: Socket | undefined;
@@ -99,6 +100,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
       cleanSocket();
     };
   }, [openStatus, caseApiId]);
+
   useEffect(() => {
     let isCancelled = false;
     const fetchData = async () => {
@@ -115,7 +117,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
         }
       }
     };
-    fetchData();
+    fetchData().then((r) => {});
     return () => {
       isCancelled = true;
     };
@@ -138,6 +140,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
         <AceCodeEditor
           value={logMessage.join('\n')}
           height="100vh"
+          _mode="json"
           readonly={true}
         />
       ),
@@ -153,7 +156,7 @@ const InterfaceApiCaseResultDrawer: FC<SelfProps> = ({
     <ProCard>
       <MyTabs
         items={items}
-        tabPosition={'left'}
+        tabPosition={'top'}
         defaultActiveKey={defaultActiveKey}
       />
     </ProCard>

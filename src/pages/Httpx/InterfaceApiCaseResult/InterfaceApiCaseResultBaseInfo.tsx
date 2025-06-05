@@ -39,13 +39,7 @@ const InterfaceApiCaseResultBaseInfo: FC<SelfProps> = ({ caseResultInfo }) => {
       <ProDescriptions.Item valueType="text" span={2} label={'执行人'}>
         {caseResultInfo?.starterName}
       </ProDescriptions.Item>
-      <ProDescriptions.Item valueType="time" label={'用例创建时间'}>
-        {caseResultInfo?.create_time}
-      </ProDescriptions.Item>
-      <ProDescriptions.Item valueType="time" label={'用例更新时间'}>
-        {caseResultInfo?.update_time}
-      </ProDescriptions.Item>
-      <ProDescriptions.Item valueType="text" label={'执行时间'}>
+      <ProDescriptions.Item valueType="text" label={'执行开始时间'}>
         {caseResultInfo?.startTime}
       </ProDescriptions.Item>
       <ProDescriptions.Item valueType="text" label={'总用时'}>

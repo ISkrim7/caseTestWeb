@@ -18,7 +18,7 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { ProFormSelect } from '@ant-design/pro-form';
-import { Button, Form, message, Tag } from 'antd';
+import { Button, Form, message, Space, Tag } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAccess } from 'umi';
 
@@ -40,13 +40,13 @@ const InterApiVariables = () => {
       title: 'project',
       dataIndex: 'project_id',
       hideInSearch: true,
-      width: '10%',
       valueEnum: projectEnum,
       render: (text) => <Tag color={'blue'}>{text}</Tag>,
     },
     {
       title: 'Key',
       dataIndex: 'key',
+      copyable: true,
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
@@ -54,18 +54,16 @@ const InterApiVariables = () => {
     {
       title: 'Value',
       dataIndex: 'value',
-      render: (text) => {
-        return <Tag color={'blue'}>{text}</Tag>;
-      },
+      copyable: true,
+      hideInSearch: true,
+      ellipsis: true,
     },
     {
       title: 'desc',
       dataIndex: 'description',
       valueType: 'textarea',
       hideInSearch: true,
-      render: (text) => {
-        return <Tag color={'blue'}>{text}</Tag>;
-      },
+      ellipsis: true,
     },
 
     {
@@ -73,17 +71,17 @@ const InterApiVariables = () => {
       valueType: 'option',
       key: 'option',
       fixed: 'right',
-      width: '10%',
       render: (__, record, _, action) => {
-        return isAdmin
-          ? [
+        return (
+          isAdmin && (
+            <Space>
               <a
                 onClick={async () => {
                   action?.startEditable?.(record.uid);
                 }}
               >
                 编辑
-              </a>,
+              </a>
               <a
                 onClick={async () => {
                   await removeInterGlobalVariable(record.uid).then(
@@ -97,9 +95,10 @@ const InterApiVariables = () => {
                 }}
               >
                 删除
-              </a>,
-            ]
-          : null;
+              </a>
+            </Space>
+          )
+        );
       },
     },
   ];

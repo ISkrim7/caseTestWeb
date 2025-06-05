@@ -47,7 +47,7 @@ const ApiDetailForm: FC<IProps> = (props) => {
   useEffect(() => {
     if (interfaceApiInfo) {
       setQueryLength(interfaceApiInfo.params?.length);
-      setBodyLength(interfaceApiInfo.data?.length);
+      setBodyLength(interfaceApiInfo.body_type !== 0 ? 1 : undefined);
       setHeadersLength(interfaceApiInfo.headers?.length);
     }
   }, [interfaceApiInfo]);

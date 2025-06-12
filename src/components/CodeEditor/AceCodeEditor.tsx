@@ -8,7 +8,6 @@ import 'ace-builds/src-noconflict/mode-sql';
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/theme-twilight';
 import 'ace-builds/src-noconflict/theme-xcode';
-import { Space } from 'antd';
 import { FC, useRef, useState } from 'react';
 import AceEditor from 'react-ace';
 import { useModel } from 'umi';
@@ -47,11 +46,11 @@ const AceCodeEditor: FC<selfProps> = (props) => {
     // @param setOptions - 编辑器的配置选项
     <ProCard
       bodyStyle={{ padding: 0 }}
-      extra={
-        <Space>
-          <a onClick={() => setWrapEnabled(!wrapEnabled)}>自动换行</a>
-        </Space>
-      }
+      // extra={
+      //   // <Space>
+      //   //   <a onClick={() => setWrapEnabled(!wrapEnabled)}>自动换行</a>
+      //   // </Space>
+      // }
     >
       <AceEditor
         style={{ borderRadius: 20 }}

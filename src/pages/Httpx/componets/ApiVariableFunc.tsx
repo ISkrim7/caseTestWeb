@@ -2,13 +2,14 @@ import {
   queryInterGlobalFunc,
   queryInterGlobalVariable,
 } from '@/api/inter/interGlobal';
+import MyTabs from '@/components/MyTabs';
 import {
   IInterfaceGlobalFunc,
   IInterfaceGlobalVariable,
 } from '@/pages/Httpx/types';
 import { GoogleSquareFilled, SearchOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, Popover, Select, Space, Tabs, Typography } from 'antd';
+import { Button, Popover, Select, Space, Typography } from 'antd';
 import Title from 'antd/es/typography/Title';
 import React, { FC, useEffect, useState } from 'react';
 
@@ -73,11 +74,13 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
     setOpen(newOpen);
   };
 
-  const Content = (
-    <ProCard split={'horizontal'}>
-      <Tabs defaultActiveKey={'1'}>
-        <Tabs.TabPane key={'1'} tab={'Func'}>
-          <ProCard>
+  const items = [
+    {
+      key: '1',
+      label: 'Func',
+      children: (
+        <ProCard split={'horizontal'}>
+          <ProCard bodyStyle={{ padding: 5 }}>
             <Select
               allowClear
               showSearch
@@ -121,48 +124,71 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
               )}
             />
           </ProCard>
-        </Tabs.TabPane>
-        <Tabs.TabPane key={'2'} tab={'Var'}>
-          <ProCard>
-            <Select
-              allowClear
-              showSearch
-              listHeight={180}
-              autoFocus
-              onChange={(value) => {
-                setSelectValue(value);
+          <ProCard bodyStyle={{ padding: 5 }}>
+            <Space
+              direction={'vertical'}
+              style={{
+                width: '100%',
+                marginTop: 20,
               }}
-              style={{ width: 500 }}
-              options={varData}
-              dropdownRender={(menu) => (
-                <>
-                  <ProCard split={'vertical'}>
-                    <ProCard bodyStyle={{ padding: 0 }}>{menu}</ProCard>
-                    <ProCard bodyStyle={{ padding: 5 }}>
-                      {currentData && (
-                        <Space direction="vertical">
-                          <Typography.Text type={'secondary'}>
-                            变量名
-                          </Typography.Text>
-                          <Typography.Text code>
-                            {currentData.key}
-                          </Typography.Text>
-                          <Typography.Text type={'secondary'}>
-                            变量值
-                          </Typography.Text>
-                          <Typography.Text code>
-                            {currentData?.value}
-                          </Typography.Text>
-                        </Space>
-                      )}
-                    </ProCard>
-                  </ProCard>
-                </>
-              )}
-            />
+            >
+              <Typography.Text type={'secondary'}>表达式</Typography.Text>
+              <Typography.Text code>{selectValue}</Typography.Text>
+              <Typography.Text type={'secondary'}>预览</Typography.Text>
+              <Typography.Text code>{currentValue?.demo}</Typography.Text>
+            </Space>
           </ProCard>
-        </Tabs.TabPane>
-      </Tabs>
+        </ProCard>
+      ),
+    },
+    {
+      key: '2',
+      label: 'Var',
+      children: (
+        <ProCard>
+          <Select
+            allowClear
+            showSearch
+            listHeight={180}
+            autoFocus
+            onChange={(value) => {
+              setSelectValue(value);
+            }}
+            style={{ width: 500 }}
+            options={varData}
+            dropdownRender={(menu) => (
+              <>
+                <ProCard split={'vertical'}>
+                  <ProCard bodyStyle={{ padding: 0 }}>{menu}</ProCard>
+                  <ProCard bodyStyle={{ padding: 5 }}>
+                    {currentData && (
+                      <Space direction="vertical">
+                        <Typography.Text type={'secondary'}>
+                          变量名
+                        </Typography.Text>
+                        <Typography.Text code>
+                          {currentData.key}
+                        </Typography.Text>
+                        <Typography.Text type={'secondary'}>
+                          变量值
+                        </Typography.Text>
+                        <Typography.Text code>
+                          {currentData?.value}
+                        </Typography.Text>
+                      </Space>
+                    )}
+                  </ProCard>
+                </ProCard>
+              </>
+            )}
+          />
+        </ProCard>
+      ),
+    },
+  ];
+  const Content = (
+    <ProCard split={'horizontal'}>
+      <MyTabs items={items} defaultActiveKey={'1'} />
       <ProCard style={{ marginTop: 200 }}>
         <Space direction={'horizontal'}>
           <Button

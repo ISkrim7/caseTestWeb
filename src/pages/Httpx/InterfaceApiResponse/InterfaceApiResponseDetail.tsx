@@ -1,6 +1,7 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import AssertColumns from '@/pages/Httpx/componets/AssertColumns';
 import RequestHeaders from '@/pages/Httpx/InterfaceApiResponse/RequestHeaders';
+import RequestInfo from '@/pages/Httpx/InterfaceApiResponse/RequestInfo';
 import ResponseExtractColumns from '@/pages/Httpx/InterfaceApiResponse/ResponseExtract';
 import RespProTable from '@/pages/Httpx/InterfaceApiResponse/RespProTable';
 import { IInterfaceResultByCase } from '@/pages/Httpx/types';
@@ -259,6 +260,12 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                   <RespProTable
                     columns={AssertColumns}
                     dataSource={item.asserts}
+                  />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={TabTitle('实际请求')} key={'6'}>
+                  <RequestInfo
+                    method={item.request_method}
+                    interfaceApiInfo={item.request_info}
                   />
                 </Tabs.TabPane>
               </Tabs>

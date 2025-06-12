@@ -133,7 +133,9 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
               }}
             >
               <Typography.Text type={'secondary'}>表达式</Typography.Text>
-              <Typography.Text code>{selectValue}</Typography.Text>
+              <Typography.Text code copyable>
+                {selectValue}
+              </Typography.Text>
               <Typography.Text type={'secondary'}>预览</Typography.Text>
               <Typography.Text code>{currentValue?.demo}</Typography.Text>
             </Space>
@@ -145,43 +147,65 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
       key: '2',
       label: 'Var',
       children: (
-        <ProCard>
-          <Select
-            allowClear
-            showSearch
-            listHeight={180}
-            autoFocus
-            onChange={(value) => {
-              setSelectValue(value);
-            }}
-            style={{ width: 500 }}
-            options={varData}
-            dropdownRender={(menu) => (
-              <>
-                <ProCard split={'vertical'}>
-                  <ProCard bodyStyle={{ padding: 0 }}>{menu}</ProCard>
-                  <ProCard bodyStyle={{ padding: 5 }}>
-                    {currentData && (
-                      <Space direction="vertical">
-                        <Typography.Text type={'secondary'}>
-                          变量名
-                        </Typography.Text>
-                        <Typography.Text code>
-                          {currentData.key}
-                        </Typography.Text>
-                        <Typography.Text type={'secondary'}>
-                          变量值
-                        </Typography.Text>
-                        <Typography.Text code>
-                          {currentData?.value}
-                        </Typography.Text>
-                      </Space>
-                    )}
+        <ProCard split={'horizontal'}>
+          <ProCard bodyStyle={{ padding: 5 }}>
+            <Select
+              allowClear
+              showSearch
+              listHeight={180}
+              autoFocus
+              onChange={(value) => {
+                setSelectValue(value);
+              }}
+              style={{ width: 500 }}
+              options={varData}
+              dropdownRender={(menu) => (
+                <>
+                  <ProCard split={'vertical'}>
+                    <ProCard bodyStyle={{ padding: 0 }}>{menu}</ProCard>
+                    <ProCard bodyStyle={{ padding: 5 }}>
+                      {currentData && (
+                        <Space direction="vertical">
+                          <Typography.Text type={'secondary'}>
+                            变量名
+                          </Typography.Text>
+                          <Typography.Text code>
+                            {currentData.key}
+                          </Typography.Text>
+                          <Typography.Text type={'secondary'}>
+                            变量值
+                          </Typography.Text>
+                          <Typography.Text code>
+                            {currentData?.value}
+                          </Typography.Text>
+                        </Space>
+                      )}
+                    </ProCard>
                   </ProCard>
-                </ProCard>
-              </>
-            )}
-          />
+                </>
+              )}
+            />
+          </ProCard>
+          <ProCard bodyStyle={{ padding: 5 }}>
+            <Space
+              direction={'vertical'}
+              style={{
+                width: '100%',
+                marginTop: 20,
+              }}
+            >
+              <Typography.Text type={'secondary'}>表达式</Typography.Text>
+              <Typography.Text code copyable>
+                {selectValue}
+              </Typography.Text>
+              <Typography.Text type={'secondary'}>变量值</Typography.Text>
+              <Typography.Text code>
+                {currentData?.value && currentData?.value.length > 40
+                  ? currentData?.value.substring(0, 40) + '...'
+                  : currentData?.value}
+              </Typography.Text>
+            </Space>
+          </ProCard>
         </ProCard>
       ),
     },
@@ -223,7 +247,6 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
   return (
     <>
       <Popover
-        style={{ width: '50px', height: '90px' }}
         content={Content}
         title={<Title level={5}>引用变量</Title>}
         trigger="click"

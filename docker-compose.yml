@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  web:
+    # 使用已加载的镜像
+    image: auto-test-web:1.0
+    ports:
+      - "10888:10888"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    #volumes:
+    #  - ./dist:/usr/share/nginx/html
+
+#  # 多环境配置示例
+#  web-dev:
+#    image: auto-test-hub-2.0-dev
+#    ports:
+#      - "8080:80"
+#    environment:
+#      - NODE_ENV=development
+#
+#  web-test:
+#    image: auto-test-hub-2.0-test
+#    ports:
+#      - "8081:80"
+#    environment:
+#      - NODE_ENV=testing

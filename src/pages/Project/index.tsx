@@ -104,6 +104,10 @@ const ProjectList: React.FC = () => {
           rules={[{ required: true, message: 'Please select !' }]}
           debounceTime={1000}
           request={queryUser}
+          fieldProps={{
+            optionFilterProp: 'label', // 确保搜索是基于 label(chargeName) 而不是 value(chargeId)
+            labelInValue: false, // 确保只提交 value 而不是 {value,label} 对象
+          }}
         />
       </ModalForm>
       <ProCard

@@ -65,6 +65,13 @@ const InterApiVariables = () => {
       hideInSearch: true,
       ellipsis: true,
     },
+    {
+      title: 'creatorName',
+      dataIndex: 'creatorName',
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
+    },
 
     {
       title: '操作',

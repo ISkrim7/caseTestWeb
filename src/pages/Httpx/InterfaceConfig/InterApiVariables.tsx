@@ -99,7 +99,15 @@ const InterApiVariables = () => {
                 删除
               </a>,
             ]
-          : null;
+          : [
+              <a
+                onClick={async () => {
+                  action?.startEditable?.(record.uid);
+                }}
+              >
+                编辑
+              </a>,
+            ];
       },
     },
   ];

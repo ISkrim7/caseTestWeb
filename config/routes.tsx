@@ -53,11 +53,12 @@ export default [
     path: '/project',
     name: '项目',
     icon: 'project',
-    access: 'isAdmin',
+    //access: 'isAdmin',
     routes: [
       {
         path: '/project/List',
         name: '项目列表',
+        access: 'isAdmin',
         component: '@/pages/Project',
       },
       {
@@ -73,6 +74,7 @@ export default [
       {
         path: '/project/apsConfig',
         name: '调度任务',
+        access: 'isAdmin',
         component: '@/pages/Project/Aps',
       },
       {

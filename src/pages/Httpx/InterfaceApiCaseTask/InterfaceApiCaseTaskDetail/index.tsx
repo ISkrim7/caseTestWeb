@@ -13,6 +13,7 @@ import { IInterfaceAPITask } from '@/pages/Httpx/types';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useModel, useParams } from '@@/exports';
+import { LeftOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -101,6 +102,14 @@ const Index = () => {
       case 1:
         return (
           <div style={{ display: 'flex' }}>
+            {/* 新增返回按钮 */}
+            <Button
+              onClick={() => history.back()}
+              icon={<LeftOutlined />}
+              style={{ marginRight: 10 }}
+            >
+              返回
+            </Button>
             <Button onClick={runTask}>Run</Button>
             <Button
               type={'primary'}
@@ -282,7 +291,7 @@ const Index = () => {
             boxShadow
             style={{ marginTop: 20 }}
           >
-            <Tabs defaultActiveKey="1" size={'large'}>
+            <Tabs defaultActiveKey="2" size={'large'}>
               <Tabs.TabPane tab={'单API用例表'} key="1">
                 <ProCard>
                   <AssociationApis

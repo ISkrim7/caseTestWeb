@@ -4,6 +4,7 @@ import InterfaceApiResultTable from '@/pages/Httpx/InterfaceApiTaskResult/Interf
 import { IInterfaceTaskResult } from '@/pages/Httpx/types';
 import { Pie } from '@ant-design/charts';
 import {
+  ArrowLeftOutlined,
   CheckCircleTwoTone,
   CloseCircleTwoTone,
   FrownTwoTone,
@@ -11,17 +12,47 @@ import {
   SmileTwoTone,
 } from '@ant-design/icons';
 import { ProCard, StatisticCard } from '@ant-design/pro-components';
-import { Col, Descriptions, Row, Tabs, Tag } from 'antd';
+import { Button, Col, Descriptions, Row, Tabs, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import { useParams } from 'umi';
+import { useLocation, useNavigate, useParams } from 'umi';
 
 const DescriptionsItem = Descriptions.Item;
-
+// 定义 location.state 的类型
+interface LocationState {
+  from?: string;
+}
 const InterfaceApiTaskResultDetail: FC = () => {
   const { resultId } = useParams<{ resultId: string }>();
+  const navigate = useNavigate(); // 使用 useNavigate 替代 useHistory
+  const location = useLocation(); // 获取当前位置信息
+  // 使用类型断言解决 TypeScript 错误
+  const state = location.state as LocationState | undefined;
   const [interfaceTaskResultInfo, setInterfaceTaskResultInfo] =
     useState<IInterfaceTaskResult>();
   const [rateNumber, setRateNumber] = useState(0);
+  // 增强的返回函数
+  const handleGoBack = () => {
+    // 1. 如果 state 中有 from 路径，优先使用
+    if (state?.from) {
+      navigate(state.from);
+      return;
+    }
+
+    // 2. 尝试返回上一页
+    navigate(-1);
+
+    // 3. 如果返回上一页无效（3秒后仍在当前页），跳转到默认列表页
+    setTimeout(() => {
+      // 检查是否仍在当前页面
+      const isStillOnPage = window.location.pathname.includes(
+        `/httpx/interface-api-task-result/${resultId}`,
+      );
+      if (isStillOnPage) {
+        // 跳转到接口任务结果列表页
+        navigate('/httpx/interface-api-task-result');
+      }
+    }, 3000);
+  };
   useEffect(() => {
     if (resultId) {
       getInterTaskResultDetail(resultId).then(async ({ code, data }) => {
@@ -55,6 +86,7 @@ const InterfaceApiTaskResultDetail: FC = () => {
     label: {
       type: 'outer',
     },
+    color: ['#52c41a', '#f5222d'],
     interactions: [
       {
         type: 'element-active',
@@ -63,6 +95,17 @@ const InterfaceApiTaskResultDetail: FC = () => {
   };
   return (
     <ProCard split={'horizontal'}>
+      {/* 新增返回按钮卡片 */}
+      <ProCard>
+        <Button
+          type="primary"
+          icon={<ArrowLeftOutlined />}
+          onClick={handleGoBack}
+          style={{ marginBottom: 16 }}
+        >
+          返回上一页
+        </Button>
+      </ProCard>
       <ProCard>
         <ProCard title={'测试报告'}>
           <Row gutter={[8, 8]}>
@@ -168,7 +211,7 @@ const InterfaceApiTaskResultDetail: FC = () => {
         </ProCard>
       </ProCard>
       <ProCard bordered={false}>
-        <Tabs defaultActiveKey={'1'}>
+        <Tabs defaultActiveKey={'2'}>
           <Tabs.TabPane tab={'API'} key="1">
             <InterfaceApiResultTable taskResultId={resultId} />
           </Tabs.TabPane>

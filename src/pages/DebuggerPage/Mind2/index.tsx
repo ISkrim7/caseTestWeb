@@ -4,8 +4,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import MindMap from 'simple-mind-map';
 // @ts-ignore
 import Themes from 'simple-mind-map-plugin-themes';
+// @ts-ignore
 import Drag from 'simple-mind-map/src/plugins/Drag.js';
+// @ts-ignore
 import RichText from 'simple-mind-map/src/plugins/RichText.js';
+// @ts-ignore
 import Scrollbar from 'simple-mind-map/src/plugins/Scrollbar.js';
 
 import MyDrawer from '@/components/MyDrawer';
@@ -19,10 +22,17 @@ import {
   SettingTwoTone,
 } from '@ant-design/icons';
 import { CornerUpLeft, CornerUpRight } from '@icon-park/react';
-import { Typography } from 'antd';
 import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
 
-const { Text } = Typography;
+type Format = {
+  bold: boolean;
+  underline: boolean;
+  strike: boolean;
+  italic: boolean;
+  fontSize: number;
+  color: string;
+};
+
 const Index = () => {
   const containerRef = useRef(null);
   const mindMapRef: React.MutableRefObject<MindMap | null> = useRef(null);
@@ -36,13 +46,13 @@ const Index = () => {
     left: '0',
     top: '0',
   });
-  const [formatInfo, setFormatInfo] = useState({
+  const [formatInfo, setFormatInfo] = useState<Format>({
     bold: false,
     underline: false,
     strike: false,
-    color: '#000000',
     italic: false,
     fontSize: 16,
+    color: '#000000',
   });
 
   // 初始化数据
@@ -56,7 +66,7 @@ const Index = () => {
     // 注册插件
     Themes.init(MindMap);
     MindMap.usePlugin(Drag);
-    MindMap.usePlugin(RichText, {});
+    MindMap.usePlugin(RichText, formatInfo);
     MindMap.usePlugin(Scrollbar);
 
     // 创建思维导图实例
@@ -84,7 +94,7 @@ const Index = () => {
     ) => {
       if (hasRange) {
         setToolbarPosition({
-          left: `${rect.left + rect.width / 2}px`,
+          left: `${rect.left}px`,
           top: `${rect.top - 80}px`,
         });
         setFormatInfo(formatInfo || {});
@@ -97,6 +107,11 @@ const Index = () => {
     mindMapRef.current.on('rich_text_selection_change', handleSelectionChange);
 
     return () => {
+      mindMapRef.current?.off('node_active', handleNodeActive);
+      mindMapRef.current?.off(
+        'rich_text_selection_change',
+        handleSelectionChange,
+      );
       mindMapRef.current?.destroy();
     };
   }, []);
@@ -172,6 +187,8 @@ const Index = () => {
         mindMapRef={mindMapRef}
         showToolbar={showToolbar}
         toolbarPosition={toolbarPosition}
+        formatInfo={formatInfo}
+        setFormatInfo={setFormatInfo}
       />
       {/* 设置按钮 */}
       <FloatButton

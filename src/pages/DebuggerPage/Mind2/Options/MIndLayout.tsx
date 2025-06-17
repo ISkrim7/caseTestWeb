@@ -14,10 +14,6 @@ const MIndLayout: React.FC<SelfProps> = ({ layoutSetter }) => {
       value: 'organizationStructure',
       url: '/mindImages/layout/organizationStructure.png',
     },
-    {
-      value: 'mindMap',
-      url: '/mindImages/layout/mindMap.png',
-    },
   ];
   return (
     <Space direction={'vertical'}>

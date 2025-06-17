@@ -12,6 +12,7 @@ import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Divider, message, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { history } from 'umi';
 
 interface SelfProps {
   apiCaseTaskId?: number | string;
@@ -160,7 +161,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
             <>
               <a
                 onClick={() => {
-                  window.open(
+                  history.push(
                     `/interface/task/report/detail/resultId=${record.id}`,
                     '_blank',
                   );

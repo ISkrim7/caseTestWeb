@@ -9,7 +9,8 @@ const Settings: LayoutSettings & {
   logo: '/icons/logo.png',
   colorPrimary: '#1677ff',
   // 设置标题的 title
-  title: 'Case.Hub',
+  //title: 'Case.Hub',
+  title: '测试平台',
   layout: 'side',
   menu: {
     type: 'sub',

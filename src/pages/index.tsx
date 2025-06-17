@@ -112,6 +112,7 @@ export default function IndexPage() {
     label: {
       type: 'outer',
     },
+    color: ['#52c41a', '#f5222d'],
     interactions: [
       {
         type: 'element-active',
@@ -139,6 +140,7 @@ export default function IndexPage() {
     label: {
       type: 'inner',
     },
+    color: ['#52c41a', '#f5222d'],
     interactions: [
       {
         type: 'element-active',

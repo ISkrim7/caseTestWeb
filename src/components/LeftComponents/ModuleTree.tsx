@@ -155,14 +155,59 @@ const ModuleTree: FC<IProps> = (props) => {
   };
 
   /**
-   * 拖拽
-   * @param info
+   * 拖拽排序
+   * @param info 拖拽信息
    */
   const onDrop: TreeProps['onDrop'] = async (info) => {
+    // 计算新的排序位置
+    const dragKey = info.dragNode.key;
+    const dropKey = info.node.key;
+    const dropToGap = info.dropToGap;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition =
+      info.dropPosition - Number(dropPos[dropPos.length - 1]);
+
+    // 确定目标父模块ID
+    const targetId = dropToGap ? null : dropKey;
+
+    // 确定新的排序位置
+    let new_order = 1; // 默认值设为1
+
+    if (dropToGap) {
+      // 从modules中查找对应节点的order值
+      const getNodeOrder = (key: React.Key) => {
+        const module = modules.find((m) => m.key === key);
+        return module ? module.order : 1;
+      };
+
+      const dragNodeOrder = getNodeOrder(info.dragNode.key);
+      const dropNodeOrder = getNodeOrder(info.node.key);
+
+      if (dropPosition > 0) {
+        // 拖拽到节点下方
+        new_order = dropNodeOrder + 1;
+      } else {
+        // 拖拽到节点上方
+        new_order = Math.max(1, dropNodeOrder - 1);
+      }
+
+      // 确保拖动节点的顺序确实改变了
+      if (new_order === dragNodeOrder) {
+        new_order += 1;
+      }
+    } else {
+      // 作为子节点时，获取父节点的子节点数量作为顺序
+      const childrenCount = info.node.children?.length || 0;
+      new_order = childrenCount + 1;
+    }
+
+    // 调用新的拖动排序API
     const { code } = await dropModule({
-      id: info.dragNode.key,
-      targetId: info.dropToGap ? null : info.node.key,
+      id: dragKey,
+      targetId: targetId,
+      new_order: new_order,
     });
+
     if (code === 0) {
       await handleReload();
     }

@@ -64,6 +64,7 @@ const Index = () => {
     >
       <Splitter>
         <Splitter.Panel
+          key={`left-panel-${currentModuleId}`}
           collapsible={true}
           defaultSize="20%"
           min="10%"
@@ -77,7 +78,7 @@ const Index = () => {
             setCurrentModuleId={setCurrentModuleId}
           />
         </Splitter.Panel>
-        <Splitter.Panel>
+        <Splitter.Panel key="right-panel">
           <ProCard
             bodyStyle={{ padding: 0 }}
             tabs={{

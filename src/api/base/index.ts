@@ -248,6 +248,7 @@ export const dropModule = async (
   body: {
     id: React.Key;
     targetId: React.Key | null;
+    new_order?: number;
   },
   opt?: IObjGet,
 ) => {

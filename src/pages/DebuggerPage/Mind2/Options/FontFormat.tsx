@@ -1,6 +1,6 @@
 import {
-  BgColorsOutlined,
   BoldOutlined,
+  HighlightOutlined,
   ItalicOutlined,
   StrikethroughOutlined,
   UnderlineOutlined,
@@ -50,7 +50,7 @@ const FontFormat: FC<ISelfProps> = ({
   const toggleBold = () => {
     const newBoldState = !formatInfo.bold;
     setFormatInfo({ ...formatInfo, bold: newBoldState });
-    mindMapRef.current?.richText?.formatText({
+    mindMapRef.current?.richText!.formatText({
       bold: newBoldState,
     });
   };
@@ -155,7 +155,7 @@ const FontFormat: FC<ISelfProps> = ({
             arrow
           >
             <Button
-              icon={<BgColorsOutlined />}
+              icon={<HighlightOutlined />}
               variant={'text'}
               style={{
                 color: formatInfo.color, // 显示当前颜色

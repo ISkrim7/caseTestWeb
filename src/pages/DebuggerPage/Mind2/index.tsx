@@ -1,7 +1,6 @@
 import { ProCard } from '@ant-design/pro-components';
-import { Button, FloatButton, Space, Tooltip } from 'antd';
+import { FloatButton } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import MindMap from 'simple-mind-map';
 // @ts-ignore
 import Themes from 'simple-mind-map-plugin-themes';
 // @ts-ignore
@@ -15,13 +14,14 @@ import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
 import FontFormat from '@/pages/DebuggerPage/Mind2/Options/FontFormat';
 import MIndLayout from '@/pages/DebuggerPage/Mind2/Options/MIndLayout';
+import MindOpt from '@/pages/DebuggerPage/Mind2/Options/MindOpt';
 import MindThem from '@/pages/DebuggerPage/Mind2/Options/MindThem';
 import {
   BgColorsOutlined,
   LayoutOutlined,
   SettingTwoTone,
 } from '@ant-design/icons';
-import { CornerUpLeft, CornerUpRight } from '@icon-park/react';
+import MindMap from 'simple-mind-map';
 import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
 
 type Format = {
@@ -46,6 +46,7 @@ const Index = () => {
     left: '0',
     top: '0',
   });
+  const [currentNode, setCurrentNode] = useState<MindMapNode | null>(null);
   const [formatInfo, setFormatInfo] = useState<Format>({
     bold: false,
     underline: false,
@@ -76,6 +77,16 @@ const Index = () => {
       data: initialData,
       layout: currentLayout,
       theme: currentTheme,
+      // mousewheelAction: 'move',// zoom（放大缩小）、move（上下移动）
+      // // 当mousewheelAction设为move时，可以通过该属性控制鼠标滚动一下视图移动的步长，单位px
+      // mousewheelMoveStep: 100,
+      // // 鼠标缩放是否以鼠标当前位置为中心点，否则以画布中心点
+      // mouseScaleCenterUseMousePosition: true,
+      // // 当mousewheelAction设为zoom时，或者按住Ctrl键时，默认向前滚动是缩小，向后滚动是放大，如果该属性设为true，那么会反过来
+      // mousewheelZoomActionReverse: true,
+      // 禁止鼠标滚轮缩放，你仍旧可以使用api进行缩放
+      disableTouchZoom: true,
+      disableMouseWheelZoom: true,
     });
 
     // 节点激活事件
@@ -83,7 +94,7 @@ const Index = () => {
       node: MindMapNode,
       activeNodeList: MindMapNode[],
     ) => {
-      console.log('Active node:', node, activeNodeList);
+      setCurrentNode(node);
     };
 
     // 富文本选择变化事件
@@ -147,30 +158,12 @@ const Index = () => {
       bodyStyle={{
         padding: 0,
         margin: 0,
-        height: '80vh',
+        height: '100vh',
         width: '100%',
       }}
     >
       {/* 操作按钮组 */}
-      <Space style={{ marginBottom: 16 }}>
-        <Tooltip title="撤销 (Ctrl+Z)">
-          <Button
-            type="text"
-            icon={<CornerUpLeft theme="multi-color" size="24" />}
-            onClick={() => mindMapRef.current?.execCommand('BACK')}
-          />
-        </Tooltip>
-        <Tooltip title="重做 (Ctrl+Y)">
-          <Button
-            type="text"
-            icon={<CornerUpRight theme="multi-color" size="24" />}
-            onClick={() => mindMapRef.current?.execCommand('FORWARD')}
-          />
-        </Tooltip>
-        <Button onClick={() => console.log(mindMapRef.current?.getData(true))}>
-          导出数据
-        </Button>
-      </Space>
+      <MindOpt mindMapRef={mindMapRef} currentNode={currentNode} />
 
       {/* 思维导图容器 */}
       <div

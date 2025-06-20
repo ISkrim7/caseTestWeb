@@ -9,7 +9,10 @@ import RichText from 'simple-mind-map/src/plugins/RichText.js';
 // @ts-ignore
 import Scrollbar from 'simple-mind-map/src/plugins/Scrollbar.js';
 // @ts-ignore
+import OuterFrame from 'simple-mind-map/src/plugins/OuterFrame.js';
+
 import MyDrawer from '@/components/MyDrawer';
+import { MapConfig } from '@/pages/DebuggerPage/Mind2/MapConfig';
 import FontFormat from '@/pages/DebuggerPage/Mind2/Options/FontFormat';
 import MenuSetting from '@/pages/DebuggerPage/Mind2/Options/MenuSetting';
 import MindOpt from '@/pages/DebuggerPage/Mind2/Options/MindOpt';
@@ -35,6 +38,7 @@ const Index = () => {
     useState<string>('logicalStructure');
 
   const [showToolbar, setShowToolbar] = useState(false);
+  const [showContextmenu, setShowContextmenu] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState({
     left: '0',
     top: '0',
@@ -78,6 +82,15 @@ const Index = () => {
   ) => {
     setCurrentNode(node);
   };
+  const handle_node_contextmenu = (e: MouseEvent, node: MindMapNode) => {
+    // console.log(e);
+    // setToolbarPosition({
+    //   left: `${e.clientX + 10}px`,
+    //   top: `${e.clientY + 10}px`,
+    // });
+    // setShowContextmenu(true);
+    // setCurrentNode(node);
+  };
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -86,6 +99,7 @@ const Index = () => {
     Themes.init(MindMap);
     MindMap.usePlugin(Drag);
     MindMap.usePlugin(RichText, formatInfo);
+    MindMap.usePlugin(OuterFrame);
     MindMap.usePlugin(Scrollbar, {
       // 滚动条配置选项
       padding: 5, // 滚动条与边缘的间距
@@ -103,22 +117,14 @@ const Index = () => {
       data: initialData,
       layout: currentLayout,
       theme: currentTheme,
-      mousewheelAction: 'move', // zoom（放大缩小）、move（上下移动）
-      // // 当mousewheelAction设为move时，可以通过该属性控制鼠标滚动一下视图移动的步长，单位px
-      mousewheelMoveStep: 100,
-      // // 鼠标缩放是否以鼠标当前位置为中心点，否则以画布中心点
-      // mouseScaleCenterUseMousePosition: true,
-      // // 当mousewheelAction设为zoom时，或者按住Ctrl键时，默认向前滚动是缩小，向后滚动是放大，如果该属性设为true，那么会反过来
-      // mousewheelZoomActionReverse: true,
-      // 禁止鼠标滚轮缩放，你仍旧可以使用api进行缩放
-      disableTouchZoom: true,
-      disableMouseWheelZoom: true,
+
+      ...MapConfig,
     });
 
     // 添加事件监听
     mindMapRef.current.on('node_active', handleNodeActive);
     mindMapRef.current.on('rich_text_selection_change', handleSelectionChange);
-
+    mindMapRef.current.on('node_contextmenu', handle_node_contextmenu);
     return () => {
       mindMapRef.current?.off('node_active', handleNodeActive);
       mindMapRef.current?.off(
@@ -140,15 +146,11 @@ const Index = () => {
       style={{
         height: '100vh',
         width: '100%',
-        // position: 'relative',
+        position: 'relative',
         overflow: 'hidden',
+        margin: 0,
+        padding: 0,
       }}
-      // bodyStyle={{
-      //   padding: 0,
-      //   margin: 0,
-      //   height: '100vh',
-      //   width: '100%',
-      // }}
     >
       {/* 操作按钮组 */}
       <MindOpt mindMapRef={mindMapRef} currentNode={currentNode} />
@@ -157,9 +159,9 @@ const Index = () => {
       <div
         ref={containerRef}
         style={{
-          height: 'calc(100% - 56px)',
+          height: '100%',
           width: '100%',
-          border: '1px solid #f0f0f0',
+          // border: '1px solid #f0f0f0',
           borderRadius: 4,
           overflow: 'hidden',
           position: 'relative', // 确保滚动条定位正确
@@ -179,7 +181,25 @@ const Index = () => {
         style={{ right: 24 }}
         onClick={() => setMenuDropdownVisible(true)}
       />
-
+      {showContextmenu && (
+        <div
+          style={{
+            position: 'absolute',
+            left: toolbarPosition.left,
+            top: toolbarPosition.top,
+            transform: 'translateX(-50%)',
+            background: '#fff',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+            borderRadius: 4,
+            padding: 8,
+            zIndex: 1000,
+            display: 'flex',
+            gap: 8,
+          }}
+        >
+          hi
+        </div>
+      )}
       {/* 配置抽屉 */}
       <MyDrawer
         name="思维导图配置"

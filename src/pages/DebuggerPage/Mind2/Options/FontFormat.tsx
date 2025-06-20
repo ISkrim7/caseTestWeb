@@ -1,5 +1,6 @@
 import {
   BoldOutlined,
+  ClearOutlined,
   HighlightOutlined,
   ItalicOutlined,
   StrikethroughOutlined,
@@ -41,11 +42,6 @@ const FontFormat: FC<ISelfProps> = ({
     blue: ['#e6f7ff', '#bae7ff', '#91d5ff', '#69c0ff', '#40a9ff'],
   };
 
-  // 颜色改变回调
-  const handleColorChange = (color: string) => {
-    console.log('Selected color:', color);
-  };
-
   // 工具栏操作
   const toggleBold = () => {
     const newBoldState = !formatInfo.bold;
@@ -74,6 +70,11 @@ const FontFormat: FC<ISelfProps> = ({
     setFormatInfo({ ...formatInfo, strike: newStrikethroughState });
     // @ts-ignore
     mindMapRef.current?.richText?.formatText({ strike: newStrikethroughState });
+  };
+
+  const clear_format = () => {
+    // @ts-ignore
+    mindMapRef.current?.richText?.removeFormat();
   };
   const changeColor = (color: string) => {
     const newUnderlineState = !formatInfo.underline;
@@ -167,6 +168,12 @@ const FontFormat: FC<ISelfProps> = ({
               }}
             />
           </Dropdown>
+          <Button
+            icon={<ClearOutlined />}
+            color={'default'}
+            variant={'text'}
+            onClick={clear_format}
+          />
         </div>
       )}
     </div>

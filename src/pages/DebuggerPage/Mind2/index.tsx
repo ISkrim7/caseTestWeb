@@ -1,4 +1,3 @@
-import { ProCard } from '@ant-design/pro-components';
 import { FloatButton } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 // @ts-ignore
@@ -9,18 +8,12 @@ import Drag from 'simple-mind-map/src/plugins/Drag.js';
 import RichText from 'simple-mind-map/src/plugins/RichText.js';
 // @ts-ignore
 import Scrollbar from 'simple-mind-map/src/plugins/Scrollbar.js';
-
+// @ts-ignore
 import MyDrawer from '@/components/MyDrawer';
-import MyTabs from '@/components/MyTabs';
 import FontFormat from '@/pages/DebuggerPage/Mind2/Options/FontFormat';
-import MIndLayout from '@/pages/DebuggerPage/Mind2/Options/MIndLayout';
+import MenuSetting from '@/pages/DebuggerPage/Mind2/Options/MenuSetting';
 import MindOpt from '@/pages/DebuggerPage/Mind2/Options/MindOpt';
-import MindThem from '@/pages/DebuggerPage/Mind2/Options/MindThem';
-import {
-  BgColorsOutlined,
-  LayoutOutlined,
-  SettingTwoTone,
-} from '@ant-design/icons';
+import { SettingTwoTone } from '@ant-design/icons';
 import MindMap from 'simple-mind-map';
 import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
 
@@ -61,6 +54,31 @@ const Index = () => {
     data: { text: '根节点' },
     children: [{ data: { text: '子节点1' } }, { data: { text: '子节点2' } }],
   };
+
+  // 富文本选择变化事件
+  const handleSelectionChange = (
+    hasRange: boolean,
+    rect: any,
+    formatInfo: any,
+  ) => {
+    if (hasRange) {
+      setToolbarPosition({
+        left: `${rect.left}px`,
+        top: `${rect.top - 80}px`,
+      });
+      setFormatInfo(formatInfo || {});
+    }
+    setShowToolbar(hasRange);
+  };
+
+  // 节点激活事件
+  const handleNodeActive = (
+    node: MindMapNode,
+    activeNodeList: MindMapNode[],
+  ) => {
+    setCurrentNode(node);
+  };
+
   useEffect(() => {
     if (!containerRef.current) return;
     if (!initialData) return;
@@ -68,7 +86,15 @@ const Index = () => {
     Themes.init(MindMap);
     MindMap.usePlugin(Drag);
     MindMap.usePlugin(RichText, formatInfo);
-    MindMap.usePlugin(Scrollbar);
+    MindMap.usePlugin(Scrollbar, {
+      // 滚动条配置选项
+      padding: 5, // 滚动条与边缘的间距
+      scrollbarWidth: 10, // 滚动条宽度
+      scrollbarThumbColor: '#ccc', // 滚动条滑块颜色
+      scrollbarTrackColor: '#f5f5f5', // 滚动条轨道颜色
+      scrollbarThumbHoverColor: '#999', // 滚动条滑块悬停颜色
+      minShowScrollbarNum: 1, // 最小显示滚动条数量
+    });
 
     // 创建思维导图实例
     // @ts-ignore
@@ -77,9 +103,9 @@ const Index = () => {
       data: initialData,
       layout: currentLayout,
       theme: currentTheme,
-      // mousewheelAction: 'move',// zoom（放大缩小）、move（上下移动）
+      mousewheelAction: 'move', // zoom（放大缩小）、move（上下移动）
       // // 当mousewheelAction设为move时，可以通过该属性控制鼠标滚动一下视图移动的步长，单位px
-      // mousewheelMoveStep: 100,
+      mousewheelMoveStep: 100,
       // // 鼠标缩放是否以鼠标当前位置为中心点，否则以画布中心点
       // mouseScaleCenterUseMousePosition: true,
       // // 当mousewheelAction设为zoom时，或者按住Ctrl键时，默认向前滚动是缩小，向后滚动是放大，如果该属性设为true，那么会反过来
@@ -88,30 +114,6 @@ const Index = () => {
       disableTouchZoom: true,
       disableMouseWheelZoom: true,
     });
-
-    // 节点激活事件
-    const handleNodeActive = (
-      node: MindMapNode,
-      activeNodeList: MindMapNode[],
-    ) => {
-      setCurrentNode(node);
-    };
-
-    // 富文本选择变化事件
-    const handleSelectionChange = (
-      hasRange: boolean,
-      rect: any,
-      formatInfo: any,
-    ) => {
-      if (hasRange) {
-        setToolbarPosition({
-          left: `${rect.left}px`,
-          top: `${rect.top - 80}px`,
-        });
-        setFormatInfo(formatInfo || {});
-      }
-      setShowToolbar(hasRange);
-    };
 
     // 添加事件监听
     mindMapRef.current.on('node_active', handleNodeActive);
@@ -133,34 +135,20 @@ const Index = () => {
     if (currentLayout) mindMapRef.current?.setLayout(currentLayout);
   }, [currentTheme, currentLayout]);
 
-  const MenuSetting = [
-    {
-      key: '1',
-      label: '主题',
-      icon: <BgColorsOutlined />,
-      children: <MindThem themSetter={setCurrentTheme} />,
-    },
-    {
-      key: '2',
-      label: '布局',
-      icon: <LayoutOutlined />,
-      children: <MIndLayout layoutSetter={setCurrentLayout} />,
-    },
-  ];
   return (
-    <ProCard
+    <div
       style={{
         height: '100vh',
         width: '100%',
-        position: 'relative',
+        // position: 'relative',
         overflow: 'hidden',
       }}
-      bodyStyle={{
-        padding: 0,
-        margin: 0,
-        height: '100vh',
-        width: '100%',
-      }}
+      // bodyStyle={{
+      //   padding: 0,
+      //   margin: 0,
+      //   height: '100vh',
+      //   width: '100%',
+      // }}
     >
       {/* 操作按钮组 */}
       <MindOpt mindMapRef={mindMapRef} currentNode={currentNode} />
@@ -174,8 +162,10 @@ const Index = () => {
           border: '1px solid #f0f0f0',
           borderRadius: 4,
           overflow: 'hidden',
+          position: 'relative', // 确保滚动条定位正确
         }}
       />
+      {/*文字配置*/}
       <FontFormat
         mindMapRef={mindMapRef}
         showToolbar={showToolbar}
@@ -197,13 +187,12 @@ const Index = () => {
         open={menuDropdownVisible}
         setOpen={setMenuDropdownVisible}
       >
-        <MyTabs
-          defaultActiveKey="theme"
-          items={MenuSetting}
-          tabPosition="left"
+        <MenuSetting
+          setCurrentTheme={setCurrentTheme}
+          setCurrentLayout={setCurrentLayout}
         />
       </MyDrawer>
-    </ProCard>
+    </div>
   );
 };
 export default Index;

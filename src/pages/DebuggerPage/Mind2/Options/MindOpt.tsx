@@ -3,10 +3,11 @@ import { CornerUpLeft, CornerUpRight, EditOne } from '@icon-park/react';
 import { Button, Modal, Space, Tooltip } from 'antd';
 import React, { FC, useState } from 'react';
 import MindMap from 'simple-mind-map';
+import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
 
 interface ISelfProps {
   mindMapRef: React.MutableRefObject<MindMap | null>;
-  currentNode: MindMap | null;
+  currentNode: MindMapNode | null;
 }
 
 const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNode }) => {
@@ -15,13 +16,26 @@ const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNode }) => {
 
   const onModelFinish = async () => {
     if (script && currentNode) {
+      // @ts-ignore
       currentNode?.setNote(script);
       setIsModalOpen(false);
     }
     setScript(null);
   };
   return (
-    <>
+    <div
+      style={{
+        position: 'absolute',
+        top: '16px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1000,
+        backgroundColor: 'white',
+        padding: '8px',
+        borderRadius: '10px',
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
+      }}
+    >
       <Modal
         title="备注"
         open={isModalOpen}
@@ -67,11 +81,14 @@ const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNode }) => {
             onClick={() => setIsModalOpen(true)}
           ></Button>
         </Tooltip>
-        <Button onClick={() => console.log(mindMapRef.current?.getData(true))}>
-          导出数据
+        <Button
+          type="text"
+          onClick={() => console.log(mindMapRef.current?.getData(true))}
+        >
+          data
         </Button>
       </Space>
-    </>
+    </div>
   );
 };
 export default MindOpt;

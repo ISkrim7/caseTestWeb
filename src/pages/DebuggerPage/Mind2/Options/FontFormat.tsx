@@ -50,6 +50,7 @@ const FontFormat: FC<ISelfProps> = ({
   const toggleBold = () => {
     const newBoldState = !formatInfo.bold;
     setFormatInfo({ ...formatInfo, bold: newBoldState });
+    // @ts-ignore
     mindMapRef.current?.richText!.formatText({
       bold: newBoldState,
     });
@@ -58,22 +59,26 @@ const FontFormat: FC<ISelfProps> = ({
   const toggleUnderline = () => {
     const newUnderlineState = !formatInfo.underline;
     setFormatInfo({ ...formatInfo, underline: newUnderlineState });
+    // @ts-ignore
     mindMapRef.current?.richText?.formatText({ underline: newUnderlineState });
   };
   const toggleItalic = () => {
     const newItalicState = !formatInfo.italic;
     setFormatInfo({ ...formatInfo, italic: newItalicState });
+    // @ts-ignore
     mindMapRef.current?.richText?.formatText({ italic: newItalicState });
   };
 
   const toggleStrikethrough = () => {
     const newStrikethroughState = !formatInfo.strike;
     setFormatInfo({ ...formatInfo, strike: newStrikethroughState });
+    // @ts-ignore
     mindMapRef.current?.richText?.formatText({ strike: newStrikethroughState });
   };
   const changeColor = (color: string) => {
     const newUnderlineState = !formatInfo.underline;
     setFormatInfo({ ...formatInfo, color }); // 更新状态
+    // @ts-ignore
     mindMapRef.current?.richText?.formatText({ color }); // 应用到富文本
     setOpen(false); // 选择后关闭面板
   };

@@ -1,13 +1,19 @@
 import { executeCaseByIO } from '@/api/play';
 import { getDebugResultDetail } from '@/api/play/result';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
+import MyTabs from '@/components/MyTabs';
 import { IAsserts } from '@/pages/Httpx/types';
 import { IUIResult } from '@/pages/Play/componets/uiTypes';
 import PlayCaseResultInfo from '@/pages/Play/PlayResult/PlayCaseResultDetail/PlayCaseResultInfo';
 import { useModel } from '@@/exports';
-import { ProTable } from '@ant-design/pro-components';
+import {
+  InfoCircleOutlined,
+  MessageOutlined,
+  OrderedListOutlined,
+} from '@ant-design/icons';
+import { ProCard, ProTable } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { Tabs, Tag, Tooltip } from 'antd';
+import { TabsProps, Tag, Tooltip } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
@@ -30,10 +36,14 @@ const Index: FC<SelfProps> = (props) => {
   useEffect(() => {
     let socket: Socket | undefined;
     const createSocket = () => {
-      socket = io('ws://localhost:5050/ws', {
-        query: { clientId: initialState?.currentUser?.uid },
+      socket = io('ws://localhost:5050/ui_namespace', {
+        query: {
+          clientId: initialState?.currentUser?.uid,
+          EIO: 4,
+        },
+        upgrade: false, // 禁止降级
         transports: ['websocket'],
-        path: '/ws/socket.io',
+        path: '/socket.io',
       });
 
       socket.on('connect', () => {
@@ -44,7 +54,7 @@ const Index: FC<SelfProps> = (props) => {
       });
 
       socket.on('ui_message', ({ code, data }) => {
-        console.log('Received message:', data);
+        console.log('Received message:', code, data);
         if (code === 0) {
           setLogMessage((prevMessages) => [...prevMessages, data]);
         } else {
@@ -92,7 +102,9 @@ const Index: FC<SelfProps> = (props) => {
         if (code === 0) {
           setCurrentResultDetail(data);
           if (data.running_logs) {
-            setLogMessage(data.running_logs.split(''));
+            setLogMessage(data.running_logs.split('\n'));
+          } else {
+            setLogMessage([]);
           }
           if (data.asserts_info) {
             setAsserts(data.asserts_info);
@@ -106,7 +118,6 @@ const Index: FC<SelfProps> = (props) => {
       return (
         <AceCodeEditor
           gutter={false}
-          showLineNumbers={false}
           value={JSON.stringify(T, null, 2)}
           readonly={true}
           height={'40px'}
@@ -160,10 +171,9 @@ const Index: FC<SelfProps> = (props) => {
         if (record.extraValueType === 'object') {
           return (
             <AceCodeEditor
-              value={record.expect}
+              value={record.actual}
               readonly={true}
               height={'80px'}
-              showLineNumbers={false}
             />
           );
         } else if (record.extraValueType === 'bool') {
@@ -216,31 +226,50 @@ const Index: FC<SelfProps> = (props) => {
       ),
     },
   ];
+  const items: TabsProps['items'] = [
+    {
+      label: '基本信息',
+      key: '1',
+      icon: <InfoCircleOutlined />,
+      children: <PlayCaseResultInfo resultDetail={currentResultDetail} />,
+    },
+    {
+      label: '请求日志',
+      key: '2',
+      icon: <MessageOutlined />,
+      children: (
+        <AceCodeEditor
+          value={logMessage.join('\n')}
+          height="100vh"
+          _mode="json"
+          readonly={true}
+        />
+      ),
+    },
+    {
+      label: '断言详情',
+      key: '3',
+      icon: <OrderedListOutlined />,
+      children: (
+        <ProTable
+          search={false}
+          toolBarRender={false}
+          columns={UIAssertColumns}
+          dataSource={asserts}
+          scroll={{ x: 1000 }}
+        />
+      ),
+    },
+  ];
 
   return (
-    <div>
-      <Tabs tabPosition="left" size="large" defaultActiveKey={defaultActiveKey}>
-        <Tabs.TabPane key="1" tab={'基本信息'} disabled={tabDisabled}>
-          <PlayCaseResultInfo resultDetail={currentResultDetail} />
-        </Tabs.TabPane>
-        <Tabs.TabPane key="2" tab={'日志信息'}>
-          <AceCodeEditor
-            value={logMessage.join('')}
-            height="100vh"
-            readonly={true}
-          />
-        </Tabs.TabPane>
-        <Tabs.TabPane key="3" tab={'断言信息'} disabled={tabDisabled}>
-          <ProTable
-            search={false}
-            toolBarRender={false}
-            columns={UIAssertColumns}
-            dataSource={asserts}
-            scroll={{ x: 1000 }}
-          />
-        </Tabs.TabPane>
-      </Tabs>
-    </div>
+    <ProCard>
+      <MyTabs
+        items={items}
+        tabPosition={'top'}
+        defaultActiveKey={defaultActiveKey}
+      />
+    </ProCard>
   );
 };
 

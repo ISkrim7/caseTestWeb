@@ -6,6 +6,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import {
   Button,
+  Divider,
   FormInstance,
   List,
   message,
@@ -15,48 +16,83 @@ import {
   Typography,
 } from 'antd';
 import { FC, useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const { Text, Title, Paragraph } = Typography;
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
+  tag: 'before_script' | 'after_script';
 }
 
-const demoScript = [
+const ScriptList = [
   {
-    label: '设置一个变量',
+    label: '设置一个变量 1',
     value: 'key = 1',
+    desc: 'python 写法',
+  },
+  {
+    label: '设置一个变量 2',
+    value: 'hub_variables_set("name","cyq")',
+    desc: '内置函数写法',
+  },
+  {
+    label: '删除一个变量',
+    value: 'hub_variables_remove("key")',
+    desc: '删除运行中的变量',
   },
   {
     label: '获取时间戳 （内置）',
-    value:
-      "ts = timestamp(); # 参数params ['+1s', '-1s', '+1m', '-1m', '+1h', '-1h']",
-    desc: 'return 1748590765290',
+    value: 't = ts()',
+    desc: (
+      <p>
+        params t: +1s -1s +1m -1m +1h -1h 获取不同时间段的时间戳
+        不传递为当前时间戳
+      </p>
+    ),
   },
   {
     label: '获取日期 （内置）',
-    value:
-      "date_value = date() #参数: ['+1d', '-1d', '+1m', '-1m', '+1y', '-1y'] ",
-    desc: 'return 2025-05-30 ',
+    value: 'current_date = date()',
+    desc: (
+      <>
+        <p>params t: +1d -1d +1m -1m +1y -1y 获取日期 不传递为当前日期</p>
+        <p>params ft: 时间格式 默认 '%Y-%m-%d'</p>
+      </>
+    ),
   },
   {
-    label: '打印',
-    value: 'log("xx")',
-    desc: '打印内容、只适用于业务日志',
+    label: '发送一个请求',
+    value:
+      'response = hub_request(url="https://somehost/anything",method="get") \ndata=response.json()',
+    desc: (
+      <>
+        <p>发送一个请求、使用内置requests</p>
+        <p>返回 response 对象</p>
+      </>
+    ),
   },
   {
     label: 'faker 生成随机数据',
-    value: 'name = faker.pystr()',
+    value: 'name = hub_faker.pystr()',
     desc: 'return xxx',
   },
 ];
-const InterBeforeScript: FC<SelfProps> = ({ form }) => {
+
+const InterScript: FC<SelfProps> = ({ form, tag }) => {
   const [scriptData, setScriptData] = useState<any>();
   const [showButton, setShowButton] = useState(false);
   const [open, setOpen] = useState(false);
   const [tryData, setTryData] = useState<any>();
+
+  const formSetter = (value: string | null) => {
+    form.setFieldsValue({
+      [tag === 'before_script' ? 'before_script' : 'after_script']: value,
+    });
+  };
+
   useEffect(() => {
-    const script = form.getFieldValue('before_script');
+    const script = form.getFieldValue(tag);
     if (script) {
       setShowButton(true);
       setScriptData(script);
@@ -66,7 +102,7 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
     if (value) {
       setScriptData(value);
       setShowButton(true);
-      form.setFieldsValue({ before_script: value });
+      formSetter(value);
     }
   };
 
@@ -104,8 +140,11 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
       }
     });
     setShowButton(true);
-    form.setFieldsValue({ before_script: scriptData });
+    if (tag === 'before_script') {
+      form.setFieldsValue({ before_script: scriptData });
+    }
   };
+
   return (
     <>
       <MyDrawer name={'script response'} open={open} setOpen={setOpen}>
@@ -162,12 +201,14 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
                   type={'primary'}
                   onClick={async () => {
                     const InterfaceId = form.getFieldValue('id');
-                    form.setFieldValue('before_script', null);
+                    formSetter(null);
                     setScriptData('');
                     if (scriptData && InterfaceId) {
                       const { code, msg } = await updateInterApiById({
                         id: InterfaceId,
-                        before_script: null,
+                        [tag === 'before_script'
+                          ? 'before_script'
+                          : 'after_script']: null,
                       });
                       if (code === 0) {
                         message.success(msg);
@@ -204,23 +245,32 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
             min="0%"
             max="20%"
           >
-            <ProCard style={{ height: '100%' }}>
-              <List
-                itemLayout="horizontal"
-                dataSource={demoScript}
-                renderItem={(item, index) => (
-                  <List.Item>
-                    <List.Item.Meta
-                      title={
-                        <a onClick={() => useDemoScript(item.value)}>
-                          {item.label}
-                        </a>
-                      }
-                      description={item.desc || ''}
-                    />
-                  </List.Item>
-                )}
-              />
+            <ProCard style={{ height: '500px', overflow: 'auto' }}>
+              <InfiniteScroll
+                dataLength={ScriptList.length}
+                hasMore={false}
+                endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+                scrollableTarget="scrollableDiv"
+                loader={false}
+                next={() => {}}
+              >
+                <List
+                  itemLayout="horizontal"
+                  dataSource={ScriptList}
+                  renderItem={(item, index) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        title={
+                          <a onClick={() => useDemoScript(item.value)}>
+                            {item.label}
+                          </a>
+                        }
+                        description={item.desc || ''}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </InfiniteScroll>
             </ProCard>
           </Splitter.Panel>
         </Splitter>
@@ -229,4 +279,4 @@ const InterBeforeScript: FC<SelfProps> = ({ form }) => {
   );
 };
 
-export default InterBeforeScript;
+export default InterScript;

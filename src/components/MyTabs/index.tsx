@@ -8,6 +8,7 @@ interface IProps {
   items: Tab[];
   tabPosition?: 'top' | 'left';
   title?: string;
+  onChangeKey?: (key: string) => void;
 }
 
 const Index: FC<IProps> = ({
@@ -16,12 +17,16 @@ const Index: FC<IProps> = ({
   items,
   tabBarExtraContent,
   title,
+  onChangeKey,
 }) => {
   return (
     <Tabs
       title={title}
       type={'card'}
       size={'large'}
+      onChange={(key: string) => {
+        onChangeKey?.(key);
+      }}
       tabPosition={tabPosition}
       defaultActiveKey={defaultActiveKey}
       items={items}

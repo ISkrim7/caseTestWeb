@@ -3,6 +3,7 @@ import {
   queryInterGlobalVariable,
 } from '@/api/inter/interGlobal';
 import MyTabs from '@/components/MyTabs';
+import VarModalForm from '@/pages/Httpx/InterfaceConfig/VarModalForm';
 import {
   IInterfaceGlobalFunc,
   IInterfaceGlobalVariable,
@@ -21,13 +22,15 @@ interface ISelfProps {
 
 const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
   const [open, setOpen] = useState(false);
+  const [currentActiveKey, setCurrentActiveKey] = useState<string>('1');
   const [currentValue, setCurrentValue] = useState<IInterfaceGlobalFunc>();
   const [currentData, setCurrentData] = useState<IInterfaceGlobalVariable>();
   const [selectValue, setSelectValue] = useState<string>();
   const [funcData, setFuncData] = useState<any[]>([]);
   const [varData, setVarData] = useState<any[]>([]);
-
-  useEffect(() => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const fetch_func_data = async () => {
     queryInterGlobalFunc().then(async ({ code, data }) => {
       if (code === 0) {
         const func = data.map((item: IInterfaceGlobalFunc) => {
@@ -43,32 +46,42 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
               </span>
             ),
             value: item.value,
+            desc: item.description,
           };
         });
         setFuncData(func);
       }
     });
+  };
+  const fetch_var_data = async () => {
     queryInterGlobalVariable().then(async ({ code, data }) => {
       if (code === 0) {
-        const func = data.map((item: IInterfaceGlobalVariable) => {
+        const var_data = data.map((item: IInterfaceGlobalVariable) => {
           return {
             label: (
               <span
-                onMouseEnter={() => {
+                onMouseEnter={(event) => {
+                  event.stopPropagation();
                   setCurrentData(item);
                 }}
               >
-                <GoogleSquareFilled style={{ color: 'blue' }} />
-                {item.key}
+                <Space>
+                  <GoogleSquareFilled style={{ color: 'blue' }} />
+                  {item.key}
+                </Space>
               </span>
             ),
             value: `{{${item.key}}}`,
           };
         });
-        setVarData(func);
+        setVarData(var_data);
       }
     });
-  }, []);
+  };
+
+  useEffect(() => {
+    Promise.all([fetch_func_data(), fetch_var_data()]).then(() => {});
+  }, [refresh]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -79,17 +92,19 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
       key: '1',
       label: 'Func',
       children: (
-        <ProCard split={'horizontal'}>
+        <ProCard split={'horizontal'} bodyStyle={{ minHeight: 100 }}>
           <ProCard bodyStyle={{ padding: 5 }}>
             <Select
               allowClear
               showSearch
-              listHeight={180}
               autoFocus
               onChange={(value) => {
                 setSelectValue(value);
               }}
-              style={{ width: 500 }}
+              onClear={() => {
+                setSelectValue(undefined);
+                setCurrentValue(undefined);
+              }}
               options={funcData}
               dropdownRender={(menu) => (
                 <>
@@ -125,19 +140,20 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
             />
           </ProCard>
           <ProCard bodyStyle={{ padding: 5 }}>
-            <Space
-              direction={'vertical'}
-              style={{
-                width: '100%',
-                marginTop: 20,
-              }}
-            >
-              <Typography.Text type={'secondary'}>表达式</Typography.Text>
-              <Typography.Text code copyable>
-                {selectValue}
-              </Typography.Text>
-              <Typography.Text type={'secondary'}>预览</Typography.Text>
-              <Typography.Text code>{currentValue?.demo}</Typography.Text>
+            <Space direction={'vertical'}>
+              {currentValue && (
+                <>
+                  <Typography.Text type={'secondary'}>表达式</Typography.Text>
+                  <Typography.Text code copyable>
+                    {' '}
+                    {selectValue}{' '}
+                  </Typography.Text>
+                  <Typography.Text type={'secondary'}>描述</Typography.Text>
+                  <Typography.Text>{currentValue?.description}</Typography.Text>
+                  <Typography.Text type={'secondary'}>预览</Typography.Text>
+                  <Typography.Text code>{currentValue?.demo}</Typography.Text>
+                </>
+              )}
             </Space>
           </ProCard>
         </ProCard>
@@ -147,17 +163,19 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
       key: '2',
       label: 'Var',
       children: (
-        <ProCard split={'horizontal'}>
+        <ProCard split={'horizontal'} bodyStyle={{ minHeight: 100 }}>
           <ProCard bodyStyle={{ padding: 5 }}>
             <Select
               allowClear
               showSearch
-              listHeight={180}
               autoFocus
               onChange={(value) => {
                 setSelectValue(value);
               }}
-              style={{ width: 500 }}
+              onClear={() => {
+                setSelectValue(undefined);
+                setCurrentData(undefined);
+              }}
               options={varData}
               dropdownRender={(menu) => (
                 <>
@@ -176,7 +194,10 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
                             变量值
                           </Typography.Text>
                           <Typography.Text code>
-                            {currentData?.value}
+                            {currentData?.value &&
+                            currentData?.value.length > 15
+                              ? currentData?.value.substring(0, 15) + '...'
+                              : currentData?.value}
                           </Typography.Text>
                         </Space>
                       )}
@@ -187,23 +208,21 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
             />
           </ProCard>
           <ProCard bodyStyle={{ padding: 5 }}>
-            <Space
-              direction={'vertical'}
-              style={{
-                width: '100%',
-                marginTop: 20,
-              }}
-            >
-              <Typography.Text type={'secondary'}>表达式</Typography.Text>
-              <Typography.Text code copyable>
-                {selectValue}
-              </Typography.Text>
-              <Typography.Text type={'secondary'}>变量值</Typography.Text>
-              <Typography.Text code>
-                {currentData?.value && currentData?.value.length > 40
-                  ? currentData?.value.substring(0, 40) + '...'
-                  : currentData?.value}
-              </Typography.Text>
+            <Space direction={'vertical'}>
+              {currentData && (
+                <>
+                  <Typography.Text type={'secondary'}>表达式</Typography.Text>
+                  <Typography.Text code copyable>
+                    {selectValue}
+                  </Typography.Text>
+                  <Typography.Text type={'secondary'}>变量值</Typography.Text>
+                  <Typography.Text code>
+                    {currentData?.value && currentData?.value.length > 40
+                      ? currentData?.value.substring(0, 40) + '...'
+                      : currentData?.value}
+                  </Typography.Text>
+                </>
+              )}
             </Space>
           </ProCard>
         </ProCard>
@@ -211,41 +230,64 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
     },
   ];
   const Content = (
-    <ProCard split={'horizontal'}>
-      <MyTabs items={items} defaultActiveKey={'1'} />
-      <ProCard style={{ marginTop: 200 }}>
-        <Space direction={'horizontal'}>
-          <Button
-            onClick={() => {
-              if (selectValue && index) {
-                setValue?.(index, { value: selectValue });
-              }
-              setOpen(false);
-            }}
-          >
-            添加
-          </Button>
-          <Button
-            onClick={() => {
-              if (selectValue && index) {
-                if (value) {
-                  setValue?.(index, { value: value + selectValue });
-                } else {
-                  setValue?.(index, { value: selectValue });
-                }
-              }
-              setOpen(false);
-            }}
-          >
-            插入
-          </Button>
-        </Space>
+    <ProCard split={'horizontal'} style={{ height: 370, width: 400 }}>
+      <MyTabs
+        items={items}
+        defaultActiveKey={currentActiveKey}
+        onChangeKey={(key) => setCurrentActiveKey(key)}
+      />
+      <ProCard style={{ marginTop: 30 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {selectValue && (
+            <Space>
+              <Button
+                onClick={() => {
+                  if (selectValue && index) {
+                    setValue?.(index, { value: selectValue });
+                  }
+                  setOpen(false);
+                }}
+              >
+                添加
+              </Button>
+              <Button
+                onClick={() => {
+                  if (selectValue && index) {
+                    if (value) {
+                      setValue?.(index, { value: value + selectValue });
+                    } else {
+                      setValue?.(index, { value: selectValue });
+                    }
+                  }
+                  setOpen(false);
+                }}
+              >
+                插入
+              </Button>
+            </Space>
+          )}
+          {currentActiveKey === '2' && (
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+            >
+              新增
+            </Button>
+          )}
+        </div>
       </ProCard>
     </ProCard>
   );
 
   return (
     <>
+      <VarModalForm
+        open={isModalOpen}
+        setOpen={setIsModalOpen}
+        callBack={() => setRefresh(!refresh)}
+      />
       <Popover
         content={Content}
         title={<Title level={5}>引用变量</Title>}

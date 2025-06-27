@@ -1,5 +1,11 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import { CornerUpLeft, CornerUpRight, EditOne } from '@icon-park/react';
+import {
+  CornerUpLeft,
+  CornerUpRight,
+  EditOne,
+  ScreenshotOne,
+  Tag,
+} from '@icon-park/react';
 import { Button, Modal, Space, Tooltip } from 'antd';
 import React, { FC, useState } from 'react';
 import MindMap from 'simple-mind-map';
@@ -8,9 +14,10 @@ import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode'
 interface ISelfProps {
   mindMapRef: React.MutableRefObject<MindMap | null>;
   currentNode: MindMapNode | null;
+  currentNodes: MindMapNode[] | null;
 }
 
-const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNode }) => {
+const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNodes, currentNode }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [script, setScript] = useState(null);
 
@@ -21,6 +28,10 @@ const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNode }) => {
       setIsModalOpen(false);
     }
     setScript(null);
+  };
+
+  const addTag = () => {
+    mindMapRef.current?.execCommand('ADD_GENERALIZATION');
   };
   return (
     <div
@@ -79,6 +90,44 @@ const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNode }) => {
               />
             }
             onClick={() => setIsModalOpen(true)}
+          ></Button>
+        </Tooltip>
+        <Tooltip title={'概要'}>
+          <Button
+            type={'text'}
+            icon={
+              <Tag
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
+            disabled={currentNode === null}
+            onClick={addTag}
+          ></Button>
+        </Tooltip>
+        <Tooltip title="外框">
+          <Button
+            type="text"
+            icon={
+              <ScreenshotOne
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
+            disabled={currentNodes?.length === 0}
+            onClick={() => {
+              mindMapRef.current?.execCommand(
+                'ADD_OUTER_FRAME',
+                currentNodes,
+                {},
+              );
+            }}
           ></Button>
         </Tooltip>
         <Button

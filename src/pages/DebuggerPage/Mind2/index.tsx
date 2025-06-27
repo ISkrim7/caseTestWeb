@@ -10,14 +10,19 @@ import RichText from 'simple-mind-map/src/plugins/RichText.js';
 import Scrollbar from 'simple-mind-map/src/plugins/Scrollbar.js';
 // @ts-ignore
 import OuterFrame from 'simple-mind-map/src/plugins/OuterFrame.js';
-
+// @ts-ignore
+import TouchEvent from 'simple-mind-map/src/plugins/TouchEvent.js';
+// @ts-ignore
 import MyDrawer from '@/components/MyDrawer';
 import { MapConfig } from '@/pages/DebuggerPage/Mind2/MapConfig';
+import ContextMenu from '@/pages/DebuggerPage/Mind2/Options/ContextMenu';
 import FontFormat from '@/pages/DebuggerPage/Mind2/Options/FontFormat';
 import MenuSetting from '@/pages/DebuggerPage/Mind2/Options/MenuSetting';
 import MindOpt from '@/pages/DebuggerPage/Mind2/Options/MindOpt';
+import OutFrameSetting from '@/pages/DebuggerPage/Mind2/Options/OutFrameSetting';
 import { SettingTwoTone } from '@ant-design/icons';
 import MindMap from 'simple-mind-map';
+import Select from 'simple-mind-map/src/plugins/Select.js';
 import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
 
 type Format = {
@@ -29,6 +34,15 @@ type Format = {
   color: string;
 };
 
+const FormatInfo = {
+  bold: false,
+  underline: false,
+  strike: false,
+  italic: false,
+  fontSize: 16,
+  color: '#000000',
+};
+
 const Index = () => {
   const containerRef = useRef(null);
   const mindMapRef: React.MutableRefObject<MindMap | null> = useRef(null);
@@ -38,21 +52,23 @@ const Index = () => {
     useState<string>('logicalStructure');
 
   const [showToolbar, setShowToolbar] = useState(false);
-  const [showContextmenu, setShowContextmenu] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState({
     left: '0',
     top: '0',
   });
   const [currentNode, setCurrentNode] = useState<MindMapNode | null>(null);
-  const [formatInfo, setFormatInfo] = useState<Format>({
-    bold: false,
-    underline: false,
-    strike: false,
-    italic: false,
-    fontSize: 16,
-    color: '#000000',
+  const [currentNodes, setCurrentNodes] = useState<MindMapNode[] | null>([]);
+  const [formatInfo, setFormatInfo] = useState<Format>(FormatInfo);
+  const [showContextmenu, setShowContextmenu] = useState(false);
+  const [showOuterFrameMenu, setShowOuterFrameMenu] = useState(true);
+  const [contextMenuPosition, setContextMenuPosition] = useState({
+    left: '0',
+    top: '0',
   });
-
+  const [outerFrameMenuPosition, setOuterFrameMenuPosition] = useState({
+    left: '0',
+    top: '0',
+  });
   // 初始化数据
   const initialData = {
     data: { text: '根节点' },
@@ -75,23 +91,47 @@ const Index = () => {
     setShowToolbar(hasRange);
   };
 
+  // 外框点击时间
+  const handleOuterFrameActive = (el: any, parentNode: any, range: any) => {
+    const { x, y, width, height } = el.rbox();
+    setOuterFrameMenuPosition({
+      left: `${x}px`,
+      top: `${y}px`,
+    });
+    setShowOuterFrameMenu(true);
+  };
+
   // 节点激活事件
   const handleNodeActive = (
     node: MindMapNode,
     activeNodeList: MindMapNode[],
   ) => {
     setCurrentNode(node);
-  };
-  const handle_node_contextmenu = (e: MouseEvent, node: MindMapNode) => {
-    // console.log(e);
-    // setToolbarPosition({
-    //   left: `${e.clientX + 10}px`,
-    //   top: `${e.clientY + 10}px`,
-    // });
-    // setShowContextmenu(true);
-    // setCurrentNode(node);
+    setCurrentNodes(activeNodeList);
   };
 
+  // 节点右键事件
+  const handleNodeContextMenu = (e: any, node: MindMapNode) => {
+    setContextMenuPosition({
+      left: `${e.clientX - 10}px`,
+      top: `${e.clientY - 10}px`,
+    });
+    setShowContextmenu(true);
+  };
+
+  //关闭右键菜单
+  const hideNodeContextMenu = () => {
+    setShowContextmenu(false);
+    setContextMenuPosition({
+      left: '0',
+      top: '0',
+    });
+    setShowOuterFrameMenu(false);
+    setOuterFrameMenuPosition({
+      left: '0',
+      top: '0',
+    });
+  };
   useEffect(() => {
     if (!containerRef.current) return;
     if (!initialData) return;
@@ -100,15 +140,9 @@ const Index = () => {
     MindMap.usePlugin(Drag);
     MindMap.usePlugin(RichText, formatInfo);
     MindMap.usePlugin(OuterFrame);
-    MindMap.usePlugin(Scrollbar, {
-      // 滚动条配置选项
-      padding: 5, // 滚动条与边缘的间距
-      scrollbarWidth: 10, // 滚动条宽度
-      scrollbarThumbColor: '#ccc', // 滚动条滑块颜色
-      scrollbarTrackColor: '#f5f5f5', // 滚动条轨道颜色
-      scrollbarThumbHoverColor: '#999', // 滚动条滑块悬停颜色
-      minShowScrollbarNum: 1, // 最小显示滚动条数量
-    });
+    MindMap.usePlugin(Select);
+    MindMap.usePlugin(Scrollbar);
+    MindMap.usePlugin(TouchEvent);
 
     // 创建思维导图实例
     // @ts-ignore
@@ -117,14 +151,17 @@ const Index = () => {
       data: initialData,
       layout: currentLayout,
       theme: currentTheme,
-
       ...MapConfig,
     });
 
     // 添加事件监听
     mindMapRef.current.on('node_active', handleNodeActive);
     mindMapRef.current.on('rich_text_selection_change', handleSelectionChange);
-    mindMapRef.current.on('node_contextmenu', handle_node_contextmenu);
+    mindMapRef.current.on('outer_frame_active', handleOuterFrameActive);
+    mindMapRef.current.on('node_contextmenu', handleNodeContextMenu);
+    mindMapRef.current.on('node_click', hideNodeContextMenu);
+    mindMapRef.current.on('draw_click', hideNodeContextMenu);
+    mindMapRef.current.on('expand_btn_click', hideNodeContextMenu);
     return () => {
       mindMapRef.current?.off('node_active', handleNodeActive);
       mindMapRef.current?.off(
@@ -144,16 +181,20 @@ const Index = () => {
   return (
     <div
       style={{
-        height: '100vh',
+        height: '80vh',
         width: '100%',
-        position: 'relative',
-        overflow: 'hidden',
+        // position: 'relative',
+        // overflow: 'hidden',
         margin: 0,
         padding: 0,
       }}
     >
       {/* 操作按钮组 */}
-      <MindOpt mindMapRef={mindMapRef} currentNode={currentNode} />
+      <MindOpt
+        mindMapRef={mindMapRef}
+        currentNode={currentNode}
+        currentNodes={currentNodes}
+      />
 
       {/* 思维导图容器 */}
       <div
@@ -181,25 +222,18 @@ const Index = () => {
         style={{ right: 24 }}
         onClick={() => setMenuDropdownVisible(true)}
       />
-      {showContextmenu && (
-        <div
-          style={{
-            position: 'absolute',
-            left: toolbarPosition.left,
-            top: toolbarPosition.top,
-            transform: 'translateX(-50%)',
-            background: '#fff',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-            borderRadius: 4,
-            padding: 8,
-            zIndex: 1000,
-            display: 'flex',
-            gap: 8,
-          }}
-        >
-          hi
-        </div>
-      )}
+      <ContextMenu
+        mindMapRef={mindMapRef}
+        show={showContextmenu}
+        menuPosition={contextMenuPosition}
+        callback={() => setShowContextmenu(false)}
+      />
+      <OutFrameSetting
+        mindMapRef={mindMapRef}
+        showToolbar={showOuterFrameMenu}
+        outerFrameMenuPosition={outerFrameMenuPosition}
+        callback={() => setShowOuterFrameMenu(false)}
+      />
       {/* 配置抽屉 */}
       <MyDrawer
         name="思维导图配置"

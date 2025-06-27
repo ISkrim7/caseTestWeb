@@ -12,5 +12,5 @@ export const MapConfig = {
   disableMouseWheelZoom: false, //禁止鼠标滚轮缩放，你仍旧可以使用api进行缩放
   useLeftKeySelectionRightKeyDrag: true,
   isShowExpandNum: true, //节点收起时是否显示收起的数量
-  initRootNodePosition: ['40%', '60%'],
+  initRootNodePosition: ['left', 'center'],
 };

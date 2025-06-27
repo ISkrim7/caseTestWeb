@@ -77,6 +77,26 @@ const ScriptList = [
     value: 'name = hub_faker.pystr()',
     desc: 'return xxx',
   },
+  {
+    label: 'MD5 生成字符串',
+    value: 'data = hub_md5(value="abc")',
+    desc: 'return xxx',
+  },
+  {
+    label: '生成本月一号',
+    value: 'data = hub_month_begin()',
+    desc: 'return 2025-05-01',
+  },
+  {
+    label: '随机获取',
+    value: 'data = hub_random([1,2,3])',
+    desc: (
+      <>
+        <p>:params values:List[Any]</p>
+        <p>:return value:Any</p>
+      </>
+    ),
+  },
 ];
 
 const InterScript: FC<SelfProps> = ({ form, tag }) => {

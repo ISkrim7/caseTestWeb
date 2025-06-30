@@ -3,8 +3,8 @@ import { FC } from 'react';
 
 interface SelfProps {
   name: string | JSX.Element;
-  open: any;
-  setOpen: any;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   width?: string | null;
   extra?: any;
   onClose?: () => void;

@@ -40,6 +40,7 @@ const ContextMenu: FC<ISelfProps> = ({
     callback();
   };
   const addParent = () => {
+    // @ts-ignore
     mindMapRef.current?.renderer.insertParentNode();
     callback();
   };

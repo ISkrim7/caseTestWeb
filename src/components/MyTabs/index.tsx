@@ -1,14 +1,14 @@
 import { Tabs } from 'antd';
-import { Tab } from 'rc-tabs/lib/interface';
 import React, { FC } from 'react';
 
 interface IProps {
   defaultActiveKey: string;
   tabBarExtraContent?: React.ReactNode;
-  items: Tab[];
+  items: any[];
   tabPosition?: 'top' | 'left';
   title?: string;
   onChangeKey?: (key: string) => void;
+  type?: 'line' | 'card' | 'editable-card';
 }
 
 const Index: FC<IProps> = ({
@@ -18,11 +18,12 @@ const Index: FC<IProps> = ({
   tabBarExtraContent,
   title,
   onChangeKey,
+  type,
 }) => {
   return (
     <Tabs
       title={title}
-      type={'card'}
+      type={type || 'card'}
       size={'large'}
       onChange={(key: string) => {
         onChangeKey?.(key);

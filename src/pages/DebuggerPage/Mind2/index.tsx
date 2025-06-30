@@ -14,6 +14,9 @@ import OuterFrame from 'simple-mind-map/src/plugins/OuterFrame.js';
 import TouchEvent from 'simple-mind-map/src/plugins/TouchEvent.js';
 // @ts-ignore
 import MyDrawer from '@/components/MyDrawer';
+// @ts-ignore
+import Select from 'simple-mind-map/src/plugins/Select.js';
+
 import { MapConfig } from '@/pages/DebuggerPage/Mind2/MapConfig';
 import ContextMenu from '@/pages/DebuggerPage/Mind2/Options/ContextMenu';
 import FontFormat from '@/pages/DebuggerPage/Mind2/Options/FontFormat';
@@ -22,7 +25,6 @@ import MindOpt from '@/pages/DebuggerPage/Mind2/Options/MindOpt';
 import OutFrameSetting from '@/pages/DebuggerPage/Mind2/Options/OutFrameSetting';
 import { SettingTwoTone } from '@ant-design/icons';
 import MindMap from 'simple-mind-map';
-import Select from 'simple-mind-map/src/plugins/Select.js';
 import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
 
 type Format = {
@@ -95,8 +97,8 @@ const Index = () => {
   const handleOuterFrameActive = (el: any, parentNode: any, range: any) => {
     const { x, y, width, height } = el.rbox();
     setOuterFrameMenuPosition({
-      left: `${x}px`,
-      top: `${y}px`,
+      left: `${x + height}px`,
+      top: `${y - height}px`,
     });
     setShowOuterFrameMenu(true);
   };
@@ -106,6 +108,7 @@ const Index = () => {
     node: MindMapNode,
     activeNodeList: MindMapNode[],
   ) => {
+    console.log('curr', node);
     setCurrentNode(node);
     setCurrentNodes(activeNodeList);
   };
@@ -194,6 +197,7 @@ const Index = () => {
         mindMapRef={mindMapRef}
         currentNode={currentNode}
         currentNodes={currentNodes}
+        setMenuDropdownVisible={setMenuDropdownVisible}
       />
 
       {/* 思维导图容器 */}
@@ -237,13 +241,14 @@ const Index = () => {
       {/* 配置抽屉 */}
       <MyDrawer
         name="思维导图配置"
-        width="25%"
+        width="30%"
         open={menuDropdownVisible}
         setOpen={setMenuDropdownVisible}
       >
         <MenuSetting
           setCurrentTheme={setCurrentTheme}
           setCurrentLayout={setCurrentLayout}
+          currentNode={currentNode}
         />
       </MyDrawer>
     </div>

@@ -3,10 +3,12 @@ import {
   CornerUpLeft,
   CornerUpRight,
   EditOne,
+  Save,
   ScreenshotOne,
+  SettingConfig,
   Tag,
 } from '@icon-park/react';
-import { Button, Modal, Space, Tooltip } from 'antd';
+import { Button, Divider, Modal, Space, Tooltip } from 'antd';
 import React, { FC, useState } from 'react';
 import MindMap from 'simple-mind-map';
 import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
@@ -15,9 +17,15 @@ interface ISelfProps {
   mindMapRef: React.MutableRefObject<MindMap | null>;
   currentNode: MindMapNode | null;
   currentNodes: MindMapNode[] | null;
+  setMenuDropdownVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNodes, currentNode }) => {
+const MindOpt: FC<ISelfProps> = ({
+  mindMapRef,
+  setMenuDropdownVisible,
+  currentNodes,
+  currentNode,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [script, setScript] = useState(null);
 
@@ -130,12 +138,37 @@ const MindOpt: FC<ISelfProps> = ({ mindMapRef, currentNodes, currentNode }) => {
             }}
           ></Button>
         </Tooltip>
-        <Button
-          type="text"
-          onClick={() => console.log(mindMapRef.current?.getData(true))}
-        >
-          data
-        </Button>
+        <Divider type="vertical" />
+        <Tooltip title={'保存'}>
+          <Button
+            type="text"
+            icon={
+              <Save
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
+            onClick={() => console.log(mindMapRef.current?.getData(true))}
+          ></Button>
+        </Tooltip>
+        <Tooltip title={'格式'}>
+          <Button
+            type={'text'}
+            onClick={() => setMenuDropdownVisible(true)}
+            icon={
+              <SettingConfig
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
+          ></Button>
+        </Tooltip>
       </Space>
     </div>
   );

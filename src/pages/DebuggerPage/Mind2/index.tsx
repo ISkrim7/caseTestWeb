@@ -108,7 +108,6 @@ const Index = () => {
     node: MindMapNode,
     activeNodeList: MindMapNode[],
   ) => {
-    console.log('curr', node);
     setCurrentNode(node);
     setCurrentNodes(activeNodeList);
   };

@@ -7,6 +7,7 @@ import {
   IResponse,
   ISearch,
   IUser,
+  IUserVar,
 } from '@/api';
 import { IUITask } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request/request';
@@ -20,6 +21,45 @@ export async function login(body: ILoginParams, options?: IObjGet) {
     ...(options || {}),
   });
 }
+
+/**
+ * 我的变量
+ * @param options
+ */
+export const queryUserVars = async (options?: IObjGet) => {
+  return request<IResponse<any>>('/api/user/query_vars', {
+    method: 'GET',
+    ...(options || {}),
+  });
+};
+
+/**
+ * 我的变量
+ * @param options
+ * @param values
+ */
+export const pageUserVars = async (values: any, options?: IObjGet) => {
+  return request<IResponse<any>>('/api/user/page_vars', {
+    method: 'POST',
+    data: values,
+    ...(options || {}),
+  });
+};
+/**
+ * 我的变量
+ * @param options
+ * @param values
+ */
+export const addOrUpdateUserVars = async (
+  values: IUserVar,
+  options?: IObjGet,
+) => {
+  return request<IResponse<any>>('/api/user/add_or_update_vars', {
+    method: 'POST',
+    data: values,
+    ...(options || {}),
+  });
+};
 
 /** 获取当前的用户 GET /user/current */
 export async function currentUser(options?: IObjGet) {

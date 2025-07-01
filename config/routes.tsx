@@ -28,6 +28,11 @@ export default [
         access: 'isAdmin',
         component: '@/pages/User/Admin',
       },
+      {
+        path: '/user/my',
+        name: '我的',
+        component: '@/pages/User/My',
+      },
       // {
       //   path: '/user/department',
       //   name: '部门列表',

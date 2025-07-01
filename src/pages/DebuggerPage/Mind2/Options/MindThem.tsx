@@ -1,5 +1,5 @@
 import MyTabs from '@/components/MyTabs';
-import { Button, Card, Carousel, Flex, Space } from 'antd';
+import { Button, Card, Collapse, Flex, Space } from 'antd';
 import React from 'react';
 import MindMapNode from 'simple-mind-map/types/src/core/render/node/MindMapNode';
 
@@ -47,138 +47,69 @@ const MindThem: React.FC<SelfProps> = ({ themSetter, currentNode }) => {
     background: '#364d79',
   };
   const nodeThems = (
-    <Carousel arrows infinite={false}>
-      <div style={contentStyle}>
-        <Flex vertical gap="small">
-          <Flex gap="small" wrap>
-            <Button
-              style={{ backgroundColor: '#000000', color: 'white' }}
-              onClick={() => setNodeStyle('fillColor', '#000000')}
-              variant="solid"
-            >
-              主题
-            </Button>
-            <Button
-              style={{ backgroundColor: '#1677ff', color: 'white' }}
-              onClick={() => setNodeStyle('fillColor', '#1677ff')}
-              variant="solid"
-            >
-              主题
-            </Button>
-            <Button
-              style={{ backgroundColor: '#f99b04', color: 'white' }}
-              onClick={() => {
-                setNodeStyle('fillColor', '#f99b04');
-              }}
-              variant="solid"
-            >
-              主题
-            </Button>
-          </Flex>
-          <Flex gap="small" wrap>
-            <Button
-              color={'default'}
-              onClick={() => {
-                if (currentNode) {
-                  currentNode.setStyle('fillColor', '#FFFFFF');
-                  currentNode.setStyle('color', '#000000');
-                }
-              }}
-              variant="outlined"
-            >
-              主题
-            </Button>
-            <Button
-              color={'default'}
-              onClick={() => {
-                if (currentNode) {
-                  currentNode.setStyle('borderDasharray', '5,5'); // node.setStyle('borderDasharray', 'none')
-                  currentNode.setStyle('fillColor', '#FFFFFF');
-                  currentNode.setStyle('color', '#000000');
-                }
-              }}
-              variant="dashed"
-            >
-              主题
-            </Button>
-            <Button
-              style={{ backgroundColor: '#ff0000', color: 'white' }}
-              onClick={() => {
-                setNodeStyle('fillColor', '#ff0000');
-              }}
-              variant="solid"
-            >
-              主题
-            </Button>
-          </Flex>
-        </Flex>
-      </div>
-      <div style={contentStyle}>
-        <Flex vertical gap="small">
-          <Flex gap="small" wrap>
-            <Button
-              style={{ backgroundColor: '#000000', color: 'white' }}
-              onClick={() => setNodeStyle('fillColor', '#000000')}
-              variant="solid"
-            >
-              主题
-            </Button>
-            <Button
-              style={{ backgroundColor: '#1677ff', color: 'white' }}
-              onClick={() => setNodeStyle('fillColor', '#1677ff')}
-              variant="solid"
-            >
-              主题
-            </Button>
-            <Button
-              style={{ backgroundColor: '#f99b04', color: 'white' }}
-              onClick={() => {
-                setNodeStyle('fillColor', '#f99b04');
-              }}
-              variant="solid"
-            >
-              主题
-            </Button>
-          </Flex>
-          <Flex gap="small" wrap>
-            <Button
-              color={'default'}
-              onClick={() => {
-                if (currentNode) {
-                  currentNode.setStyle('fillColor', '#FFFFFF');
-                  currentNode.setStyle('color', '#000000');
-                }
-              }}
-              variant="outlined"
-            >
-              主题
-            </Button>
-            <Button
-              color={'default'}
-              onClick={() => {
-                if (currentNode) {
-                  currentNode.setStyle('borderDasharray', '5,5'); // node.setStyle('borderDasharray', 'none')
-                  currentNode.setStyle('fillColor', '#FFFFFF');
-                  currentNode.setStyle('color', '#000000');
-                }
-              }}
-              variant="dashed"
-            >
-              主题
-            </Button>
-            <Button
-              style={{ backgroundColor: '#ff0000', color: 'white' }}
-              onClick={() => {
-                setNodeStyle('fillColor', '#ff0000');
-              }}
-              variant="solid"
-            >
-              主题
-            </Button>
-          </Flex>
-        </Flex>
-      </div>
-    </Carousel>
+    <Flex vertical gap="small">
+      <Flex gap="small" wrap>
+        <Button
+          style={{ backgroundColor: '#000000', color: 'white' }}
+          onClick={() => setNodeStyle('fillColor', '#000000')}
+          variant="solid"
+        >
+          主题
+        </Button>
+        <Button
+          style={{ backgroundColor: '#1677ff', color: 'white' }}
+          onClick={() => setNodeStyle('fillColor', '#1677ff')}
+          variant="solid"
+        >
+          主题
+        </Button>
+        <Button
+          style={{ backgroundColor: '#f99b04', color: 'white' }}
+          onClick={() => {
+            setNodeStyle('fillColor', '#f99b04');
+          }}
+          variant="solid"
+        >
+          主题
+        </Button>
+      </Flex>
+      <Flex gap="small" wrap>
+        <Button
+          color={'default'}
+          onClick={() => {
+            if (currentNode) {
+              currentNode.setStyle('fillColor', '#FFFFFF');
+              currentNode.setStyle('color', '#000000');
+            }
+          }}
+          variant="outlined"
+        >
+          主题
+        </Button>
+        <Button
+          color={'default'}
+          onClick={() => {
+            if (currentNode) {
+              currentNode.setStyle('borderDasharray', '5,5'); // node.setStyle('borderDasharray', 'none')
+              currentNode.setStyle('fillColor', '#FFFFFF');
+              currentNode.setStyle('color', '#000000');
+            }
+          }}
+          variant="dashed"
+        >
+          主题
+        </Button>
+        <Button
+          style={{ backgroundColor: '#ff0000', color: 'white' }}
+          onClick={() => {
+            setNodeStyle('fillColor', '#ff0000');
+          }}
+          variant="solid"
+        >
+          主题
+        </Button>
+      </Flex>
+    </Flex>
   );
 
   const centerThem = (
@@ -195,7 +126,26 @@ const MindThem: React.FC<SelfProps> = ({ themSetter, currentNode }) => {
       ))}
     </Space>
   );
-  const nodeStyleSetting = <>{nodeThems}</>;
+  const NodeStyleSetting = <></>;
+  const nodeStyleSetting = (
+    <Collapse
+      items={[
+        {
+          key: '1',
+          label: '节点样式',
+          children: nodeThems,
+        },
+        {
+          key: '2',
+          label: '节点样式',
+          children: NodeStyleSetting,
+        },
+      ]}
+      bordered={false}
+      accordion={false}
+      defaultActiveKey={['1', '2', '3']}
+    />
+  );
 
   const itmes = [
     {

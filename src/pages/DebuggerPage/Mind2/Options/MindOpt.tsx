@@ -1,7 +1,10 @@
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import {
+  AddItem,
   CornerUpLeft,
   CornerUpRight,
+  DoubleLeft,
+  DoubleRight,
   EditOne,
   Save,
   ScreenshotOne,
@@ -73,17 +76,84 @@ const MindOpt: FC<ISelfProps> = ({
         <Tooltip title="撤销 (Ctrl+Z)">
           <Button
             type="text"
-            icon={<CornerUpLeft theme="multi-color" size="24" />}
+            icon={
+              <CornerUpLeft
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
             onClick={() => mindMapRef.current?.execCommand('BACK')}
           />
         </Tooltip>
         <Tooltip title="重做 (Ctrl+Y)">
           <Button
             type="text"
-            icon={<CornerUpRight theme="multi-color" size="24" />}
+            icon={
+              <CornerUpRight
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
             onClick={() => mindMapRef.current?.execCommand('FORWARD')}
           />
         </Tooltip>
+        <Divider type="vertical" />
+        <Tooltip title={'插入父主题'}>
+          <Button
+            type={'text'}
+            disabled={currentNode === null}
+            icon={
+              <DoubleLeft
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
+            // @ts-ignore
+            onClick={() => mindMapRef.current?.renderer.insertParentNode()}
+          />
+        </Tooltip>
+        <Tooltip title={'插入子主题'}>
+          <Button
+            type={'text'}
+            disabled={currentNode === null}
+            icon={
+              <DoubleRight
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
+            onClick={() => mindMapRef.current?.renderer.insertChildNode()}
+          />
+        </Tooltip>
+        <Tooltip title={'插入子同级别主题'}>
+          <Button
+            type={'text'}
+            disabled={currentNode === null}
+            icon={
+              <AddItem
+                theme="multi-color"
+                size="24"
+                fill={['#333', '#2F88FF', '#FFF', '#43CCF8']}
+                strokeLinejoin="bevel"
+                strokeLinecap="square"
+              />
+            }
+            onClick={() => mindMapRef.current?.renderer.insertNode()}
+          />
+        </Tooltip>
+        <Divider type="vertical" />
         <Tooltip title="备注">
           <Button
             disabled={currentNode === null}

@@ -6,15 +6,7 @@ import {
   SunOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import {
-  Avatar,
-  Divider,
-  Dropdown,
-  MenuProps,
-  Segmented,
-  Space,
-  Spin,
-} from 'antd';
+import { Avatar, Dropdown, MenuProps, Segmented, Space, Spin } from 'antd';
 import { FC } from 'react';
 
 type ThemeType = 'realDark' | 'light';
@@ -95,20 +87,9 @@ const GlobalHeaderRight: FC<SelfProps> = ({
     <Space
       direction={!collapsed ? 'horizontal' : 'vertical'}
       align="baseline"
-      split={<Divider type={collapsed ? 'horizontal' : 'vertical'} />}
+      // split={<Divider type={collapsed ? 'horizontal' : 'vertical'} />}
       size={'small'}
     >
-      <Dropdown menu={{ items }}>
-        <Avatar
-          size="small"
-          style={{ backgroundColor: '#f56a00' }}
-          src={currentUser.avatar}
-          alt="avatar"
-        >
-          {currentUser.username[0]}
-        </Avatar>
-      </Dropdown>
-
       <Segmented
         value={currentTheme}
         vertical={collapsed}
@@ -120,6 +101,16 @@ const GlobalHeaderRight: FC<SelfProps> = ({
           { value: 'realDark', icon: <MoonOutlined /> },
         ]}
       />
+      <Dropdown menu={{ items }}>
+        <Avatar
+          size="small"
+          style={{ backgroundColor: '#f56a00' }}
+          src={currentUser.avatar}
+          alt="avatar"
+        >
+          {currentUser.username[0]}
+        </Avatar>
+      </Dropdown>
     </Space>
   );
 };

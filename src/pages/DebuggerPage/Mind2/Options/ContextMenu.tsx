@@ -45,6 +45,7 @@ const ContextMenu: FC<ISelfProps> = ({
     callback();
   };
 
+  //  添加概要
   const addGENERALIZATION = () => {
     // mindMapRef.current?.renderer.setNodeNote();
     mindMapRef.current?.execCommand('ADD_GENERALIZATION');

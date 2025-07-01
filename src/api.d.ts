@@ -81,6 +81,16 @@ export interface IProject {
   desc?: string | null;
 }
 
+export interface IUserVar {
+  id: number;
+  uid: string;
+  key: string;
+  value: string;
+  description?: string;
+  user_id: number;
+  user_name: string;
+}
+
 export interface ILoginParams {
   username: string;
   password: string;
@@ -125,6 +135,7 @@ export interface IModule {
   children_length?: number;
   children?: IModule[];
 }
+
 export interface IModuleEnum {
   title: string;
   value: number;

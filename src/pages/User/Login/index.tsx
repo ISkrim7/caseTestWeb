@@ -12,7 +12,7 @@ const Index: React.FC = () => {
   const getCurrentUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
     if (userInfo) {
-      await setInitialState((s) => ({
+      await setInitialState((s: any) => ({
         ...s,
         currentUser: userInfo,
       }));
@@ -68,6 +68,9 @@ const Index: React.FC = () => {
           },
         ]}
       />
+      <div style={{ marginTop: 24, textAlign: 'center' }}>
+        <a onClick={() => history.push('/user/register')}>没有账号？立即注册</a>
+      </div>
     </LoginForm>
   );
 };

@@ -17,7 +17,13 @@ export default defineConfig({
   routes,
   model: {},
   antd: {
-    theme: {},
+    import: false,
+    style: 'less',
+    theme: {
+      'primary-color': '#1890ff',
+    },
+    dark: false,
+    compact: false,
   },
   request: {
     dataField: '',
@@ -30,5 +36,6 @@ export default defineConfig({
   manifest: {
     basePath: '/',
   },
-  mfsu: {},
+  mfsu: false,
+  //mfsu: {},
 });

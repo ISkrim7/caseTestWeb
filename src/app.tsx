@@ -1,5 +1,6 @@
 import { IUser } from '@/api';
 import { currentUser, queryProject } from '@/api/base';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import RightContent from '@/components/RightContent';
 import { errorConfig } from '@/requestErrorConfig';
 import { RequestConfig } from '@@/plugin-request/request';
@@ -97,7 +98,8 @@ export const layout: RunTimeLayoutConfig = ({
   initialState,
   setInitialState,
 }) => {
-  const [collapsed, setCollapsed] = useState(true);
+  //左侧导航栏默认展开false，true默认关闭
+  const [collapsed, setCollapsed] = useState(false);
   const currentTheme = initialState?.theme || 'light';
 
   const handleToggleTheme = () => {
@@ -128,7 +130,9 @@ export const layout: RunTimeLayoutConfig = ({
     unAccessible: <div>无访问权限</div>,
     childrenRender: (children) => (
       <ConfigProvider>
-        {initialState?.loading ? <PageLoading /> : children}
+        <ErrorBoundary>
+          {initialState?.loading ? <PageLoading /> : children}
+        </ErrorBoundary>
       </ConfigProvider>
     ),
     rightContentRender: () => (
@@ -144,4 +148,17 @@ export const layout: RunTimeLayoutConfig = ({
 
 export const request: RequestConfig = {
   ...errorConfig,
+  // ...其他配置...
+  // requestInterceptors: [
+  //   (url, options) => {
+  //     console.log('[Request Interceptor]', url, options.headers);
+  //     return { url, options };
+  //   }
+  // ],
+  // responseInterceptors: [
+  //   (response) => {
+  //     console.log('[Response]', response);
+  //     return response;
+  //   }
+  // ]
 };

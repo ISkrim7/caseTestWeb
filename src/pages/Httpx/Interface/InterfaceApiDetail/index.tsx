@@ -26,6 +26,7 @@ import { fetchModulesEnum } from '@/utils/somefunc';
 import {
   ApiOutlined,
   CheckCircleOutlined,
+  CodeOutlined,
   EditOutlined,
   FormOutlined,
   KeyOutlined,
@@ -48,6 +49,7 @@ import {
 } from 'antd';
 import React, { Dispatch, FC, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
+import MockRuleList from './MockRuleList';
 
 interface SelfProps {
   addFromCase: boolean;
@@ -325,6 +327,12 @@ const Index: FC<SelfProps> = ({
             label: '压力测试',
             icon: <LineChartOutlined />,
             children: <InterPerf interfaceId={interId} />,
+          },
+          {
+            key: '8',
+            label: 'Mock管理',
+            icon: <CodeOutlined />,
+            children: <MockRuleList interfaceId={interId} />,
           },
         ]
       : []),

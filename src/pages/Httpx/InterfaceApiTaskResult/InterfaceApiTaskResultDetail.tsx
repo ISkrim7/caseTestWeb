@@ -12,9 +12,9 @@ import {
   SmileTwoTone,
 } from '@ant-design/icons';
 import { ProCard, StatisticCard } from '@ant-design/pro-components';
+import { useLocation, useNavigate, useParams } from '@umijs/max';
 import { Button, Col, Descriptions, Row, Tabs, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'umi';
 
 const DescriptionsItem = Descriptions.Item;
 // 定义 location.state 的类型

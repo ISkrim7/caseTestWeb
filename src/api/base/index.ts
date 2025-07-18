@@ -47,6 +47,22 @@ export async function updateUser(user: IUser, options?: IObjGet) {
   });
 }
 
+export async function publicRegister(
+  userData: {
+    username: string;
+    password: string;
+    gender: number; // 1(MALE) 或 0(FEMALE)
+    phone: string;
+  },
+  options?: IObjGet,
+) {
+  return request<IResponse<any>>('/api/user/public/register', {
+    method: 'POST',
+    data: userData, // 直接传递整个对象，更简洁
+    ...(options || {}),
+  });
+}
+
 /** 删除用户  /user/current */
 export async function registerUser(user: IUser, options?: IObjGet) {
   return request<IResponse<null>>('/api/user/registerUser', {
@@ -281,6 +297,10 @@ export async function userUpdatePwd(
 ) {
   return request<IResponse<any>>('/api/user/updatePwd', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
     data: data,
     ...(options || {}),
   });

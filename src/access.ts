@@ -4,5 +4,7 @@ export default function (initialState: { currentUser: IUser } | undefined) {
   const { currentUser } = initialState ?? {};
   return {
     isAdmin: currentUser && currentUser.isAdmin,
+    canManageMock: currentUser && currentUser.isAdmin,
+    canViewMock: true,
   };
 }

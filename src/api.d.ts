@@ -31,6 +31,7 @@ export interface IResponse<T> {
 interface IPage<T> {
   items: T[] | [];
   pageInfo: IPageInfo;
+  total: number;
 }
 
 export interface ISearch {

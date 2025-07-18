@@ -25,6 +25,7 @@ interface SelfProps {
   pagination?: TablePaginationConfig;
   x?: number;
   persistenceKey?: string;
+  loading?: boolean;
 }
 
 const MyProTable: FC<SelfProps> = (props) => {

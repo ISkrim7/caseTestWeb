@@ -12,12 +12,14 @@ import AceEditor from 'react-ace';
 import { useModel } from 'umi';
 
 interface selfProps {
-  value?: any;
+  value?: string | object;
   readonly?: boolean;
   height?: string;
   onChange?: (value: string) => void;
   _mode?: string;
   gutter?: boolean;
+  enableBasicAutocompletion?: boolean;
+  enableLiveAutocompletion?: boolean;
 }
 
 const AceCodeEditor: FC<selfProps> = (props) => {
@@ -50,7 +52,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
       readOnly={readonly || false}
       height={height || '100%'}
       width={'100%'}
-      value={value}
+      value={typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
       fontSize={14}
       onChange={onChange}
       showGutter={gutter} //是否显示行号

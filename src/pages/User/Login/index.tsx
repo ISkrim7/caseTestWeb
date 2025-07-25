@@ -28,14 +28,25 @@ const Index: React.FC = () => {
       }
       await getCurrentUserInfo();
       const urlParams = new URL(window.location.href).searchParams;
-      history.push(urlParams.get('redirect') || '/');
+      const redirect = urlParams.get('redirect');
+      if (redirect) {
+        history.push(redirect);
+      } else {
+        // 根据权限跳转到不同默认页面
+        const userInfo = await initialState?.fetchUserInfo?.();
+        if (userInfo?.isAdmin) {
+          history.push('/home');
+        } else {
+          history.push('/home2');
+        }
+      }
       return Promise.resolve();
     }
   };
 
   return (
     <LoginForm
-      title="Case Hub"
+      title="测试平台"
       initialValues={{ autoLogin: true }}
       onFinish={async (values) => {
         await handleSubmit(values as ILoginParams);

@@ -51,6 +51,7 @@ export interface IUser {
   tagName?: string;
   departmentID?: number;
   departmentName?: string;
+  access?: string[] | Record<string, boolean>;
 }
 
 export interface IDepartment {

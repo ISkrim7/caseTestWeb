@@ -14,6 +14,7 @@ const Settings: LayoutSettings & {
   layout: 'side',
   menu: {
     type: 'sub',
+    //defaultOpenAll: true,
   },
   contentWidth: 'Fluid',
   fixedHeader: true,

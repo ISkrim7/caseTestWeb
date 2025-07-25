@@ -4,22 +4,22 @@ import { Tag } from 'antd';
 
 let socketUrl = '';
 if (process.env.NODE_ENV === 'development') {
-  socketUrl = 'http://10.1.6.39:5050/';
+  socketUrl = 'http://xx.1.6.39:5050/';
 } else {
-  socketUrl = 'wss://aijia-test.5i5j.com/';
+  socketUrl = 'wss://xx-test.5i5j.com/';
 }
 export { socketUrl };
 
 export const ModuleEnum = {
-  API : 1,
-  API_CASE : 2,
-  API_TASK : 3,
+  API: 1,
+  API_CASE: 2,
+  API_TASK: 3,
 
-  UI_CASE :4,
-  UI_TASK : 5,
+  UI_CASE: 4,
+  UI_TASK: 5,
 
-  CASE:6
-}
+  CASE: 6,
+};
 
 export const CONFIG: IObjGet = {
   EXTRACT_TARGET_ENUM: {

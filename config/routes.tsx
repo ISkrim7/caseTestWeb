@@ -6,14 +6,34 @@ export default [
     layout: false,
   },
   {
+    path: '/user/register',
+    exact: true,
+    component: '@/pages/User/Register',
+    layout: false,
+  },
+  {
     path: '/home',
     name: '首页',
     icon: 'HomeOutlined',
     component: '@/pages/index',
+    access: 'isAdmin',
+  },
+  {
+    path: '/home2',
+    name: '使用指南',
+    icon: 'HomeOutlined',
+    component: '@/pages/index2',
+    access: 'canViewMock',
   },
   {
     path: '/',
     redirect: '/home',
+    access: 'isAdmin',
+  },
+  {
+    path: '/',
+    redirect: '/home2',
+    access: 'canViewMock',
   },
 
   {
@@ -277,6 +297,46 @@ export default [
         component: '@/pages/Httpx/InterfacePerf/PerfDetail',
       },
       { component: '@/pages/404' },
+    ],
+  },
+  {
+    path: '/mock',
+    name: 'Mock管理',
+    icon: 'ApiOutlined',
+    routes: [
+      {
+        path: '/mock/rules',
+        name: '规则管理',
+        component: '@/pages/Mock/RuleList',
+        access: 'canViewMock',
+      },
+      {
+        path: '/mock/interfaces',
+        name: '使用指南',
+        component: '@/pages/Mock/LinkInterface',
+        access: 'isAdmin',
+      },
+      {
+        path: '/mock/status',
+        name: '状态监控',
+        component: '@/pages/Mock/Status',
+        //access: 'canViewMock',
+        access: 'isAdmin',
+      },
+      {
+        path: '/mock/create',
+        name: '创建规则',
+        component: '@/pages/Mock/CreateRule',
+        hideInMenu: true,
+        access: 'canViewMock',
+      },
+      {
+        path: '/mock/detail',
+        name: '规则详情',
+        component: '@/pages/Mock/RuleDetail',
+        hideInMenu: true,
+        access: 'canViewMock',
+      },
     ],
   },
   {

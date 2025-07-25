@@ -21,6 +21,7 @@ const Index = () => {
         bodyStyle={{ padding: 0 }}
         bordered={false}
       >
+        {/* @ts-expect-error: SplitterLayout type mismatch */}
         <SplitterLayout
           ref={splitPaneRef}
           percentage={true}

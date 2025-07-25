@@ -5,6 +5,7 @@ export default function (initialState: { currentUser: IUser } | undefined) {
   return {
     isAdmin: currentUser && currentUser.isAdmin,
     canManageMock: currentUser && currentUser.isAdmin,
-    canViewMock: true,
+    canViewMock: currentUser,
+    //canViewMock: true,
   };
 }

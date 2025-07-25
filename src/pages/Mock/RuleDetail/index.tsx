@@ -1,10 +1,6 @@
 import { mockApi } from '@/api/mock';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
-import {
-  ArrowLeftOutlined,
-  CopyOutlined,
-  EditOutlined,
-} from '@ant-design/icons';
+import { ArrowLeftOutlined, CopyOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { history, useParams } from '@umijs/max';
 import {
@@ -84,15 +80,15 @@ const MockRuleDetail: React.FC = () => {
         title: rule?.mockname || 'Mock规则详情',
         breadcrumb: {},
         extra: [
-          <Button
-            key="edit"
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={handleEdit}
-            style={{ marginRight: 8 }}
-          >
-            编辑
-          </Button>,
+          // <Button
+          //   key="edit"
+          //   type="primary"
+          //   icon={<EditOutlined />}
+          //   onClick={handleEdit}
+          //   style={{ marginRight: 8 }}
+          // >
+          //   编辑
+          // </Button>,
         ],
       }}
     >
@@ -185,6 +181,8 @@ const MockRuleDetail: React.FC = () => {
               onClick={async () => {
                 const key = 'mock-test';
                 message.loading({ content: '正在测试Mock...', key });
+                // 记录请求开始时间
+                const startTime = Date.now();
                 try {
                   // 使用axios直接发送请求，同时保留token和X-Mock-Request
                   const axios = require('axios').default;
@@ -200,6 +198,10 @@ const MockRuleDetail: React.FC = () => {
                     },
                     withCredentials: true,
                   });
+                  // 计算请求耗时
+                  const requestCostTime = Date.now() - startTime;
+                  // 将耗时添加到响应对象
+                  res.requestCostTime = requestCostTime;
                   console.log('实际发送的请求头:', res.config.headers);
                   console.debug('已发送请求头:', {
                     'X-Mock-Request': 'true',
@@ -255,6 +257,8 @@ const MockRuleDetail: React.FC = () => {
                     maskClosable: true,
                   });
                 } catch (error: any) {
+                  // 错误处理中也添加耗时计算
+                  const requestCostTime = Date.now() - startTime;
                   message.error({
                     content: `Mock测试失败: ${error.message || '未知错误'}`,
                     key,
@@ -264,6 +268,8 @@ const MockRuleDetail: React.FC = () => {
                     width: 800,
                     content: (
                       <div>
+                        <span style={{ fontWeight: 'bold' }}>响应时间: </span>
+                        {requestCostTime}ms
                         <p style={{ color: '#ff4d4f', fontWeight: 'bold' }}>
                           错误信息:
                         </p>
@@ -317,12 +323,26 @@ const MockRuleDetail: React.FC = () => {
             </Button>
             <Button
               onClick={() => {
+                const baseUrl = `${window.location.protocol}//${window.location.host}`;
                 Modal.info({
                   title: 'Mock URL',
                   content: (
                     <div>
                       <p>请求方法: {rule?.method}</p>
-                      <p>请求URL: /mock{rule?.path}</p>
+                      {rule?.access_level === 2 ? (
+                        <>
+                          <p>
+                            请求URL: {baseUrl}/mock{rule?.path}
+                          </p>
+                          <p>
+                            公共请求URL: {baseUrl}/mockpublic{rule?.path}
+                          </p>
+                        </>
+                      ) : (
+                        <p>
+                          请求URL: {baseUrl}/mock{rule?.path}
+                        </p>
+                      )}
                       <p>请求头: X-Mock-Request: true</p>
                       <p>可以直接复制到Postman等工具中测试</p>
                     </div>

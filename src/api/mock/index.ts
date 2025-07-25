@@ -1,7 +1,7 @@
 //import { request } from '@@/plugin-request';
 import type { IObjGet, IPage, IResponse } from '@/api';
-import { request } from 'umi';
-
+//import { request } from 'umi';
+import { request } from '@@/plugin-request/request'; // 这个请求实例有全局拦截器
 /**
  * Mock规则接口定义
  */
@@ -69,9 +69,9 @@ export const createMockRule = (data: Partial<IMockRule>, options?: IObjGet) =>
 export const updateMockRule = (data: IMockRule, options?: IObjGet) =>
   request<IResponse<IMockRule>>('/api/mock/updateById', {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
     data: {
       rule_id: data.id,
       ...data,
@@ -87,9 +87,9 @@ export const updateMockRule = (data: IMockRule, options?: IObjGet) =>
 export const deleteMockRule = (rule_id: number, options?: IObjGet) =>
   request<IResponse<void>>('/api/mock/remove', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
     data: { rule_id },
     ...(options || {}),
   });
@@ -102,9 +102,9 @@ export const deleteMockRule = (rule_id: number, options?: IObjGet) =>
 export const batchDeleteMockRules = (rule_ids: number[], options?: IObjGet) =>
   request<IResponse<void>>('/api/mock/batchRemove', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
     data: { rule_ids },
     ...(options || {}),
   });
@@ -310,6 +310,41 @@ export const getMockInterfaces = (options?: IObjGet) =>
 /**
  * Mock API集合
  */
+/**
+ * 获取Mock配置
+ * @param options 请求配置
+ */
+export const getMockConfig = (options?: IObjGet) =>
+  request<
+    IResponse<{
+      enabled: boolean;
+      require_mock_flag: boolean;
+      browser_friendly: boolean;
+    }>
+  >('/api/mock/config', {
+    method: 'GET',
+    ...(options || {}),
+  });
+
+/**
+ * 更新Mock配置
+ * @param data 配置数据
+ * @param options 请求配置
+ */
+export const updateMockConfig = (
+  data: {
+    enabled?: boolean;
+    require_mock_flag?: boolean;
+    browser_friendly?: boolean;
+  },
+  options?: IObjGet,
+) =>
+  request<IResponse<void>>('/api/mock/config', {
+    method: 'PUT',
+    data,
+    ...(options || {}),
+  });
+
 export const mockApi = {
   create: createMockRule,
   update: updateMockRule,
@@ -328,4 +363,6 @@ export const mockApi = {
   export: exportMockRules,
   link: linkMockToInterface,
   getInterfaces: getMockInterfaces,
+  getConfig: getMockConfig,
+  updateConfig: updateMockConfig,
 };

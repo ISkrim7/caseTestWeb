@@ -42,6 +42,7 @@ export interface IInterfaceAPI extends IBaseField {
   url: string;
   body_type: number;
   headers: IHeaders[] | [];
+  request_headers: IHeaders[] | [];
   params: IParams[] | [];
   body: any;
   raw_type: 'json' | 'text';
@@ -68,6 +69,7 @@ export interface IInterfaceAPI extends IBaseField {
   enable: boolean;
   is_group: number;
   group_id: number;
+  response: any;
 }
 
 export interface IInterfaceGroup extends IBaseField {

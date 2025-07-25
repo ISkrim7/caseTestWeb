@@ -7,7 +7,7 @@ docker load -i auto-test-hub-2.0.tar
 
 ## 2. 多环境部署
 ```bash
-docker build --no-cache -t auto-test-web:1.0 .
+docker build --no-cache -t auto-test-web:2.0 .
 ```
 ### 生产环境部署
 ```bash

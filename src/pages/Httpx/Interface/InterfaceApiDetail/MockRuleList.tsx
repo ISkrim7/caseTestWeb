@@ -457,23 +457,23 @@ const MockRuleList: React.FC<MockRuleListProps> = ({ interfaceId }) => {
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               description={
                 <span>
-                  暂无Mock规则，
-                  <a
-                    onClick={() => {
-                      setCurrentRule({
-                        interface_id: Number(interfaceId),
-                        mockname: '',
-                        path: '',
-                        method: 'GET',
-                        status_code: 200,
-                        response: {},
-                        enabled: true,
-                      });
-                      setFormVisible(true);
-                    }}
-                  >
-                    点击创建
-                  </a>
+                  暂无Mock规则
+                  {/*<a*/}
+                  {/*  onClick={() => {*/}
+                  {/*    setCurrentRule({*/}
+                  {/*      interface_id: Number(interfaceId),*/}
+                  {/*      mockname: '',*/}
+                  {/*      path: '',*/}
+                  {/*      method: 'GET',*/}
+                  {/*      status_code: 200,*/}
+                  {/*      response: {},*/}
+                  {/*      enabled: true,*/}
+                  {/*    });*/}
+                  {/*    setFormVisible(true);*/}
+                  {/*  }}*/}
+                  {/*>*/}
+                  {/*  点击创建*/}
+                  {/*</a>*/}
                 </span>
               }
             />

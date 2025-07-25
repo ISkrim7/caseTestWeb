@@ -39,7 +39,7 @@ const InterApiVariables = () => {
     {
       title: 'project',
       dataIndex: 'project_id',
-      hideInSearch: true,
+      //hideInSearch: true,
       width: '10%',
       valueEnum: projectEnum,
       render: (text) => <Tag color={'blue'}>{text}</Tag>,

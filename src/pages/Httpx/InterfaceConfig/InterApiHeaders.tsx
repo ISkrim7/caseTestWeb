@@ -54,7 +54,7 @@ const InterApiHeaders = () => {
     {
       title: 'project',
       dataIndex: 'project_id',
-      hideInSearch: true,
+      //hideInSearch: true,
       width: '10%',
       valueEnum: projectEnum,
       render: (text, record) => <Tag color={'blue'}>{text}</Tag>,

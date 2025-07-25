@@ -12,6 +12,7 @@ interface IProxy {
   ws?: boolean;
   changeOrigin: boolean;
   pathRewrite?: {};
+  headers?: Record<string, string>;
 }
 
 interface ITarget {
@@ -24,6 +25,14 @@ const proxy: ITarget = {
       target: 'http://127.0.0.1:5050',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
+    },
+    '/mock': {
+      target: 'http://127.0.0.1:5050',
+      changeOrigin: true,
+      // 添加以下配置
+      headers: {
+        'Access-Control-Allow-Headers': 'X-Mock-Request, Content-Type', // 允许自定义头
+      },
     },
   },
   hb: {

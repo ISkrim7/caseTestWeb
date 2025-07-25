@@ -15,6 +15,7 @@ $ yarn
 
 Start the dev server,
 
+npm install --legacy-peer-deps
 
 
 ```bash

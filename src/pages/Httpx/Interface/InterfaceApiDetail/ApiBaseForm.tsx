@@ -7,7 +7,7 @@ import {
   ProFormSelect,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 interface IProps {
   addFromCase: boolean;
@@ -27,7 +27,27 @@ const ApiBaseForm: FC<IProps> = (props) => {
   } = props;
   const { API_LEVEL_SELECT, API_STATUS_SELECT, API_REQUEST_METHOD } = CONFIG;
   const { initialState } = useModel('@@initialState');
-  const projects = initialState?.projects || [];
+  const [projects, setProjects] = useState(() => {
+    return (
+      initialState?.projects?.map((project) => ({
+        label: project.label || '',
+        value: project.value || 0,
+      })) || []
+    );
+  });
+
+  useEffect(() => {
+    if (!projects.length && initialState?.refreshProjects) {
+      initialState.refreshProjects().then((newProjects) => {
+        setProjects(
+          newProjects.map((project) => ({
+            label: project.label || '',
+            value: project.value || 0,
+          })),
+        );
+      });
+    }
+  }, []);
 
   return (
     <ProCard hidden={addFromCase || addFromGroup}>

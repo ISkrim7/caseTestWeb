@@ -165,7 +165,10 @@ const Index: FC<SelfProps> = ({
           onClick={() => {
             /*window.open('/interface/interApi/detail');*/
             // 添加接口按钮修改（原 window.open 改为路由跳转）
-            history.push('/interface/interApi/detail');
+            history.push({
+              pathname: '/interface/interApi/detail',
+              search: `?projectId=${currentProjectId?.toString()}&moduleId=${currentModuleId?.toString()}`,
+            });
           }}
         >
           <PlusOutlined />

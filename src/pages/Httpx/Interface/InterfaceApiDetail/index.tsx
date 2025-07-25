@@ -48,7 +48,7 @@ import {
   Tooltip,
 } from 'antd';
 import React, { Dispatch, FC, useEffect, useState } from 'react';
-import { history, useParams } from 'umi';
+import { history, useModel, useParams } from 'umi';
 import MockRuleList from './MockRuleList';
 
 interface SelfProps {
@@ -93,15 +93,33 @@ const Index: FC<SelfProps> = ({
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
   const [currentInterAPIId, setCurrentInterAPIId] = useState<number>();
   const [openDoc, setOpenDoc] = useState(false);
+  const { initialState } = useModel('@@initialState');
 
   // 初始化接口详情和项目列表
   useEffect(() => {
-    if (interId) {
-      setCurrentMode(1);
-      fetchInterfaceDetails(interId).then();
-    } else {
-      setCurrentMode(2);
-    }
+    const initialize = async () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const projectId = searchParams.get('projectId');
+      const moduleId = searchParams.get('moduleId');
+
+      if (projectId) {
+        const projectIdNum = parseInt(projectId);
+        interApiForm.setFieldValue('project_id', projectIdNum);
+        setCurrentProjectId(projectIdNum);
+      }
+      if (moduleId) {
+        interApiForm.setFieldValue('module_id', parseInt(moduleId));
+      }
+
+      if (interId) {
+        setCurrentMode(1);
+        await fetchInterfaceDetails(interId);
+      } else {
+        setCurrentMode(2);
+      }
+    };
+
+    initialize();
   }, [interId]);
 
   // 根据当前项目ID获取环境和用例部分

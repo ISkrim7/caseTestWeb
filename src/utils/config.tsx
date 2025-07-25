@@ -11,15 +11,17 @@ if (process.env.NODE_ENV === 'development') {
 export { socketUrl };
 
 export const ModuleEnum = {
-  API : 1,
-  API_CASE : 2,
-  API_TASK : 3,
+  API: 1,
+  API_CASE: 2,
+  API_TASK: 3,
 
-  UI_CASE :4,
-  UI_TASK : 5,
+  UI_CASE: 4,
+  UI_TASK: 5,
+  UI_STEP: 6,
+  UI_STEP_GROUP: 7,
 
-  CASE:6
-}
+  CASE: 8,
+};
 
 export const CONFIG: IObjGet = {
   EXTRACT_TARGET_ENUM: {

@@ -14,7 +14,7 @@ import { Button, message, Space, Tag } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAccess } from 'umi';
 
-const InterApiVariables = () => {
+const GlobalVariables = () => {
   const { isAdmin } = useAccess();
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -142,4 +142,4 @@ const InterApiVariables = () => {
   );
 };
 
-export default InterApiVariables;
+export default GlobalVariables;

@@ -8,6 +8,7 @@ export interface IUICase {
   description?: string;
   level: string;
   status: string;
+  step_num: number;
   steps: IUICaseSteps[];
   project_id: number;
   module_id: number;
@@ -18,17 +19,6 @@ export interface IUICase {
   updaterName?: string;
   updaterId?: number;
   env_id: string;
-}
-
-export interface CasePartEnum {
-  title: string;
-  value: number;
-  children?: CasePartEnum[];
-}
-
-export interface ProjectEnum {
-  label: string;
-  value: number;
 }
 
 export interface IUITask {
@@ -46,7 +36,7 @@ export interface IUITask {
   send_type?: number;
   send_key?: string;
   ui_cases: IUICase[];
-  ui_case_num: number;
+  play_case_num: number;
   project_id: number;
   module_id: number;
   create_time: string;
@@ -58,26 +48,12 @@ export interface IUITask {
   mode: string;
 }
 
-export interface IUIExtract {
-  id: number;
-  uid: string;
-  key: string;
-  value: string;
-  caseId: number;
-  creator: number;
-  creatorName: string;
-  updaterName?: string | null;
-  updater?: number | null;
-  create_time: string;
-  update_time: string | null;
-}
-
 export interface IUIVars {
   id: number;
   uid: string;
   key: string;
   value: string;
-  case_id: number;
+  play_case_id: number;
 }
 
 export interface IUIStepGroup {
@@ -91,15 +67,32 @@ export interface IUIStepGroup {
   steps: IUICaseSteps[] | [];
 }
 
+export interface IUIGroupStep {
+  uid: string;
+  id: number;
+  name: string;
+  description: string;
+  module_id: number;
+  project_id: number;
+  creator: number;
+  creatorName: string;
+}
+
 export interface IUICaseSteps {
   id: number;
   uid: string;
   name: string;
   description: string;
   method: string;
-  has_api: number | null;
-  has_sql: number | null;
-  has_condition: number | null;
+
+  interface_id?: number;
+  interface_a_or_b: number | null;
+  interface_fail_stop: number | null;
+
+  db_id?: number;
+  sql_script?: string;
+  db_a_or_b?: 1 | 0;
+
   condition: {
     key: string;
     value: string;
@@ -118,9 +111,14 @@ export interface IUICaseSteps {
   updaterId?: number | null;
   create_time: string;
   update_time: string | null;
+
   is_group: boolean;
-  group_Id: number;
-  case_id: number | string;
+  group_id: number;
+  step_order: number;
+
+  caseId: number | string;
+  module_id: number;
+  project_id: number;
 }
 
 export interface IUIMethod {
@@ -165,6 +163,7 @@ export interface IUIResult {
   result: string;
   running_logs: string;
   asserts_info: any[];
+  vars_info: any[];
 }
 
 export interface IUICaseStepAPI {
@@ -201,7 +200,6 @@ export interface IUICaseStepSQL {
 }
 
 export interface IUICaseStepCondition {
-  stepId: number;
   key: string;
   value: string;
   operator: number;
@@ -221,4 +219,20 @@ export interface IUICaseSubStep {
   creator: number | undefined;
   creatorName: string | undefined;
   stepId: number | string;
+}
+
+export interface IPlayTaskResult {
+  id: number;
+  uid: string;
+  project_id: number;
+  module_id: number;
+  task_name: string;
+  task_id: number;
+  starter_name: string;
+  run_day: any;
+  status: string;
+  result: string;
+  total_usetime: string;
+  start_time: string;
+  end_time: string;
 }

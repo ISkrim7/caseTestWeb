@@ -1,23 +1,26 @@
 import { IModuleEnum, IObjGet } from '@/api';
-import { pageUITaskResult } from '@/api/play/result';
+import {
+  pagePlayTaskResult,
+  removePlayTaskResultById,
+} from '@/api/play/playTask';
 import { queryProjectEnum } from '@/components/CommonFunc';
 import MyProTable from '@/components/Table/MyProTable';
+import { IPlayTaskResult } from '@/pages/Play/componets/uiTypes';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Tag } from 'antd';
+import { message, Space, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
-  taskId?: number;
+  taskId?: string;
 }
 
 const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number>();
-  const [selectPartId, setSelectPartId] = useState<number>();
 
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
@@ -28,29 +31,28 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
 
   useEffect(() => {
     if (selectProjectId) {
-      fetchModulesEnum(selectProjectId, ModuleEnum.API, setModuleEnum).then();
+      fetchModulesEnum(
+        selectProjectId,
+        ModuleEnum.UI_TASK,
+        setModuleEnum,
+      ).then();
     }
   }, [selectProjectId]);
+
   const fetchTaskData = useCallback(
     async (params: any, sort: any) => {
       const newParams = {
         ...params,
         ...sort,
         module_type: ModuleEnum.UI_TASK,
-        taskId: taskId,
+        task_id: taskId,
       };
-      if (newParams.run_day && params.run_day.length > 1) {
-        newParams.run_day = [
-          dayjs(params.runDay[0]).format('YYYY-MM-DD'),
-          dayjs(params.runDay[1]).format('YYYY-MM-DD'),
-        ];
-      }
-      const { code, data } = await pageUITaskResult(newParams);
+      const { code, data } = await pagePlayTaskResult(newParams);
       return pageData(code, data);
     },
     [taskId],
   );
-  const columns: ProColumns<any>[] = [
+  const columns: ProColumns<IPlayTaskResult>[] = [
     {
       title: '报告ID',
       dataIndex: 'uid',
@@ -72,26 +74,22 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
       hideInTable: true,
       valueType: 'select',
       valueEnum: { ...projectEnumMap },
-      // valueEnum: { 1: { text: '全部'} },
-      initialValue: selectProjectId,
       fieldProps: {
         onSelect: (value: number) => {
           setSelectProjectId(value);
-          setSelectPartId(undefined);
+          // setSelectModuleId(undefined);
         },
       },
     },
     {
       title: '所属模块',
-      dataIndex: 'part_id',
+      dataIndex: 'module_id',
       hideInTable: true,
       valueType: 'treeSelect',
-      initialValue: selectPartId,
       fieldProps: {
-        value: selectPartId,
-        onSelect: (value: number) => {
-          setSelectPartId(value);
-        },
+        // onSelect: (value: number) => {
+        //   setSelectModuleId(value);
+        // },
         treeData: moduleEnum,
         fieldNames: {
           label: 'title',
@@ -135,14 +133,7 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
           };
         },
       },
-      // search: {
-      //   transform: (value) => {
-      //     return {dayjs(value[0]).format("YYYY-MM-DD"),
-      //       dayjs(value[1]).format("YYYY-MM-DD")""
-      //   },
-      // },
     },
-
     {
       title: '运行状态',
       dataIndex: 'status',
@@ -173,25 +164,41 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
       hideInSearch: true,
       render: (_, record) => <Tag color={'blue'}>{record.start_time}</Tag>,
     },
-
     {
       title: '操作',
       valueType: 'option',
       fixed: 'right',
+      width: '10%',
       render: (_, record) => (
-        <a
-          onClick={() => {
-            history.push(`/ui/report/detail/resultId=${record.id}`);
-          }}
-        >
-          详情
-        </a>
+        <Space>
+          <a
+            onClick={() => {
+              history.push(`/ui/report/detail/resultId=${record.id}`);
+            }}
+          >
+            详情
+          </a>
+          <a
+            onClick={async () => {
+              const { code, msg } = await removePlayTaskResultById({
+                resultId: record.uid,
+              });
+              if (code === 0) {
+                message.success(msg);
+                actionRef.current?.reload();
+              }
+            }}
+          >
+            删除
+          </a>
+        </Space>
       ),
     },
   ];
 
   return (
     <MyProTable
+      search={taskId === undefined && false}
       actionRef={actionRef}
       rowKey={'id'}
       columns={columns}

@@ -81,6 +81,11 @@ export default [
         component: '@/pages/Project/Aps',
       },
       {
+        path: '/project/gVars',
+        name: '项目变量',
+        component: '@/pages/Project/GlobalVariables.tsx',
+      },
+      {
         path: '/project/push',
         name: '推送配置',
         component: '@/pages/Project/Push',
@@ -107,6 +112,12 @@ export default [
     name: 'UI自动化',
     icon: 'RobotOutlined',
     routes: [
+      {
+        path: '/ui/commonStep',
+        name: '公共步骤',
+        component: '@/pages/Play/PlayStep',
+        icon: 'DatabaseOutlined',
+      },
       {
         path: '/ui/cases',
         name: '自动化用例',
@@ -148,6 +159,13 @@ export default [
         name: '用例详情',
         hideInMenu: true,
         component: '@/pages/Play/PlayCase/PlayCaseDetail',
+      },
+      {
+        path: '/ui/group/detail/groupId=:groupId',
+        name: '用例详情',
+        hideInMenu: true,
+        component:
+          '@/pages/Play/PlayStep/PlayStepGroup/PlayStepGroupDetail.tsx',
       },
       {
         path: '/ui/addTask',

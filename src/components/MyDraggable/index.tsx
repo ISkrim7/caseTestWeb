@@ -6,10 +6,11 @@ interface ISelfProps {
   items: any[];
   setItems: React.Dispatch<React.SetStateAction<any[]>>;
   dragEndFunc: (data: any[]) => void;
+  disabled?: boolean;
 }
 
 const Index: FC<ISelfProps> = (props) => {
-  const { items, setItems, dragEndFunc } = props;
+  const { items, setItems, dragEndFunc, disabled = false } = props;
 
   const { initialState, setInitialState } = useModel('@@initialState');
   const currentTheme = initialState?.theme || 'light'; // 统一使用 theme 拼写
@@ -33,8 +34,10 @@ const Index: FC<ISelfProps> = (props) => {
     result.splice(endIndex, 0, removed);
     return result;
   };
+  // const DragDropWrapper = disabled ? React.Fragment : DragDropContext;
 
   return (
+    // @ts-ignore
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable" direction="vertical">
         {(provided, snapshot) => (

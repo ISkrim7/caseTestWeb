@@ -1,10 +1,10 @@
+import { setSwitch } from '@/api/base';
 import {
-  delCaseTaskByUid,
-  getTaskJobNextRunTime,
-  handelExecuteTask,
-  pageUICaseTask,
-  setUITaskSwitch,
-} from '@/api/play/task';
+  getPlayTaskJobNextRunTime,
+  handelExecutePlayTask,
+  pagePlayTask,
+  removePlayTaskById,
+} from '@/api/play/playTask';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUITask } from '@/pages/Play/componets/uiTypes';
 import { CONFIG, ModuleEnum } from '@/utils/config';
@@ -28,7 +28,7 @@ const Index: FC<SelfProps> = (props) => {
 
   const fetchPageUITaskTable = useCallback(
     async (params: any, sort: any) => {
-      const { code, data } = await pageUICaseTask({
+      const { code, data } = await pagePlayTask({
         module_id: currentModuleId,
         module_type: ModuleEnum.UI_TASK,
         sort: sort,
@@ -43,7 +43,7 @@ const Index: FC<SelfProps> = (props) => {
   }, [currentModuleId, currentProjectId]);
 
   const setTaskSwitch = async (uid: string, flag: boolean) => {
-    const { code } = await setUITaskSwitch({ jobId: uid, switch: flag });
+    const { code } = await setSwitch({ tag: 'UI', uid: uid, switch: flag });
     if (code === 0) {
       if (flag) {
         message.success('已重启任务');
@@ -115,7 +115,7 @@ const Index: FC<SelfProps> = (props) => {
     {
       title: '用例数',
       valueType: 'text',
-      dataIndex: 'ui_case_num',
+      dataIndex: 'play_case_num',
       hideInSearch: true,
       render: (text) => <Tag color={'blue'}> {text}</Tag>,
     },
@@ -150,7 +150,7 @@ const Index: FC<SelfProps> = (props) => {
             <Divider type={'vertical'} />
             <a
               onClick={async () => {
-                const { code, msg } = await handelExecuteTask({
+                const { code, msg } = await handelExecutePlayTask({
                   taskId: record.id,
                 });
                 if (code === 0) {
@@ -164,7 +164,7 @@ const Index: FC<SelfProps> = (props) => {
             <Divider type={'vertical'} />
             <a
               onClick={async () => {
-                const { code, data, msg } = await getTaskJobNextRunTime({
+                const { code, data, msg } = await getPlayTaskJobNextRunTime({
                   jobId: record.uid,
                 });
                 if (code === 0) {
@@ -183,7 +183,7 @@ const Index: FC<SelfProps> = (props) => {
                 okText={'确认'}
                 cancelText={'点错了'}
                 onConfirm={async () => {
-                  await delCaseTaskByUid({ taskId: record.uid }).then(() => {
+                  await removePlayTaskById({ taskId: record.id }).then(() => {
                     actionRef.current?.reload();
                   });
                 }}

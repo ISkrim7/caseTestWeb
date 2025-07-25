@@ -135,7 +135,6 @@ export const detailInterApiById = async (
     ...(options || {}),
   });
 };
-
 /**
  * 新增api
  * @param data

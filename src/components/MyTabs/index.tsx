@@ -9,11 +9,13 @@ interface IProps {
   title?: string;
   onChangeKey?: (key: string) => void;
   type?: 'line' | 'card' | 'editable-card';
+  size?: 'small' | 'middle' | 'large';
 }
 
 const Index: FC<IProps> = ({
   defaultActiveKey,
   tabPosition = 'top',
+  size = 'large',
   items,
   tabBarExtraContent,
   title,
@@ -24,7 +26,7 @@ const Index: FC<IProps> = ({
     <Tabs
       title={title}
       type={type || 'card'}
-      size={'large'}
+      size={size}
       onChange={(key: string) => {
         onChangeKey?.(key);
       }}

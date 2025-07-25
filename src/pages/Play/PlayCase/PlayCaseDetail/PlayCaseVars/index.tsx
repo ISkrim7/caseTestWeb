@@ -1,36 +1,45 @@
-import { addVars, pageVars, removeVars, updateVars } from '@/api/play/vars';
+import {
+  addPlayCaeVars,
+  pagePlayCaseVars,
+  removePlayCaseVars,
+  updatePlayCaeVars,
+} from '@/api/play/playCase';
+import ApiVariableFunc from '@/pages/Httpx/componets/ApiVariableFunc';
 import { IUIVars } from '@/pages/Play/componets/uiTypes';
 import { pageData } from '@/utils/somefunc';
 import {
   ActionType,
+  EditableFormInstance,
   EditableProTable,
   ProColumns,
+  ProFormText,
 } from '@ant-design/pro-components';
-import { message, Popconfirm, Tag } from 'antd';
+import { message, Popconfirm, Tag, Typography } from 'antd';
 import React, { FC, useCallback, useRef, useState } from 'react';
+
+const { Text } = Typography;
 
 interface ISelfProps {
   currentCaseId: string;
-  setVarsNum: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const Index: FC<ISelfProps> = ({ currentCaseId, setVarsNum }) => {
+const Index: FC<ISelfProps> = ({ currentCaseId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [varsEditableKeys, setVarsEditableRowKeys] = useState<React.Key[]>();
   const [dataSource, setDataSource] = useState<IUIVars[]>([]);
-  const [edit, setEdit] = useState(0);
-
+  const editorFormRef = useRef<EditableFormInstance<IUIVars>>();
+  //
   const fetchPageVars = useCallback(
     async (values: any) => {
-      const { code, data } = await pageVars({
+      const { code, data } = await pagePlayCaseVars({
         ...values,
-        case_id: currentCaseId,
+        play_case_id: parseInt(currentCaseId),
       });
-      setVarsNum(data.pageInfo.total);
       return pageData(code, data, setDataSource);
     },
-    [currentCaseId, edit],
+    [currentCaseId],
   );
+
   const varColumns: ProColumns<IUIVars>[] = [
     {
       title: '变量名',
@@ -44,24 +53,40 @@ const Index: FC<ISelfProps> = ({ currentCaseId, setVarsNum }) => {
           },
         ],
       },
-      render: (_, record) => {
-        return <Tag color={'blue'}>{record.key}</Tag>;
-      },
+      render: (_, record) => <Text strong>{record.key}</Text>,
     },
     {
       title: '值',
       dataIndex: 'value',
       valueType: 'text',
-      formItemProps: {
-        rules: [
-          {
-            required: true,
-            whitespace: true,
-            message: '此项是必填项',
-          },
-        ],
+      hideInSearch: true,
+      render: (text, record) => {
+        if (record?.value?.includes('{{$')) {
+          return <Tag color="orange">{text}</Tag>;
+        } else {
+          return <Tag color={'blue'}>{text}</Tag>;
+        }
+      },
+      renderFormItem: (_, { record }) => {
+        return (
+          <ProFormText
+            noStyle
+            name={'value'}
+            fieldProps={{
+              suffix: (
+                <ApiVariableFunc
+                  value={record?.value}
+                  index={record?.id}
+                  setValue={editorFormRef.current?.setRowData}
+                />
+              ),
+              value: record?.value,
+            }}
+          />
+        );
       },
     },
+
     {
       title: 'Opt',
       valueType: 'option',
@@ -79,10 +104,10 @@ const Index: FC<ISelfProps> = ({ currentCaseId, setVarsNum }) => {
         <Popconfirm
           title="确认删除"
           onConfirm={async () => {
-            const { code, msg } = await removeVars({ uid: record.uid });
+            const { code, msg } = await removePlayCaseVars({ uid: record.uid });
             if (code === 0) {
               message.success(msg);
-              setEdit(edit + 1);
+              actionRef.current?.reload();
             }
           }}
         >
@@ -94,16 +119,14 @@ const Index: FC<ISelfProps> = ({ currentCaseId, setVarsNum }) => {
 
   return (
     <EditableProTable<IUIVars>
+      editableFormRef={editorFormRef}
       options={{
         density: true,
         setting: {
           listsHeight: 400,
         },
       }}
-      search={{
-        labelWidth: 'auto',
-        showHiddenNum: true,
-      }}
+      search={false}
       dataSource={dataSource}
       request={fetchPageVars}
       rowKey={'id'}
@@ -115,7 +138,7 @@ const Index: FC<ISelfProps> = ({ currentCaseId, setVarsNum }) => {
         // @ts-ignore
         record: () => ({
           id: Date.now(),
-          case_id: currentCaseId,
+          play_case_id: parseInt(currentCaseId),
         }),
       }}
       editable={{
@@ -124,21 +147,21 @@ const Index: FC<ISelfProps> = ({ currentCaseId, setVarsNum }) => {
         onChange: setVarsEditableRowKeys,
         onSave: async (_, data) => {
           console.log(data);
+          data.play_case_id = parseInt(currentCaseId);
           if (data.uid) {
-            const { code, msg } = await updateVars(data);
+            const { code, msg } = await updatePlayCaeVars(data);
             if (code === 0) {
               message.success(msg);
             }
           } else {
-            const { code, msg } = await addVars(data);
+            const { code, msg } = await addPlayCaeVars(data);
             if (code === 0) {
               message.success(msg);
             }
           }
-          setEdit(edit + 1);
+          actionRef.current?.reload();
         },
-
-        actionRender: (row, _, dom) => {
+        actionRender: (__, _, dom) => {
           return [dom.save, dom.cancel];
         },
       }}

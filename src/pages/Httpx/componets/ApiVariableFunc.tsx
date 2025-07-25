@@ -75,7 +75,7 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
                 </Space>
               </span>
             ),
-            value: `{{${item.key}}}`,
+            value: `{{$g_${item.key}}}`,
           };
         });
         setVarData(var_data);

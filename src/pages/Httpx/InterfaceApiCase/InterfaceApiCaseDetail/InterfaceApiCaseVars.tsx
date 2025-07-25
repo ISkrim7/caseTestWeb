@@ -26,13 +26,12 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [varsEditableKeys, setVarsEditableRowKeys] = useState<React.Key[]>();
   const [dataSource, setDataSource] = useState<IVariable[]>([]);
-  const [edit, setEdit] = useState(0);
   const editorFormRef = useRef<EditableFormInstance<IVariable>>();
 
   const fetchPageVars = useCallback(async () => {
     const { code, data } = await queryVarsByCaseId(currentCaseId!);
     return queryData(code, data, setDataSource);
-  }, [currentCaseId, edit]);
+  }, [currentCaseId]);
 
   const varColumns: ProColumns<IVariable>[] = [
     {
@@ -99,7 +98,7 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
             const { code, msg } = await removeVars({ uid: record.uid });
             if (code === 0) {
               message.success(msg);
-              setEdit(edit + 1);
+              actionRef.current?.reload();
             }
           }}
         >
@@ -152,7 +151,7 @@ const InterfaceApiCaseVars: FC<ISelfProps> = ({ currentCaseId }) => {
               message.success(msg);
             }
           }
-          setEdit(edit + 1);
+          actionRef.current?.reload();
         },
         actionRender: (row, _, dom) => {
           return [dom.save, dom.cancel];

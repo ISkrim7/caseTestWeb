@@ -1,13 +1,16 @@
-import { IObjGet } from '@/api';
-import { copyUICase, pageUICase, removeUICase } from '@/api/play';
+import {
+  copyPlayCase,
+  pagePlayCase,
+  removePlayCase,
+} from '@/api/play/playCase';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUICase } from '@/pages/Play/componets/uiTypes';
 import { CONFIG, ModuleEnum } from '@/utils/config';
-import { pageData, queryUIEnvEnum } from '@/utils/somefunc';
+import { pageData } from '@/utils/somefunc';
 import { history, useModel } from '@@/exports';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, message, Popconfirm, Tag } from 'antd';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
@@ -22,10 +25,6 @@ const Index: FC<SelfProps> = ({
 }) => {
   const { initialState } = useModel('@@initialState');
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-  const [envOptions, setEnvOptions] = useState<IObjGet>({});
-  useEffect(() => {
-    queryUIEnvEnum(setEnvOptions).then();
-  }, []);
 
   useEffect(() => {
     actionRef.current?.reload();
@@ -34,7 +33,7 @@ const Index: FC<SelfProps> = ({
   const fetchUICase = useCallback(
     async (params: any, sort: any) => {
       if (currentModuleId) {
-        const { code, data } = await pageUICase({
+        const { code, data } = await pagePlayCase({
           module_id: currentModuleId,
           module_type: ModuleEnum.UI_CASE,
           ...params,
@@ -64,16 +63,6 @@ const Index: FC<SelfProps> = ({
       sorter: true,
       fixed: 'left',
       key: 'title',
-    },
-    {
-      title: 'env',
-      dataIndex: 'env_id',
-      valueType: 'select',
-      key: 'env_id',
-      valueEnum: { ...envOptions },
-      render: (text, record) => {
-        return <Tag color={'blue'}>{text}</Tag>;
-      },
     },
     {
       title: 'level',
@@ -146,11 +135,11 @@ const Index: FC<SelfProps> = ({
         <a
           key="copy"
           onClick={async () => {
-            const { code, data, msg } = await copyUICase({
-              caseId: record.uid,
+            const { code, data, msg } = await copyPlayCase({
+              caseId: record.id,
             });
             if (code === 0) {
-              history.push(`/ui/case/detail/caseId=${data.id}`);
+              window.open(`/ui/case/detail/caseId=${data.id}`);
               message.success(msg);
             }
           }}
@@ -166,7 +155,7 @@ const Index: FC<SelfProps> = ({
               okText={'确认'}
               cancelText={'点错了'}
               onConfirm={async () => {
-                const { code, msg } = await removeUICase({
+                const { code, msg } = await removePlayCase({
                   caseId: record.id,
                 });
                 if (code === 0) {
@@ -187,7 +176,7 @@ const Index: FC<SelfProps> = ({
     <Button
       type={'primary'}
       onClick={() => {
-        history.push(`/ui/addCase`);
+        window.open('/ui/addCase');
       }}
     >
       添加用例
@@ -195,6 +184,7 @@ const Index: FC<SelfProps> = ({
   );
   return (
     <MyProTable
+      headerTitle={'用例列表'}
       persistenceKey={perKey}
       columns={columns}
       rowKey={'id'}

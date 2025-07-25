@@ -1,19 +1,19 @@
 import { executeCaseByIO } from '@/api/play';
-import { getDebugResultDetail } from '@/api/play/result';
+import { getPlayCaseResultDetail } from '@/api/play/playCase';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import MyTabs from '@/components/MyTabs';
-import { IAsserts } from '@/pages/Httpx/types';
 import { IUIResult } from '@/pages/Play/componets/uiTypes';
 import PlayCaseResultInfo from '@/pages/Play/PlayResult/PlayCaseResultDetail/PlayCaseResultInfo';
 import { useModel } from '@@/exports';
 import {
+  DatabaseOutlined,
   InfoCircleOutlined,
   MessageOutlined,
   OrderedListOutlined,
 } from '@ant-design/icons';
 import { ProCard, ProTable } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { TabsProps, Tag, Tooltip } from 'antd';
+import { TabsProps, Tag } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
@@ -30,6 +30,7 @@ const Index: FC<SelfProps> = (props) => {
   const [caseResultId, setCaseResultId] = useState<string>();
   const [defaultActiveKey, setDefaultActiveKey] = useState('2');
   const [asserts, setAsserts] = useState<any[]>([]);
+  const [vars, setVars] = useState<any[]>([]);
   const [currentResultDetail, setCurrentResultDetail] = useState<IUIResult>();
   const [tabDisabled, setTabDisabled] = useState(true);
 
@@ -98,7 +99,7 @@ const Index: FC<SelfProps> = (props) => {
   useEffect(() => {
     if (caseResultId) {
       setTabDisabled(false);
-      getDebugResultDetail(caseResultId).then(async ({ code, data }) => {
+      getPlayCaseResultDetail(caseResultId).then(async ({ code, data }) => {
         if (code === 0) {
           setCurrentResultDetail(data);
           if (data.running_logs) {
@@ -108,36 +109,14 @@ const Index: FC<SelfProps> = (props) => {
           }
           if (data.asserts_info) {
             setAsserts(data.asserts_info);
+            setVars(data.vars_info);
           }
         }
       });
     }
   }, [caseResultId]);
-  const typeContent = (T: any) => {
-    if (typeof T === 'object') {
-      return (
-        <AceCodeEditor
-          gutter={false}
-          value={JSON.stringify(T, null, 2)}
-          readonly={true}
-          height={'40px'}
-        />
-      );
-    } else if (typeof T === 'boolean') {
-      return <Tag color={T ? 'green' : 'red'}>{T.toString()}</Tag>;
-    } else {
-      if (T.length > 20) {
-        return (
-          <Tooltip title={T}>
-            <span>{T.substring(0, 20) + '...'}</span>
-          </Tooltip>
-        );
-      }
-      return <span>{T}</span>;
-    }
-  };
 
-  const UIAssertColumns: ProColumns<IAsserts>[] = [
+  const UIAssertColumns: ProColumns[] = [
     {
       title: '类型',
       valueType: 'text',
@@ -151,7 +130,7 @@ const Index: FC<SelfProps> = (props) => {
     {
       title: '步骤',
       valueType: 'text',
-      dataIndex: 'stepName',
+      dataIndex: 'assert_name',
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;
       },
@@ -164,73 +143,80 @@ const Index: FC<SelfProps> = (props) => {
     },
     {
       title: '预计结果',
-      dataIndex: 'expect',
+      dataIndex: 'assert_expect',
       key: 'expect',
-      valueType: 'jsonCode',
-      render: (_text, record) => {
-        if (record.extraValueType === 'object') {
-          return (
-            <AceCodeEditor
-              value={record.actual}
-              readonly={true}
-              height={'80px'}
-            />
-          );
-        } else if (record.extraValueType === 'bool') {
-          return (
-            <Tag color={record.expect === 'true' ? 'green' : 'red'}>
-              {record.expect}
-            </Tag>
-          );
-        } else {
-          return <span>{record.expect}</span>;
-        }
-      },
+      valueType: 'textarea',
     },
     {
       title: '断言方法',
-      dataIndex: 'assertOpt',
+      dataIndex: 'assert_opt',
       render: (text) => <Tag color={'blue'}>{text}</Tag>,
     },
     {
       title: '实际结果',
-      dataIndex: 'actual',
+      dataIndex: 'assert_actual',
       valueType: 'textarea',
-      render: (_text, record) => {
-        return typeContent(record.actual);
-      },
-    },
-
-    {
-      title: '提取',
-      dataIndex: 'extraOpt',
-      key: 'extraOpt',
-      width: '15%',
-      render: (text) => <Tag color={'blue'}>{text}</Tag>,
-    },
-    {
-      title: '语法',
-      dataIndex: 'extraValue',
-      key: 'extraValue',
-      render: (text) => <Tag color={'blue'}>{text}</Tag>,
     },
     {
       title: '测试结果',
       dataIndex: 'result',
       key: 'result',
       fixed: 'right',
-      render: (text) => (
-        <Tag color={text ? 'green' : 'volcano'}>
-          {text ? 'SUCCESS' : 'FAIL'}
+      render: (_, record) => (
+        <Tag color={record.assert_result ? 'green' : 'volcano'}>
+          {record.assert_result ? 'SUCCESS' : 'FAIL'}
         </Tag>
       ),
     },
   ];
+
+  const UIVarsColumns: ProColumns[] = [
+    {
+      title: '步骤',
+      valueType: 'text',
+      dataIndex: 'step_name',
+      fixed: 'left',
+      width: '10%',
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
+    },
+    {
+      title: '提取方式',
+      valueType: 'text',
+      dataIndex: 'extract_method',
+      fixed: 'left',
+      width: '10%',
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
+    },
+    {
+      title: 'Key',
+      dataIndex: 'key',
+      valueType: 'text',
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
+    },
+
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      valueType: 'text',
+      ellipsis: true,
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
+    },
+  ];
+
   const items: TabsProps['items'] = [
     {
       label: '基本信息',
       key: '1',
       icon: <InfoCircleOutlined />,
+      disabled: tabDisabled,
       children: <PlayCaseResultInfo resultDetail={currentResultDetail} />,
     },
     {
@@ -250,6 +236,7 @@ const Index: FC<SelfProps> = (props) => {
       label: '断言详情',
       key: '3',
       icon: <OrderedListOutlined />,
+      disabled: tabDisabled,
       children: (
         <ProTable
           search={false}
@@ -260,10 +247,24 @@ const Index: FC<SelfProps> = (props) => {
         />
       ),
     },
+    {
+      label: '变量提取',
+      key: '4',
+      icon: <DatabaseOutlined />,
+      disabled: tabDisabled,
+      children: (
+        <ProTable
+          search={false}
+          toolBarRender={false}
+          columns={UIVarsColumns}
+          dataSource={vars}
+        />
+      ),
+    },
   ];
 
   return (
-    <ProCard>
+    <ProCard bordered={true}>
       <MyTabs
         items={items}
         tabPosition={'top'}

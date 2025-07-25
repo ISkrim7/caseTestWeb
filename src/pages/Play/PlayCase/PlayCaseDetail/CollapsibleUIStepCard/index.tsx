@@ -1,19 +1,16 @@
-import { copyStep, removeStep } from '@/api/play/step';
+import { copyCaseStep, removePlayStep } from '@/api/play/playCase';
 import MyDrawer from '@/components/MyDrawer';
+import StepFunc from '@/pages/Play/componets/StepFunc';
 import { IUICaseSteps } from '@/pages/Play/componets/uiTypes';
-import StepAPI from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepAPI';
-import StepIF from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepIF';
-import StepSQL from '@/pages/Play/PlayCase/PlayCaseDetail/CollapsibleUIStepCard/StepFunc/StepSQL';
-import PlayStepDetail from '@/pages/Play/PlayCase/PlayStepDetail';
+import PlayStepDetail from '@/pages/Play/PlayStep/PlayStepDetail';
+import PlayGroupStepsTable from '@/pages/Play/PlayStep/PlayStepGroup/PlayGroupStepsTable';
 import {
   ApiFilled,
-  ApiOutlined,
   ConsoleSqlOutlined,
   CopyFilled,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
-  QuestionOutlined,
   RightOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons';
@@ -23,11 +20,11 @@ import {
   message,
   Popconfirm,
   Space,
-  Tabs,
   Tag,
+  Tooltip,
   Typography,
 } from 'antd';
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -37,8 +34,9 @@ interface ISelfProps {
   uiStepInfo?: IUICaseSteps;
   collapsible?: boolean;
   callBackFunc: () => void;
-  apiEnv?: any[];
+  envs?: any[];
   step: number;
+  setDraggableDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Index: FC<ISelfProps> = ({
@@ -47,23 +45,24 @@ const Index: FC<ISelfProps> = ({
   callBackFunc,
   collapsible,
   currentProjectId,
-  apiEnv,
+  envs,
   step,
+  setDraggableDisabled,
 }) => {
-  const [openStepDrawer, setOpenStepDrawer] = useState(false);
-  const [openSteDetailDrawer, setOpenStepDetailDrawer] = useState(false);
+  const [openStepDetailDrawer, setOpenStepDetailDrawer] = useState(false);
   const copyUIStep = async () => {
-    const { code } = await copyStep({
-      caseId: caseId,
+    copyCaseStep({
+      caseId: parseInt(caseId),
       stepId: uiStepInfo?.id!,
+    }).then(async ({ code }) => {
+      if (code === 0) {
+        callBackFunc();
+      }
     });
-    if (code === 0) {
-      callBackFunc();
-    }
   };
   const removeUIStep = async () => {
-    const { code, msg } = await removeStep({
-      caseId: caseId,
+    const { code, msg } = await removePlayStep({
+      caseId: parseInt(caseId),
       stepId: uiStepInfo?.id!,
     });
     if (code === 0) {
@@ -71,33 +70,57 @@ const Index: FC<ISelfProps> = ({
       callBackFunc();
     }
   };
+
   const CardExtra = (
     <>
       <Space>
-        {uiStepInfo?.has_api ? (
+        {uiStepInfo?.condition ? <Tag color={'green'}>IF</Tag> : null}
+
+        {uiStepInfo?.interface_id ? (
           <Tag color={'green'}>
-            <ApiFilled />
+            <Space>
+              <ApiFilled />
+              {uiStepInfo.interface_a_or_b === 1 ? '前' : '后'}
+            </Space>
           </Tag>
         ) : null}
-        {uiStepInfo?.has_condition ? <Tag color={'green'}>IF</Tag> : null}
-        {uiStepInfo?.has_sql ? (
+        {uiStepInfo?.db_id ? (
           <Tag color={'green'}>
-            <ConsoleSqlOutlined />
+            <Space>
+              <ConsoleSqlOutlined />
+              {uiStepInfo.db_a_or_b === 1 ? '前' : '后'}
+            </Space>
           </Tag>
         ) : null}
-        {uiStepInfo?.is_common_step ? (
-          <Tag color={'green-inverse'}>公</Tag>
+
+        {uiStepInfo?.is_group ? (
+          <Tag color={'green-inverse'}>组</Tag>
         ) : (
-          <Tag color={'blue-inverse'}>私</Tag>
+          <>
+            {uiStepInfo?.is_common_step ? (
+              <Tag color={'green-inverse'}>公</Tag>
+            ) : (
+              <Tag color={'blue-inverse'}>私</Tag>
+            )}
+          </>
         )}
-        <Button color={'primary'} variant="filled" onClick={copyUIStep}>
-          <CopyFilled />
-          COPY
-        </Button>
+        <Tooltip title={'复制步骤到底步、如果是公共复制、将复制成私有'}>
+          <Button
+            color={'primary'}
+            variant="filled"
+            disabled={uiStepInfo?.is_group}
+            onClick={copyUIStep}
+          >
+            <CopyFilled />
+            COPY
+          </Button>
+        </Tooltip>
+
         <Button
           icon={<EditOutlined />}
           color={'primary'}
           variant="filled"
+          disabled={uiStepInfo?.is_group}
           onClick={() => {
             setOpenStepDetailDrawer(true);
           }}
@@ -127,46 +150,52 @@ const Index: FC<ISelfProps> = ({
   return (
     <>
       <MyDrawer
-        name={'Add Step'}
-        width={'auto'}
-        open={openStepDrawer}
-        setOpen={setOpenStepDrawer}
-      >
-        <PlayStepDetail
-          uiStepInfo={uiStepInfo}
-          func={() => {
-            setOpenStepDrawer(false);
-            callBackFunc();
-          }}
-        />
-      </MyDrawer>
-      <MyDrawer
         name={'Step Detail'}
         width={'auto'}
-        open={openSteDetailDrawer}
+        open={openStepDetailDrawer}
         setOpen={setOpenStepDetailDrawer}
       >
         <PlayStepDetail
-          uiStepInfo={uiStepInfo}
-          func={() => {
+          caseId={parseInt(caseId)}
+          stepInfo={uiStepInfo}
+          callBack={() => {
             setOpenStepDetailDrawer(false);
             callBackFunc();
           }}
+          readOnly={uiStepInfo?.is_common_step}
         />
       </MyDrawer>
       <ProCard
         extra={CardExtra}
-        collapsibleIconRender={({ collapsed }) => (
-          <>
-            <UnorderedListOutlined
-              style={{ color: '#c3cad4', marginLeft: 10 }}
-            />{' '}
-            {collapsed ? <RightOutlined /> : <DownOutlined />}
-            <Tag color={'green-inverse'} style={{ marginLeft: 4 }}>
-              Step_{step}
-            </Tag>
-          </>
-        )}
+        collapsibleIconRender={({ collapsed }) => {
+          if (collapsed) {
+            setDraggableDisabled(true);
+            return (
+              <Space>
+                <UnorderedListOutlined
+                  style={{ color: '#c3cad4', marginLeft: 10 }}
+                />
+                <RightOutlined />
+                <Tag color={'green-inverse'} style={{ marginLeft: 4 }}>
+                  Step_{step}
+                </Tag>
+              </Space>
+            );
+          } else {
+            setDraggableDisabled(false);
+            return (
+              <Space>
+                <UnorderedListOutlined
+                  style={{ color: '#c3cad4', marginLeft: 10 }}
+                />
+                <DownOutlined />
+                <Tag color={'green-inverse'} style={{ marginLeft: 4 }}>
+                  Step_{step}
+                </Tag>
+              </Space>
+            );
+          }
+        }}
         hoverable
         collapsible={true}
         ghost={true}
@@ -186,26 +215,19 @@ const Index: FC<ISelfProps> = ({
         }
       >
         <ProCard headerBordered>
-          <Tabs tabPosition={'left'} size={'small'}>
-            <Tabs.TabPane key={'1'} icon={<ApiOutlined />} tab={'接口请求'}>
-              <StepAPI
-                apiEnv={apiEnv}
-                stepInfo={uiStepInfo}
-                callBackFunc={callBackFunc}
-                currentProjectId={currentProjectId}
-              />
-            </Tabs.TabPane>
-            <Tabs.TabPane
-              key={'2'}
-              icon={<ConsoleSqlOutlined />}
-              tab={'执行SQL'}
-            >
-              <StepSQL stepId={uiStepInfo?.id} callBackFunc={callBackFunc} />
-            </Tabs.TabPane>
-            <Tabs.TabPane key={'3'} icon={<QuestionOutlined />} tab={'IF条件'}>
-              <StepIF uiStepInfo={uiStepInfo} callBackFunc={callBackFunc} />
-            </Tabs.TabPane>
-          </Tabs>
+          {uiStepInfo?.is_group ? (
+            <PlayGroupStepsTable
+              groupName={uiStepInfo.name!}
+              groupId={uiStepInfo.id!}
+            />
+          ) : (
+            <StepFunc
+              currentProjectId={currentProjectId!}
+              subStepInfo={uiStepInfo!}
+              envs={envs}
+              callback={callBackFunc}
+            />
+          )}
         </ProCard>
       </ProCard>
     </>

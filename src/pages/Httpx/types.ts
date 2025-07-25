@@ -65,6 +65,10 @@ export interface IInterfaceAPI extends IBaseField {
   enable: boolean;
   is_group: number;
   group_id: number;
+
+  // 兼容UI
+  interface_a_or_b?: number | null;
+  interface_fail_stop?: number | null;
 }
 
 export interface IInterfaceGroup extends IBaseField {

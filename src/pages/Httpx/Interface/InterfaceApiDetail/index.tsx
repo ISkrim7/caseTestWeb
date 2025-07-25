@@ -293,13 +293,13 @@ const Index: FC<SelfProps> = ({
       key: '3',
       label: '出参提取',
       icon: <EditOutlined />,
-      children: <InterExtractList form={interApiForm} />,
+      children: <InterExtractList form={interApiForm} readonly={false} />,
     },
     {
       key: '4',
       label: '断言',
       icon: <CheckCircleOutlined />,
-      children: <InterAssertList form={interApiForm} />,
+      children: <InterAssertList form={interApiForm} readonly={false} />,
     },
     {
       key: '5',

@@ -119,17 +119,19 @@ const ApiDetailForm: FC<IProps> = (props) => {
     {
       key: '1',
       label: renderTab(1),
-      children: <InterHeader form={interApiForm} />,
+      children: <InterHeader form={interApiForm} readonly={false} />,
     },
     {
       key: '2',
       label: renderTab(2),
-      children: <InterParam form={interApiForm} />,
+      children: <InterParam form={interApiForm} readonly={false} />,
     },
     {
       key: '3',
       label: renderTab(3),
-      children: <InterBody form={interApiForm} mode={currentMode} />,
+      children: (
+        <InterBody form={interApiForm} readonly={false} mode={currentMode} />
+      ),
     },
   ];
 

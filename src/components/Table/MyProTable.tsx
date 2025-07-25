@@ -4,11 +4,12 @@ import { SearchConfig } from '@ant-design/pro-table/es/components/Form/FormRende
 import { OptionsFunctionType } from '@ant-design/pro-table/es/components/ToolBar';
 import type { ActionType, ProColumns } from '@ant-design/pro-table/lib/typing';
 import { TablePaginationConfig, TableProps } from 'antd';
+import type { ExpandableConfig } from 'rc-table/lib/interface';
 import { TableProps as RcTableProps } from 'rc-table/lib/Table';
 import { FC, MutableRefObject } from 'react';
 
 interface SelfProps {
-  headerTitle?: string;
+  headerTitle?: any;
   columns: ProColumns[];
   request?: (params: any, sort: any) => Promise<any>;
   dataSource?: RcTableProps<any>['data'];
@@ -25,10 +26,12 @@ interface SelfProps {
   pagination?: TablePaginationConfig;
   x?: number;
   persistenceKey?: string;
+  expandable?: ExpandableConfig<any>;
 }
 
 const MyProTable: FC<SelfProps> = (props) => {
   const {
+    expandable,
     form,
     columns,
     height = 'auto',
@@ -93,6 +96,7 @@ const MyProTable: FC<SelfProps> = (props) => {
           },
           reload: reload || true,
         }}
+        expandable={expandable}
         pagination={pagination || defaultPagination}
         dateFormatter="string"
         headerTitle={headerTitle ? titleName(headerTitle) : null}

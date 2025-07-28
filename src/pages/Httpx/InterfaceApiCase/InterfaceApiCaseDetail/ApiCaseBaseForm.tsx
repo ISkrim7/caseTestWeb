@@ -8,7 +8,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useLocation } from 'umi';
 
 interface IProps {
@@ -20,18 +20,36 @@ interface IProps {
 const ApiCaseBaseForm: FC<IProps> = (props) => {
   const { setCurrentProjectId, setCurrentModuleId, moduleEnum } = props;
   const { initialState } = useModel('@@initialState');
-  const projects =
-    initialState?.projects?.map((project) => ({
-      label: project.label || '',
-      value: project.value || 0,
-    })) || [];
+  // const projects =
+  //   initialState?.projects?.map((project) => ({
+  //     label: project.label || '',
+  //     value: project.value || 0,
+  //   })) || [];
+  const [projects, setProjects] = useState(() => {
+    return (
+      initialState?.projects?.map((project) => ({
+        label: project.label || '',
+        value: project.value || 0,
+      })) || []
+    );
+  });
   console.log('Projects data:', projects); // 添加调试信息
   const location = useLocation();
 
   useEffect(() => {
     const { query } = location as any;
-    if (query?.projectId) {
-      setCurrentProjectId(Number(query.projectId));
+    // if (query?.projectId) {
+    //   setCurrentProjectId(Number(query.projectId));
+    // }
+    if (!projects.length && initialState?.refreshProjects) {
+      initialState.refreshProjects().then((newProjects) => {
+        setProjects(
+          newProjects.map((project) => ({
+            label: project.label || '',
+            value: project.value || 0,
+          })),
+        );
+      });
     }
     if (query?.moduleId) {
       setCurrentModuleId(Number(query.moduleId));
@@ -48,14 +66,13 @@ const ApiCaseBaseForm: FC<IProps> = (props) => {
           label={'所属项目'}
           name={'project_id'}
           required={true}
-          disabled={true} // 双重禁用设置
-          fieldProps={{
-            disabled: true, // 禁用的正确设置方式
-            fieldNames: {
-              label: 'title',
-              value: 'id',
-            },
-          }}
+          // fieldProps={{
+          //   //disabled: true, // 禁用的正确设置方式
+          //   fieldNames: {
+          //     label: 'title',
+          //     value: 'id',
+          //   },
+          // }}
           onChange={(value) => {
             setCurrentProjectId(value as number);
           }}
@@ -65,9 +82,9 @@ const ApiCaseBaseForm: FC<IProps> = (props) => {
           name="module_id"
           label="所属模块"
           rules={[{ required: true, message: '所属模块必选' }]}
-          disabled={true} // 双重禁用设置
+          //disabled={true} // 双重禁用设置
           fieldProps={{
-            disabled: true, // 禁用的正确设置方式
+            //disabled: true, // 禁用的正确设置方式
             treeData: moduleEnum,
             onChange: (value) => {
               setCurrentModuleId(value as number);

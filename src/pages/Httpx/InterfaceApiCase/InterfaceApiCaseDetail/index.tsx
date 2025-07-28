@@ -66,6 +66,19 @@ const Index = () => {
     { label: string; value: number | null }[]
   >([]);
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const projectId = searchParams.get('projectId');
+    const moduleId = searchParams.get('moduleId');
+
+    if (projectId) {
+      const projectIdNum = parseInt(projectId);
+      baseForm.setFieldValue('project_id', projectIdNum);
+      setCurrentProjectId(projectIdNum);
+    }
+    if (moduleId) {
+      baseForm.setFieldValue('module_id', parseInt(moduleId));
+      setCurrentModuleId(parseInt(moduleId));
+    }
     if (caseApiId) {
       Promise.all([
         baseInfoApiCase(caseApiId),

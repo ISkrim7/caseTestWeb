@@ -119,7 +119,10 @@ const Index: FC<SelfProps> = ({
       render: (_, record) => [
         <a
           onClick={() => {
-            history.push(`/interface/interApi/detail/interId=${record.id}`);
+            history.push({
+              pathname: `/interface/interApi/detail/interId=${record.id}`,
+              search: `?projectId=${currentProjectId?.toString()}&moduleId=${currentModuleId?.toString()}`,
+            });
           }}
         >
           详情
@@ -163,6 +166,10 @@ const Index: FC<SelfProps> = ({
         <Button
           type={'primary'}
           onClick={() => {
+            if (!currentModuleId) {
+              message.warning('请左侧树列表选择所属模块');
+              return;
+            }
             /*window.open('/interface/interApi/detail');*/
             // 添加接口按钮修改（原 window.open 改为路由跳转）
             history.push({

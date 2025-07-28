@@ -35,6 +35,7 @@ const ApiBaseForm: FC<IProps> = (props) => {
       })) || []
     );
   });
+  console.log('ProjectsBASE data:', projects); // 添加调试信息
 
   useEffect(() => {
     if (!projects.length && initialState?.refreshProjects) {
@@ -53,7 +54,7 @@ const ApiBaseForm: FC<IProps> = (props) => {
     <ProCard hidden={addFromCase || addFromGroup}>
       <ProForm.Group>
         <ProFormSelect
-          disabled={currentMode === 1}
+          disabled={currentMode === 1 || true}
           width={'md'}
           options={projects}
           label={'所属项目'}
@@ -70,6 +71,7 @@ const ApiBaseForm: FC<IProps> = (props) => {
           label="所属模块"
           rules={[{ required: true, message: '所属模块必选' }]}
           fieldProps={{
+            disabled: true, // 禁用的正确设置方式
             treeData: moduleEnum,
             fieldNames: {
               label: 'title',

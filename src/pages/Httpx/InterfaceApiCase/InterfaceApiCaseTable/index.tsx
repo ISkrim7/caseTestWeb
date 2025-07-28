@@ -9,7 +9,7 @@ import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, Popconfirm, Tag } from 'antd';
+import { Button, Divider, message, Popconfirm, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef } from 'react';
 
 interface SelfProps {
@@ -111,9 +111,17 @@ const Index: FC<SelfProps> = ({
           <>
             <a
               onClick={() => {
-                history.push(
-                  `/interface/caseApi/detail/caseApiId=${record.id}`,
-                );
+                const searchParams = new URLSearchParams();
+                if (currentProjectId)
+                  searchParams.set('projectId', currentProjectId.toString());
+                if (currentModuleId)
+                  searchParams.set('moduleId', currentModuleId.toString());
+
+                history.push({
+                  pathname: `/interface/caseApi/detail/caseApiId=${record.id}`,
+                  search: searchParams.toString(),
+                });
+                //history.push(`/interface/caseApi/detail/caseApiId=${record.id}`);
               }}
             >
               详情
@@ -151,7 +159,6 @@ const Index: FC<SelfProps> = ({
       },
     },
   ];
-
   return (
     <MyProTable
       key={perKey}
@@ -162,9 +169,24 @@ const Index: FC<SelfProps> = ({
       request={fetchInterfaceCase}
       toolBarRender={() => [
         <Button
+          key="add"
           type={'primary'}
           onClick={() => {
-            history.push('/interface/caseApi/detail');
+            if (!currentModuleId) {
+              message.warning('请左侧树列表选择所属模块');
+              return;
+            }
+
+            const searchParams = new URLSearchParams();
+            if (currentProjectId)
+              searchParams.set('projectId', currentProjectId.toString());
+            if (currentModuleId)
+              searchParams.set('moduleId', currentModuleId.toString());
+
+            history.push({
+              pathname: '/interface/caseApi/detail',
+              search: searchParams.toString(),
+            });
           }}
         >
           添加

@@ -224,30 +224,37 @@ const ModuleTree: FC<IProps> = (props) => {
         },
         icon: <EditOutlined />,
       },
-      {
-        key: '2',
-        label: <Text strong={true}>删除</Text>,
-        onClick: async () => {
-          return Modal.confirm({
-            title: '你确定要删除这个目录吗?',
-            icon: <ExclamationCircleOutlined />,
-            okText: '确定',
-            okType: 'danger',
-            cancelText: '点错了',
-            onOk() {
-              removeModule({ moduleId: node.key }).then(
-                async ({ code, msg }) => {
-                  if (code === 0) {
-                    message.success(msg);
-                    await handleReload();
-                  }
-                },
-              );
+      // 仅管理员显示删除选项
+      ...(isAdmin
+        ? [
+            {
+              //{
+              key: '2',
+              label: <Text strong={true}>删除</Text>,
+              onClick: async () => {
+                return Modal.confirm({
+                  title: '你确定要删除这个目录吗?',
+                  icon: <ExclamationCircleOutlined />,
+                  okText: '确定',
+                  okType: 'danger',
+                  cancelText: '点错了',
+                  onOk() {
+                    removeModule({ moduleId: node.key }).then(
+                      async ({ code, msg }) => {
+                        if (code === 0) {
+                          message.success(msg);
+                          await handleReload();
+                        }
+                      },
+                    );
+                  },
+                });
+              },
+              icon: <DeleteOutlined />,
+              //},
             },
-          });
-        },
-        icon: <DeleteOutlined />,
-      },
+          ]
+        : []),
     ];
   };
 
@@ -266,31 +273,32 @@ const ModuleTree: FC<IProps> = (props) => {
         <Text type={'secondary'} strong>
           {tree.title}
         </Text>
-        {isAdmin && (
-          <>
-            {currentModule && currentModule.key === tree.key ? (
-              <Space style={{ float: 'right' }}>
-                <PlusOutlined
-                  onClick={async (event) => {
-                    event.stopPropagation();
-                    setCurrentModule(tree);
-                    setHandleModule(Handle.AddChild);
-                    setOpen(true);
-                  }}
-                />
-                <Dropdown
-                  menu={{ items: menuItem(tree) }}
-                  trigger={['click', 'hover']}
-                  placement="bottomRight"
-                >
-                  <Text onClick={(e) => e.preventDefault()}>
-                    <MoreOutlined />
-                  </Text>
-                </Dropdown>
-              </Space>
-            ) : null}
-          </>
-        )}
+        {/* 移除isAdmin整体判断，保留内部删除权限判断 */}
+        {/*{isAdmin && (*/}
+        <>
+          {currentModule && currentModule.key === tree.key ? (
+            <Space style={{ float: 'right' }}>
+              <PlusOutlined
+                onClick={async (event) => {
+                  event.stopPropagation();
+                  setCurrentModule(tree);
+                  setHandleModule(Handle.AddChild);
+                  setOpen(true);
+                }}
+              />
+              <Dropdown
+                menu={{ items: menuItem(tree) }}
+                trigger={['click', 'hover']}
+                placement="bottomRight"
+              >
+                <Text onClick={(e) => e.preventDefault()}>
+                  <MoreOutlined />
+                </Text>
+              </Dropdown>
+            </Space>
+          ) : null}
+        </>
+        {/*)}*/}
       </div>
     );
   };
@@ -379,25 +387,26 @@ const ModuleTree: FC<IProps> = (props) => {
             placeholder="模块查询"
             width={'100%'}
             suffix={
-              isAdmin && (
-                <Tooltip title={'点击可新建根模块。子模块需要在树上新建'}>
-                  <a
-                    onClick={() => {
-                      setHandleModule(Handle.AddRoot);
-                      setCurrentModule(null);
-                      setOpen(true);
-                    }}
-                  >
-                    <PlusOutlined style={{ color: 'black' }} />
-                  </a>
-                </Tooltip>
-              )
+              //isAdmin && (
+              <Tooltip title={'点击可新建根模块。子模块需要在树上新建'}>
+                <a
+                  onClick={() => {
+                    setHandleModule(Handle.AddRoot);
+                    setCurrentModule(null);
+                    setOpen(true);
+                  }}
+                >
+                  <PlusOutlined style={{ color: 'black' }} />
+                </a>
+              </Tooltip>
+              //)
             }
             onChange={OnSearchChange}
           />
           <Tree
             showLine
-            draggable={isAdmin} //admin 可拖动
+            //draggable={isAdmin} //admin 可拖动
+            draggable
             blockNode //是否节点占据一行
             onExpand={(newExpandedKeys: React.Key[]) => {
               setExpandedKeys(newExpandedKeys);

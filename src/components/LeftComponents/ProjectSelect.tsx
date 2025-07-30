@@ -37,7 +37,10 @@ const ProjectSelect: FC<IProps> = ({
             <Button
               type="text"
               icon={<CloseOutlined />}
-              onClick={() => setCurrentProjectId(undefined)}
+              onClick={() => {
+                setCurrentProjectId(undefined);
+                localStorage.removeItem('selectedProjectId');
+              }}
               style={{ color: '#ff4d4f' }}
             >
               选择项目
@@ -55,6 +58,7 @@ const ProjectSelect: FC<IProps> = ({
           options={data2LabelValue(projects)}
           onChange={(value: number) => {
             setCurrentProjectId(value);
+            localStorage.setItem('selectedProjectId', String(value));
           }}
         />
       )}

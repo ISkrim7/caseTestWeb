@@ -28,7 +28,11 @@ const Index: FC<SelfProps> = (props) => {
     queryProject().then(async ({ data }) => {
       if (data && data.length > 0) {
         setProjects(data);
-        setCurrentProjectId(data[0].id);
+        const savedProjectId = localStorage.getItem('selectedProjectId');
+        const initialProjectId = savedProjectId
+          ? Number(savedProjectId)
+          : data[0].id;
+        setCurrentProjectId(initialProjectId);
       }
     });
   }, []);

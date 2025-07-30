@@ -71,7 +71,7 @@ const ApiBaseForm: FC<IProps> = (props) => {
           label="所属模块"
           rules={[{ required: true, message: '所属模块必选' }]}
           fieldProps={{
-            disabled: true, // 禁用的正确设置方式
+            //disabled: true, // 禁用的正确设置方式
             treeData: moduleEnum,
             fieldNames: {
               label: 'title',

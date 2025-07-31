@@ -192,59 +192,145 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
     return 'text';
   };
 
+  // const renderRequestBody = (item: IInterfaceResultByCase) => {
+  //   //const { request_txt } = item;
+  //   let { request_txt } = item;
+  //   // 新增：解码URL编码内容
+  //   try {
+  //     // 尝试解析为JSON
+  //     const jsonValue = JSON.parse(request_txt);
+  //     // 对JSON内特定字段进行解码（这里以url字段为例）
+  //     if (jsonValue.url) {
+  //       jsonValue.url = decodeURIComponent(jsonValue.url);
+  //     }
+  //     const value = JSON.stringify(jsonValue, null, 2);
+  //     return <AceCodeEditor value={value} readonly={true} />;
+  //   } catch (e) {
+  //     // 保留原始内容当解码失败时
+  //     // 非JSON内容整体解码
+  //     request_txt = decodeURIComponent(request_txt);
+  //   }
+  //   // 在renderRequestBody中添加二进制内容判断
+  //   if (request_txt?.startsWith('[Binary Content')) {
+  //     return (
+  //       <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 4 }}>
+  //         <Text type="secondary">{request_txt}</Text>
+  //       </div>
+  //     );
+  //   }
+  //   // 在renderRequestBody开始处添加
+  //   if (!request_txt) {
+  //     return (
+  //       <div style={{ padding: 16 }}>
+  //         <Text type="secondary">No request body</Text>
+  //       </div>
+  //     );
+  //   }
+  //   // 在解析前添加长度判断
+  //   const MAX_LENGTH = 50000;
+  //   if (request_txt.length > MAX_LENGTH) {
+  //     return (
+  //       <AceCodeEditor
+  //         value={`${request_txt.substring(
+  //           0,
+  //           MAX_LENGTH,
+  //         )}\n\n[内容过长已截断，完整内容长度：${request_txt.length}字节]`}
+  //         _mode="text"
+  //         readonly={true}
+  //       />
+  //     );
+  //   }
+  //   try {
+  //     const jsonValue = JSON.parse(request_txt);
+  //     const value = JSON.stringify(jsonValue, null, 2);
+  //     return <AceCodeEditor value={value} readonly={true} />;
+  //   } catch (e) {
+  //     return (
+  //       <AceCodeEditor
+  //         value={request_txt}
+  //         _mode={detectContentType(request_txt)}
+  //         readonly={true}
+  //       />
+  //     );
+  //   }
+  // };
   const renderRequestBody = (item: IInterfaceResultByCase) => {
-    //const { request_txt } = item;
-    let { request_txt } = item;
-    // 新增：解码URL编码内容
-    try {
-      // 尝试解析为JSON
-      const jsonValue = JSON.parse(request_txt);
-      // 对JSON内特定字段进行解码（这里以url字段为例）
-      if (jsonValue.url) {
-        jsonValue.url = decodeURIComponent(jsonValue.url);
-      }
-      const value = JSON.stringify(jsonValue, null, 2);
-      return <AceCodeEditor value={value} readonly={true} />;
-    } catch (e) {
-      // 保留原始内容当解码失败时
-      // 非JSON内容整体解码
-      request_txt = decodeURIComponent(request_txt);
+    const request_txt = item.request_txt || '';
+
+    // 1. 空内容处理
+    if (!request_txt.trim()) {
+      return (
+        <div style={{ padding: 16 }}>
+          <Text type="secondary">无请求体内容</Text>
+        </div>
+      );
     }
-    // 在renderRequestBody中添加二进制内容判断
-    if (request_txt?.startsWith('[Binary Content')) {
+
+    // 2. 二进制内容处理
+    if (request_txt.startsWith('[Binary Content')) {
       return (
         <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 4 }}>
           <Text type="secondary">{request_txt}</Text>
         </div>
       );
     }
-    // 在renderRequestBody开始处添加
-    if (!request_txt) {
-      return (
-        <div style={{ padding: 16 }}>
-          <Text type="secondary">No request body</Text>
-        </div>
-      );
-    }
-    // 在解析前添加长度判断
-    const MAX_LENGTH = 50000;
-    if (request_txt.length > MAX_LENGTH) {
+
+    // 3. 大文件截断处理
+    // const MAX_LENGTH = 50000;
+    // if (request_txt.length > MAX_LENGTH) {
+    //   return (
+    //     <AceCodeEditor
+    //       value={`${request_txt.substring(0, MAX_LENGTH)}\n\n[内容过长，已截断前${MAX_LENGTH}字符，完整长度: ${
+    //         request_txt.length
+    //       }字节]`}
+    //       _mode="text"
+    //       readonly={true}
+    //     />
+    //   );
+    // }
+
+    // 4. JSON内容处理（核心优化）
+    try {
+      // 尝试直接解析原始JSON
+      const jsonValue = JSON.parse(request_txt);
+
+      // 深度遍历解码可能的URL编码字段
+      const decodeUrlFields = (obj: any): any => {
+        if (Array.isArray(obj)) {
+          return obj.map(decodeUrlFields);
+        } else if (obj && typeof obj === 'object') {
+          return Object.fromEntries(
+            Object.entries(obj).map(([key, value]) => [
+              key,
+              decodeUrlFields(value),
+            ]),
+          );
+        } else if (typeof obj === 'string') {
+          // 只解码符合URL编码模式的字符串
+          if (/%[0-9A-Fa-f]{2}/.test(obj)) {
+            try {
+              return decodeURIComponent(obj);
+            } catch (e) {
+              // 解码失败保留原值
+              return obj;
+            }
+          }
+        }
+        return obj;
+      };
+
+      // 处理可能的URL编码字段
+      const decodedValue = decodeUrlFields(jsonValue);
+
+      // 格式化输出
       return (
         <AceCodeEditor
-          value={`${request_txt.substring(
-            0,
-            MAX_LENGTH,
-          )}\n\n[内容过长已截断，完整内容长度：${request_txt.length}字节]`}
-          _mode="text"
+          value={JSON.stringify(decodedValue, null, 2)}
           readonly={true}
         />
       );
-    }
-    try {
-      const jsonValue = JSON.parse(request_txt);
-      const value = JSON.stringify(jsonValue, null, 2);
-      return <AceCodeEditor value={value} readonly={true} />;
     } catch (e) {
+      // 5. 非JSON内容处理
       return (
         <AceCodeEditor
           value={request_txt}

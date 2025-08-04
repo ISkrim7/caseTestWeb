@@ -66,6 +66,11 @@ export default [
         component: '@/pages/Project',
       },
       {
+        path: '/project/detail/projectId=:projectId',
+        name: '项目列表',
+        component: '@/pages/Project/ProjectTab.tsx',
+      },
+      {
         path: '/project/Env',
         name: '环境',
         component: '@/pages/Project/Env',

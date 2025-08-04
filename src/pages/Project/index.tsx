@@ -1,5 +1,6 @@
 import { IProject } from '@/api';
 import { newProject, putProject, queryProject, searchUser } from '@/api/base';
+import { history } from '@@/core/history';
 import { PlusOutlined, ProjectTwoTone } from '@ant-design/icons';
 import {
   ModalForm,
@@ -134,6 +135,9 @@ const ProjectList: React.FC = () => {
             return (
               <Col span={8} key={index}>
                 <ProCard
+                  onClick={() => {
+                    history.push(`/project/detail/projectId=${item.id}`);
+                  }}
                   bordered={true}
                   hoverable={true}
                   type="inner"
@@ -163,7 +167,7 @@ const ProjectList: React.FC = () => {
                     </>
                   }
                 >
-                  <Paragraph>{item.desc}</Paragraph>
+                  <Paragraph>{item.description}</Paragraph>
                 </ProCard>
               </Col>
             );

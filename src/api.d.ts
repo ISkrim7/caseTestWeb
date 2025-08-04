@@ -78,7 +78,7 @@ export interface IProject {
   id: number;
   uid: string;
   title: string;
-  desc?: string | null;
+  description?: string | null;
 }
 
 export interface IUserVar {

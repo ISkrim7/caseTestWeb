@@ -89,7 +89,8 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
     {
       title: '任务结果ID',
       dataIndex: 'uid',
-      width: '6%',
+      width: '8%',
+      fixed: 'left',
       render: (_, record) => <Tag color={'blue'}>{record.uid}</Tag>,
     },
     {
@@ -105,7 +106,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
       sorter: true,
       valueEnum: { SUCCESS: { text: '成功' }, ERROR: { text: '失败' } },
       render: (_, record) => (
-        <Tag color={record.result === 'SUCCESS' ? 'green' : 'warning'}>
+        <Tag color={record.result === 'SUCCESS' ? 'green' : 'error'}>
           {record.result}
         </Tag>
       ),

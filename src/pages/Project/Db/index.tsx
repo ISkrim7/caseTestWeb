@@ -5,15 +5,18 @@ import { pageData } from '@/utils/somefunc';
 import { useAccess } from '@@/exports';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
 import { Divider, Tag } from 'antd';
-import { useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 
-const Index = () => {
+const Index: FC = () => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发’
   const [open, setOpen] = useState(false);
   const { isAdmin } = useAccess();
   const [currentDBConfig, setCurrentDBConfig] = useState<string>();
   const queryDbs = async (params: any, sort: any) => {
-    const { code, data } = await pageDBConfig({ ...params, sort: sort });
+    const values = {
+      ...params,
+    };
+    const { code, data } = await pageDBConfig({ ...values, sort: sort });
     return pageData(code, data);
   };
   const isReload = async () => {

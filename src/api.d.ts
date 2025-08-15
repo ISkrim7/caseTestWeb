@@ -118,7 +118,7 @@ export interface ICaseInfo {
   case_desc: string;
   case_info: ICaseStepInfo[];
   case_mark?: string;
-  case_type: 'COMMENT' | 'SMOKE';
+  case_type: number;
   case_level: 'P1' | 'P2' | 'P3' | 'P4';
   creator: number;
   creatorName: string;

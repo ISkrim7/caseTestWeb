@@ -9,9 +9,7 @@ import 'react-splitter-layout/lib/index.css';
 
 const Index = () => {
   const splitPaneRef = useRef<SplitterLayout>(null);
-  const [currentCasePartId, setCurrentCasePartId] = useState<
-    number | undefined
-  >();
+  const [currentModuleId, setCurrentModuleId] = useState<number | undefined>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
 
   return (
@@ -32,11 +30,11 @@ const Index = () => {
             moduleType={ModuleEnum.CASE}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
-            setCurrentModuleId={setCurrentCasePartId}
+            setCurrentModuleId={setCurrentModuleId}
           />
           <CaseHubTable
-            projectID={currentCasePartId!}
-            currentCasePartID={currentProjectId!}
+            projectID={currentProjectId!}
+            currentModuleId={currentModuleId!}
           />
         </SplitterLayout>
       </ProCard>

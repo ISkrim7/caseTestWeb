@@ -1,28 +1,33 @@
 import { ICaseInfo } from '@/api';
+import { pageCase } from '@/api/case';
+import MyDrawer from '@/components/MyDrawer';
+import MyProTable from '@/components/Table/MyProTable';
 import AddCase from '@/pages/CaseHub/component/AddCase';
-import ShowCase from '@/pages/CaseHub/component/ShowCase';
-import { CONFIG } from '@/utils/config';
+import CaseForm from '@/pages/CaseHub/component/CaseForm';
+import { CONFIG, ModuleEnum } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
 import {
   ActionType,
   ProCard,
   ProFormInstance,
-  ProTable,
 } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
 import { Popconfirm, Tag } from 'antd';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   projectID: number;
-  currentCasePartID: number;
+  currentModuleId: number;
 }
 
-const CaseHubTable: FC<SelfProps> = ({ projectID, currentCasePartID }) => {
+const CaseHubTable: FC<SelfProps> = ({ projectID, currentModuleId }) => {
   const ref = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [caseInfo, setCaseInfo] = useState<ICaseInfo>();
   const [showCaseDrawerVisibleProps, setShowCaseDrawerVisibleProps] =
     useState<boolean>(false);
+
+  const fetchDeleteDate = async (id: string) => {};
   const caseColumns: ProColumns[] = [
     {
       title: '用例标题',
@@ -94,52 +99,47 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentCasePartID }) => {
       },
     },
   ];
-  const [currentCases, setCurrentCases] = useState<ICaseInfo[]>([]);
 
-  useEffect(() => {
-    if (projectID) setCurrentCases([]);
-  }, [projectID]);
-
-  const fetchDeleteDate = async (uid: string) => {};
-
-  useEffect(() => {
+  const reloadTable = () => {
+    setShowCaseDrawerVisibleProps(false);
     actionRef.current?.reload();
-  }, [currentCasePartID]);
+  };
+  useEffect(() => {
+    reloadTable();
+  }, [currentModuleId, projectID]);
+
+  const fetchPageData = useCallback(
+    async (params: any, sort: any) => {
+      const values = {
+        ...params,
+        module_id: currentModuleId,
+        module_type: ModuleEnum.CASE,
+      };
+      const { code, data } = await pageCase(values);
+      return pageData(code, data);
+    },
+    [currentModuleId, projectID],
+  );
 
   return (
-    <ProCard>
-      <ShowCase
-        caseInfo={caseInfo!}
-        drawerVisibleProps={showCaseDrawerVisibleProps}
-        setDrawerVisible={setShowCaseDrawerVisibleProps}
-        casePartID={currentCasePartID}
-        projectID={projectID!}
-      />
-      <ProTable
-        formRef={ref}
+    <ProCard bodyStyle={{ padding: 2 }}>
+      <MyDrawer
+        name={caseInfo?.case_title}
+        open={showCaseDrawerVisibleProps}
+        setOpen={setShowCaseDrawerVisibleProps}
+      >
+        <CaseForm caseInfo={caseInfo} update={true} callback={reloadTable} />
+      </MyDrawer>
+      <MyProTable
+        rowKey={'id'}
         actionRef={actionRef}
-        dataSource={currentCases}
         columns={caseColumns}
-        cardBordered
-        options={{
-          setting: {
-            listsHeight: 400,
-          },
-          reload: true,
-        }}
-        pagination={{
-          pageSize: 10,
-        }}
-        search={{
-          labelWidth: 80,
-          // span: 6,
-          showHiddenNum: true,
-        }}
+        request={fetchPageData}
         toolBarRender={() => [
           <AddCase
-            casePartID={currentCasePartID}
+            currentModuleId={currentModuleId}
             projectID={projectID!}
-            actionRef={actionRef}
+            callback={reloadTable}
           />,
         ]}
       />

@@ -68,32 +68,13 @@ export default [
       {
         path: '/project/detail/projectId=:projectId',
         name: '项目列表',
+        hideInMenu: true,
         component: '@/pages/Project/ProjectTab.tsx',
-      },
-      {
-        path: '/project/Env',
-        name: '环境',
-        component: '@/pages/Project/Env',
-      },
-      {
-        path: '/project/DB',
-        name: '数据库',
-        component: '@/pages/Project/Db',
       },
       {
         path: '/project/apsConfig',
         name: '调度任务',
         component: '@/pages/Project/Aps',
-      },
-      {
-        path: '/project/gVars',
-        name: '项目变量',
-        component: '@/pages/Project/GlobalVariables.tsx',
-      },
-      {
-        path: '/project/push',
-        name: '推送配置',
-        component: '@/pages/Project/Push',
       },
     ],
   },
@@ -111,7 +92,6 @@ export default [
       },
     ],
   },
-
   {
     path: '/ui',
     name: 'UI自动化',
@@ -303,7 +283,7 @@ export default [
     ],
   },
   {
-    name: '调试',
+    name: '调试工具',
     path: '/debugger',
     icon: 'BugOutlined',
     routes: [
@@ -320,11 +300,6 @@ export default [
       {
         path: '/debugger/mind',
         name: 'mind',
-        component: '@/pages/DebuggerPage/Mind',
-      },
-      {
-        path: '/debugger/mind2',
-        name: 'mind2',
         component: '@/pages/DebuggerPage/Mind2',
       },
       {
@@ -336,6 +311,11 @@ export default [
         path: '/debugger/jp',
         name: 'Jsonpath',
         component: '@/pages/Httpx/componets/JsonPathTool.tsx',
+      },
+      {
+        path: '/debugger/casehub',
+        name: 'CaseHub',
+        component: '@/pages/CaseHub/CaseStep',
       },
     ],
   },

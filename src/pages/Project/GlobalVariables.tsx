@@ -11,10 +11,14 @@ import { pageData } from '@/utils/somefunc';
 import { PlusOutlined } from '@ant-design/icons';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
 import { Button, message, Space, Tag } from 'antd';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useAccess } from 'umi';
 
-const GlobalVariables = () => {
+interface IProps {
+  projectId?: string;
+}
+
+const GlobalVariables: FC<IProps> = ({ projectId }) => {
   const { isAdmin } = useAccess();
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,13 +28,6 @@ const GlobalVariables = () => {
   }, []);
 
   const columns: ProColumns<IInterfaceGlobalVariable>[] = [
-    {
-      title: 'project',
-      dataIndex: 'project_id',
-      hideInSearch: true,
-      valueEnum: projectEnum,
-      render: (text) => <Tag color={'blue'}>{text}</Tag>,
-    },
     {
       title: 'Key',
       dataIndex: 'key',
@@ -102,6 +99,7 @@ const GlobalVariables = () => {
     const { code, data } = await pageInterGlobalVariable({
       ...values,
       sort: sort,
+      project_id: projectId,
     });
     return pageData(code, data);
   }, []);

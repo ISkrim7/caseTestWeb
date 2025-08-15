@@ -190,11 +190,11 @@ export const CONFIG: IObjGet = {
     },
   },
   RENDER_CASE_TYPE: {
-    COMMENT: {
+    1: {
       color: 'green',
       text: '普通用例',
     },
-    SMOKE: {
+    0: {
       color: 'blue',
       text: '冒烟用例',
     },

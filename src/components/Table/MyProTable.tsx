@@ -68,6 +68,7 @@ const MyProTable: FC<SelfProps> = (props) => {
   return (
     <ProCard style={{ height: height }}>
       <ProTable
+        bordered
         {...otherProps}
         form={form}
         dataSource={dataSource}

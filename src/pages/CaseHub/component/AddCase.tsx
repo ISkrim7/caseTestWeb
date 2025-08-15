@@ -1,28 +1,34 @@
-import React, { FC, useState } from 'react';
-import { Button, Drawer, Form, FormInstance, message } from 'antd';
+import MyDrawer from '@/components/MyDrawer';
 import CaseForm from '@/pages/CaseHub/component/CaseForm';
+import { Button } from 'antd';
+import { FC, useState } from 'react';
 
 interface SelfProps {
-  casePartID: number;
+  currentModuleId: number;
   projectID: number;
-  actionRef: any;
+  callback: () => void;
 }
 
 const AddCase: FC<SelfProps> = (props) => {
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-
+  const callback = () => {
+    callback();
+    setDrawerVisible(false);
+  };
   return (
     <>
-      <Drawer
-        bodyStyle={{ padding: 0 }}
-        visible={drawerVisible}
+      <MyDrawer
         width={'65%'}
-        title="添加用例"
-        onClose={() => setDrawerVisible(false)}
-        maskClosable={false}
+        name="添加用例"
+        open={drawerVisible}
+        setOpen={setDrawerVisible}
       >
-        <CaseForm {...props} setDrawerVisible={setDrawerVisible} />
-      </Drawer>
+        <CaseForm
+          {...props}
+          callback={callback}
+          setDrawerVisible={setDrawerVisible}
+        />
+      </MyDrawer>
       <Button type="primary" onClick={() => setDrawerVisible(true)}>
         添加用例
       </Button>

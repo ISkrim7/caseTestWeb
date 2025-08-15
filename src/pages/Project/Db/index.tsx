@@ -7,7 +7,11 @@ import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
 import { Divider, Tag } from 'antd';
 import { FC, useRef, useState } from 'react';
 
-const Index: FC = () => {
+interface IProps {
+  projectId?: string;
+}
+
+const Index: FC<IProps> = ({ projectId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发’
   const [open, setOpen] = useState(false);
   const { isAdmin } = useAccess();
@@ -15,6 +19,7 @@ const Index: FC = () => {
   const queryDbs = async (params: any, sort: any) => {
     const values = {
       ...params,
+      project_id: projectId,
     };
     const { code, data } = await pageDBConfig({ ...values, sort: sort });
     return pageData(code, data);
@@ -26,7 +31,7 @@ const Index: FC = () => {
 
   const columns: ProColumns[] = [
     {
-      title: 'T',
+      title: '类型',
       dataIndex: 'db_type',
       valueType: 'select',
       valueEnum: {
@@ -113,6 +118,7 @@ const Index: FC = () => {
       <MyProTable
         toolBarRender={() => [
           <DBModel
+            currentProjectId={projectId!}
             callBack={isReload}
             currentDBConfigId={currentDBConfig}
             open={open}

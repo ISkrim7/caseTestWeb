@@ -76,37 +76,57 @@ const CaseSubSteps: FC<IProps> = ({
     }
   }, [caseSubStepDataSource]);
   return (
-    <ProCard>
-      <ProForm.Item name={'case_sub_step'}>
-        <DragSortTable<CaseSubStep>
-          columns={caseInfoColumn}
-          rowKey="id"
-          search={false}
-          pagination={false}
-          toolBarRender={false}
-          dataSource={caseSubStepDataSource}
-          dragSortKey="sort"
-          onDragSortEnd={handleDragSortEnd}
-          dragSortHandlerRender={() => (
-            <MenuOutlined style={{ cursor: 'grab', color: 'gold' }} />
-          )}
-          editable={{
-            type: 'multiple',
-            editableKeys,
-            actionRender: (row, config, defaultDoms) => {
-              return [defaultDoms.delete, <a>复制</a>];
-            },
-            onValuesChange: (
-              record: CaseSubStep,
-              dataSource: CaseSubStep[],
-            ) => {
-              handleValuesChange(dataSource);
-            },
-            onChange: setEditableRowKeys,
-          }}
-        />
-      </ProForm.Item>
-    </ProCard>
+    <div
+      style={{ pointerEvents: 'none' }}
+      draggable
+      onDragStart={(event) => {
+        event.stopPropagation();
+        event.preventDefault();
+      }}
+      onDragOver={(event) => event.preventDefault()}
+      onDragEnd={(event) => {
+        event.stopPropagation();
+        event.preventDefault();
+      }}
+    >
+      <ProCard style={{ pointerEvents: 'auto' }}>
+        <ProForm.Item name={'case_sub_step'}>
+          <DragSortTable<CaseSubStep>
+            columns={caseInfoColumn}
+            rowKey="id"
+            search={false}
+            pagination={false}
+            toolBarRender={false}
+            dataSource={caseSubStepDataSource}
+            dragSortKey="sort"
+            onDragSortEnd={handleDragSortEnd}
+            dragSortHandlerRender={() => (
+              <div
+                onMouseDown={(e) => e.stopPropagation()}
+                style={{ display: 'inline-block' }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MenuOutlined style={{ cursor: 'grab', color: 'gold' }} />
+              </div>
+            )}
+            editable={{
+              type: 'multiple',
+              editableKeys,
+              actionRender: (row, config, defaultDoms) => {
+                return [defaultDoms.delete, <a>复制</a>];
+              },
+              onValuesChange: (
+                record: CaseSubStep,
+                dataSource: CaseSubStep[],
+              ) => {
+                handleValuesChange(dataSource);
+              },
+              onChange: setEditableRowKeys,
+            }}
+          />
+        </ProForm.Item>
+      </ProCard>
+    </div>
   );
 };
 

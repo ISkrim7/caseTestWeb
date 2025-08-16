@@ -315,7 +315,7 @@ export default [
       {
         path: '/debugger/casehub',
         name: 'CaseHub',
-        component: '@/pages/CaseHub/CaseStep',
+        component: '@/pages/CaseHub/CaseInfo',
       },
     ],
   },

@@ -1,6 +1,11 @@
 import { CaseSubStep } from '@/pages/CaseHub/type';
 import { MenuOutlined } from '@ant-design/icons';
-import { DragSortTable, ProCard, ProColumns } from '@ant-design/pro-components';
+import {
+  DragSortTable,
+  ProCard,
+  ProColumns,
+  ProForm,
+} from '@ant-design/pro-components';
 import { debounce } from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
@@ -49,13 +54,13 @@ const CaseSubSteps: FC<IProps> = ({
 }) => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>();
 
-  const handleDragSortEnd = (
-    beforeIndex: number,
-    afterIndex: number,
-    newDataSource: any,
-  ) => {
-    setCaseSubStepDataSource(newDataSource);
-  };
+  // 使用 useCallback 来确保 handleDragSortEnd 不会在每次渲染时重新定义
+  const handleDragSortEnd = useCallback(
+    (beforeIndex: number, afterIndex: number, newDataSource: any) => {
+      setCaseSubStepDataSource(newDataSource);
+    },
+    [setCaseSubStepDataSource],
+  );
   // 使用 debounce 来避免每次都直接更新
   const handleValuesChange = useCallback(
     debounce((dataSource: CaseSubStep[]) => {
@@ -72,31 +77,35 @@ const CaseSubSteps: FC<IProps> = ({
   }, [caseSubStepDataSource]);
   return (
     <ProCard>
-      <DragSortTable<CaseSubStep>
-        columns={caseInfoColumn}
-        rowKey="id"
-        search={false}
-        pagination={false}
-        toolBarRender={false}
-        dataSource={caseSubStepDataSource}
-        dragSortKey="sort"
-        onDragSortEnd={handleDragSortEnd}
-        dragSortHandlerRender={() => (
-          <MenuOutlined style={{ cursor: 'grab', color: 'gold' }} />
-        )}
-        editable={{
-          type: 'multiple',
-          editableKeys,
-          actionRender: (row, config, defaultDoms) => {
-            return [defaultDoms.delete, <a>复制</a>];
-          },
-          onValuesChange: (record: CaseSubStep, dataSource: CaseSubStep[]) => {
-            console.log(dataSource);
-            handleValuesChange(dataSource);
-          },
-          onChange: setEditableRowKeys,
-        }}
-      />
+      <ProForm.Item name={'case_sub_step'}>
+        <DragSortTable<CaseSubStep>
+          columns={caseInfoColumn}
+          rowKey="id"
+          search={false}
+          pagination={false}
+          toolBarRender={false}
+          dataSource={caseSubStepDataSource}
+          dragSortKey="sort"
+          onDragSortEnd={handleDragSortEnd}
+          dragSortHandlerRender={() => (
+            <MenuOutlined style={{ cursor: 'grab', color: 'gold' }} />
+          )}
+          editable={{
+            type: 'multiple',
+            editableKeys,
+            actionRender: (row, config, defaultDoms) => {
+              return [defaultDoms.delete, <a>复制</a>];
+            },
+            onValuesChange: (
+              record: CaseSubStep,
+              dataSource: CaseSubStep[],
+            ) => {
+              handleValuesChange(dataSource);
+            },
+            onChange: setEditableRowKeys,
+          }}
+        />
+      </ProForm.Item>
     </ProCard>
   );
 };

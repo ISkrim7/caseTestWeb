@@ -9,7 +9,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { Button, Form, Space } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Index = () => {
   const [form] = Form.useForm<CaseStepInfo>();
@@ -146,7 +146,11 @@ const Index = () => {
       <Button>删除</Button>
     </Space>
   );
-
+  useEffect(() => {
+    if (caseSubStepDataSource) {
+      console.log('==========', caseSubStepDataSource);
+    }
+  }, [caseSubStepDataSource]);
   // 监听表单值变化
   const handleValuesChange = (changedValues: any, allValues: any) => {
     console.log('表单值变化:', changedValues);
@@ -155,7 +159,11 @@ const Index = () => {
   };
 
   return (
-    <ProForm form={form} submitter={false} onValuesChange={handleValuesChange}>
+    <ProForm<CaseStepInfo>
+      form={form}
+      submitter={false}
+      onValuesChange={handleValuesChange}
+    >
       <ProCard
         hoverable // 添加悬停效果
         title={CardTitle}

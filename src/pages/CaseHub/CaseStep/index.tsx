@@ -1,16 +1,22 @@
 import CaseSubSteps from '@/pages/CaseHub/CaseStep/CaseSubSteps';
+import { CaseStepInfo, CaseSubStep } from '@/pages/CaseHub/type';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import {
   ProCard,
+  ProForm,
   ProFormRadio,
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Button, Space } from 'antd';
+import { Button, Form, Space } from 'antd';
 import { useState } from 'react';
 
 const Index = () => {
+  const [form] = Form.useForm<CaseStepInfo>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
+  const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
+    CaseSubStep[]
+  >([]);
 
   const CardTitle = (
     <div
@@ -31,6 +37,7 @@ const Index = () => {
         <ProFormText
           style={{ fontWeight: 'bold' }}
           fieldProps={{
+            variant: 'outlined',
             style: {
               borderRadius: 20,
               height: 'auto',
@@ -40,7 +47,6 @@ const Index = () => {
           allowClear
           noStyle={true}
           name={'case_title'}
-          initialValue={'标题'}
           placeholder={'请输入用例标题'}
           required={true}
           tooltip={'最长20位'}
@@ -49,7 +55,7 @@ const Index = () => {
         <ProFormRadio.Group
           noStyle
           style={{ borderRadius: 20 }}
-          name="radio-group"
+          name="case_level"
           radioType="button"
           required={true}
           fieldProps={{
@@ -81,16 +87,16 @@ const Index = () => {
             borderRadius: 20,
             height: 'auto',
           }}
-          name={'fieldA'}
-          initialValue={'A'}
+          name={'case_type'}
+          initialValue={'普通'}
           options={[
             {
-              label: 'A',
-              value: 'A',
+              label: '普通',
+              value: '普通',
             },
             {
-              label: 'B',
-              value: 'B',
+              label: '冒烟',
+              value: '冒烟',
             },
           ]}
         />
@@ -118,16 +124,40 @@ const Index = () => {
     </div>
   );
 
+  const addSubStepLine = () => {
+    // 如果当前是折叠状态，则展开
+    if (collapsible) {
+      setCollapsible(false);
+    }
+    const newCaseSubStepDataSource: CaseSubStep = {
+      id: Date.now().toString(),
+      do: `请填写步骤描述`,
+      exp: '请填写预期描述',
+    };
+    setCaseSubStepDataSource([
+      ...caseSubStepDataSource,
+      newCaseSubStepDataSource,
+    ]);
+  };
   const ExtraOpt = (
     <Space>
-      <Button>+ 添加步骤</Button>
+      <Button onClick={addSubStepLine}>+ 添加步骤</Button>
       <Button>复制</Button>
       <Button>删除</Button>
     </Space>
   );
+
+  // 监听表单值变化
+  const handleValuesChange = (changedValues: any, allValues: any) => {
+    console.log('表单值变化:', changedValues);
+    console.log('当前所有值:', allValues);
+    // 这里可以处理数据或触发其他操作
+  };
+
   return (
-    <>
+    <ProForm form={form} submitter={false} onValuesChange={handleValuesChange}>
       <ProCard
+        hoverable // 添加悬停效果
         title={CardTitle}
         extra={ExtraOpt}
         subTitle={null}
@@ -145,9 +175,12 @@ const Index = () => {
           height: 80,
         }}
       >
-        <CaseSubSteps />
+        <CaseSubSteps
+          caseSubStepDataSource={caseSubStepDataSource}
+          setCaseSubStepDataSource={setCaseSubStepDataSource}
+        />
       </ProCard>
-    </>
+    </ProForm>
   );
 };
 

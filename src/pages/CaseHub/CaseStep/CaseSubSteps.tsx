@@ -5,6 +5,7 @@ import {
   ProCard,
   ProColumns,
   ProForm,
+  ProFormTextArea,
 } from '@ant-design/pro-components';
 import { debounce } from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
@@ -76,57 +77,44 @@ const CaseSubSteps: FC<IProps> = ({
     }
   }, [caseSubStepDataSource]);
   return (
-    <div
-      style={{ pointerEvents: 'none' }}
-      draggable
-      onDragStart={(event) => {
-        event.stopPropagation();
-        event.preventDefault();
-      }}
-      onDragOver={(event) => event.preventDefault()}
-      onDragEnd={(event) => {
-        event.stopPropagation();
-        event.preventDefault();
-      }}
-    >
-      <ProCard style={{ pointerEvents: 'auto' }}>
-        <ProForm.Item name={'case_sub_step'}>
-          <DragSortTable<CaseSubStep>
-            columns={caseInfoColumn}
-            rowKey="id"
-            search={false}
-            pagination={false}
-            toolBarRender={false}
-            dataSource={caseSubStepDataSource}
-            dragSortKey="sort"
-            onDragSortEnd={handleDragSortEnd}
-            dragSortHandlerRender={() => (
-              <div
-                onMouseDown={(e) => e.stopPropagation()}
-                style={{ display: 'inline-block' }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MenuOutlined style={{ cursor: 'grab', color: 'gold' }} />
-              </div>
-            )}
-            editable={{
-              type: 'multiple',
-              editableKeys,
-              actionRender: (row, config, defaultDoms) => {
-                return [defaultDoms.delete, <a>复制</a>];
-              },
-              onValuesChange: (
-                record: CaseSubStep,
-                dataSource: CaseSubStep[],
-              ) => {
-                handleValuesChange(dataSource);
-              },
-              onChange: setEditableRowKeys,
-            }}
-          />
-        </ProForm.Item>
-      </ProCard>
-    </div>
+    <ProCard>
+      <ProFormTextArea
+        name={'case_setup'}
+        placeholder={'请输入用例前置'}
+        fieldProps={{
+          rows: 1,
+        }}
+      />
+      <ProForm.Item name={'case_sub_step'}>
+        <DragSortTable<CaseSubStep>
+          columns={caseInfoColumn}
+          rowKey="id"
+          search={false}
+          pagination={false}
+          toolBarRender={false}
+          dataSource={caseSubStepDataSource}
+          dragSortKey="sort"
+          onDragSortEnd={handleDragSortEnd}
+          dragSortHandlerRender={() => (
+            <MenuOutlined style={{ cursor: 'grab', color: 'gold' }} />
+          )}
+          editable={{
+            type: 'multiple',
+            editableKeys,
+            actionRender: (row, config, defaultDoms) => {
+              return [defaultDoms.delete, <a>复制</a>];
+            },
+            onValuesChange: (
+              record: CaseSubStep,
+              dataSource: CaseSubStep[],
+            ) => {
+              handleValuesChange(dataSource);
+            },
+            onChange: setEditableRowKeys,
+          }}
+        />
+      </ProForm.Item>
+    </ProCard>
   );
 };
 

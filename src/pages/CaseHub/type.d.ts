@@ -23,15 +23,15 @@ export interface CaseInfo {
 }
 
 export interface CaseStepInfo {
-  case_name: string;
-  case_level: 'P1' | 'P0' | 'P2' | 'P3';
-  case_tag: string[];
+  case_step_name: string;
+  case_step_level: 'P1' | 'P0' | 'P2' | 'P3';
+  case_step_type: '冒烟' | '普通';
+  case_step_tag: string;
+  case_step_setup: string;
+  case_step_pass: boolean;
+  case_step_bugs: string[];
+  case_step_mark: string;
   case_sub_step: CaseSubStep[];
-  case_type: '冒烟' | '普通';
-  case_setup: string;
-  pass: boolean;
-  bugs: string[];
-  mark: string;
 }
 
 export interface CaseSubStep {

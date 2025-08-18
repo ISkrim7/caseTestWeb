@@ -1,32 +1,27 @@
-import MyDraggable from '@/components/MyDraggable';
+import DnDDraggable from '@/components/DnDDraggable';
 import CaseStep from '@/pages/CaseHub/CaseStep';
 import { ProCard } from '@ant-design/pro-components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Index = () => {
   const [caseSteps, setCaseSteps] = useState<any[]>([
     {
       id: '1',
-      content: <CaseStep />,
-    },
-    {
-      id: '2',
+      caseStepId: 1,
       content: <CaseStep />,
     },
   ]);
 
-  const onDragEnd = (reorderedContents: any[]) => {
-    console.log(reorderedContents);
+  useEffect(() => {
+    if (caseSteps) {
+      const reorderData = caseSteps.map((item) => item.caseStepId);
+      console.log(reorderData);
+    }
+  }, [caseSteps]);
 
-    setCaseSteps(reorderedContents);
-  };
   return (
-    <ProCard title={'asdasdas'}>
-      <MyDraggable
-        items={caseSteps}
-        setItems={setCaseSteps}
-        dragEndFunc={onDragEnd}
-      />
+    <ProCard title={'caseInfo'}>
+      <DnDDraggable items={caseSteps} setItems={setCaseSteps} />
     </ProCard>
   );
 };

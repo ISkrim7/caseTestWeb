@@ -1,6 +1,14 @@
 import CaseSubSteps from '@/pages/CaseHub/CaseStep/CaseSubSteps';
 import { CaseStepInfo, CaseSubStep } from '@/pages/CaseHub/type';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import {
+  CopyOutlined,
+  DeleteOutlined,
+  DownOutlined,
+  MessageOutlined,
+  PlusOutlined,
+  RightOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -8,7 +16,8 @@ import {
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Button, Form, Space } from 'antd';
+import type { MenuProps } from 'antd';
+import { Button, Dropdown, Form, Space, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 
 const Index = () => {
@@ -17,6 +26,8 @@ const Index = () => {
   const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
     CaseSubStep[]
   >([]);
+  const [inputVisible, setInputVisible] = useState(true);
+  const [tag, setTag] = useState<string>();
 
   const CardTitle = (
     <div
@@ -34,6 +45,41 @@ const Index = () => {
         {collapsible ? <RightOutlined /> : <DownOutlined />}
       </div>
       <Space size={'large'} style={{ marginLeft: 10 }}>
+        {inputVisible ? (
+          <ProFormText
+            noStyle={true}
+            name={'case_step_tag'}
+            width="sm"
+            placeholder="标签"
+            fieldProps={{
+              onChange: (e) => {
+                setTag(e.target.value);
+              },
+              onBlur: (e) => {
+                setTag(e.target.value);
+              },
+              onPressEnter: (e) => {
+                const tagValue = form.getFieldValue('case_step_tag');
+                if (tagValue) {
+                  setTag(tagValue);
+                  setInputVisible(false);
+                }
+              },
+            }}
+          />
+        ) : (
+          <Tag
+            onClick={() => {
+              setInputVisible(true);
+            }}
+            color="#2db7f5"
+            onClose={() => {
+              setInputVisible(true);
+            }}
+          >
+            {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
+          </Tag>
+        )}
         <ProFormText
           style={{ fontWeight: 'bold' }}
           fieldProps={{
@@ -46,7 +92,7 @@ const Index = () => {
           }}
           allowClear
           noStyle={true}
-          name={'case_title'}
+          name={'case_step_name'}
           placeholder={'请输入用例标题'}
           required={true}
           tooltip={'最长20位'}
@@ -55,7 +101,7 @@ const Index = () => {
         <ProFormRadio.Group
           noStyle
           style={{ borderRadius: 20 }}
-          name="case_level"
+          name="case_step_level"
           radioType="button"
           required={true}
           fieldProps={{
@@ -87,7 +133,7 @@ const Index = () => {
             borderRadius: 20,
             height: 'auto',
           }}
-          name={'case_type'}
+          name={'case_step_type'}
           initialValue={'普通'}
           options={[
             {
@@ -97,26 +143,6 @@ const Index = () => {
             {
               label: '冒烟',
               value: '冒烟',
-            },
-          ]}
-        />
-        <ProFormSelect
-          allowClear={true}
-          noStyle
-          style={{
-            borderRadius: 20,
-            height: 'auto',
-          }}
-          name={'fieldB'}
-          initialValue={'A'}
-          options={[
-            {
-              label: 'A',
-              value: 'A',
-            },
-            {
-              label: 'B',
-              value: 'B',
             },
           ]}
         />
@@ -134,25 +160,60 @@ const Index = () => {
       do: `请填写步骤描述`,
       exp: '请填写预期描述',
     };
-    setCaseSubStepDataSource([
-      ...caseSubStepDataSource,
-      newCaseSubStepDataSource,
-    ]);
+    setCaseSubStepDataSource((item) => [...item, newCaseSubStepDataSource]);
+  };
+
+  const menuItems: MenuProps['items'] = [
+    {
+      label: '备注',
+      key: '1',
+      icon: <MessageOutlined />,
+    },
+    {
+      label: '复制',
+      key: '2',
+      icon: <CopyOutlined />,
+    },
+    {
+      label: '删除',
+      key: '3',
+      icon: <DeleteOutlined />,
+    },
+  ];
+
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    console.log('click', e);
+    switch (e.key) {
+      case '1':
+        console.log('备注');
+        return;
+      case '2':
+        console.log('复制');
+        return;
+      case '3':
+        console.log('de;ete');
+    }
   };
   const ExtraOpt = (
     <Space>
-      <Button onClick={addSubStepLine}>+ 添加步骤</Button>
-      <Button>复制</Button>
-      <Button>删除</Button>
+      <Button onClick={addSubStepLine} type={'primary'}>
+        <PlusOutlined /> 添加步骤
+      </Button>
+      <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
+        <SettingOutlined />
+      </Dropdown>
     </Space>
   );
   useEffect(() => {
     if (caseSubStepDataSource) {
       console.log('==========', caseSubStepDataSource);
+      form.setFieldsValue({ case_sub_step: caseSubStepDataSource });
     }
   }, [caseSubStepDataSource]);
   // 监听表单值变化
-  const handleValuesChange = (changedValues: any, allValues: any) => {
+  const handleValuesChange = (changedValues: any, allValues: CaseStepInfo) => {
+    const values = form.getFieldsValue(true);
+    console.log('all', values);
     console.log('表单值变化:', changedValues);
     console.log('当前所有值:', allValues);
     // 这里可以处理数据或触发其他操作
@@ -165,13 +226,11 @@ const Index = () => {
       onValuesChange={handleValuesChange}
     >
       <ProCard
-        hoverable // 添加悬停效果
+        hoverable={true} // 添加悬停效果
         title={CardTitle}
         extra={ExtraOpt}
-        subTitle={null}
         split="vertical"
         bordered
-        boxShadow={true}
         bodyStyle={{
           padding: 10,
         }}

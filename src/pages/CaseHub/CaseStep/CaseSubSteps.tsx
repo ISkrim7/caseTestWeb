@@ -24,7 +24,9 @@ const caseInfoColumn: ProColumns<CaseSubStep>[] = [
     ellipsis: true,
     fieldProps: {
       rows: 2,
+      allowClear: true,
       fontWeight: 'bold',
+      variant: 'filled',
     },
   },
   {
@@ -34,6 +36,8 @@ const caseInfoColumn: ProColumns<CaseSubStep>[] = [
     ellipsis: true,
     fieldProps: {
       rows: 2,
+      variant: 'filled',
+      allowClear: true,
     },
   },
   {
@@ -45,7 +49,7 @@ const caseInfoColumn: ProColumns<CaseSubStep>[] = [
 ];
 
 interface IProps {
-  caseSubStepDataSource: CaseSubStep[];
+  caseSubStepDataSource?: CaseSubStep[];
   setCaseSubStepDataSource: React.Dispatch<React.SetStateAction<CaseSubStep[]>>;
 }
 
@@ -76,12 +80,22 @@ const CaseSubSteps: FC<IProps> = ({
       );
     }
   }, [caseSubStepDataSource]);
+
+  const copySubStep = async (record: CaseSubStep) => {
+    const newStep: CaseSubStep = {
+      id: Date.now(),
+      do: record.do,
+      exp: record.exp,
+    };
+    setCaseSubStepDataSource((prev) => [...prev, newStep]);
+  };
   return (
     <ProCard>
       <ProFormTextArea
-        name={'case_setup'}
+        name={'case_step_setup'}
         placeholder={'请输入用例前置'}
         fieldProps={{
+          variant: 'filled',
           rows: 1,
         }}
       />
@@ -102,7 +116,10 @@ const CaseSubSteps: FC<IProps> = ({
             type: 'multiple',
             editableKeys,
             actionRender: (row, config, defaultDoms) => {
-              return [defaultDoms.delete, <a>复制</a>];
+              return [
+                <a onClick={async () => await copySubStep(row)}>复制</a>,
+                <a>删除</a>,
+              ];
             },
             onValuesChange: (
               record: CaseSubStep,
@@ -114,6 +131,14 @@ const CaseSubSteps: FC<IProps> = ({
           }}
         />
       </ProForm.Item>
+      <ProFormTextArea
+        name={'case_step_mark'}
+        placeholder={'请输入备注'}
+        fieldProps={{
+          variant: 'filled',
+          rows: 1,
+        }}
+      />
     </ProCard>
   );
 };

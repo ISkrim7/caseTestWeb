@@ -5,7 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import React from 'react';
 
 interface SortableItemProps {
-  id: string;
+  id: number;
   children: React.ReactNode;
 }
 

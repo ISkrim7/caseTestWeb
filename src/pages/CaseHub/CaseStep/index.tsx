@@ -1,13 +1,16 @@
+import MyDrawer from '@/components/MyDrawer';
 import CaseSubSteps from '@/pages/CaseHub/CaseStep/CaseSubSteps';
+import DynamicInfo from '@/pages/CaseHub/CaseStep/DynamicInfo';
 import { CaseStepInfo, CaseSubStep } from '@/pages/CaseHub/type';
+import { CONFIG } from '@/utils/config';
 import {
   CopyOutlined,
   DeleteOutlined,
   DownOutlined,
   MessageOutlined,
+  MoreOutlined,
   PlusOutlined,
   RightOutlined,
-  SettingOutlined,
 } from '@ant-design/icons';
 import {
   ProCard,
@@ -16,11 +19,14 @@ import {
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import type { MenuProps } from 'antd';
-import { Button, Dropdown, Form, Space, Tag } from 'antd';
-import { useEffect, useState } from 'react';
+import { Badge, Button, Dropdown, Form, MenuProps, Space, Tag } from 'antd';
+import { FC, useEffect, useState } from 'react';
 
-const Index = () => {
+interface Props {
+  caseStepData: CaseStepInfo;
+}
+
+const Index: FC<Props> = ({ caseStepData }) => {
   const [form] = Form.useForm<CaseStepInfo>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
   const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
@@ -28,39 +34,62 @@ const Index = () => {
   >([]);
   const [inputVisible, setInputVisible] = useState(true);
   const [tag, setTag] = useState<string>();
-
+  const [openDynamic, setOpenDynamic] = useState(false);
+  const { CASE_STEP_STATUS_TEXT, CASE_STEP_STATUS_COLOR } = CONFIG;
+  useEffect(() => {
+    if (caseStepData) {
+      form.setFieldsValue(caseStepData);
+      if (caseStepData.case_step_tag) {
+        setTag(caseStepData.case_step_tag);
+        setInputVisible(false);
+      }
+      if (caseStepData.case_sub_step) {
+        setCaseSubStepDataSource(caseStepData.case_sub_step);
+      }
+    }
+  }, [caseStepData]);
   const CardTitle = (
     <div
       style={{
         display: 'flex',
         alignItems: 'center',
         width: '100%',
+        minHeight: 32,
+        flexWrap: 'nowrap',
+        overflow: 'hidden',
       }}
       onClick={(e) => e.stopPropagation()}
     >
       <div
-        style={{ marginRight: 8, cursor: 'pointer' }}
+        style={{
+          marginRight: 8,
+          cursor: 'pointer',
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+        }}
         onClick={() => setCollapsible(!collapsible)}
       >
         {collapsible ? <RightOutlined /> : <DownOutlined />}
       </div>
-      <Space size={'large'} style={{ marginLeft: 10 }}>
+      <Space size={'small'} style={{ marginLeft: 10 }}>
+        <Tag>{form.getFieldValue('uid')}</Tag>
         {inputVisible ? (
           <ProFormText
             noStyle={true}
             name={'case_step_tag'}
-            width="sm"
+            // width="sm"
             placeholder="标签"
             fieldProps={{
               onChange: (e) => {
-                setTag(e.target.value);
+                if (e.target.value) setTag(e.target.value);
               },
               onBlur: (e) => {
-                setTag(e.target.value);
+                if (e.target.value) setTag(e.target.value);
               },
               onPressEnter: (e) => {
                 const tagValue = form.getFieldValue('case_step_tag');
-                if (tagValue) {
+                if (tagValue && tag) {
                   setTag(tagValue);
                   setInputVisible(false);
                 }
@@ -68,17 +97,27 @@ const Index = () => {
             }}
           />
         ) : (
-          <Tag
-            onClick={() => {
-              setInputVisible(true);
-            }}
-            color="#2db7f5"
-            onClose={() => {
-              setInputVisible(true);
+          <div
+            style={{
+              width: 100,
             }}
           >
-            {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
-          </Tag>
+            <Tag
+              onClick={() => {
+                setInputVisible(true);
+              }}
+              style={{
+                textOverflow: 'ellipsis',
+                textAlign: 'center',
+              }}
+              color="#2db7f5"
+              // onClose={() => {
+              //   setInputVisible(true);
+              // }}
+            >
+              {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
+            </Tag>
+          </div>
         )}
         <ProFormText
           style={{ fontWeight: 'bold' }}
@@ -156,7 +195,7 @@ const Index = () => {
       setCollapsible(false);
     }
     const newCaseSubStepDataSource: CaseSubStep = {
-      id: Date.now().toString(),
+      id: Date.now(),
       do: `请填写步骤描述`,
       exp: '请填写预期描述',
     };
@@ -165,7 +204,7 @@ const Index = () => {
 
   const menuItems: MenuProps['items'] = [
     {
-      label: '备注',
+      label: '动态',
       key: '1',
       icon: <MessageOutlined />,
     },
@@ -181,27 +220,30 @@ const Index = () => {
     },
   ];
 
-  const handleMenuClick: MenuProps['onClick'] = (e) => {
+  const handleMenuClick: MenuProps['onClick'] = async (e) => {
     console.log('click', e);
     switch (e.key) {
       case '1':
-        console.log('备注');
+        setOpenDynamic(true);
         return;
       case '2':
-        console.log('复制');
+        await copyStepCase();
         return;
       case '3':
-        console.log('de;ete');
+        await deleteStepCase();
     }
   };
+
+  const copyStepCase = async () => {};
+  const deleteStepCase = async () => {};
   const ExtraOpt = (
-    <Space>
+    <Space style={{ marginRight: 20 }}>
+      <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
+        <Button type={'primary'} icon={<MoreOutlined />} />
+      </Dropdown>
       <Button onClick={addSubStepLine} type={'primary'}>
         <PlusOutlined /> 添加步骤
       </Button>
-      <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
-        <SettingOutlined />
-      </Dropdown>
     </Space>
   );
   useEffect(() => {
@@ -225,28 +267,42 @@ const Index = () => {
       submitter={false}
       onValuesChange={handleValuesChange}
     >
-      <ProCard
-        hoverable={true} // 添加悬停效果
-        title={CardTitle}
-        extra={ExtraOpt}
-        split="vertical"
-        bordered
-        bodyStyle={{
-          padding: 10,
-        }}
-        collapsible={false}
-        collapsed={collapsible}
-        defaultCollapsed={true}
-        headerBordered
-        headStyle={{
-          height: 80,
-        }}
+      <Badge.Ribbon
+        text={CASE_STEP_STATUS_TEXT[caseStepData.case_step_status]}
+        color={CASE_STEP_STATUS_COLOR[caseStepData.case_step_status]}
       >
-        <CaseSubSteps
-          caseSubStepDataSource={caseSubStepDataSource}
-          setCaseSubStepDataSource={setCaseSubStepDataSource}
-        />
-      </ProCard>
+        <ProCard
+          hoverable={true} // 添加悬停效果
+          title={CardTitle}
+          extra={ExtraOpt}
+          split="vertical"
+          bordered
+          bodyStyle={{
+            padding: 10,
+          }}
+          collapsible={false}
+          collapsed={collapsible}
+          defaultCollapsed={true}
+          headerBordered
+          headStyle={{
+            height: 80,
+            padding: '0 16px',
+          }}
+        >
+          <CaseSubSteps
+            caseSubStepDataSource={caseSubStepDataSource}
+            setCaseSubStepDataSource={setCaseSubStepDataSource}
+          />
+        </ProCard>
+      </Badge.Ribbon>
+      <MyDrawer
+        name={'动态'}
+        width={'30%'}
+        open={openDynamic}
+        setOpen={setOpenDynamic}
+      >
+        <DynamicInfo />
+      </MyDrawer>
     </ProForm>
   );
 };

@@ -7,10 +7,12 @@ export interface CaseInfo {
   module_id: number;
 
   requirement_url: string;
+  requirement_level: 'P1' | 'P2' | 'P0';
   requirement_name: string;
   is_review: boolean;
-  status: '二轮测试' | '一轮测试中' | '待测试' | '完成';
+  process: '二轮测试' | '一轮测试中' | '待测试' | '完成' | '编写中';
 
+  case_title: string;
   cases: CaseStepInfo[];
   case_number: number;
 
@@ -23,15 +25,17 @@ export interface CaseInfo {
 }
 
 export interface CaseStepInfo {
+  id: number;
+  uid: string;
   case_step_name: string;
   case_step_level: 'P1' | 'P0' | 'P2' | 'P3';
   case_step_type: '冒烟' | '普通';
   case_step_tag: string;
   case_step_setup: string;
-  case_step_pass: boolean;
-  case_step_bugs: string[];
-  case_step_mark: string;
-  case_sub_step: CaseSubStep[];
+  case_step_status: 0 | 1 | 2; // 0:未开始 1:通过 2:失败
+  case_step_bugs?: string[] | [] | undefined;
+  case_step_mark?: string | undefined;
+  case_sub_step?: CaseSubStep[];
 }
 
 export interface CaseSubStep {

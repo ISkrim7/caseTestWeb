@@ -1,4 +1,5 @@
 import { SortableItem } from '@/components/DnDDraggable/SortableItem';
+import { DraggableItem } from '@/components/DnDDraggable/type';
 import {
   closestCenter,
   DndContext,
@@ -15,8 +16,8 @@ import {
 import React, { FC } from 'react';
 
 interface Props {
-  items: { id: string; content: React.ReactNode }[];
-  setItems: React.Dispatch<React.SetStateAction<any[]>>;
+  items: DraggableItem[];
+  setItems: React.Dispatch<React.SetStateAction<DraggableItem[]>>;
 }
 
 const Index: FC<Props> = ({ items, setItems }) => {

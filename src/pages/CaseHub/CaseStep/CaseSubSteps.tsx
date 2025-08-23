@@ -7,6 +7,7 @@ import {
   ProForm,
   ProFormTextArea,
 } from '@ant-design/pro-components';
+import { Button, Space } from 'antd';
 import { debounce } from 'lodash';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 
@@ -139,6 +140,12 @@ const CaseSubSteps: FC<IProps> = ({
           rows: 1,
         }}
       />
+      <Space
+        style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
+      >
+        <Button>Pass</Button>
+        <Button>Fail</Button>
+      </Space>
     </ProCard>
   );
 };

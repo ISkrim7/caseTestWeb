@@ -3,14 +3,13 @@ import { DraggableItem } from '@/components/DnDDraggable/type';
 import CaseStepSearchForm from '@/pages/CaseHub/CaseInfo/CaseStepSearchForm';
 import CaseStep from '@/pages/CaseHub/CaseStep';
 import { CaseStepInfo } from '@/pages/CaseHub/type';
-import { SearchOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, Input, Select, Space } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button } from 'antd';
+import { useEffect, useState } from 'react';
 
 const dataf = () => {
   const v: CaseStepInfo[] = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 50; i++) {
     let d: CaseStepInfo = {
       id: i,
       uid: Date.now().toString().slice(0, 5),
@@ -39,47 +38,20 @@ const dataf = () => {
   return v;
 };
 const data = dataf();
-const caseLevel = [
-  {
-    label: 'P1',
-    value: 'P1',
-  },
-  {
-    label: 'P2',
-    value: 'P2',
-  },
-  {
-    label: 'P3',
-    value: 'P3',
-  },
-  {
-    label: 'P0',
-    value: 'P0',
-  },
-];
-const caseType = [
-  {
-    label: '冒烟',
-    value: '冒烟',
-  },
-  {
-    label: '普通',
-    value: '普通',
-  },
-];
 
 const Index = () => {
   const [caseStepsContent, setCaseStepsContent] = useState<DraggableItem[]>([]);
   const [caseSteps, setCaseSteps] = useState<CaseStepInfo[]>([]);
-  const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
-
-  // 筛选条件状态
-  const [searchName, setSearchName] = useState<string>('');
-  const [searchTags, setSearchTags] = useState<string[]>([]);
-  const [searchLevel, setSearchLevel] = useState<string>('');
-  const [searchType, setSearchType] = useState<string>('');
   const [dataLoading, setDataLoading] = useState(true);
-
+  const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
+  const [showCheckButton, setShowCheckButton] = useState<boolean>(false);
+  const [checkedSupSteps, setCheckSubSteps] = useState<number[]>([]);
+  const [allCollapsed, setAllCollapsed] = useState(true);
+  useEffect(() => {
+    checkedSupSteps.length > 0
+      ? setShowCheckButton(true)
+      : setShowCheckButton(false);
+  }, [checkedSupSteps]);
   useEffect(() => {
     if (data) {
       setCaseSteps(data);
@@ -101,7 +73,6 @@ const Index = () => {
       setCaseStepsContent(transformData2Content(caseSteps));
     }
   }, [caseSteps]);
-
   // useEffect(() => {
   //   if (caseSteps) {
   //     const reorderData = caseSteps.map((item) => item.id);
@@ -109,82 +80,86 @@ const Index = () => {
   //   }
   // }, [caseSteps]);
 
+  // 初始加载数据
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setDataLoading(true);
+      const result = await fetchCaseSteps();
+      setCaseSteps(result);
+      setTags(
+        Array.from(
+          new Map(
+            result.map((item) => [
+              item.case_step_tag,
+              { label: item.case_step_tag, value: item.case_step_tag },
+            ]),
+          ).values(),
+        ),
+      );
+      setDataLoading(false);
+    };
+
+    loadInitialData();
+  }, []);
+  // 模拟API请求
+  const fetchCaseSteps = async () => {
+    try {
+      // 这里模拟API请求延迟
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return data;
+    } finally {
+    }
+  };
+
   const transformData2Content = (data: CaseStepInfo[]) => {
     return data.map((item) => ({
       id: item.id,
       caseStepId: item.id,
-      content: <CaseStep caseStepData={item} />,
+      content: (
+        <CaseStep caseStepData={item} setCheckSubSteps={setCheckSubSteps} />
+      ),
     }));
   };
 
-  // 计算当前筛选条件数量
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (searchName) count++;
-    if (searchTags.length > 0) count++;
-    if (searchLevel) count++;
-    if (searchType) count++;
-    return count;
-  }, [searchName, searchTags, searchLevel, searchType]);
-  // 清空所有筛选
-
-  const clearAllFilters = useCallback(() => {
-    setSearchName('');
-    setSearchTags([]);
-    setSearchLevel('');
-    setSearchType('');
-  }, []);
-
-  const SearchArea = (
-    <Space>
-      <Input
-        prefix={<SearchOutlined />}
-        placeholder={'输入用例名称'}
-        allowClear
-        value={searchName}
-        onChange={(e) => setSearchName(e.target.value)}
-      />
-      <Select
-        placeholder="选择标签"
-        allowClear
-        prefix={<SearchOutlined />}
-        mode="multiple"
-        value={searchTags}
-        onChange={(values: string[]) => setSearchTags(values)}
-        options={tags}
-        style={{ width: 130 }}
-      />
-      <Select
-        placeholder="选择等级"
-        allowClear
-        prefix={<SearchOutlined />}
-        onChange={(value: string) => setSearchLevel(value)}
-        value={searchLevel}
-        options={caseLevel}
-        style={{ width: 130 }}
-      />
-      <Select
-        placeholder="选择类型"
-        allowClear
-        prefix={<SearchOutlined />}
-        value={searchType}
-        onChange={(value: string) => setSearchType(value)}
-        options={caseType}
-        style={{ width: 130 }}
-      />
-      {/* 清空筛选按钮 */}
-      {activeFilterCount > 0 && (
-        <Button type="link" onClick={clearAllFilters} style={{ marginLeft: 8 }}>
-          清空筛选 ({activeFilterCount})
-        </Button>
-      )}
-    </Space>
-  );
   return (
     <ProCard split={'horizontal'} bodyStyle={{ padding: 1 }}>
-      <CaseStepSearchForm />
-      <ProCard loading={dataLoading} bodyStyle={{ padding: 1 }}>
-        <DnDDraggable items={caseStepsContent} setItems={setCaseStepsContent} />
+      <CaseStepSearchForm showCheckButton={showCheckButton} />
+      <ProCard
+        extra={<Button onClick={() => setAllCollapsed(true)}>全部收起</Button>}
+        loading={dataLoading}
+        bodyStyle={{ padding: 1 }}
+      >
+        <div
+          style={{
+            maxHeight: '85vh',
+            overflowY: 'auto',
+            padding: '8px',
+            borderRadius: '8px',
+          }}
+        >
+          <DnDDraggable
+            items={caseStepsContent}
+            setItems={setCaseStepsContent}
+          />
+          {/* 滚动提示 */}
+          {caseStepsContent.length > 10 && (
+            <div
+              style={{
+                position: 'sticky',
+                bottom: 0,
+                background: 'linear-gradient(transparent, #f0f2f5)',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#999',
+                fontSize: '12px',
+              }}
+            >
+              滚动查看更多
+            </div>
+          )}
+        </div>
       </ProCard>
     </ProCard>
   );

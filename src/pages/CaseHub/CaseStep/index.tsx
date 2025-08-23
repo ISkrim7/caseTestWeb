@@ -15,18 +15,27 @@ import {
 import {
   ProCard,
   ProForm,
-  ProFormRadio,
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Badge, Button, Dropdown, Form, MenuProps, Space, Tag } from 'antd';
-import { FC, useEffect, useState } from 'react';
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Dropdown,
+  Form,
+  MenuProps,
+  Space,
+  Tag,
+} from 'antd';
+import React, { FC, useEffect, useState } from 'react';
 
 interface Props {
   caseStepData: CaseStepInfo;
+  setCheckSubSteps: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-const Index: FC<Props> = ({ caseStepData }) => {
+const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
   const [form] = Form.useForm<CaseStepInfo>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
   const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
@@ -36,6 +45,7 @@ const Index: FC<Props> = ({ caseStepData }) => {
   const [tag, setTag] = useState<string>();
   const [openDynamic, setOpenDynamic] = useState(false);
   const { CASE_STEP_STATUS_TEXT, CASE_STEP_STATUS_COLOR } = CONFIG;
+
   useEffect(() => {
     if (caseStepData) {
       form.setFieldsValue(caseStepData);
@@ -50,6 +60,7 @@ const Index: FC<Props> = ({ caseStepData }) => {
   }, [caseStepData]);
   const CardTitle = (
     <div
+      key={caseStepData.id}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -60,25 +71,40 @@ const Index: FC<Props> = ({ caseStepData }) => {
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div
-        style={{
-          marginRight: 8,
-          cursor: 'pointer',
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-        }}
-        onClick={() => setCollapsible(!collapsible)}
-      >
-        {collapsible ? <RightOutlined /> : <DownOutlined />}
-      </div>
+      <Space size={'small'}>
+        <Checkbox
+          onChange={(e) => {
+            const checked = e.target.checked;
+            const subStepId = caseStepData.id;
+            setCheckSubSteps((pre) =>
+              checked
+                ? pre.includes(subStepId)
+                  ? pre
+                  : [...pre, subStepId]
+                : pre.filter((id) => id !== subStepId),
+            );
+          }}
+        />
+        <div
+          style={{
+            marginRight: 8,
+            cursor: 'pointer',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          onClick={() => setCollapsible(!collapsible)}
+        >
+          {collapsible ? <RightOutlined /> : <DownOutlined />}
+        </div>
+      </Space>
+
       <Space size={'small'} style={{ marginLeft: 10 }}>
-        <Tag>{form.getFieldValue('uid')}</Tag>
+        {/*<Text type={'secondary'}>{form.getFieldValue('uid')}</Text>*/}
         {inputVisible ? (
           <ProFormText
             noStyle={true}
             name={'case_step_tag'}
-            // width="sm"
             placeholder="标签"
             fieldProps={{
               onChange: (e) => {
@@ -97,27 +123,21 @@ const Index: FC<Props> = ({ caseStepData }) => {
             }}
           />
         ) : (
-          <div
-            style={{
-              width: 100,
+          <Tag
+            onClick={() => {
+              setInputVisible(true);
             }}
+            style={{
+              textOverflow: 'ellipsis',
+              textAlign: 'center',
+            }}
+            color="#2db7f5"
+            // onClose={() => {
+            //   setInputVisible(true);
+            // }}
           >
-            <Tag
-              onClick={() => {
-                setInputVisible(true);
-              }}
-              style={{
-                textOverflow: 'ellipsis',
-                textAlign: 'center',
-              }}
-              color="#2db7f5"
-              // onClose={() => {
-              //   setInputVisible(true);
-              // }}
-            >
-              {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
-            </Tag>
-          </div>
+            {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
+          </Tag>
         )}
         <ProFormText
           style={{ fontWeight: 'bold' }}
@@ -130,22 +150,21 @@ const Index: FC<Props> = ({ caseStepData }) => {
             },
           }}
           allowClear
-          noStyle={true}
+          noStyle
           name={'case_step_name'}
           placeholder={'请输入用例标题'}
-          required={true}
+          required
           tooltip={'最长20位'}
           rules={[{ required: true, message: '标题不能为空' }]}
         />
-        <ProFormRadio.Group
+        <ProFormSelect
           noStyle
           style={{ borderRadius: 20 }}
           name="case_step_level"
-          radioType="button"
-          required={true}
-          fieldProps={{
-            buttonStyle: 'solid',
-          }}
+          required
+          // fieldProps={{
+          //   buttonStyle: 'solid',
+          // }}
           initialValue={'P1'}
           options={[
             {
@@ -248,7 +267,6 @@ const Index: FC<Props> = ({ caseStepData }) => {
   );
   useEffect(() => {
     if (caseSubStepDataSource) {
-      console.log('==========', caseSubStepDataSource);
       form.setFieldsValue({ case_sub_step: caseSubStepDataSource });
     }
   }, [caseSubStepDataSource]);
@@ -272,7 +290,7 @@ const Index: FC<Props> = ({ caseStepData }) => {
         color={CASE_STEP_STATUS_COLOR[caseStepData.case_step_status]}
       >
         <ProCard
-          hoverable={true} // 添加悬停效果
+          hoverable
           title={CardTitle}
           extra={ExtraOpt}
           split="vertical"
@@ -280,9 +298,8 @@ const Index: FC<Props> = ({ caseStepData }) => {
           bodyStyle={{
             padding: 10,
           }}
-          collapsible={false}
+          collapsible
           collapsed={collapsible}
-          defaultCollapsed={true}
           headerBordered
           headStyle={{
             height: 80,

@@ -6,7 +6,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { Button, Form, Space } from 'antd';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 
 const caseLevel = [
   {
@@ -37,21 +37,29 @@ const caseType = [
     value: '普通',
   },
 ];
-const CaseStepSearchForm = () => {
+
+interface Props {
+  showCheckButton: boolean;
+}
+
+const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
   const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
   const [form] = Form.useForm();
 
   return (
     <ProCard
       extra={
-        <Space>
-          <Button>搜索</Button>
-          <Button>重置</Button>
-        </Space>
+        showCheckButton && (
+          <Space>
+            <Button>操作</Button>
+          </Space>
+        )
       }
     >
       <ProForm form={form} submitter={false}>
-        <ProForm.Group>
+        <ProForm.Group
+          style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
+        >
           <ProFormText
             width="sm"
             name="caseStepName"

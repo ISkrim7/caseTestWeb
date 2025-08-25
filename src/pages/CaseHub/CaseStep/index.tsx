@@ -1,8 +1,8 @@
 import MyDrawer from '@/components/MyDrawer';
+import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
 import CaseSubSteps from '@/pages/CaseHub/CaseStep/CaseSubSteps';
 import DynamicInfo from '@/pages/CaseHub/CaseStep/DynamicInfo';
 import { CaseStepInfo, CaseSubStep } from '@/pages/CaseHub/type';
-import { CONFIG } from '@/utils/config';
 import {
   CopyOutlined,
   DeleteOutlined,
@@ -41,17 +41,35 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
   const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
     CaseSubStep[]
   >([]);
-  const [inputVisible, setInputVisible] = useState(true);
+  const [tagVisible, setTagVisible] = useState(true);
+  const [levelVisible, setLevelVisible] = useState(true);
+  const [typeVisible, setTypeVisible] = useState(true);
   const [tag, setTag] = useState<string>();
+  const [level, setLevel] = useState<string>('P2');
+  const [type, setType] = useState<number>(2);
   const [openDynamic, setOpenDynamic] = useState(false);
-  const { CASE_STEP_STATUS_TEXT, CASE_STEP_STATUS_COLOR } = CONFIG;
-
+  const {
+    CASE_LEVEL_OPTION,
+    CASE_STEP_STATUS_TEXT_ENUM,
+    CASE_STEP_STATUS_COLOR_ENUM,
+    CASE_TYPE_OPTION,
+    CASE_TYPE_ENUM,
+    CASE_LEVEL_COLOR_ENUM,
+  } = CaseHubConfig;
   useEffect(() => {
     if (caseStepData) {
       form.setFieldsValue(caseStepData);
       if (caseStepData.case_step_tag) {
         setTag(caseStepData.case_step_tag);
-        setInputVisible(false);
+        setTagVisible(false);
+      }
+      if (caseStepData.case_step_level) {
+        setLevel(caseStepData.case_step_level);
+        setLevelVisible(false);
+      }
+      if (caseStepData.case_step_type) {
+        setType(caseStepData.case_step_type);
+        setTypeVisible(false);
       }
       if (caseStepData.case_sub_step) {
         setCaseSubStepDataSource(caseStepData.case_sub_step);
@@ -100,45 +118,7 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
       </Space>
 
       <Space size={'small'} style={{ marginLeft: 10 }}>
-        {/*<Text type={'secondary'}>{form.getFieldValue('uid')}</Text>*/}
-        {inputVisible ? (
-          <ProFormText
-            noStyle={true}
-            name={'case_step_tag'}
-            placeholder="标签"
-            fieldProps={{
-              onChange: (e) => {
-                if (e.target.value) setTag(e.target.value);
-              },
-              onBlur: (e) => {
-                if (e.target.value) setTag(e.target.value);
-              },
-              onPressEnter: (e) => {
-                const tagValue = form.getFieldValue('case_step_tag');
-                if (tagValue && tag) {
-                  setTag(tagValue);
-                  setInputVisible(false);
-                }
-              },
-            }}
-          />
-        ) : (
-          <Tag
-            onClick={() => {
-              setInputVisible(true);
-            }}
-            style={{
-              textOverflow: 'ellipsis',
-              textAlign: 'center',
-            }}
-            color="#2db7f5"
-            // onClose={() => {
-            //   setInputVisible(true);
-            // }}
-          >
-            {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
-          </Tag>
-        )}
+        <Tag>{form.getFieldValue('uid')}</Tag>
         <ProFormText
           style={{ fontWeight: 'bold' }}
           fieldProps={{
@@ -156,53 +136,6 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
           required
           tooltip={'最长20位'}
           rules={[{ required: true, message: '标题不能为空' }]}
-        />
-        <ProFormSelect
-          noStyle
-          style={{ borderRadius: 20 }}
-          name="case_step_level"
-          required
-          // fieldProps={{
-          //   buttonStyle: 'solid',
-          // }}
-          initialValue={'P1'}
-          options={[
-            {
-              label: 'P0',
-              value: 'P0',
-            },
-            {
-              label: 'P1',
-              value: 'P1',
-            },
-            {
-              label: 'P2',
-              value: 'P2',
-            },
-            {
-              label: 'P3',
-              value: 'P3',
-            },
-          ]}
-        />
-        <ProFormSelect
-          noStyle
-          style={{
-            borderRadius: 20,
-            height: 'auto',
-          }}
-          name={'case_step_type'}
-          initialValue={'普通'}
-          options={[
-            {
-              label: '普通',
-              value: '普通',
-            },
-            {
-              label: '冒烟',
-              value: '冒烟',
-            },
-          ]}
         />
       </Space>
     </div>
@@ -257,6 +190,88 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
   const deleteStepCase = async () => {};
   const ExtraOpt = (
     <Space style={{ marginRight: 20 }}>
+      {tagVisible ? (
+        <ProFormText
+          noStyle={true}
+          name={'case_step_tag'}
+          placeholder="标签"
+          fieldProps={{
+            onChange: (e) => {
+              if (e.target.value) setTag(e.target.value);
+            },
+            onBlur: (e) => {
+              const tagValue = form.getFieldValue('case_step_tag');
+              if (tagValue && tag) {
+                setTag(tagValue);
+                setTagVisible(false);
+              }
+            },
+            onPressEnter: (e) => {
+              const tagValue = form.getFieldValue('case_step_tag');
+              if (tagValue && tag) {
+                setTag(tagValue);
+                setTagVisible(false);
+              }
+            },
+          }}
+        />
+      ) : (
+        <Tag
+          onClick={() => {
+            setTagVisible(true);
+          }}
+          style={{
+            textOverflow: 'ellipsis',
+            textAlign: 'center',
+          }}
+          color="#2db7f5"
+          // onClose={() => {
+          //   setTagVisible(true);
+          // }}
+        >
+          {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
+        </Tag>
+      )}
+      {levelVisible ? (
+        <ProFormSelect
+          noStyle
+          style={{ borderRadius: 20 }}
+          name="case_step_level"
+          required
+          onChange={(value: string) => {
+            setLevel(value);
+            setLevelVisible(false);
+          }}
+          initialValue={'P1'}
+          options={CASE_LEVEL_OPTION}
+        />
+      ) : (
+        <Tag
+          color={CASE_LEVEL_COLOR_ENUM[level]}
+          onClick={() => setLevelVisible(true)}
+        >
+          {level}
+        </Tag>
+      )}
+      {typeVisible ? (
+        <ProFormSelect
+          noStyle
+          style={{
+            borderRadius: 20,
+            height: 'auto',
+          }}
+          onChange={(value: number) => {
+            setType(value);
+            setTypeVisible(false);
+          }}
+          name={'case_step_type'}
+          initialValue={2}
+          // valueEnum={CASE_TYPE_ENUM}
+          options={CASE_TYPE_OPTION}
+        />
+      ) : (
+        <Tag onClick={() => setTypeVisible(true)}>{CASE_TYPE_ENUM[type]}</Tag>
+      )}
       <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
         <Button type={'primary'} icon={<MoreOutlined />} />
       </Dropdown>
@@ -286,8 +301,8 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
       onValuesChange={handleValuesChange}
     >
       <Badge.Ribbon
-        text={CASE_STEP_STATUS_TEXT[caseStepData.case_step_status]}
-        color={CASE_STEP_STATUS_COLOR[caseStepData.case_step_status]}
+        text={CASE_STEP_STATUS_TEXT_ENUM[caseStepData.case_step_status]}
+        color={CASE_STEP_STATUS_COLOR_ENUM[caseStepData.case_step_status]}
       >
         <ProCard
           hoverable

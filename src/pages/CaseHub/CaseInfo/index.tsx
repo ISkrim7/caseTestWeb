@@ -15,7 +15,7 @@ const dataf = () => {
       uid: Date.now().toString().slice(0, 5),
       case_step_name: `case${i}`,
       case_step_level: 'P1',
-      case_step_type: '普通',
+      case_step_type: 1,
       case_step_tag: 'tag2',
       case_step_setup: 'setup2',
       case_step_status: 2,

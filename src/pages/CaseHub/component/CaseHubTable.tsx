@@ -1,6 +1,6 @@
 import { pageCase } from '@/api/case';
 import MyProTable from '@/components/Table/MyProTable';
-import AddCase from '@/pages/CaseHub/component/AddCase';
+import Requirement from '@/pages/CaseHub/Requirement';
 import { CaseInfo } from '@/pages/CaseHub/type';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
@@ -149,10 +149,9 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentModuleId }) => {
         columns={caseColumns}
         request={fetchPageData}
         toolBarRender={() => [
-          <AddCase
+          <Requirement
             currentModuleId={currentModuleId}
-            projectID={projectID!}
-            callback={reloadTable}
+            currentProjectId={projectID}
           />,
         ]}
       />

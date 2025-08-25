@@ -24,16 +24,6 @@ export const ModuleEnum = {
 };
 
 export const CONFIG: IObjGet = {
-  CASE_STEP_STATUS_TEXT: {
-    0: 'WAIT',
-    1: 'PASS',
-    2: 'FAIL',
-  },
-  CASE_STEP_STATUS_COLOR: {
-    0: 'blue',
-    1: 'green',
-    2: 'red',
-  },
   EXTRACT_TARGET_ENUM: {
     6: { text: 'Response.json' },
     8: { text: 'Response.text' },

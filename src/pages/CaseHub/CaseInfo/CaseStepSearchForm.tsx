@@ -1,3 +1,4 @@
+import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
 import { SearchOutlined } from '@ant-design/icons';
 import {
   ProCard,
@@ -8,36 +9,6 @@ import {
 import { Button, Form, Space } from 'antd';
 import { FC, useState } from 'react';
 
-const caseLevel = [
-  {
-    label: 'P1',
-    value: 'P1',
-  },
-  {
-    label: 'P2',
-    value: 'P2',
-  },
-  {
-    label: 'P3',
-    value: 'P3',
-  },
-  {
-    label: 'P0',
-    value: 'P0',
-  },
-];
-
-const caseType = [
-  {
-    label: '冒烟',
-    value: '冒烟',
-  },
-  {
-    label: '普通',
-    value: '普通',
-  },
-];
-
 interface Props {
   showCheckButton: boolean;
 }
@@ -45,7 +16,7 @@ interface Props {
 const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
   const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
   const [form] = Form.useForm();
-
+  const { CASE_LEVEL_OPTION, CASE_TYPE_OPTION } = CaseHubConfig;
   return (
     <ProCard
       extra={
@@ -83,7 +54,7 @@ const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
             placeholder="选择等级"
             mode="multiple"
             allowClear
-            options={caseLevel}
+            options={CASE_LEVEL_OPTION}
           />
           <ProFormSelect
             width="sm"
@@ -91,7 +62,7 @@ const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
             placeholder="选择类型"
             mode="multiple"
             allowClear
-            options={caseType}
+            options={CASE_TYPE_OPTION}
           />
           <Space
             style={{

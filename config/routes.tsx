@@ -317,6 +317,11 @@ export default [
         name: 'CaseHub',
         component: '@/pages/CaseHub/CaseInfo',
       },
+      {
+        path: '/debugger/casehub/req',
+        name: 'CaseHub',
+        component: '@/pages/CaseHub/Requirement',
+      },
     ],
   },
   {

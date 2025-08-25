@@ -29,7 +29,7 @@ export interface CaseStepInfo {
   uid: string;
   case_step_name: string;
   case_step_level: 'P1' | 'P0' | 'P2' | 'P3';
-  case_step_type: '冒烟' | '普通';
+  case_step_type: 1 | 2;
   case_step_tag: string;
   case_step_setup: string;
   case_step_status: 0 | 1 | 2; // 0:未开始 1:通过 2:失败

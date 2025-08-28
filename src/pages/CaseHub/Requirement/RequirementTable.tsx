@@ -1,7 +1,10 @@
-import { pageCase } from '@/api/case';
+import { pageRequirement } from '@/api/case/requirement';
+import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
-import Requirement from '@/pages/CaseHub/Requirement';
-import { CaseInfo } from '@/pages/CaseHub/type';
+import { RequirementProcessEnum } from '@/pages/CaseHub/CaseConfig';
+import Requirement from '@/pages/CaseHub/Requirement/index';
+import RequirementDetail from '@/pages/CaseHub/Requirement/RequirementDetail';
+import { IRequirement } from '@/pages/CaseHub/type';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProCard } from '@ant-design/pro-components';
@@ -10,38 +13,32 @@ import { Popconfirm, Space, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
-  projectID: number;
-  currentModuleId: number;
+  currentProjectId?: number;
+  currentModuleId?: number;
+  perKey: string;
 }
 
-const CaseHubTable: FC<SelfProps> = ({ projectID, currentModuleId }) => {
-  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-  const [caseInfo, setCaseInfo] = useState<CaseInfo>();
-  const [showCaseDrawerVisibleProps, setShowCaseDrawerVisibleProps] =
-    useState<boolean>(false);
+const RequirementTable: FC<SelfProps> = ({
+  currentProjectId,
+  perKey,
+  currentModuleId,
+}) => {
+  const actionRef = useRef<ActionType>();
+  const [detailVisible, setDetailVisible] = useState<boolean>(false);
+  const [currentReqId, setCurrentReqId] = useState<number>();
 
-  const fetchDeleteDate = async (id: string) => {};
-  const caseColumns: ProColumns[] = [
+  const columns: ProColumns<IRequirement>[] = [
     {
       title: 'ID',
       key: 'uid',
       dataIndex: 'uid',
       fixed: 'left',
-      width: '10%',
-      copyable: true,
-    },
-    {
-      title: '用例',
-      key: 'case_title',
-      dataIndex: 'case_title',
-      width: '20%',
       copyable: true,
     },
     {
       title: '需求名',
       key: 'requirement_name',
       dataIndex: 'requirement_name',
-      width: '20%',
       copyable: true,
     },
     {
@@ -49,11 +46,10 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentModuleId }) => {
       key: 'requirement_level',
       dataIndex: 'requirement_level',
       valueEnum: CONFIG.CASE_LEVEL_ENUM,
-      width: '10%',
       render: (text, record) => {
         return (
-          <Tag color={CONFIG.RENDER_CASE_LEVEL[record.case_level].color}>
-            {CONFIG.RENDER_CASE_LEVEL[record.case_level].text}
+          <Tag color={CONFIG.RENDER_CASE_LEVEL[record.requirement_level].color}>
+            {CONFIG.RENDER_CASE_LEVEL[record.requirement_level].text}
           </Tag>
         );
       },
@@ -63,52 +59,53 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentModuleId }) => {
       key: 'process',
       dataIndex: 'process',
       width: '10%',
+      valueEnum: RequirementProcessEnum,
       render: (text, record) => {
-        return <Tag></Tag>;
+        return <Tag>{RequirementProcessEnum[record.process]}</Tag>;
       },
     },
     {
       title: '用例数',
       key: 'case_number',
       dataIndex: 'case_number',
-      width: '10%',
       hideInSearch: true,
       render: (text, record) => {
-        return <Tag></Tag>;
+        return <Tag>{record.case_number}</Tag>;
       },
     },
     {
-      title: '评审',
-      key: 'is_review',
-      dataIndex: 'is_review',
-    },
-    {
-      title: '维护人',
+      title: '创建人',
       key: 'creatorName',
       dataIndex: 'creatorName',
+      hideInSearch: true,
     },
     {
       title: '操作',
       valueType: 'option',
       fixed: 'right',
-      render: (_: any, record: any) => {
+      render: (_: any, record: IRequirement) => {
         return (
           <Space>
             <a
               onClick={() => {
-                setCaseInfo(record);
-                setShowCaseDrawerVisibleProps(true);
+                window.open(
+                  `/cases/caseHub/requirementCases/reqId=${record.id}&projectId=${currentProjectId}&moduleId=${currentModuleId}`,
+                );
+              }}
+            >
+              用例
+            </a>
+            <a
+              onClick={() => {
+                setCurrentReqId(record.id);
+                setDetailVisible(true);
               }}
             >
               详情
             </a>
-
-            <a>需求文档</a>
             <Popconfirm
               title="确定要删除吗？"
-              onConfirm={async () => {
-                await fetchDeleteDate(record.uid);
-              }}
+              onConfirm={async () => {}}
               okText="是"
               cancelText="否"
             >
@@ -120,38 +117,46 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentModuleId }) => {
     },
   ];
 
-  const reloadTable = () => {
-    setShowCaseDrawerVisibleProps(false);
-    actionRef.current?.reload();
-  };
   useEffect(() => {
-    reloadTable();
-  }, [currentModuleId, projectID]);
+    actionRef.current?.reload();
+  }, [currentModuleId, currentProjectId]);
 
   const fetchPageData = useCallback(
-    async (params: any, sort: any) => {
+    async (params: IRequirement, sort: any) => {
       const values = {
         ...params,
         module_id: currentModuleId,
         module_type: ModuleEnum.CASE,
+        sort: sort,
       };
-      const { code, data } = await pageCase(values);
+      const { code, data } = await pageRequirement(values);
       return pageData(code, data);
     },
-    [currentModuleId, projectID],
+    [currentModuleId],
   );
 
   return (
     <ProCard bodyStyle={{ padding: 2 }}>
+      <MyDrawer name={''} open={detailVisible} setOpen={setDetailVisible}>
+        <RequirementDetail
+          requirementId={currentReqId}
+          callback={() => {
+            setDetailVisible(false);
+            actionRef.current?.reload();
+          }}
+        />
+      </MyDrawer>
       <MyProTable
+        persistenceKey={perKey}
         rowKey={'id'}
         actionRef={actionRef}
-        columns={caseColumns}
+        columns={columns}
         request={fetchPageData}
         toolBarRender={() => [
           <Requirement
+            callback={() => actionRef.current?.reload()}
             currentModuleId={currentModuleId}
-            currentProjectId={projectID}
+            currentProjectId={currentProjectId}
           />,
         ]}
       />
@@ -159,4 +164,4 @@ const CaseHubTable: FC<SelfProps> = ({ projectID, currentModuleId }) => {
   );
 };
 
-export default CaseHubTable;
+export default RequirementTable;

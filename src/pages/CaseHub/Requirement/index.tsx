@@ -1,7 +1,9 @@
 import { IModuleEnum } from '@/api';
 import { searchUser } from '@/api/base';
+import { insertRequirement } from '@/api/case/requirement';
 import MyDrawer from '@/components/MyDrawer';
 import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
+import { IRequirement } from '@/pages/CaseHub/type';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useModel } from '@@/exports';
@@ -13,15 +15,16 @@ import {
   ProFormTreeSelect,
   StepsForm,
 } from '@ant-design/pro-components';
-import { Button, Empty } from 'antd';
+import { Button, Empty, message } from 'antd';
 import { FC, useEffect, useRef, useState } from 'react';
 
 interface Props {
   currentProjectId?: number;
   currentModuleId?: number;
+  callback: () => void;
 }
 
-const Index: FC<Props> = ({ currentProjectId, currentModuleId }) => {
+const Index: FC<Props> = ({ currentProjectId, currentModuleId, callback }) => {
   const formRef = useRef<ProFormInstance>();
 
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
@@ -160,10 +163,16 @@ const Index: FC<Props> = ({ currentProjectId, currentModuleId }) => {
         setOpen={setDrawerVisible}
       >
         <ProCard>
-          <StepsForm
+          <StepsForm<IRequirement>
             formRef={formRef}
             onFinish={async (values) => {
               console.log(values);
+              const { code, data, msg } = await insertRequirement(values);
+              if (code === 0) {
+                message.success(msg);
+                setDrawerVisible(false);
+                callback();
+              }
             }}
             stepsProps={{ direction: 'vertical' }}
             formProps={{

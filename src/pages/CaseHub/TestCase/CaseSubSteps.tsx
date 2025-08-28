@@ -20,7 +20,7 @@ const caseInfoColumn: ProColumns<CaseSubStep>[] = [
   },
   {
     title: '操作步骤',
-    dataIndex: 'do',
+    dataIndex: 'action',
     valueType: 'textarea',
     ellipsis: true,
     fieldProps: {
@@ -32,7 +32,7 @@ const caseInfoColumn: ProColumns<CaseSubStep>[] = [
   },
   {
     title: '预期结果',
-    dataIndex: 'exp',
+    dataIndex: 'expected_result',
     valueType: 'textarea',
     ellipsis: true,
     fieldProps: {
@@ -52,9 +52,11 @@ const caseInfoColumn: ProColumns<CaseSubStep>[] = [
 interface IProps {
   caseSubStepDataSource?: CaseSubStep[];
   setCaseSubStepDataSource: React.Dispatch<React.SetStateAction<CaseSubStep[]>>;
+  save: React.ReactNode;
 }
 
 const CaseSubSteps: FC<IProps> = ({
+  save,
   caseSubStepDataSource,
   setCaseSubStepDataSource,
 }) => {
@@ -85,8 +87,8 @@ const CaseSubSteps: FC<IProps> = ({
   const copySubStep = async (record: CaseSubStep) => {
     const newStep: CaseSubStep = {
       id: Date.now(),
-      do: record.do,
-      exp: record.exp,
+      action: record.action,
+      expected_result: record.expected_result,
     };
     setCaseSubStepDataSource((prev) => [...prev, newStep]);
   };
@@ -143,6 +145,7 @@ const CaseSubSteps: FC<IProps> = ({
       <Space
         style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
       >
+        {save}
         <Button>Pass</Button>
         <Button>Fail</Button>
       </Space>

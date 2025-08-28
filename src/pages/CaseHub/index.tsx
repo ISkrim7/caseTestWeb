@@ -1,5 +1,7 @@
 import LeftComponents from '@/components/LeftComponents';
-import CaseHubTable from '@/pages/CaseHub/component/CaseHubTable';
+import MyTabs from '@/components/MyTabs';
+import CaseDataSource from '@/pages/CaseHub/CaseDataSource';
+import RequirementTable from '@/pages/CaseHub/Requirement/RequirementTable';
 import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -12,6 +14,27 @@ const Index = () => {
   const [currentModuleId, setCurrentModuleId] = useState<number | undefined>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
 
+  const PerKeyRequirement = 'Requirement';
+  const PerKeyCaseDataSource = 'CaseDataSource';
+
+  const items = [
+    {
+      key: '1',
+      label: '需求',
+      children: (
+        <RequirementTable
+          perKey={PerKeyRequirement}
+          currentProjectId={currentProjectId}
+          currentModuleId={currentModuleId}
+        />
+      ),
+    },
+    {
+      key: '2',
+      label: '用例库',
+      children: <CaseDataSource perKey={PerKeyCaseDataSource} />,
+    },
+  ];
   return (
     <PageContainer title={false}>
       <ProCard
@@ -19,6 +42,7 @@ const Index = () => {
         bodyStyle={{ padding: 0 }}
         bordered={false}
       >
+        {/*// @ts-ignore*/}
         <SplitterLayout
           ref={splitPaneRef}
           percentage={true}
@@ -32,10 +56,9 @@ const Index = () => {
             setCurrentProjectId={setCurrentProjectId}
             setCurrentModuleId={setCurrentModuleId}
           />
-          <CaseHubTable
-            projectID={currentProjectId!}
-            currentModuleId={currentModuleId!}
-          />
+          <ProCard>
+            <MyTabs defaultActiveKey={'1'} items={items} tabPosition={'top'} />
+          </ProCard>
         </SplitterLayout>
       </ProCard>
     </PageContainer>

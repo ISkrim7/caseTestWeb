@@ -37,14 +37,27 @@ export const CaseHubConfig: any = {
     1: '冒烟',
     2: '普通',
   },
-  CASE_STEP_STATUS_TEXT_ENUM: {
+  CASE_STATUS_TEXT_ENUM: {
     0: 'WAIT',
     1: 'PASS',
     2: 'FAIL',
   },
-  CASE_STEP_STATUS_COLOR_ENUM: {
+  CASE_STATUS_COLOR_ENUM: {
     0: 'blue',
     1: 'green',
     2: 'red',
   },
+};
+
+export const RequirementProcessEnum: { [key: number]: string } = {
+  1: '二轮测试中',
+  2: '一轮测试中',
+  3: '待测试',
+  4: '完成',
+  5: '用例中',
+};
+
+export const RequirementIsReviewEnum: { [key: number]: string } = {
+  1: '是',
+  0: '否',
 };

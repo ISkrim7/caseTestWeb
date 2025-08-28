@@ -108,6 +108,14 @@ export async function searchUser(
   });
 }
 
+/** 模糊搜索用户 GET /users */
+export async function queryUser(options?: IObjGet) {
+  return request<IResponse<IUser[]>>('/api/user/query', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 /**
  * 项目query
  */

@@ -90,6 +90,12 @@ export default [
         name: '测试用例',
         component: '@/pages/CaseHub',
       },
+      {
+        path: '/cases/caseHub/requirementCases/reqId=:reqId&projectId=:projectId&moduleId=:moduleId',
+        name: 'CaseHub',
+        hideInMenu: true,
+        component: '@/pages/CaseHub/CaseInfo',
+      },
     ],
   },
   {
@@ -311,16 +317,6 @@ export default [
         path: '/debugger/jp',
         name: 'Jsonpath',
         component: '@/pages/Httpx/componets/JsonPathTool.tsx',
-      },
-      {
-        path: '/debugger/casehub',
-        name: 'CaseHub',
-        component: '@/pages/CaseHub/CaseInfo',
-      },
-      {
-        path: '/debugger/casehub/req',
-        name: 'CaseHub',
-        component: '@/pages/CaseHub/Requirement',
       },
     ],
   },

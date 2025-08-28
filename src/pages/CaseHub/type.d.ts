@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface CaseInfo {
+export interface IRequirement {
   id: number;
   uid: string;
   project_id: number;
@@ -9,13 +9,12 @@ export interface CaseInfo {
   requirement_url: string;
   requirement_level: 'P1' | 'P2' | 'P0';
   requirement_name: string;
-  is_review: boolean;
-  process: '二轮测试' | '一轮测试中' | '待测试' | '完成' | '编写中';
+  process: number;
 
-  case_title: string;
-  cases: CaseStepInfo[];
+  cases?: ITestCase[];
   case_number: number;
-
+  develops?: number[];
+  maintainer: number;
   creator: number;
   creatorName: string;
   updater: number;
@@ -24,22 +23,26 @@ export interface CaseInfo {
   update_time: string;
 }
 
-export interface CaseStepInfo {
+export interface ITestCase {
   id: number;
-  uid: string;
-  case_step_name: string;
-  case_step_level: 'P1' | 'P0' | 'P2' | 'P3';
-  case_step_type: 1 | 2;
-  case_step_tag: string;
-  case_step_setup: string;
-  case_step_status: 0 | 1 | 2; // 0:未开始 1:通过 2:失败
-  case_step_bugs?: string[] | [] | undefined;
-  case_step_mark?: string | undefined;
-  case_sub_step?: CaseSubStep[];
+  uid?: string;
+  case_name: string;
+  case_level: 'P1' | 'P0' | 'P2' | 'P3';
+  case_type: 1 | 2;
+  case_tag?: string;
+  case_setup?: string;
+  case_status?: 0 | 1 | 2; // 0:未开始 1:通过 2:失败
+  case_bugs?: string[] | [] | undefined;
+  case_mark?: string | undefined;
+  case_sub_steps?: CaseSubStep[];
+  requirementId?: number | string;
+
+  project_id: number;
+  module_id: number;
 }
 
 export interface CaseSubStep {
   id: React.Key;
-  do: string;
-  exp: string;
+  action: string;
+  expected_result: string;
 }

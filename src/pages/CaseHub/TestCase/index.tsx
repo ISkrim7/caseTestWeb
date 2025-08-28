@@ -1,8 +1,9 @@
+import { saveTestCase } from '@/api/case/testCase';
 import MyDrawer from '@/components/MyDrawer';
 import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
-import CaseSubSteps from '@/pages/CaseHub/CaseStep/CaseSubSteps';
-import DynamicInfo from '@/pages/CaseHub/CaseStep/DynamicInfo';
-import { CaseStepInfo, CaseSubStep } from '@/pages/CaseHub/type';
+import CaseSubSteps from '@/pages/CaseHub/TestCase/CaseSubSteps';
+import DynamicInfo from '@/pages/CaseHub/TestCase/DynamicInfo';
+import { CaseSubStep, ITestCase } from '@/pages/CaseHub/type';
 import {
   CopyOutlined,
   DeleteOutlined,
@@ -25,18 +26,21 @@ import {
   Dropdown,
   Form,
   MenuProps,
+  message,
+  Select,
   Space,
   Tag,
 } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 
 interface Props {
-  caseStepData: CaseStepInfo;
+  tags?: { label: string; value: string }[];
+  testcaseData?: ITestCase;
   setCheckSubSteps: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
-  const [form] = Form.useForm<CaseStepInfo>();
+const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
+  const [form] = Form.useForm<ITestCase>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
   const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
     CaseSubStep[]
@@ -50,35 +54,36 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
   const [openDynamic, setOpenDynamic] = useState(false);
   const {
     CASE_LEVEL_OPTION,
-    CASE_STEP_STATUS_TEXT_ENUM,
-    CASE_STEP_STATUS_COLOR_ENUM,
+    CASE_STATUS_TEXT_ENUM,
+    CASE_STATUS_COLOR_ENUM,
     CASE_TYPE_OPTION,
     CASE_TYPE_ENUM,
     CASE_LEVEL_COLOR_ENUM,
   } = CaseHubConfig;
   useEffect(() => {
-    if (caseStepData) {
-      form.setFieldsValue(caseStepData);
-      if (caseStepData.case_step_tag) {
-        setTag(caseStepData.case_step_tag);
+    console.log(tags);
+    if (testcaseData) {
+      form.setFieldsValue(testcaseData);
+      if (testcaseData.case_tag) {
+        setTag(testcaseData.case_tag);
         setTagVisible(false);
       }
-      if (caseStepData.case_step_level) {
-        setLevel(caseStepData.case_step_level);
+      if (testcaseData.case_level) {
+        setLevel(testcaseData.case_level);
         setLevelVisible(false);
       }
-      if (caseStepData.case_step_type) {
-        setType(caseStepData.case_step_type);
+      if (testcaseData.case_type) {
+        setType(testcaseData.case_type);
         setTypeVisible(false);
       }
-      if (caseStepData.case_sub_step) {
-        setCaseSubStepDataSource(caseStepData.case_sub_step);
+      if (testcaseData.case_sub_steps) {
+        setCaseSubStepDataSource(testcaseData.case_sub_steps);
       }
     }
-  }, [caseStepData]);
+  }, [testcaseData]);
   const CardTitle = (
     <div
-      key={caseStepData.id}
+      key={testcaseData?.id}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -93,7 +98,7 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
         <Checkbox
           onChange={(e) => {
             const checked = e.target.checked;
-            const subStepId = caseStepData.id;
+            const subStepId = testcaseData!.id;
             setCheckSubSteps((pre) =>
               checked
                 ? pre.includes(subStepId)
@@ -131,7 +136,7 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
           }}
           allowClear
           noStyle
-          name={'case_step_name'}
+          name={'case_name'}
           placeholder={'请输入用例标题'}
           required
           tooltip={'最长20位'}
@@ -148,8 +153,8 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
     }
     const newCaseSubStepDataSource: CaseSubStep = {
       id: Date.now(),
-      do: `请填写步骤描述`,
-      exp: '请填写预期描述',
+      action: `请填写步骤描述`,
+      expected_result: '请填写预期描述',
     };
     setCaseSubStepDataSource((item) => [...item, newCaseSubStepDataSource]);
   };
@@ -173,7 +178,6 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
   ];
 
   const handleMenuClick: MenuProps['onClick'] = async (e) => {
-    console.log('click', e);
     switch (e.key) {
       case '1':
         setOpenDynamic(true);
@@ -188,46 +192,38 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
 
   const copyStepCase = async () => {};
   const deleteStepCase = async () => {};
+
   const ExtraOpt = (
-    <Space style={{ marginRight: 20 }}>
+    <Space style={{ marginRight: 30 }}>
       {tagVisible ? (
-        <ProFormText
-          noStyle={true}
-          name={'case_step_tag'}
-          placeholder="标签"
-          fieldProps={{
-            onChange: (e) => {
-              if (e.target.value) setTag(e.target.value);
-            },
-            onBlur: (e) => {
-              const tagValue = form.getFieldValue('case_step_tag');
-              if (tagValue && tag) {
-                setTag(tagValue);
-                setTagVisible(false);
-              }
-            },
-            onPressEnter: (e) => {
-              const tagValue = form.getFieldValue('case_step_tag');
-              if (tagValue && tag) {
-                setTag(tagValue);
-                setTagVisible(false);
-              }
-            },
+        <Select
+          style={{ width: '100px' }}
+          mode="tags"
+          maxCount={1}
+          options={tags}
+          placeholder="请选择标签"
+          allowClear
+          onSearch={(value: string) => {
+            setTag(value);
+          }}
+          onChange={(value: string) => {
+            setTag(value);
+          }}
+          onBlur={(e) => {
+            if (tag) {
+              form.setFieldValue('case_tag', tag);
+              setTagVisible(false);
+            }
           }}
         />
       ) : (
         <Tag
-          onClick={() => {
-            setTagVisible(true);
-          }}
+          onClick={() => setTagVisible(true)}
           style={{
             textOverflow: 'ellipsis',
             textAlign: 'center',
           }}
           color="#2db7f5"
-          // onClose={() => {
-          //   setTagVisible(true);
-          // }}
         >
           {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
         </Tag>
@@ -236,7 +232,7 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
         <ProFormSelect
           noStyle
           style={{ borderRadius: 20 }}
-          name="case_step_level"
+          name="case_level"
           required
           onChange={(value: string) => {
             setLevel(value);
@@ -264,7 +260,7 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
             setType(value);
             setTypeVisible(false);
           }}
-          name={'case_step_type'}
+          name={'case_type'}
           initialValue={2}
           // valueEnum={CASE_TYPE_ENUM}
           options={CASE_TYPE_OPTION}
@@ -282,11 +278,33 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
   );
   useEffect(() => {
     if (caseSubStepDataSource) {
-      form.setFieldsValue({ case_sub_step: caseSubStepDataSource });
+      form.setFieldsValue({ case_sub_steps: caseSubStepDataSource });
     }
   }, [caseSubStepDataSource]);
+
+  const Save = (
+    <Button
+      onClick={async () => {
+        try {
+          await form.validateFields();
+        } catch (error) {
+          console.log('表单验证失败:', error);
+          return;
+        }
+        const values = form.getFieldsValue(true);
+        const { code, data, msg } = await saveTestCase(values);
+        if (code === 0) {
+          message.success(msg);
+        }
+        console.log(values);
+      }}
+      type={'primary'}
+    >
+      保存
+    </Button>
+  );
   // 监听表单值变化
-  const handleValuesChange = (changedValues: any, allValues: CaseStepInfo) => {
+  const handleValuesChange = (changedValues: any, allValues: ITestCase) => {
     const values = form.getFieldsValue(true);
     console.log('all', values);
     console.log('表单值变化:', changedValues);
@@ -295,14 +313,14 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
   };
 
   return (
-    <ProForm<CaseStepInfo>
+    <ProForm<ITestCase>
       form={form}
       submitter={false}
       onValuesChange={handleValuesChange}
     >
       <Badge.Ribbon
-        text={CASE_STEP_STATUS_TEXT_ENUM[caseStepData.case_step_status]}
-        color={CASE_STEP_STATUS_COLOR_ENUM[caseStepData.case_step_status]}
+        text={CASE_STATUS_TEXT_ENUM[testcaseData!.case_status!]}
+        color={CASE_STATUS_COLOR_ENUM[testcaseData!.case_status!]}
       >
         <ProCard
           hoverable
@@ -323,6 +341,7 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
         >
           <CaseSubSteps
             caseSubStepDataSource={caseSubStepDataSource}
+            save={Save}
             setCaseSubStepDataSource={setCaseSubStepDataSource}
           />
         </ProCard>
@@ -338,5 +357,4 @@ const Index: FC<Props> = ({ caseStepData, setCheckSubSteps }) => {
     </ProForm>
   );
 };
-
 export default Index;

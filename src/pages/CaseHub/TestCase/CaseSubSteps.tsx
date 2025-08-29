@@ -79,14 +79,14 @@ const CaseSubSteps: FC<IProps> = ({
   useEffect(() => {
     if (caseSubStepDataSource) {
       setEditableRowKeys(
-        caseSubStepDataSource.map((item: CaseSubStep) => item.id),
+        caseSubStepDataSource.map((item: CaseSubStep) => item.uid),
       );
     }
   }, [caseSubStepDataSource]);
 
   const copySubStep = async (record: CaseSubStep) => {
     const newStep: CaseSubStep = {
-      id: Date.now(),
+      uid: Date.now().toString(),
       action: record.action,
       expected_result: record.expected_result,
     };
@@ -105,7 +105,7 @@ const CaseSubSteps: FC<IProps> = ({
       <ProForm.Item name={'case_sub_step'}>
         <DragSortTable<CaseSubStep>
           columns={caseInfoColumn}
-          rowKey="id"
+          rowKey="uid"
           search={false}
           pagination={false}
           toolBarRender={false}

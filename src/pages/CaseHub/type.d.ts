@@ -24,7 +24,7 @@ export interface IRequirement {
 }
 
 export interface ITestCase {
-  id: number;
+  id?: number;
   uid?: string;
   case_name: string;
   case_level: 'P1' | 'P0' | 'P2' | 'P3';
@@ -34,7 +34,7 @@ export interface ITestCase {
   case_status?: 0 | 1 | 2; // 0:未开始 1:通过 2:失败
   case_bugs?: string[] | [] | undefined;
   case_mark?: string | undefined;
-  case_sub_steps?: CaseSubStep[];
+  // case_sub_steps?: CaseSubStep[];
   requirementId?: number | string;
 
   project_id: number;
@@ -42,7 +42,9 @@ export interface ITestCase {
 }
 
 export interface CaseSubStep {
-  id: React.Key;
+  id?: React.Key;
+  uid: string;
   action: string;
+  order?: number;
   expected_result: string;
 }

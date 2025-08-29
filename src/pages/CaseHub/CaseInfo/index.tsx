@@ -57,8 +57,8 @@ const Index = () => {
   // }, [caseSteps]);
 
   const transformData2Content = (data: ITestCase[]) => {
-    return data.map((item) => ({
-      id: item.id,
+    return data.map((item, index) => ({
+      id: index,
       caseStepId: item.id,
       content: (
         <TestCase
@@ -73,7 +73,6 @@ const Index = () => {
   const handleAddCase = () => {
     // 添加用例
     const testCase: ITestCase = {
-      id: Date.now(),
       case_name: '测试用例',
       case_level: 'P2',
       case_type: 2,

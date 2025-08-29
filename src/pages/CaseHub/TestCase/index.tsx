@@ -1,4 +1,9 @@
-import { saveTestCase } from '@/api/case/testCase';
+import {
+  queryTestCaseSupStep,
+  saveTestCase,
+  setTestCaseSupStep,
+  updateTestCase,
+} from '@/api/case/testCase';
 import MyDrawer from '@/components/MyDrawer';
 import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
 import CaseSubSteps from '@/pages/CaseHub/TestCase/CaseSubSteps';
@@ -31,6 +36,7 @@ import {
   Space,
   Tag,
 } from 'antd';
+import { debounce } from 'lodash';
 import React, { FC, useEffect, useState } from 'react';
 
 interface Props {
@@ -40,6 +46,8 @@ interface Props {
 }
 
 const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
+  let timeout: NodeJS.Timeout | null = null;
+
   const [form] = Form.useForm<ITestCase>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
   const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
@@ -61,7 +69,6 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
     CASE_LEVEL_COLOR_ENUM,
   } = CaseHubConfig;
   useEffect(() => {
-    console.log(tags);
     if (testcaseData) {
       form.setFieldsValue(testcaseData);
       if (testcaseData.case_tag) {
@@ -76,11 +83,46 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
         setType(testcaseData.case_type);
         setTypeVisible(false);
       }
-      if (testcaseData.case_sub_steps) {
-        setCaseSubStepDataSource(testcaseData.case_sub_steps);
-      }
     }
   }, [testcaseData]);
+  useEffect(() => {
+    if (!collapsible) {
+      console.log('展开了');
+      if (testcaseData?.id) {
+        queryTestCaseSupStep(testcaseData.id.toString()).then(
+          async ({ code, data, msg }) => {
+            if (code === 0) {
+              setCaseSubStepDataSource(data);
+            }
+          },
+        );
+      }
+    }
+  }, [collapsible]);
+
+  // 子步骤更新
+  useEffect(() => {
+    const updateData = debounce((data) => {
+      console.log(data);
+      const test_case_id = testcaseData?.id;
+      if (test_case_id) {
+        setTestCaseSupStep({
+          test_case_id,
+          case_sub_steps: data,
+        }).then(async ({ code }) => {});
+      }
+      // 这里调用上传操作
+      // form.setFieldsValue({ case_sub_steps: data });
+    }, 3000); // 设置 3 秒的防抖延迟
+
+    if (caseSubStepDataSource && caseSubStepDataSource.length > 0) {
+      updateData(caseSubStepDataSource);
+    }
+    return () => {
+      updateData.cancel(); // 清除防抖
+    };
+  }, [caseSubStepDataSource]);
+
   const CardTitle = (
     <div
       key={testcaseData?.id}
@@ -96,17 +138,17 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
     >
       <Space size={'small'}>
         <Checkbox
-          onChange={(e) => {
-            const checked = e.target.checked;
-            const subStepId = testcaseData!.id;
-            setCheckSubSteps((pre) =>
-              checked
-                ? pre.includes(subStepId)
-                  ? pre
-                  : [...pre, subStepId]
-                : pre.filter((id) => id !== subStepId),
-            );
-          }}
+        // onChange={(e) => {
+        //   const checked = e.target.checked;
+        //   const subStepId = testcaseData!.id;
+        //   setCheckSubSteps((pre) =>
+        //     checked
+        //       ? pre.includes(subStepId)
+        //         ? pre
+        //         : [...pre, subStepId]
+        //       : pre.filter((id) => id !== subStepId),
+        //   );
+        // {/*}}*/}
         />
         <div
           style={{
@@ -152,7 +194,7 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
       setCollapsible(false);
     }
     const newCaseSubStepDataSource: CaseSubStep = {
-      id: Date.now(),
+      uid: Date.now().toString(),
       action: `请填写步骤描述`,
       expected_result: '请填写预期描述',
     };
@@ -206,8 +248,8 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
           onSearch={(value: string) => {
             setTag(value);
           }}
-          onChange={(value: string) => {
-            setTag(value);
+          onChange={(value: string[]) => {
+            setTag(value[0]);
           }}
           onBlur={(e) => {
             if (tag) {
@@ -276,11 +318,6 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
       </Button>
     </Space>
   );
-  useEffect(() => {
-    if (caseSubStepDataSource) {
-      form.setFieldsValue({ case_sub_steps: caseSubStepDataSource });
-    }
-  }, [caseSubStepDataSource]);
 
   const Save = (
     <Button
@@ -292,11 +329,20 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
           return;
         }
         const values = form.getFieldsValue(true);
-        const { code, data, msg } = await saveTestCase(values);
-        if (code === 0) {
-          message.success(msg);
+        console.log('value', values);
+        if (values.id) {
+          const { code, data, msg } = await updateTestCase(values);
+          if (code === 0) {
+            message.success(msg);
+          }
+          console.log(values);
+        } else {
+          const { code, data, msg } = await saveTestCase(values);
+          if (code === 0) {
+            message.success(msg);
+          }
+          console.log(values);
         }
-        console.log(values);
       }}
       type={'primary'}
     >
@@ -304,12 +350,29 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
     </Button>
   );
   // 监听表单值变化
-  const handleValuesChange = (changedValues: any, allValues: ITestCase) => {
+  const handleValuesChange = async (
+    changedValues: any,
+    allValues: ITestCase,
+  ) => {
     const values = form.getFieldsValue(true);
     console.log('all', values);
     console.log('表单值变化:', changedValues);
     console.log('当前所有值:', allValues);
-    // 这里可以处理数据或触发其他操作
+    if (form.getFieldValue('id')) {
+      changedValues.id = values.id;
+    }
+
+    // 如果之前有延时操作存在，清除它
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(async () => {
+      console.log('发送更新请求，当前值：', allValues);
+      const { code, data, msg } = await updateTestCase(values);
+      if (code === 0) {
+        message.success(msg);
+      }
+    }, 3000); // 延时3秒
   };
 
   return (

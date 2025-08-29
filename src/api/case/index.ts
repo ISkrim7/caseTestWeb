@@ -29,7 +29,7 @@ export const updateCase = async (caseInfo: any, options?: IObjGet) => {
 
 /**
  * insertCase
- * @param caseInfo
+ * @param values
  * @param options
  */
 export const pageCase = async (values: IObjGet, options?: IObjGet) => {

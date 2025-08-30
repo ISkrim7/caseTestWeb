@@ -63,6 +63,7 @@ const Index = () => {
       content: (
         <TestCase
           tags={tags}
+          setTags={setTags}
           testcaseData={item}
           setCheckSubSteps={setCheckSubSteps}
         />
@@ -95,7 +96,7 @@ const Index = () => {
       <ProCard extra={ExtraContent} bodyStyle={{ padding: 1 }}>
         {caseSteps.length === 0 ? (
           <Empty
-            style={{ height: '200px' }}
+            style={{ height: '85vh' }}
             description={<Typography.Text>暂无用例</Typography.Text>}
           />
         ) : (

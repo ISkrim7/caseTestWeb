@@ -7,6 +7,7 @@ import { IRequirement } from '@/pages/CaseHub/type';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useModel } from '@@/exports';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProFormInstance,
@@ -127,11 +128,12 @@ const Index: FC<Props> = ({ currentProjectId, currentModuleId, callback }) => {
         name={'maintainer'}
         label={'维护人'}
         required={true}
-        initialValue={currentUser?.username}
         request={queryUser}
         debounceTime={1000}
+        initialValue={currentUser?.id}
         fieldProps={{
-          optionFilterProp: 'label', // 确保搜索是基于 label(chargeName) 而不是 value(chargeId)
+          value: { value: currentUser?.id, label: currentUser?.username },
+          optionFilterProp: 'label', // 确保搜索是基于 label)而不是 value
           labelInValue: false, // 确保只提交 value 而不是 {value,label} 对象
         }}
       />
@@ -188,7 +190,7 @@ const Index: FC<Props> = ({ currentProjectId, currentModuleId, callback }) => {
         </ProCard>
       </MyDrawer>
       <Button type="primary" onClick={() => setDrawerVisible(true)}>
-        添加
+        <PlusOutlined /> 添加需求
       </Button>
     </>
   );

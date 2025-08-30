@@ -6,6 +6,9 @@ import {
 } from '@/api/case/testCase';
 import MyDrawer from '@/components/MyDrawer';
 import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
+import CaseLevelSelect from '@/pages/CaseHub/component/CaseLevelSelect';
+import CaseTagSelect from '@/pages/CaseHub/component/CaseTagSelect';
+import CaseTypeSelect from '@/pages/CaseHub/component/CaseTypeSelect';
 import CaseSubSteps from '@/pages/CaseHub/TestCase/CaseSubSteps';
 import DynamicInfo from '@/pages/CaseHub/TestCase/DynamicInfo';
 import { CaseSubStep, ITestCase } from '@/pages/CaseHub/type';
@@ -18,12 +21,7 @@ import {
   PlusOutlined,
   RightOutlined,
 } from '@ant-design/icons';
-import {
-  ProCard,
-  ProForm,
-  ProFormSelect,
-  ProFormText,
-} from '@ant-design/pro-components';
+import { ProCard, ProForm, ProFormText } from '@ant-design/pro-components';
 import {
   Badge,
   Button,
@@ -32,7 +30,6 @@ import {
   Form,
   MenuProps,
   message,
-  Select,
   Space,
   Tag,
 } from 'antd';
@@ -41,48 +38,25 @@ import React, { FC, useEffect, useState } from 'react';
 
 interface Props {
   tags?: { label: string; value: string }[];
+  setTags: React.Dispatch<
+    React.SetStateAction<{ label: string; value: string }[]>
+  >;
   testcaseData?: ITestCase;
   setCheckSubSteps: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
+const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
   let timeout: NodeJS.Timeout | null = null;
-
   const [form] = Form.useForm<ITestCase>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
   const [caseSubStepDataSource, setCaseSubStepDataSource] = useState<
     CaseSubStep[]
   >([]);
-  const [tagVisible, setTagVisible] = useState(true);
-  const [levelVisible, setLevelVisible] = useState(true);
-  const [typeVisible, setTypeVisible] = useState(true);
-  const [tag, setTag] = useState<string>();
-  const [level, setLevel] = useState<string>('P2');
-  const [type, setType] = useState<number>(2);
   const [openDynamic, setOpenDynamic] = useState(false);
-  const {
-    CASE_LEVEL_OPTION,
-    CASE_STATUS_TEXT_ENUM,
-    CASE_STATUS_COLOR_ENUM,
-    CASE_TYPE_OPTION,
-    CASE_TYPE_ENUM,
-    CASE_LEVEL_COLOR_ENUM,
-  } = CaseHubConfig;
+  const { CASE_STATUS_TEXT_ENUM, CASE_STATUS_COLOR_ENUM } = CaseHubConfig;
   useEffect(() => {
     if (testcaseData) {
       form.setFieldsValue(testcaseData);
-      if (testcaseData.case_tag) {
-        setTag(testcaseData.case_tag);
-        setTagVisible(false);
-      }
-      if (testcaseData.case_level) {
-        setLevel(testcaseData.case_level);
-        setLevelVisible(false);
-      }
-      if (testcaseData.case_type) {
-        setType(testcaseData.case_type);
-        setTypeVisible(false);
-      }
     }
   }, [testcaseData]);
   useEffect(() => {
@@ -125,7 +99,6 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
 
   const CardTitle = (
     <div
-      key={testcaseData?.id}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -167,7 +140,7 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
       <Space size={'small'} style={{ marginLeft: 10 }}>
         <Tag>{form.getFieldValue('uid')}</Tag>
         <ProFormText
-          style={{ fontWeight: 'bold' }}
+          style={{ fontWeight: 'bold', width: 'auto' }}
           fieldProps={{
             variant: 'outlined',
             style: {
@@ -237,79 +210,13 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
 
   const ExtraOpt = (
     <Space style={{ marginRight: 30 }}>
-      {tagVisible ? (
-        <Select
-          style={{ width: '100px' }}
-          mode="tags"
-          maxCount={1}
-          options={tags}
-          placeholder="请选择标签"
-          allowClear
-          onSearch={(value: string) => {
-            setTag(value);
-          }}
-          onChange={(value: string[]) => {
-            setTag(value[0]);
-          }}
-          onBlur={(e) => {
-            if (tag) {
-              form.setFieldValue('case_tag', tag);
-              setTagVisible(false);
-            }
-          }}
-        />
-      ) : (
-        <Tag
-          onClick={() => setTagVisible(true)}
-          style={{
-            textOverflow: 'ellipsis',
-            textAlign: 'center',
-          }}
-          color="#2db7f5"
-        >
-          {tag && tag.length > 10 ? `${tag.slice(0, 10)}...` : tag}
-        </Tag>
-      )}
-      {levelVisible ? (
-        <ProFormSelect
-          noStyle
-          style={{ borderRadius: 20 }}
-          name="case_level"
-          required
-          onChange={(value: string) => {
-            setLevel(value);
-            setLevelVisible(false);
-          }}
-          initialValue={'P1'}
-          options={CASE_LEVEL_OPTION}
-        />
-      ) : (
-        <Tag
-          color={CASE_LEVEL_COLOR_ENUM[level]}
-          onClick={() => setLevelVisible(true)}
-        >
-          {level}
-        </Tag>
-      )}
-      {typeVisible ? (
-        <ProFormSelect
-          noStyle
-          style={{
-            borderRadius: 20,
-            height: 'auto',
-          }}
-          onChange={(value: number) => {
-            setType(value);
-            setTypeVisible(false);
-          }}
-          name={'case_type'}
-          initialValue={2}
-          // valueEnum={CASE_TYPE_ENUM}
-          options={CASE_TYPE_OPTION}
-        />
-      ) : (
-        <Tag onClick={() => setTypeVisible(true)}>{CASE_TYPE_ENUM[type]}</Tag>
-      )}
+      <CaseTagSelect
+        tags={tags}
+        setTags={setTags}
+        testcaseData={testcaseData}
+      />
+      <CaseLevelSelect testcaseData={testcaseData} />
+      <CaseTypeSelect testcaseData={testcaseData} />
       <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
         <Button type={'primary'} icon={<MoreOutlined />} />
       </Dropdown>
@@ -357,22 +264,32 @@ const Index: FC<Props> = ({ testcaseData, tags, setCheckSubSteps }) => {
     const values = form.getFieldsValue(true);
     console.log('all', values);
     console.log('表单值变化:', changedValues);
-    console.log('当前所有值:', allValues);
-    if (form.getFieldValue('id')) {
-      changedValues.id = values.id;
-    }
-
-    // 如果之前有延时操作存在，清除它
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(async () => {
-      console.log('发送更新请求，当前值：', allValues);
-      const { code, data, msg } = await updateTestCase(values);
-      if (code === 0) {
-        message.success(msg);
-      }
-    }, 3000); // 延时3秒
+
+    if (form.getFieldValue('id')) {
+      changedValues.id = values.id;
+      timeout = setTimeout(async () => {
+        console.log('发送更新请求，当前值：', allValues);
+
+        const { code, data, msg } = await updateTestCase(values);
+        if (code === 0) {
+          message.success(msg);
+        }
+      }, 3000); // 延时3秒
+    } else {
+      timeout = setTimeout(async () => {
+        console.log('发送插入请求，当前值：', values);
+        if (values.case_name && values.case_tag) {
+          console.log(allValues);
+          const { code, data, msg } = await saveTestCase(values);
+          if (code === 0) {
+            message.success(msg);
+          }
+        }
+      }, 3000); // 延时3秒
+    }
   };
 
   return (

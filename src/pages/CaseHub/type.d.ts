@@ -48,3 +48,11 @@ export interface CaseSubStep {
   order?: number;
   expected_result: string;
 }
+
+export interface ICaseDynamic {
+  id: number;
+  test_case_id: string;
+  description: string;
+  create_time: string;
+  creatorName: string;
+}

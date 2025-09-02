@@ -1,4 +1,4 @@
-import { queryCasesByRequirement } from '@/api/case/testCase';
+import { queryCasesByRequirement, reorderTestCase } from '@/api/case/testCase';
 import DnDDraggable from '@/components/DnDDraggable';
 import { DraggableItem } from '@/components/DnDDraggable/type';
 import TestCase from '@/pages/CaseHub/TestCase';
@@ -49,12 +49,6 @@ const Index = () => {
       setCaseStepsContent(transformData2Content(caseSteps));
     }
   }, [caseSteps, tags]);
-  // useEffect(() => {
-  //   if (caseSteps) {
-  //     const reorderData = caseSteps.map((item) => item.id);
-  //     console.log(reorderData);
-  //   }
-  // }, [caseSteps]);
 
   const transformData2Content = (data: ITestCase[]) => {
     return data.map((item, index) => ({
@@ -85,6 +79,13 @@ const Index = () => {
     setCaseSteps((prev) => [...prev, testCase]);
   };
 
+  const orderFetch = async (orderIds: number[]) => {
+    console.log(orderIds);
+    await reorderTestCase({
+      requirementId: parseInt(reqId!),
+      caseIds: orderIds,
+    });
+  };
   const ExtraContent = (
     <Space>
       {/*<Button onClick={() => setAllCollapsed(false)}>全部展开</Button>*/}
@@ -111,6 +112,7 @@ const Index = () => {
             <DnDDraggable
               items={caseStepsContent}
               setItems={setCaseStepsContent}
+              orderFetch={orderFetch}
             />
             {/* 滚动提示 */}
             {caseStepsContent.length > 10 && (

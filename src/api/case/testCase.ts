@@ -1,5 +1,5 @@
 import { IObjGet, IResponse } from '@/api';
-import { CaseSubStep, ITestCase } from '@/pages/CaseHub/type';
+import { CaseSubStep, ICaseDynamic, ITestCase } from '@/pages/CaseHub/type';
 import { request } from '@@/plugin-request';
 
 /**
@@ -80,6 +80,131 @@ export const setTestCaseSupStep = async (
   return request<IResponse<CaseSubStep[]>>(`/api/hub/cases/setSubSteps`, {
     method: 'POST',
     data: data,
+    ...(options || {}),
+  });
+};
+
+/**
+ * queryTestCaseDynamic
+ * @param caseId
+ * @param options
+ */
+export const queryTestCaseDynamic = async (
+  caseId: number,
+  options?: IObjGet,
+) => {
+  return request<IResponse<ICaseDynamic[]>>(
+    `/api/hub/cases/queryDynamic/${caseId}`,
+    {
+      method: 'GET',
+      ...(options || {}),
+    },
+  );
+};
+
+/**
+ * reorderTestCase
+ * @param info
+ * @param options
+ */
+export const reorderTestCase = async (
+  info: {
+    requirementId: number;
+    caseIds: number[];
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/reorder`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};
+
+/**
+ * reorderTestCase
+ * @param info
+ * @param options
+ */
+export const reorderTestCaseStep = async (
+  info: {
+    stepIds: number[];
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/reorderSupStep`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};
+
+/**
+ * removeTestCaseStep
+ * @param info
+ * @param options
+ */
+export const removeTestCaseStep = async (
+  info: {
+    stepId: any;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/removeStep`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};
+
+/**
+ * copyTestCaseStep
+ * @param info
+ * @param options
+ */
+export const copyTestCaseStep = async (
+  info: {
+    stepId: any;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/copyStep`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};
+
+/**
+ * handleAddTestCaseStep
+ * @param info
+ * @param options
+ */
+export const handleAddTestCaseStep = async (
+  info: {
+    caseId: number;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/handleAddStepLine`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};
+
+/**
+ * updateTestCaseStep
+ * @param info
+ * @param options
+ */
+export const updateTestCaseStep = async (
+  info: CaseSubStep,
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/updateSubStep`, {
+    method: 'POST',
+    data: info,
     ...(options || {}),
   });
 };

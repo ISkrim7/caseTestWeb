@@ -87,11 +87,9 @@ const CaseTagSelect: FC<Props> = ({ tags, setTags, testcaseData }) => {
               setTagValue(value);
               setTagVisible(true);
             },
-            // onBlur:()=>{
-            //   if (tagValue){
-            //     setTagVisible(true)
-            //   }
-            // }
+            onBlur: () => {
+              setTagVisible(true);
+            },
           }}
         />
       )}

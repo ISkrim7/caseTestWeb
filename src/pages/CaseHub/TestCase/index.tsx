@@ -1,7 +1,7 @@
 import {
+  handleAddTestCaseStep,
   queryTestCaseSupStep,
   saveTestCase,
-  setTestCaseSupStep,
   updateTestCase,
 } from '@/api/case/testCase';
 import MyDrawer from '@/components/MyDrawer';
@@ -33,7 +33,6 @@ import {
   Space,
   Tag,
 } from 'antd';
-import { debounce } from 'lodash';
 import React, { FC, useEffect, useState } from 'react';
 
 interface Props {
@@ -54,6 +53,7 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
   >([]);
   const [openDynamic, setOpenDynamic] = useState(false);
   const { CASE_STATUS_TEXT_ENUM, CASE_STATUS_COLOR_ENUM } = CaseHubConfig;
+  const [status, setStatus] = useState(0);
   useEffect(() => {
     if (testcaseData) {
       form.setFieldsValue(testcaseData);
@@ -61,7 +61,6 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
   }, [testcaseData]);
   useEffect(() => {
     if (!collapsible) {
-      console.log('展开了');
       if (testcaseData?.id) {
         queryTestCaseSupStep(testcaseData.id.toString()).then(
           async ({ code, data, msg }) => {
@@ -72,30 +71,11 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
         );
       }
     }
-  }, [collapsible]);
+  }, [collapsible, status]);
 
-  // 子步骤更新
-  useEffect(() => {
-    const updateData = debounce((data) => {
-      console.log(data);
-      const test_case_id = testcaseData?.id;
-      if (test_case_id) {
-        setTestCaseSupStep({
-          test_case_id,
-          case_sub_steps: data,
-        }).then(async ({ code }) => {});
-      }
-      // 这里调用上传操作
-      // form.setFieldsValue({ case_sub_steps: data });
-    }, 3000); // 设置 3 秒的防抖延迟
-
-    if (caseSubStepDataSource && caseSubStepDataSource.length > 0) {
-      updateData(caseSubStepDataSource);
-    }
-    return () => {
-      updateData.cancel(); // 清除防抖
-    };
-  }, [caseSubStepDataSource]);
+  const reloadCaseStep = () => {
+    setStatus(status + 1);
+  };
 
   const CardTitle = (
     <div
@@ -166,12 +146,21 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
     if (collapsible) {
       setCollapsible(false);
     }
-    const newCaseSubStepDataSource: CaseSubStep = {
-      uid: Date.now().toString(),
-      action: `请填写步骤描述`,
-      expected_result: '请填写预期描述',
-    };
-    setCaseSubStepDataSource((item) => [...item, newCaseSubStepDataSource]);
+    if (testcaseData?.id) {
+      handleAddTestCaseStep({ caseId: testcaseData!.id }).then(
+        async ({ code }) => {
+          if (code === 0) {
+            reloadCaseStep();
+          }
+        },
+      );
+    }
+    // const newCaseSubStepDataSource: CaseSubStep = {
+    //   uid: Date.now().toString(),
+    //   action: `请填写步骤描述`,
+    //   expected_result: '请填写预期描述',
+    // };
+    // setCaseSubStepDataSource((item) => [...item, newCaseSubStepDataSource]);
   };
 
   const menuItems: MenuProps['items'] = [
@@ -226,36 +215,6 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
     </Space>
   );
 
-  const Save = (
-    <Button
-      onClick={async () => {
-        try {
-          await form.validateFields();
-        } catch (error) {
-          console.log('表单验证失败:', error);
-          return;
-        }
-        const values = form.getFieldsValue(true);
-        console.log('value', values);
-        if (values.id) {
-          const { code, data, msg } = await updateTestCase(values);
-          if (code === 0) {
-            message.success(msg);
-          }
-          console.log(values);
-        } else {
-          const { code, data, msg } = await saveTestCase(values);
-          if (code === 0) {
-            message.success(msg);
-          }
-          console.log(values);
-        }
-      }}
-      type={'primary'}
-    >
-      保存
-    </Button>
-  );
   // 监听表单值变化
   const handleValuesChange = async (
     changedValues: any,
@@ -321,18 +280,18 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
         >
           <CaseSubSteps
             caseSubStepDataSource={caseSubStepDataSource}
-            save={Save}
+            callback={reloadCaseStep}
             setCaseSubStepDataSource={setCaseSubStepDataSource}
           />
         </ProCard>
       </Badge.Ribbon>
       <MyDrawer
         name={'动态'}
-        width={'30%'}
+        width={'40%'}
         open={openDynamic}
         setOpen={setOpenDynamic}
       >
-        <DynamicInfo />
+        <DynamicInfo caseId={testcaseData?.id} />
       </MyDrawer>
     </ProForm>
   );

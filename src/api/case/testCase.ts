@@ -4,20 +4,35 @@ import { request } from '@@/plugin-request';
 
 /**
  * queryCasesByRequirement
- * @param requirementId
+ * @param searchInfo
  * @param options
  */
 export const queryCasesByRequirement = async (
-  requirementId: string,
+  searchInfo: IObjGet,
   options?: IObjGet,
 ) => {
   return request<IResponse<ITestCase[]>>('/api/hub/cases/queryByReqId', {
     method: 'GET',
-    params: { requirementId: requirementId },
+    params: searchInfo,
     ...(options || {}),
   });
 };
 
+/**
+ * queryTagsByRequirement
+ * @param searchInfo
+ * @param options
+ */
+export const queryTagsByRequirement = async (
+  searchInfo: { requirementId: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<string[]>>('/api/hub/cases/queryTagsByReqId', {
+    method: 'GET',
+    params: searchInfo,
+    ...(options || {}),
+  });
+};
 /**
  * saveCase
  * @param caseInfo
@@ -120,7 +135,43 @@ export const reorderTestCase = async (
     ...(options || {}),
   });
 };
+/**
+ * removeTestCase
+ * @param info
+ * @param options
+ */
+export const removeTestCase = async (
+  info: {
+    requirementId: number | null;
+    caseId: number;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/remove`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};
 
+/**
+ * copyTestCase
+ * @param info
+ * @param options
+ */
+export const copyTestCase = async (
+  info: {
+    requirementId: number | null;
+    caseId: number;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/copy`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};
 /**
  * reorderTestCase
  * @param info

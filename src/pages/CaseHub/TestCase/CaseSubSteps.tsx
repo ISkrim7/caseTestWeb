@@ -159,11 +159,11 @@ const CaseSubSteps: FC<IProps> = ({
             type: 'multiple',
             editableKeys,
             // @ts-ignore
-            actionRender: (row, config, defaultDoms) => {
+            actionRender: (row, _, __) => {
               return (
-                <Space>
-                  {row.id ? (
-                    <>
+                <>
+                  {row.id && (
+                    <Space>
                       <a
                         onClick={async () => {
                           const { code, msg } = await copyTestCaseStep({
@@ -190,25 +190,13 @@ const CaseSubSteps: FC<IProps> = ({
                       >
                         删除
                       </a>
-                    </>
-                  ) : (
-                    <a
-                      onClick={() => {
-                        console.log(row);
-                      }}
-                    >
-                      保存
-                    </a>
+                    </Space>
                   )}
-                </Space>
+                </>
               );
             },
-            onValuesChange: async (
-              record: CaseSubStep,
-              dataSource: CaseSubStep[],
-            ) => {
+            onValuesChange: async (record: CaseSubStep, _: CaseSubStep[]) => {
               await saveRecord(record);
-              // await handleValuesChange(dataSource);
             },
             onChange: setEditableRowKeys,
           }}

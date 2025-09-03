@@ -1,6 +1,8 @@
 import {
+  copyTestCase,
   handleAddTestCaseStep,
   queryTestCaseSupStep,
+  removeTestCase,
   saveTestCase,
   updateTestCase,
 } from '@/api/case/testCase';
@@ -36,15 +38,17 @@ import {
 import React, { FC, useEffect, useState } from 'react';
 
 interface Props {
+  reqId?: string;
   tags?: { label: string; value: string }[];
   setTags: React.Dispatch<
     React.SetStateAction<{ label: string; value: string }[]>
   >;
   testcaseData?: ITestCase;
-  setCheckSubSteps: React.Dispatch<React.SetStateAction<number[]>>;
+  // setCheckSubSteps: React.Dispatch<React.SetStateAction<number[]>>;
+  callback: () => void;
 }
 
-const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
+const Index: FC<Props> = ({ callback, testcaseData, reqId, tags, setTags }) => {
   let timeout: NodeJS.Timeout | null = null;
   const [form] = Form.useForm<ITestCase>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
@@ -118,7 +122,7 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
       </Space>
 
       <Space size={'small'} style={{ marginLeft: 10 }}>
-        <Tag>{form.getFieldValue('uid')}</Tag>
+        <Tag color={'#87d068'}>{testcaseData?.uid}</Tag>
         <ProFormText
           style={{ fontWeight: 'bold', width: 'auto' }}
           fieldProps={{
@@ -194,8 +198,30 @@ const Index: FC<Props> = ({ testcaseData, tags, setTags }) => {
     }
   };
 
-  const copyStepCase = async () => {};
-  const deleteStepCase = async () => {};
+  const copyStepCase = async () => {
+    if (testcaseData?.id) {
+      const { code, msg } = await copyTestCase({
+        requirementId: reqId ? parseInt(reqId) : null,
+        caseId: testcaseData.id,
+      });
+      if (code === 0) {
+        message.success(msg);
+        callback();
+      }
+    }
+  };
+  const deleteStepCase = async () => {
+    if (testcaseData?.id) {
+      const { code, msg } = await removeTestCase({
+        requirementId: reqId ? parseInt(reqId) : null,
+        caseId: testcaseData.id,
+      });
+      if (code === 0) {
+        message.success(msg);
+        callback();
+      }
+    }
+  };
 
   const ExtraOpt = (
     <Space style={{ marginRight: 30 }}>

@@ -1,4 +1,5 @@
 import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
+import { CaseSearchForm } from '@/pages/CaseHub/type';
 import { SearchOutlined } from '@ant-design/icons';
 import {
   ProCard,
@@ -7,18 +8,39 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { Button, Form, Space } from 'antd';
-import { FC, useState } from 'react';
+import React, { FC } from 'react';
 
 interface Props {
   showCheckButton: boolean;
+  setSearchForm: React.Dispatch<React.SetStateAction<CaseSearchForm>>;
+  tags: { label: string; value: string }[];
 }
 
-const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
-  const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
+const CaseStepSearchForm: FC<Props> = ({
+  tags,
+  setSearchForm,
+  showCheckButton,
+}) => {
   const [form] = Form.useForm();
   const { CASE_LEVEL_OPTION, CASE_TYPE_OPTION } = CaseHubConfig;
+
+  const onSearch = async () => {
+    const values = await form.getFieldsValue();
+    console.log(values);
+    if (values) {
+      setSearchForm(values);
+    }
+  };
+
+  const onReset = () => {
+    form.resetFields();
+    setSearchForm({});
+  };
   return (
     <ProCard
+      title={'搜索'}
+      defaultCollapsed={true}
+      collapsible={true}
       extra={
         showCheckButton && (
           <Space>
@@ -33,7 +55,7 @@ const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
         >
           <ProFormText
             width="sm"
-            name="caseStepName"
+            name="case_name"
             placeholder="请输入步骤名称"
             fieldProps={{
               allowClear: true,
@@ -42,25 +64,25 @@ const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
           />
           <ProFormSelect
             width="sm"
-            name={'caseStepTag'}
+            name={'case_tag'}
             placeholder="选择标签"
-            mode="multiple"
+            mode="single"
             allowClear
             options={tags}
           />
           <ProFormSelect
             width="sm"
-            name={'caseStepLevel'}
+            name={'case_level'}
             placeholder="选择等级"
-            mode="multiple"
+            mode="single"
             allowClear
             options={CASE_LEVEL_OPTION}
           />
           <ProFormSelect
             width="sm"
-            name={'caseStepType'}
+            name={'case_type'}
             placeholder="选择类型"
-            mode="multiple"
+            mode="single"
             allowClear
             options={CASE_TYPE_OPTION}
           />
@@ -70,8 +92,8 @@ const CaseStepSearchForm: FC<Props> = ({ showCheckButton }) => {
               justifyContent: 'flex-end',
             }}
           >
-            <Button>搜索</Button>
-            <Button>重置</Button>
+            <Button onClick={onSearch}>搜索</Button>
+            <Button onClick={onReset}>重置</Button>
           </Space>
         </ProForm.Group>
       </ProForm>

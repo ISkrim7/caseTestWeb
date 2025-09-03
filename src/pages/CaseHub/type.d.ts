@@ -56,3 +56,11 @@ export interface ICaseDynamic {
   create_time: string;
   creatorName: string;
 }
+
+export interface CaseSearchForm {
+  case_name?: string;
+  case_level?: 'P1' | 'P0' | 'P2' | 'P3';
+  case_type?: 1 | 2;
+  case_tag?: string;
+  case_status?: 0 | 1 | 2; // 0:未开始 1:通过 2:失败
+}

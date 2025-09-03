@@ -1,8 +1,13 @@
-import { queryCasesByRequirement, reorderTestCase } from '@/api/case/testCase';
+import {
+  queryCasesByRequirement,
+  queryTagsByRequirement,
+  reorderTestCase,
+} from '@/api/case/testCase';
 import DnDDraggable from '@/components/DnDDraggable';
 import { DraggableItem } from '@/components/DnDDraggable/type';
+import CaseStepSearchForm from '@/pages/CaseHub/CaseInfo/CaseStepSearchForm';
 import TestCase from '@/pages/CaseHub/TestCase';
-import { ITestCase } from '@/pages/CaseHub/type';
+import { CaseSearchForm, ITestCase } from '@/pages/CaseHub/type';
 import { useParams } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, Empty, Space, Typography } from 'antd';
@@ -18,48 +23,74 @@ const Index = () => {
   const [caseSteps, setCaseSteps] = useState<ITestCase[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
+
   const [showCheckButton, setShowCheckButton] = useState<boolean>(false);
   const [checkedSupSteps, setCheckSubSteps] = useState<number[]>([]);
   const [allCollapsed, setAllCollapsed] = useState(true);
-
+  const [reload, setReload] = useState(0);
+  const [searchInfo, setSearchInfo] = useState<CaseSearchForm>({});
   useEffect(() => {
     checkedSupSteps.length > 0
       ? setShowCheckButton(true)
       : setShowCheckButton(false);
   }, [checkedSupSteps]);
 
+  // 获取用例数据
   useEffect(() => {
-    if (reqId) {
-      queryCasesByRequirement(reqId).then(async ({ code, data }) => {
+    if (!reqId) return;
+
+    const fetchCases = async () => {
+      setDataLoading(true);
+      try {
+        const searchValues = {
+          requirementId: reqId,
+          ...searchInfo,
+        };
+        const { code, data } = await queryCasesByRequirement(searchValues);
         if (code === 0) {
           setCaseSteps(data);
-          setTags(
-            [...new Set(data.map((item) => item.case_tag))].map((tag) => ({
-              label: tag!,
-              value: tag!,
-            })),
-          );
         }
-      });
-    }
-  }, [reqId]);
+      } catch (error) {
+        console.error('Failed to fetch cases:', error);
+      } finally {
+        setDataLoading(false);
+      }
+    };
 
+    fetchCases();
+  }, [reqId, reload, searchInfo]);
+
+  useEffect(() => {
+    if (!reqId) return;
+    queryTagsByRequirement({ requirementId: parseInt(reqId) }).then(
+      async ({ code, data }) => {
+        if (code === 0 && data.length > 0) {
+          setTags(data.map((tag) => ({ label: tag, value: tag })));
+        }
+      },
+    );
+  }, [reqId]);
   useEffect(() => {
     if (caseSteps) {
       setCaseStepsContent(transformData2Content(caseSteps));
     }
   }, [caseSteps, tags]);
 
+  const handelReload = () => {
+    setReload(reload + 1);
+  };
   const transformData2Content = (data: ITestCase[]) => {
     return data.map((item, index) => ({
       id: index,
       caseStepId: item.id,
       content: (
         <TestCase
+          reqId={reqId}
           tags={tags}
           setTags={setTags}
+          callback={handelReload}
           testcaseData={item}
-          setCheckSubSteps={setCheckSubSteps}
+          // setCheckSubSteps={setCheckSubSteps}
         />
       ),
     }));
@@ -80,7 +111,6 @@ const Index = () => {
   };
 
   const orderFetch = async (orderIds: number[]) => {
-    console.log(orderIds);
     await reorderTestCase({
       requirementId: parseInt(reqId!),
       caseIds: orderIds,
@@ -92,8 +122,15 @@ const Index = () => {
       <Button onClick={handleAddCase}>添加用例</Button>
     </Space>
   );
+
   return (
     <ProCard split={'horizontal'} bodyStyle={{ padding: 1 }}>
+      <CaseStepSearchForm
+        tags={tags}
+        showCheckButton={showCheckButton}
+        setSearchForm={setSearchInfo}
+      />
+
       <ProCard extra={ExtraContent} bodyStyle={{ padding: 1 }}>
         {caseSteps.length === 0 ? (
           <Empty

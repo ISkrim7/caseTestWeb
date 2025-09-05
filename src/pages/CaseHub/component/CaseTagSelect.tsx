@@ -17,12 +17,36 @@ const CaseTagSelect: FC<Props> = ({ tags, setTags, testcaseData }) => {
   const [currentTag, setCurrentTag] = useState<string>();
   const [tagVisible, setTagVisible] = useState<boolean>(false);
   const [tagValue, setTagValue] = useState<string>();
+
   useEffect(() => {
     if (testcaseData?.case_tag) {
       setTagVisible(true);
-      setTagValue(testcaseData?.case_tag);
+      setTagValue(testcaseData.case_tag);
     }
   }, [testcaseData]);
+
+  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (currentTag && currentTag.trim()) {
+        setTags((t) => [...t, { label: currentTag, value: currentTag }]);
+        setCurrentTag('');
+      }
+    }
+  };
+
+  const handleAddTag = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (currentTag && currentTag.trim()) {
+      setTags((t) => [...t, { label: currentTag, value: currentTag }]);
+      setCurrentTag('');
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  };
   return (
     <>
       {tagVisible ? (
@@ -44,7 +68,7 @@ const CaseTagSelect: FC<Props> = ({ tags, setTags, testcaseData }) => {
           required
           rules={[{ required: true, message: '请选择标签' }]}
           allowClear
-          width={'md'}
+          width={'sm'}
           name={'case_tag'}
           options={tags}
           fieldProps={{
@@ -58,25 +82,16 @@ const CaseTagSelect: FC<Props> = ({ tags, setTags, testcaseData }) => {
                     ref={inputRef}
                     value={currentTag}
                     onChange={(e) => {
+                      console.log('===');
                       setCurrentTag(e.target.value);
                     }}
-                    onKeyDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={handleInputKeyDown}
                   />
                   <Button
                     type="text"
                     icon={<PlusOutlined />}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      if (currentTag) {
-                        setTags((t) => [
-                          ...t,
-                          { label: currentTag, value: currentTag },
-                        ]);
-                        setTimeout(() => {
-                          inputRef.current?.focus();
-                        }, 0);
-                      }
-                    }}
+                    onClick={handleAddTag}
                   >
                     添加
                   </Button>
@@ -84,12 +99,18 @@ const CaseTagSelect: FC<Props> = ({ tags, setTags, testcaseData }) => {
               </>
             ),
             onChange: (value: string) => {
+              console.log('onChange');
               setTagValue(value);
               setTagVisible(true);
             },
-            onBlur: () => {
-              setTagVisible(true);
-            },
+            // onBlur: () => {
+            //   console.log('onBlur');
+            //
+            //   if (tagValue) {
+            //     setTagVisible(true);
+            //     setIsEditing(false);
+            //   }
+            // },
           }}
         />
       )}

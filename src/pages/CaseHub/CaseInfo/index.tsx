@@ -1,4 +1,5 @@
 import {
+  addDefaultTestCase,
   queryCasesByRequirement,
   queryTagsByRequirement,
   reorderTestCase,
@@ -11,7 +12,7 @@ import { CaseSearchForm, ITestCase } from '@/pages/CaseHub/type';
 import { useParams } from '@@/exports';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, Empty, Space, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const Index = () => {
   const { reqId, projectId, moduleId } = useParams<{
@@ -19,6 +20,9 @@ const Index = () => {
     projectId: string;
     moduleId: string;
   }>();
+  // 添加用例
+  const topRef = useRef<HTMLElement>(null);
+
   const [caseStepsContent, setCaseStepsContent] = useState<DraggableItem[]>([]);
   const [caseSteps, setCaseSteps] = useState<ITestCase[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
@@ -26,7 +30,7 @@ const Index = () => {
 
   const [showCheckButton, setShowCheckButton] = useState<boolean>(false);
   const [checkedSupSteps, setCheckSubSteps] = useState<number[]>([]);
-  const [allCollapsed, setAllCollapsed] = useState(true);
+  const [shouldScroll, setShouldScroll] = useState(false);
   const [reload, setReload] = useState(0);
   const [searchInfo, setSearchInfo] = useState<CaseSearchForm>({});
   useEffect(() => {
@@ -76,6 +80,16 @@ const Index = () => {
     }
   }, [caseSteps, tags]);
 
+  // 添加滚动效果
+  useEffect(() => {
+    if (shouldScroll) {
+      // 使用setTimeout确保DOM已更新
+      setTimeout(() => {
+        topRef.current?.scrollIntoView({ behavior: 'smooth' });
+        setShouldScroll(false);
+      }, 100);
+    }
+  }, [shouldScroll]);
   const handelReload = () => {
     setReload(reload + 1);
   };
@@ -85,29 +99,30 @@ const Index = () => {
       caseStepId: item.id,
       content: (
         <TestCase
+          top={topRef}
           reqId={reqId}
           tags={tags}
           setTags={setTags}
           callback={handelReload}
           testcaseData={item}
+          collapsible={false}
+
           // setCheckSubSteps={setCheckSubSteps}
         />
       ),
     }));
   };
 
-  const handleAddCase = () => {
-    // 添加用例
-    const testCase: ITestCase = {
-      case_name: '测试用例',
-      case_level: 'P2',
-      case_type: 2,
-      case_status: 0,
-      requirementId: reqId,
-      project_id: parseInt(projectId!),
-      module_id: parseInt(moduleId!),
-    };
-    setCaseSteps((prev) => [...prev, testCase]);
+  const handleAddCase = async () => {
+    if (reqId) {
+      const { code } = await addDefaultTestCase({
+        requirementId: parseInt(reqId),
+      });
+      if (code === 0) {
+        handelReload();
+        setShouldScroll(true);
+      }
+    }
   };
 
   const orderFetch = async (orderIds: number[]) => {
@@ -131,7 +146,7 @@ const Index = () => {
         setSearchForm={setSearchInfo}
       />
 
-      <ProCard extra={ExtraContent} bodyStyle={{ padding: 1 }}>
+      <ProCard extra={ExtraContent} bodyStyle={{ padding: 4 }}>
         {caseSteps.length === 0 ? (
           <Empty
             style={{ height: '85vh' }}
@@ -140,9 +155,9 @@ const Index = () => {
         ) : (
           <div
             style={{
-              maxHeight: '85vh',
+              maxHeight: '90vh',
               overflowY: 'auto',
-              padding: '8px',
+              padding: '10px',
               borderRadius: '8px',
             }}
           >

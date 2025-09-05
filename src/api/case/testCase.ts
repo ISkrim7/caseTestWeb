@@ -1,6 +1,7 @@
 import { IObjGet, IResponse } from '@/api';
 import { CaseSubStep, ICaseDynamic, ITestCase } from '@/pages/CaseHub/type';
 import { request } from '@@/plugin-request';
+import { int } from 'utrie/dist/types/Trie';
 
 /**
  * queryCasesByRequirement
@@ -47,6 +48,24 @@ export const saveTestCase = async (caseInfo: ITestCase, options?: IObjGet) => {
 };
 
 /**
+ * addDefault
+ * @param caseInfo
+ * @param options
+ */
+export const addDefaultTestCase = async (
+  caseInfo: {
+    requirementId: int;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<ITestCase>>('/api/hub/cases/addDefault', {
+    method: 'POST',
+    data: caseInfo,
+    ...(options || {}),
+  });
+};
+
+/**
  * saveCase
  * @param caseInfo
  * @param options
@@ -78,25 +97,6 @@ export const queryTestCaseSupStep = async (
       ...(options || {}),
     },
   );
-};
-
-/**
- * queryTestCaseSupStep
- * @param data
- * @param options
- */
-export const setTestCaseSupStep = async (
-  data: {
-    test_case_id: number;
-    case_sub_steps: CaseSubStep[];
-  },
-  options?: IObjGet,
-) => {
-  return request<IResponse<CaseSubStep[]>>(`/api/hub/cases/setSubSteps`, {
-    method: 'POST',
-    data: data,
-    ...(options || {}),
-  });
 };
 
 /**

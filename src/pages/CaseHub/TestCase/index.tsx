@@ -38,6 +38,7 @@ import {
 import React, { FC, useEffect, useState } from 'react';
 
 interface Props {
+  top: any;
   reqId?: string;
   tags?: { label: string; value: string }[];
   setTags: React.Dispatch<
@@ -46,9 +47,11 @@ interface Props {
   testcaseData?: ITestCase;
   // setCheckSubSteps: React.Dispatch<React.SetStateAction<number[]>>;
   callback: () => void;
+  collapsible: boolean;
 }
 
-const Index: FC<Props> = ({ callback, testcaseData, reqId, tags, setTags }) => {
+const Index: FC<Props> = (props) => {
+  const { top, callback, testcaseData, reqId, tags, setTags } = props;
   let timeout: NodeJS.Timeout | null = null;
   const [form] = Form.useForm<ITestCase>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
@@ -288,6 +291,7 @@ const Index: FC<Props> = ({ callback, testcaseData, reqId, tags, setTags }) => {
         color={CASE_STATUS_COLOR_ENUM[testcaseData!.case_status!]}
       >
         <ProCard
+          ref={top}
           hoverable
           title={CardTitle}
           extra={ExtraOpt}
@@ -296,6 +300,7 @@ const Index: FC<Props> = ({ callback, testcaseData, reqId, tags, setTags }) => {
           bodyStyle={{
             padding: 10,
           }}
+          defaultCollapsed={props.collapsible}
           collapsible
           collapsed={collapsible}
           headerBordered

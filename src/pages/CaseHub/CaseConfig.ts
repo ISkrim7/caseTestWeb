@@ -43,9 +43,9 @@ export const CaseHubConfig: any = {
     2: 'FAIL',
   },
   CASE_STATUS_COLOR_ENUM: {
-    0: 'blue',
-    1: 'green',
-    2: 'red',
+    0: '#7994ef',
+    1: '#0ccc49',
+    2: '#f96b37',
   },
 };
 

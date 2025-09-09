@@ -37,8 +37,8 @@ export interface ITestCase {
   // case_sub_steps?: CaseSubStep[];
   requirementId?: number | string;
 
-  project_id: number;
-  module_id: number;
+  project_id?: number;
+  module_id?: number;
 }
 
 export interface CaseSubStep {

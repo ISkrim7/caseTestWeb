@@ -24,11 +24,13 @@ interface Props {
 const RequirementDetail: FC<Props> = ({ callback, requirementId }) => {
   const [reqForm] = Form.useForm<IRequirement>();
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
-  const { initialState } = useModel('@@initialState');
-  const projects = initialState?.projects || [];
+
   const { CASE_LEVEL_OPTION } = CaseHubConfig;
   const [selectProjectId, setSelectProjectId] = useState<number>();
   const [users, setUsers] = useState<any[]>([]);
+  const { initialState } = useModel('@@initialState');
+  const projects = initialState?.projects || [];
+
   useEffect(() => {
     if (selectProjectId) {
       setSelectProjectId(selectProjectId);

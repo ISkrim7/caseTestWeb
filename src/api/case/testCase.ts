@@ -82,6 +82,19 @@ export const updateTestCase = async (
 };
 
 /**
+ * uploadTestCase
+ * @param data
+ * @param options
+ */
+export const uploadTestCase = async (data: any, options?: IObjGet) => {
+  return request<IResponse<ITestCase>>('/api/hub/cases/upload', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
  * queryTestCaseSupStep
  * @param caseId
  * @param options

@@ -34,8 +34,11 @@ import {
   message,
   Space,
   Tag,
+  Typography,
 } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
+
+const { Text } = Typography;
 
 interface Props {
   top: any;
@@ -82,6 +85,7 @@ const Index: FC<Props> = (props) => {
 
   const reloadCaseStep = () => {
     setStatus(status + 1);
+    callback();
   };
 
   const CardTitle = (
@@ -235,12 +239,14 @@ const Index: FC<Props> = (props) => {
       />
       <CaseLevelSelect testcaseData={testcaseData} />
       <CaseTypeSelect testcaseData={testcaseData} />
-      <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
-        <Button type={'primary'} icon={<MoreOutlined />} />
-      </Dropdown>
-      <Button onClick={addSubStepLine} type={'primary'}>
-        <PlusOutlined /> 添加步骤
+
+      <Button onClick={addSubStepLine} type={'link'}>
+        <PlusOutlined />
+        步骤
       </Button>
+      <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
+        <Button type={'link'} icon={<MoreOutlined />} />
+      </Dropdown>
     </Space>
   );
 
@@ -310,6 +316,7 @@ const Index: FC<Props> = (props) => {
           }}
         >
           <CaseSubSteps
+            caseId={testcaseData?.id}
             caseSubStepDataSource={caseSubStepDataSource}
             callback={reloadCaseStep}
             setCaseSubStepDataSource={setCaseSubStepDataSource}

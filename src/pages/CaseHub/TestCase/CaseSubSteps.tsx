@@ -2,6 +2,7 @@ import {
   copyTestCaseStep,
   removeTestCaseStep,
   reorderTestCaseStep,
+  updateTestCase,
   updateTestCaseStep,
 } from '@/api/case/testCase';
 import { CaseSubStep } from '@/pages/CaseHub/type';
@@ -61,12 +62,14 @@ const caseInfoColumn: ProColumns<CaseSubStep>[] = [
 ];
 
 interface IProps {
+  caseId?: number;
   caseSubStepDataSource?: CaseSubStep[];
   setCaseSubStepDataSource: React.Dispatch<React.SetStateAction<CaseSubStep[]>>;
   callback: () => void;
 }
 
 const CaseSubSteps: FC<IProps> = ({
+  caseId,
   callback,
   caseSubStepDataSource,
   setCaseSubStepDataSource,
@@ -214,8 +217,42 @@ const CaseSubSteps: FC<IProps> = ({
       <Space
         style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
       >
-        <Button>Pass</Button>
-        <Button>Fail</Button>
+        <Button
+          color={'green'}
+          variant={'text'}
+          onClick={async () => {
+            if (caseId) {
+              // @ts-ignore
+              const { code } = await updateTestCase({
+                id: caseId,
+                case_status: 1,
+              });
+              if (code === 0) {
+                callback();
+              }
+            }
+          }}
+        >
+          Pass
+        </Button>
+        <Button
+          variant={'text'}
+          color={'red'}
+          onClick={async () => {
+            if (caseId) {
+              // @ts-ignore
+              const { code } = await updateTestCase({
+                id: caseId,
+                case_status: 2,
+              });
+              if (code === 0) {
+                callback();
+              }
+            }
+          }}
+        >
+          Fail
+        </Button>
       </Space>
     </ProCard>
   );

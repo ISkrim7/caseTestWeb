@@ -1,4 +1,5 @@
 import { pageRequirement } from '@/api/case/requirement';
+import { downloadCaseExcel } from '@/api/case/testCase';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import { RequirementProcessEnum } from '@/pages/CaseHub/CaseConfig';
@@ -7,9 +8,10 @@ import RequirementDetail from '@/pages/CaseHub/Requirement/RequirementDetail';
 import { IRequirement } from '@/pages/CaseHub/type';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
+import { DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProCard } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { Popconfirm, Space, Tag } from 'antd';
+import { Button, Popconfirm, Space, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -135,6 +137,17 @@ const RequirementTable: FC<SelfProps> = ({
     [currentModuleId],
   );
 
+  const download = async () => {
+    const blob = await downloadCaseExcel({ responseType: 'blob' });
+    const objectURL = URL.createObjectURL(blob);
+    let btn: any = document.createElement('a');
+    btn.download = `模版.xlsx`; // 确保文件名有.xlsx扩展名
+    btn.href = objectURL;
+    btn.click();
+    // 清理临时资源
+    URL.revokeObjectURL(objectURL);
+    btn = null;
+  };
   return (
     <ProCard bodyStyle={{ padding: 2 }}>
       <MyDrawer name={''} open={detailVisible} setOpen={setDetailVisible}>
@@ -153,6 +166,9 @@ const RequirementTable: FC<SelfProps> = ({
         columns={columns}
         request={fetchPageData}
         toolBarRender={() => [
+          <Button onClick={download} type="link" icon={<DownloadOutlined />}>
+            用例模版
+          </Button>,
           <Requirement
             callback={() => actionRef.current?.reload()}
             currentModuleId={currentModuleId}

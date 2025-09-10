@@ -272,3 +272,10 @@ export const updateTestCaseStep = async (
     ...(options || {}),
   });
 };
+
+export const downloadCaseExcel = async (options: { responseType: 'blob' }) => {
+  return request<any>('/api/hub/cases/downloadCaseDemo', {
+    method: 'GET',
+    ...(options || {}),
+  });
+};

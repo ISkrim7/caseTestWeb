@@ -116,7 +116,6 @@ const Index = () => {
               callBackFunc={handelRefresh}
               collapsible={true} // 默认折叠
               uiStepInfo={item}
-              setDraggableDisabled={setDraggableDisabled}
             />
           ),
         })),

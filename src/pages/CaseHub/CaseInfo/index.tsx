@@ -3,6 +3,7 @@ import {
   queryCasesByRequirement,
   queryTagsByRequirement,
   reorderTestCase,
+  setAllTestCaseStatus,
   uploadTestCase,
 } from '@/api/case/testCase';
 import DnDDraggable from '@/components/DnDDraggable';
@@ -28,26 +29,25 @@ const Index = () => {
   const [fileForm] = Form.useForm();
   const [caseStepsContent, setCaseStepsContent] = useState<DraggableItem[]>([]);
   const [caseSteps, setCaseSteps] = useState<ITestCase[]>([]);
-  const [dataLoading, setDataLoading] = useState(true);
   const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
 
   const [showCheckButton, setShowCheckButton] = useState<boolean>(false);
-  const [checkedSupSteps, setCheckSubSteps] = useState<number[]>([]);
   const [shouldScroll, setShouldScroll] = useState(false);
   const [reload, setReload] = useState(0);
   const [searchInfo, setSearchInfo] = useState<CaseSearchForm>({});
+
+  const [selectedCase, setSelectedCase] = useState<number[]>([]);
   useEffect(() => {
-    checkedSupSteps.length > 0
+    selectedCase.length > 0
       ? setShowCheckButton(true)
       : setShowCheckButton(false);
-  }, [checkedSupSteps]);
+  }, [selectedCase]);
 
   // 获取用例数据
   useEffect(() => {
     if (!reqId) return;
 
     const fetchCases = async () => {
-      setDataLoading(true);
       try {
         const searchValues = {
           requirementId: reqId,
@@ -59,8 +59,6 @@ const Index = () => {
         }
       } catch (error) {
         console.error('Failed to fetch cases:', error);
-      } finally {
-        setDataLoading(false);
       }
     };
 
@@ -81,7 +79,7 @@ const Index = () => {
     if (caseSteps) {
       setCaseStepsContent(transformData2Content(caseSteps));
     }
-  }, [caseSteps, tags]);
+  }, [caseSteps, tags, selectedCase]);
 
   // 添加滚动效果
   useEffect(() => {
@@ -102,6 +100,7 @@ const Index = () => {
       step_id: item.id,
       content: (
         <TestCase
+          selectedCase={selectedCase}
           top={topRef}
           reqId={reqId}
           tags={tags}
@@ -109,8 +108,7 @@ const Index = () => {
           callback={handelReload}
           testcaseData={item}
           collapsible={false}
-
-          // setCheckSubSteps={setCheckSubSteps}
+          setSelectedCase={setSelectedCase}
         />
       ),
     }));
@@ -174,8 +172,34 @@ const Index = () => {
       </ProCard>
     </ModalForm>
   );
+
+  const setAllSuccess = async () => {
+    const values = {
+      caseIds: selectedCase,
+      status: 1,
+    };
+    const { code, msg } = await setAllTestCaseStatus(values);
+    if (code === 0) {
+      message.success(msg);
+      handelReload();
+    }
+  };
+  const setAllFail = async () => {
+    const values = {
+      caseIds: selectedCase,
+      status: 2,
+    };
+    const { code, msg } = await setAllTestCaseStatus(values);
+    if (code === 0) {
+      message.success(msg);
+      handelReload();
+    }
+  };
+  const moveToCaseLib = async () => {};
+
   const ExtraContent = (
     <Space>
+      {' '}
       {UploadForm}
       <Button type={'primary'} onClick={handleAddCase}>
         <PlusOutlined />
@@ -186,13 +210,46 @@ const Index = () => {
 
   return (
     <ProCard split={'horizontal'} bodyStyle={{ padding: 1 }}>
-      <CaseStepSearchForm
-        tags={tags}
-        showCheckButton={showCheckButton}
-        setSearchForm={setSearchInfo}
-      />
+      <CaseStepSearchForm tags={tags} setSearchForm={setSearchInfo} />
 
-      <ProCard extra={ExtraContent} bodyStyle={{ padding: 4 }}>
+      <ProCard
+        split={'horizontal'}
+        extra={ExtraContent}
+        bodyStyle={{ padding: 4 }}
+      >
+        {showCheckButton && (
+          <ProCard
+            collapsed
+            title={
+              <div>
+                已选择 {selectedCase.length} 项{' '}
+                <a
+                  style={{ marginLeft: '10px' }}
+                  onClick={() => setSelectedCase([])}
+                >
+                  取消选择
+                </a>
+              </div>
+            }
+            style={{
+              background: '#e6e6e6',
+              borderRadius: '8px',
+            }}
+            extra={
+              <Space size={'small'}>
+                <Button onClick={setAllSuccess} type={'link'}>
+                  全部成功
+                </Button>
+                <Button onClick={setAllFail} type={'link'}>
+                  全部失败
+                </Button>
+                <Button onClick={moveToCaseLib} type={'link'}>
+                  移动到用例库
+                </Button>
+              </Space>
+            }
+          ></ProCard>
+        )}
         {caseSteps.length === 0 ? (
           <Empty
             style={{ height: '85vh' }}

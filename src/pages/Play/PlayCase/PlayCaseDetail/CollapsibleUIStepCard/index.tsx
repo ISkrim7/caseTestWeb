@@ -12,7 +12,6 @@ import {
   DownOutlined,
   EditOutlined,
   RightOutlined,
-  UnorderedListOutlined,
 } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import {
@@ -24,7 +23,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 
 const { Text } = Typography;
 
@@ -36,20 +35,14 @@ interface ISelfProps {
   callBackFunc: () => void;
   envs?: any[];
   step: number;
-  setDraggableDisabled: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Index: FC<ISelfProps> = ({
-  caseId,
-  uiStepInfo,
-  callBackFunc,
-  collapsible,
-  currentProjectId,
-  envs,
-  step,
-  setDraggableDisabled,
-}) => {
+const Index: FC<ISelfProps> = (props) => {
+  const { caseId, uiStepInfo, callBackFunc, currentProjectId, envs, step } =
+    props;
   const [openStepDetailDrawer, setOpenStepDetailDrawer] = useState(false);
+  const [collapsible, setCollapsible] = useState<boolean>(true);
+
   const copyUIStep = async () => {
     copyCaseStep({
       caseId: parseInt(caseId),
@@ -146,7 +139,40 @@ const Index: FC<ISelfProps> = ({
       </Space>
     </>
   );
-
+  const Title = (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        minHeight: 32,
+        flexWrap: 'nowrap',
+        overflow: 'hidden',
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Space size={'small'}>
+        <div
+          style={{
+            marginRight: 8,
+            cursor: 'pointer',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          onClick={() => setCollapsible(!collapsible)}
+        >
+          {collapsible ? <RightOutlined /> : <DownOutlined />}
+        </div>
+        <Tag color={'green-inverse'} style={{ marginLeft: 4 }}>
+          Step_{step}
+        </Tag>
+        <Tag color={'#108ee9'} style={{ marginLeft: 4 }}>
+          {uiStepInfo?.name}
+        </Tag>
+      </Space>
+    </div>
+  );
   return (
     <>
       <MyDrawer
@@ -166,53 +192,28 @@ const Index: FC<ISelfProps> = ({
         />
       </MyDrawer>
       <ProCard
-        extra={CardExtra}
-        collapsibleIconRender={({ collapsed }) => {
-          if (collapsed) {
-            setDraggableDisabled(true);
-            return (
-              <Space>
-                <UnorderedListOutlined
-                  style={{ color: '#c3cad4', marginLeft: 10 }}
-                />
-                <RightOutlined />
-                <Tag color={'green-inverse'} style={{ marginLeft: 4 }}>
-                  Step_{step}
-                </Tag>
-              </Space>
-            );
-          } else {
-            setDraggableDisabled(false);
-            return (
-              <Space>
-                <UnorderedListOutlined
-                  style={{ color: '#c3cad4', marginLeft: 10 }}
-                />
-                <DownOutlined />
-                <Tag color={'green-inverse'} style={{ marginLeft: 4 }}>
-                  Step_{step}
-                </Tag>
-              </Space>
-            );
-          }
+        headStyle={{
+          height: 80,
+          padding: '0 16px',
         }}
+        bodyStyle={{
+          padding: 0,
+        }}
+        extra={CardExtra}
         hoverable
-        collapsible={true}
-        ghost={true}
+        defaultCollapsed={props.collapsible}
+        collapsible
+        collapsed={collapsible}
+        headerBordered
         style={{ borderRadius: '5px', marginTop: 10 }}
-        defaultCollapsed={collapsible}
         subTitle={
-          <Space>
-            <Text type={'secondary'}>{uiStepInfo?.description}</Text>
-          </Space>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Space>
+              <Text type={'secondary'}>{uiStepInfo?.description}</Text>
+            </Space>
+          </div>
         }
-        title={
-          <>
-            <Tag color={'#108ee9'} style={{ marginLeft: 4 }}>
-              {uiStepInfo?.name}
-            </Tag>
-          </>
-        }
+        title={Title}
       >
         <ProCard headerBordered>
           {uiStepInfo?.is_group ? (

@@ -279,3 +279,22 @@ export const downloadCaseExcel = async (options: { responseType: 'blob' }) => {
     ...(options || {}),
   });
 };
+
+/**
+ * setAllTestCaseStatus
+ * @param info
+ * @param options
+ */
+export const setAllTestCaseStatus = async (
+  info: {
+    status: number;
+    caseIds: number[];
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/updateStatus`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};

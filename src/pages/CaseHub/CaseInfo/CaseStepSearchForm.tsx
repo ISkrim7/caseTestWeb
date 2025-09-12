@@ -11,16 +11,11 @@ import { Button, Form, Space } from 'antd';
 import React, { FC } from 'react';
 
 interface Props {
-  showCheckButton: boolean;
   setSearchForm: React.Dispatch<React.SetStateAction<CaseSearchForm>>;
   tags: { label: string; value: string }[];
 }
 
-const CaseStepSearchForm: FC<Props> = ({
-  tags,
-  setSearchForm,
-  showCheckButton,
-}) => {
+const CaseStepSearchForm: FC<Props> = ({ tags, setSearchForm }) => {
   const [form] = Form.useForm();
   const { CASE_LEVEL_OPTION, CASE_TYPE_OPTION } = CaseHubConfig;
 
@@ -37,18 +32,7 @@ const CaseStepSearchForm: FC<Props> = ({
     setSearchForm({});
   };
   return (
-    <ProCard
-      title={'搜索'}
-      defaultCollapsed={true}
-      collapsible={true}
-      extra={
-        showCheckButton && (
-          <Space>
-            <Button>操作</Button>
-          </Space>
-        )
-      }
-    >
+    <ProCard title={'搜索'} defaultCollapsed={true} collapsible={true}>
       <ProForm form={form} submitter={false}>
         <ProForm.Group
           style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}

@@ -47,14 +47,24 @@ interface Props {
   setTags: React.Dispatch<
     React.SetStateAction<{ label: string; value: string }[]>
   >;
-  testcaseData?: ITestCase;
-  // setCheckSubSteps: React.Dispatch<React.SetStateAction<number[]>>;
+  selectedCase: number[];
+  testcaseData: ITestCase;
+  setSelectedCase: React.Dispatch<React.SetStateAction<number[]>>;
   callback: () => void;
   collapsible: boolean;
 }
 
 const Index: FC<Props> = (props) => {
-  const { top, callback, testcaseData, reqId, tags, setTags } = props;
+  const {
+    top,
+    callback,
+    selectedCase,
+    setSelectedCase,
+    testcaseData,
+    reqId,
+    tags,
+    setTags,
+  } = props;
   let timeout: NodeJS.Timeout | null = null;
   const [form] = Form.useForm<ITestCase>();
   const [collapsible, setCollapsible] = useState<boolean>(true);
@@ -82,7 +92,11 @@ const Index: FC<Props> = (props) => {
       }
     }
   }, [collapsible, status]);
-
+  useEffect(() => {
+    if (selectedCase) {
+      console.log(selectedCase);
+    }
+  }, [selectedCase]);
   const reloadCaseStep = () => {
     setStatus(status + 1);
     callback();
@@ -102,17 +116,20 @@ const Index: FC<Props> = (props) => {
     >
       <Space size={'small'}>
         <Checkbox
-        // onChange={(e) => {
-        //   const checked = e.target.checked;
-        //   const subStepId = testcaseData!.id;
-        //   setCheckSubSteps((pre) =>
-        //     checked
-        //       ? pre.includes(subStepId)
-        //         ? pre
-        //         : [...pre, subStepId]
-        //       : pre.filter((id) => id !== subStepId),
-        //   );
-        // {/*}}*/}
+          checked={selectedCase.includes(testcaseData.id!)} // 控制选中状态
+          onChange={(e) => {
+            const checked = e.target.checked;
+            const testCaseId = testcaseData.id;
+            if (testCaseId) {
+              setSelectedCase((pre) =>
+                checked
+                  ? pre.includes(testCaseId)
+                    ? pre
+                    : [...pre, testCaseId]
+                  : pre.filter((id) => id !== testCaseId),
+              );
+            }
+          }}
         />
         <div
           style={{

@@ -9,7 +9,8 @@ import {
 } from '@/api/play/playCase';
 import { executePlayCaseByBack } from '@/api/play/result';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
-import MyDraggable from '@/components/MyDraggable';
+import DnDDraggable from '@/components/DnDDraggable';
+import { DraggableItem } from '@/components/DnDDraggable/type';
 import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
 import { IUICase, IUICaseSteps } from '@/pages/Play/componets/uiTypes';
@@ -36,14 +37,8 @@ import {
   MenuProps,
   message,
 } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
-
-interface IUIStepContent {
-  id: string;
-  step_id: number;
-  content: React.ReactNode;
-}
 
 const Index = () => {
   const { caseId } = useParams<{ caseId: string }>();
@@ -57,7 +52,7 @@ const Index = () => {
     [],
   );
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
-  const [uiStepsContent, setUIStepsContent] = useState<IUIStepContent[]>([]);
+  const [uiStepsContent, setUIStepsContent] = useState<DraggableItem[]>([]);
   const [uiSteps, setUISteps] = useState<IUICaseSteps[]>([]);
   const [stepIndex, setStepIndex] = useState<number>(0);
   const [openAddStepDrawer, setOpenAddStepDrawer] = useState(false);
@@ -110,7 +105,7 @@ const Index = () => {
     if (uiSteps && uiSteps.length > 0) {
       setUIStepsContent(
         uiSteps.map((item, index) => ({
-          id: (index + 1).toString(),
+          id: index,
           step_id: item.id,
           content: (
             <CollapsibleUIStepCard
@@ -288,13 +283,18 @@ const Index = () => {
       children: (
         <ProCard>
           {uiSteps.length > 0 ? (
-            <MyDraggable
-              disabled={draggableDisabled}
+            <DnDDraggable
               items={uiStepsContent}
               setItems={setUIStepsContent}
-              dragEndFunc={onDragEnd}
+              orderFetch={onDragEnd}
             />
           ) : (
+            // <MyDraggable
+            //   disabled={draggableDisabled}
+            //   items={uiStepsContent}
+            //   setItems={setUIStepsContent}
+            //   dragEndFunc={onDragEnd}
+            // />
             <Empty description={'暂无数据'} />
           )}
         </ProCard>

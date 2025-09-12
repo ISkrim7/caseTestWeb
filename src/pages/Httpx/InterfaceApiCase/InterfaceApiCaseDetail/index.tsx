@@ -8,7 +8,7 @@ import {
   setApiCase,
 } from '@/api/inter/interCase';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
-import MyDraggable from '@/components/MyDraggable';
+import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
 import ApiCaseBaseForm from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/ApiCaseBaseForm';
@@ -93,7 +93,7 @@ const Index = () => {
     if (queryApis && apiModuleEnum && apiEnvs) {
       setStep(queryApis.length);
       const init = queryApis.map((item, index) => ({
-        id: (index + 1).toString(),
+        id: index,
         api_Id: item.id,
         content: (
           <CollapsibleApiCard
@@ -249,7 +249,7 @@ const Index = () => {
     setApis((prev) => [
       ...prev,
       {
-        id: currStep.toString(),
+        id: currStep,
         content: (
           <CollapsibleApiCard
             apiEnvs={apiEnvs}
@@ -320,11 +320,16 @@ const Index = () => {
           {apis.length === 0 ? (
             <Empty />
           ) : (
-            <MyDraggable
+            <DnDDraggable
               items={apis}
               setItems={setApis}
-              dragEndFunc={onDragEnd}
+              orderFetch={onDragEnd}
             />
+            // <MyDraggable
+            //   items={apis}
+            //   setItems={setApis}
+            //   dragEndFunc={onDragEnd}
+            // />
           )}
         </>
       ),

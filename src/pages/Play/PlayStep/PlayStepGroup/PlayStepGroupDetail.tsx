@@ -6,7 +6,7 @@ import {
   updatePlayStep,
 } from '@/api/play/playCase';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
-import MyDraggable from '@/components/MyDraggable';
+import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import { IUICaseSteps, IUIStepGroup } from '@/pages/Play/componets/uiTypes';
 import PlayStepDetail from '@/pages/Play/PlayStep/PlayStepDetail';
@@ -84,7 +84,7 @@ const PlayStepGroupDetail = () => {
     if (subSteps && subSteps.length > 0) {
       setSubStepsContent(
         subSteps.map((item, index) => ({
-          id: (index + 1).toString(),
+          id: index,
           step_id: item.id,
           content: (
             <PlayStepGroupCollapsible
@@ -222,10 +222,10 @@ const PlayStepGroupDetail = () => {
       </ProCard>
       <ProCard extra={CardExtra}>
         {subSteps.length > 0 ? (
-          <MyDraggable
+          <DnDDraggable
             items={subStepsContent}
             setItems={setSubStepsContent}
-            dragEndFunc={onDragEnd}
+            orderFetch={onDragEnd}
           />
         ) : (
           <Empty description={'暂无子步骤'} />

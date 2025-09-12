@@ -8,7 +8,7 @@ import {
   updateInterfaceGroup,
 } from '@/api/inter/interGroup';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
-import MyDraggable from '@/components/MyDraggable';
+import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
@@ -296,10 +296,10 @@ const Index = () => {
         </ProForm>
       </ProCard>
       <ProCard extra={<ApisCardExtra current={currentStatus} />}>
-        <MyDraggable
+        <DnDDraggable
           items={apisContent}
           setItems={setApisContent}
-          dragEndFunc={onDragEnd}
+          orderFetch={onDragEnd}
         />
       </ProCard>
       {tryResponses && <InterfaceApiResponseDetail responses={tryResponses} />}

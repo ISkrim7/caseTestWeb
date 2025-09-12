@@ -1,11 +1,10 @@
 import { IModuleEnum } from '@/api';
-import { queryUser } from '@/api/base';
+import { queryProject, queryUser } from '@/api/base';
 import { getRequirement, updateRequirement } from '@/api/case/requirement';
 import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
 import { IRequirement } from '@/pages/CaseHub/type';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
-import { useModel } from '@@/exports';
 import {
   ProCard,
   ProForm,
@@ -28,8 +27,16 @@ const RequirementDetail: FC<Props> = ({ callback, requirementId }) => {
   const { CASE_LEVEL_OPTION } = CaseHubConfig;
   const [selectProjectId, setSelectProjectId] = useState<number>();
   const [users, setUsers] = useState<any[]>([]);
-  const { initialState } = useModel('@@initialState');
-  const projects = initialState?.projects || [];
+  const [projects, setProjects] = useState<any[]>([]);
+  useEffect(() => {
+    queryProject().then(async ({ code, data }) => {
+      if (code === 0) {
+        setProjects(
+          data.map((itme) => ({ label: itme.title, value: itme.id })),
+        );
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (selectProjectId) {

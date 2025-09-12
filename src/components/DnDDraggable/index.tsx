@@ -18,7 +18,7 @@ import React, { FC } from 'react';
 interface Props {
   items: DraggableItem[];
   setItems: React.Dispatch<React.SetStateAction<DraggableItem[]>>;
-  orderFetch: (orderIds: number[]) => void;
+  orderFetch: (newItems: any[]) => void;
 }
 
 const Index: FC<Props> = ({ items, setItems, orderFetch }) => {
@@ -39,7 +39,7 @@ const Index: FC<Props> = ({ items, setItems, orderFetch }) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over?.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
-        orderFetch(newItems.map((item) => item.caseStepId));
+        orderFetch(newItems);
         return newItems;
       });
     }

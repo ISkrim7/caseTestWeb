@@ -20,7 +20,7 @@ const Index = () => {
   const items = [
     {
       key: '1',
-      label: '需求',
+      label: '需求表',
       children: (
         <RequirementTable
           perKey={PerKeyRequirement}

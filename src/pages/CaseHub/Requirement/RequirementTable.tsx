@@ -149,7 +149,7 @@ const RequirementTable: FC<SelfProps> = ({
     btn = null;
   };
   return (
-    <ProCard bodyStyle={{ padding: 2 }}>
+    <ProCard bodyStyle={{ padding: 0 }}>
       <MyDrawer name={''} open={detailVisible} setOpen={setDetailVisible}>
         <RequirementDetail
           requirementId={currentReqId}

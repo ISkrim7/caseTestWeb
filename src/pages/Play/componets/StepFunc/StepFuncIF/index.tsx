@@ -4,7 +4,7 @@ import {
   reorderPlayStepCondition,
   updatePlayStep,
 } from '@/api/play/playCase';
-import MyDraggable from '@/components/MyDraggable';
+import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import CollapsibleConditionStepsCard from '@/pages/Play/componets/StepFunc/StepFuncIF/CollapsibleConditionStepsCard';
 import {
@@ -53,7 +53,7 @@ const Index: FC<Self> = (props) => {
             setConditionSteps(data);
             setConditionStepsContent(
               data.map((item: IUICaseSteps, index) => ({
-                id: index.toString(),
+                id: index,
                 condition_step_id: item.id,
                 content: (
                   <CollapsibleConditionStepsCard
@@ -158,10 +158,10 @@ const Index: FC<Self> = (props) => {
         }
       >
         {condition && (
-          <MyDraggable
-            dragEndFunc={onDragEnd}
+          <DnDDraggable
             items={conditionStepsContent}
             setItems={setConditionStepsContent}
+            orderFetch={onDragEnd}
           />
         )}
       </ProCard>

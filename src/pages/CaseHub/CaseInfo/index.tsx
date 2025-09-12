@@ -99,7 +99,7 @@ const Index = () => {
   const transformData2Content = (data: ITestCase[]) => {
     return data.map((item, index) => ({
       id: index,
-      caseStepId: item.id,
+      step_id: item.id,
       content: (
         <TestCase
           top={topRef}
@@ -128,7 +128,8 @@ const Index = () => {
     }
   };
 
-  const orderFetch = async (orderIds: number[]) => {
+  const orderFetch = async (newItems: any[]) => {
+    const orderIds = newItems.map((item) => item.step_id);
     await reorderTestCase({
       requirementId: parseInt(reqId!),
       caseIds: orderIds,

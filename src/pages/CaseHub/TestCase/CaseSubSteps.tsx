@@ -6,7 +6,11 @@ import {
   updateTestCaseStep,
 } from '@/api/case/testCase';
 import { CaseSubStep } from '@/pages/CaseHub/type';
-import { MenuOutlined } from '@ant-design/icons';
+import {
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  MenuOutlined,
+} from '@ant-design/icons';
 import {
   DragSortTable,
   ProCard,
@@ -14,7 +18,7 @@ import {
   ProForm,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { Button, message, Space, Spin, Typography } from 'antd';
+import { Button, message, Popconfirm, Space, Spin, Typography } from 'antd';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 const { Text } = Typography;
@@ -66,6 +70,7 @@ interface IProps {
   caseSubStepDataSource?: CaseSubStep[];
   setCaseSubStepDataSource: React.Dispatch<React.SetStateAction<CaseSubStep[]>>;
   callback: () => void;
+  hiddenStatusBut?: boolean;
 }
 
 const CaseSubSteps: FC<IProps> = ({
@@ -73,6 +78,7 @@ const CaseSubSteps: FC<IProps> = ({
   callback,
   caseSubStepDataSource,
   setCaseSubStepDataSource,
+  hiddenStatusBut = false,
 }) => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -81,33 +87,46 @@ const CaseSubSteps: FC<IProps> = ({
 
   // 使用 useCallback 来确保 handleDragSortEnd 不会在每次渲染时重新定义
   const handleDragSortEnd = useCallback(
-    async (beforeIndex: number, afterIndex: number, newDataSource: any) => {
+    async (_: number, __: number, newDataSource: any) => {
       setCaseSubStepDataSource(newDataSource);
       const orderIds = newDataSource.map((item: CaseSubStep) => item.id);
       await reorderTestCaseStep({ stepIds: orderIds });
     },
-    [setCaseSubStepDataSource],
+    [caseSubStepDataSource],
   );
 
-  // 行编辑进行5s后保存
-  const saveRecord = async (data: CaseSubStep) => {
+  // 行编辑进行3s后保存
+  const saveRecord = async (data: CaseSubStep[]) => {
     // 如果定时器存在，先清除掉
     if (timerRef.current) clearTimeout(timerRef.current);
+
     // 设置一个新的定时器，5秒后执行保存请求
     timerRef.current = setTimeout(async () => {
       setEditStatus(1);
-      const { code, msg } = await updateTestCaseStep(data);
-      if (code === 0) {
+
+      // 使用 Promise.all 来并行处理多个保存请求
+      const savePromises = data.map(async (item) => {
+        const { code, msg } = await updateTestCaseStep(item);
+        return { code, msg, item };
+      });
+
+      const results = await Promise.all(savePromises);
+
+      // 检查所有保存结果
+      const failedItems = results.filter((result) => result.code !== 0);
+
+      if (failedItems.length === 0) {
         setEditStatus(2);
-        // 5秒后恢复为0（不显示状态）
-        setTimeout(async () => {
+        // 2秒后恢复为初始状态
+        setTimeout(() => {
           setEditStatus(0);
-        }, 2000); //2秒后恢复为初始状态
+        }, 1500);
       } else {
         setEditStatus(0);
       }
-    }, 5000); // 5秒后执行保存
+    }, 3000); // 3秒后执行保存
   };
+
   useEffect(() => {
     if (caseSubStepDataSource) {
       setEditableRowKeys(
@@ -118,7 +137,6 @@ const CaseSubSteps: FC<IProps> = ({
 
   const StatusArea = (status: number) => {
     let statusText = null;
-
     switch (status) {
       case 0:
         statusText = null;
@@ -138,7 +156,7 @@ const CaseSubSteps: FC<IProps> = ({
   return (
     <ProCard>
       <ProFormTextArea
-        name={'case_step_setup'}
+        name={'case_setup'}
         placeholder={'请输入用例前置'}
         fieldProps={{
           variant: 'filled',
@@ -180,8 +198,10 @@ const CaseSubSteps: FC<IProps> = ({
                       >
                         复制
                       </a>
-                      <a
-                        onClick={async () => {
+                      <Popconfirm
+                        title="用例删除"
+                        description="未存到用例库将彻底删除"
+                        onConfirm={async () => {
                           const { code, msg } = await removeTestCaseStep({
                             stepId: row.id,
                           });
@@ -190,23 +210,37 @@ const CaseSubSteps: FC<IProps> = ({
                             callback();
                           }
                         }}
+                        okText="是"
+                        cancelText="否"
                       >
-                        删除
-                      </a>
+                        <a>删除</a>
+                      </Popconfirm>
                     </Space>
                   )}
                 </>
               );
             },
-            onValuesChange: async (record: CaseSubStep, _: CaseSubStep[]) => {
-              await saveRecord(record);
+            onValuesChange: async (_: CaseSubStep, records: CaseSubStep[]) => {
+              const modifiedRecords = records.filter((r) => {
+                // 比较原始记录和修改后的记录，
+                const originalRecord = caseSubStepDataSource?.find(
+                  (data) => data.id === r.id,
+                );
+                return (
+                  r.action !== originalRecord?.action ||
+                  r.expected_result !== originalRecord?.expected_result
+                );
+              });
+              if (modifiedRecords.length > 0) {
+                await saveRecord(records); // 只提交修改过的记录
+              }
             },
             onChange: setEditableRowKeys,
           }}
         />
       </ProForm.Item>
       <ProFormTextArea
-        name={'case_step_mark'}
+        name={'case_mark'}
         placeholder={'请输入备注'}
         fieldProps={{
           variant: 'filled',
@@ -214,46 +248,44 @@ const CaseSubSteps: FC<IProps> = ({
         }}
       />
       {StatusArea(editStatus)}
-      <Space
-        style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
-      >
-        <Button
-          color={'green'}
-          variant={'text'}
-          onClick={async () => {
-            if (caseId) {
-              // @ts-ignore
-              const { code } = await updateTestCase({
-                id: caseId,
-                case_status: 1,
-              });
-              if (code === 0) {
-                callback();
-              }
-            }
-          }}
+      {!hiddenStatusBut && (
+        <Space
+          style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}
         >
-          Pass
-        </Button>
-        <Button
-          variant={'text'}
-          color={'red'}
-          onClick={async () => {
-            if (caseId) {
-              // @ts-ignore
-              const { code } = await updateTestCase({
-                id: caseId,
-                case_status: 2,
-              });
-              if (code === 0) {
-                callback();
+          <Button
+            type={'text'}
+            icon={<CheckCircleTwoTone twoToneColor="#52c41a" />}
+            onClick={async () => {
+              if (caseId) {
+                // @ts-ignore
+                const { code } = await updateTestCase({
+                  id: caseId,
+                  case_status: 1,
+                });
+                if (code === 0) {
+                  callback();
+                }
               }
-            }
-          }}
-        >
-          Fail
-        </Button>
-      </Space>
+            }}
+          />
+          <Button
+            icon={<CloseCircleTwoTone twoToneColor={'#f74649'} />}
+            variant={'text'}
+            onClick={async () => {
+              if (caseId) {
+                // @ts-ignore
+                const { code } = await updateTestCase({
+                  id: caseId,
+                  case_status: 2,
+                });
+                if (code === 0) {
+                  callback();
+                }
+              }
+            }}
+          />
+        </Space>
+      )}
     </ProCard>
   );
 };

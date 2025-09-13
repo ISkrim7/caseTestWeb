@@ -17,6 +17,12 @@ export const CaseHubConfig: any = {
       value: 'P0',
     },
   ],
+  CASE_LEVEL_ENUM: {
+    P1: { text: 'P1' },
+    P2: { text: 'P2' },
+    P3: { text: 'P3' },
+    P0: { text: 'P0' },
+  },
   CASE_LEVEL_COLOR_ENUM: {
     P1: 'orange',
     P2: 'orange',

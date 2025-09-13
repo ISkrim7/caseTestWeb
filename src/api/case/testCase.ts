@@ -1,4 +1,4 @@
-import { IObjGet, IResponse } from '@/api';
+import { IObjGet, IPage, IResponse } from '@/api';
 import { CaseSubStep, ICaseDynamic, ITestCase } from '@/pages/CaseHub/type';
 import { request } from '@@/plugin-request';
 import { int } from 'utrie/dist/types/Trie';
@@ -266,7 +266,7 @@ export const updateTestCaseStep = async (
   info: CaseSubStep,
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>(`/api/hub/cases/updateSubStep`, {
+  return request<IResponse<null>>(`/api/hub/cases/updateSubSteps`, {
     method: 'POST',
     data: info,
     ...(options || {}),
@@ -295,6 +295,19 @@ export const setAllTestCaseStatus = async (
   return request<IResponse<null>>(`/api/hub/cases/updateStatus`, {
     method: 'POST',
     data: info,
+    ...(options || {}),
+  });
+};
+
+/**
+ * pageTestCase
+ * @param searchParams
+ * @param options
+ */
+export const pageTestCase = async (searchParams: any, options?: IObjGet) => {
+  return request<IResponse<IPage<ITestCase>>>('/api/hub/cases/dataPage', {
+    method: 'POST',
+    data: searchParams,
     ...(options || {}),
   });
 };

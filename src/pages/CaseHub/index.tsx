@@ -1,6 +1,6 @@
 import LeftComponents from '@/components/LeftComponents';
 import MyTabs from '@/components/MyTabs';
-import CaseDataSource from '@/pages/CaseHub/CaseDataSource';
+import CaseDataTable from '@/pages/CaseHub/CaseDataBase/CaseDataTable';
 import RequirementTable from '@/pages/CaseHub/Requirement/RequirementTable';
 import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
@@ -32,7 +32,13 @@ const Index = () => {
     {
       key: '2',
       label: '用例库',
-      children: <CaseDataSource perKey={PerKeyCaseDataSource} />,
+      children: (
+        <CaseDataTable
+          perKey={PerKeyCaseDataSource}
+          currentProjectId={currentProjectId}
+          currentModuleId={currentModuleId}
+        />
+      ),
     },
   ];
   return (

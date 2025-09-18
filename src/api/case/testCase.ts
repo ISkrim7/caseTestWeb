@@ -311,3 +311,23 @@ export const pageTestCase = async (searchParams: any, options?: IObjGet) => {
     ...(options || {}),
   });
 };
+
+/**
+ * moveTestCase2Common
+ * @param info
+ * @param options
+ */
+export const moveTestCase2Common = async (
+  info: {
+    caseIds: number[];
+    module_id: int;
+    project_id: int;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>(`/api/hub/cases/updateCommon`, {
+    method: 'POST',
+    data: info,
+    ...(options || {}),
+  });
+};

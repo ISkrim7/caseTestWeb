@@ -1,7 +1,11 @@
-import { queryTestCaseSupStep } from '@/api/case/testCase';
+import {
+  handleAddTestCaseStep,
+  queryTestCaseSupStep,
+} from '@/api/case/testCase';
 import { CaseHubConfig } from '@/pages/CaseHub/CaseConfig';
 import CaseSubSteps from '@/pages/CaseHub/TestCase/CaseSubSteps';
 import { CaseSubStep, ITestCase } from '@/pages/CaseHub/type';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   ProCard,
   ProForm,
@@ -25,6 +29,15 @@ const TestCaseDetail: FC<Props> = ({ testcase, callback }) => {
 
   const reload = () => {
     setEditStatus(editStatus + 1);
+  };
+  const addSubStepLine = () => {
+    if (testcase?.id) {
+      handleAddTestCaseStep({ caseId: testcase!.id }).then(async ({ code }) => {
+        if (code === 0) {
+          reload();
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -77,13 +90,23 @@ const TestCaseDetail: FC<Props> = ({ testcase, callback }) => {
             />
           </ProForm.Group>
         </ProCard>
-        <CaseSubSteps
-          caseId={testcase?.id}
-          caseSubStepDataSource={testCaseSteps}
-          callback={reload}
-          hiddenStatusBut={true}
-          setCaseSubStepDataSource={setTestCaseSteps}
-        />
+        <ProCard
+          actions={
+            <Button onClick={addSubStepLine} type={'link'}>
+              <PlusOutlined />
+              步骤
+            </Button>
+          }
+          bodyStyle={{ padding: 0 }}
+        >
+          <CaseSubSteps
+            caseId={testcase?.id}
+            caseSubStepDataSource={testCaseSteps}
+            callback={reload}
+            hiddenStatusBut={true}
+            setCaseSubStepDataSource={setTestCaseSteps}
+          />
+        </ProCard>
       </ProForm>
     </ProCard>
   );

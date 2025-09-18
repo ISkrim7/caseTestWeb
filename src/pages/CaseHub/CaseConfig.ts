@@ -55,14 +55,37 @@ export const CaseHubConfig: any = {
   },
 };
 
-export const RequirementProcessEnum: { [key: number]: string } = {
-  1: '二轮测试中',
-  2: '一轮测试中',
-  3: '待测试',
-  4: '完成',
-  5: '用例中',
+export const RequirementProcessEnum: {
+  [key: number]: { text: string; value: number };
+} = {
+  1: { text: '二轮测试中', value: 1 },
+  2: { text: '一轮测试中', value: 2 },
+  3: { text: '待测试', value: 3 },
+  4: { text: '完成', value: 4 },
+  5: { text: '用例中', value: 5 },
 };
-
+export const RequirementProcessOption = [
+  {
+    label: '二轮测试中',
+    value: 1,
+  },
+  {
+    label: '一轮测试中',
+    value: 2,
+  },
+  {
+    label: '待测试',
+    value: 3,
+  },
+  {
+    label: '完成',
+    value: 4,
+  },
+  {
+    label: '用例中',
+    value: 5,
+  },
+];
 export const RequirementIsReviewEnum: { [key: number]: string } = {
   1: '是',
   0: '否',

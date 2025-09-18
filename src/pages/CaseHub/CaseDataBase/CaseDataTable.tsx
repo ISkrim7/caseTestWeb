@@ -72,7 +72,7 @@ const CaseDataTable: FC<Props> = (props) => {
     {
       valueType: 'option',
       fixed: 'right',
-      width: '8%',
+      width: '12%',
       render: (_: any, record: ITestCase) => {
         return (
           <Space>

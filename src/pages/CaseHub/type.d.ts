@@ -44,9 +44,9 @@ export interface ITestCase {
 export interface CaseSubStep {
   id?: React.Key;
   uid: string;
-  action: string;
+  action: string | null;
   order?: number;
-  expected_result: string;
+  expected_result: string | null;
 }
 
 export interface ICaseDynamic {

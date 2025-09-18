@@ -1,17 +1,20 @@
-import { pageRequirement } from '@/api/case/requirement';
+import { pageRequirement, updateRequirement } from '@/api/case/requirement';
 import { downloadCaseExcel } from '@/api/case/testCase';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
-import { RequirementProcessEnum } from '@/pages/CaseHub/CaseConfig';
+import {
+  RequirementProcessEnum,
+  RequirementProcessOption,
+} from '@/pages/CaseHub/CaseConfig';
 import Requirement from '@/pages/CaseHub/Requirement/index';
 import RequirementDetail from '@/pages/CaseHub/Requirement/RequirementDetail';
 import { IRequirement } from '@/pages/CaseHub/type';
 import { CONFIG, ModuleEnum } from '@/utils/config';
 import { pageData } from '@/utils/somefunc';
-import { DownloadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, EditOutlined } from '@ant-design/icons';
 import { ActionType, ProCard } from '@ant-design/pro-components';
 import { ProColumns } from '@ant-design/pro-table/lib/typing';
-import { Button, Popconfirm, Space, Tag } from 'antd';
+import { Button, Popconfirm, Select, Space, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -36,17 +39,24 @@ const RequirementTable: FC<SelfProps> = ({
       dataIndex: 'uid',
       fixed: 'left',
       copyable: true,
+      width: '12%',
+      editable: false,
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
     },
     {
       title: '需求名',
       key: 'requirement_name',
       dataIndex: 'requirement_name',
       copyable: true,
+      editable: false,
     },
     {
       title: '需求等级',
       key: 'requirement_level',
       dataIndex: 'requirement_level',
+      editable: false,
       valueEnum: CONFIG.CASE_LEVEL_ENUM,
       render: (text, record) => {
         return (
@@ -60,10 +70,24 @@ const RequirementTable: FC<SelfProps> = ({
       title: '进度',
       key: 'process',
       dataIndex: 'process',
-      width: '10%',
+      valueType: 'select',
+      width: '12%',
       valueEnum: RequirementProcessEnum,
       render: (text, record) => {
-        return <Tag>{RequirementProcessEnum[record.process]}</Tag>;
+        return (
+          <Space size={'small'}>
+            <Tag>{RequirementProcessEnum[record.process].text}</Tag>{' '}
+            <EditOutlined
+              onClick={() => {
+                actionRef?.current?.startEditable(record.id);
+              }}
+            />
+          </Space>
+        );
+      },
+      renderFormItem: (text, { type, defaultRender, ...rest }, form) => {
+        // 这里可以自定义渲染方式
+        return <Select options={RequirementProcessOption} value={text} />;
       },
     },
     {
@@ -71,6 +95,7 @@ const RequirementTable: FC<SelfProps> = ({
       key: 'case_number',
       dataIndex: 'case_number',
       hideInSearch: true,
+      editable: false,
       render: (text, record) => {
         return <Tag>{record.case_number}</Tag>;
       },
@@ -80,11 +105,12 @@ const RequirementTable: FC<SelfProps> = ({
       key: 'creatorName',
       dataIndex: 'creatorName',
       hideInSearch: true,
+      editable: false,
     },
     {
-      title: '操作',
       valueType: 'option',
       fixed: 'right',
+      width: '20%',
       render: (_: any, record: IRequirement) => {
         return (
           <Space>
@@ -95,7 +121,7 @@ const RequirementTable: FC<SelfProps> = ({
                 );
               }}
             >
-              用例
+              关联用例
             </a>
             <a
               onClick={() => {
@@ -148,6 +174,16 @@ const RequirementTable: FC<SelfProps> = ({
     URL.revokeObjectURL(objectURL);
     btn = null;
   };
+  const onSave = async (_: any, record: IRequirement) => {
+    const values = {
+      id: record.id,
+      process: record.process,
+    };
+    const { code, data } = await updateRequirement(values);
+    if (code === 0) {
+      actionRef.current?.reload();
+    }
+  };
   return (
     <ProCard bodyStyle={{ padding: 0 }}>
       <MyDrawer name={''} open={detailVisible} setOpen={setDetailVisible}>
@@ -160,6 +196,7 @@ const RequirementTable: FC<SelfProps> = ({
         />
       </MyDrawer>
       <MyProTable
+        onSave={onSave}
         persistenceKey={perKey}
         rowKey={'id'}
         actionRef={actionRef}

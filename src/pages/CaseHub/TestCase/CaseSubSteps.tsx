@@ -97,6 +97,7 @@ const CaseSubSteps: FC<IProps> = ({
 
   // 行编辑进行3s后保存
   const saveRecord = async (data: CaseSubStep[]) => {
+    console.log('=====', data);
     // 如果定时器存在，先清除掉
     if (timerRef.current) clearTimeout(timerRef.current);
 
@@ -270,7 +271,7 @@ const CaseSubSteps: FC<IProps> = ({
           />
           <Button
             icon={<CloseCircleTwoTone twoToneColor={'#f74649'} />}
-            variant={'text'}
+            type={'text'}
             onClick={async () => {
               if (caseId) {
                 // @ts-ignore

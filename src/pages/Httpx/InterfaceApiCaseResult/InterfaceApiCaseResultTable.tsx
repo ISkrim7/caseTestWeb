@@ -90,7 +90,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     {
       title: '执行时间',
       dataIndex: 'startTime',
-      valueType: 'dateTime',
+      valueType: 'date',
       key: 'startTime',
       render: (_, record) => <Tag color={'blue'}>{record.startTime}</Tag>,
     },

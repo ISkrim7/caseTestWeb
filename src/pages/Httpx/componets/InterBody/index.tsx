@@ -9,8 +9,7 @@ import { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  mode: number;
-  readonly: boolean;
+  readonly?: boolean;
 }
 
 const Index: FC<SelfProps> = (props) => {

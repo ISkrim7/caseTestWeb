@@ -17,7 +17,7 @@ import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  readonly: boolean;
+  readonly?: boolean;
 }
 
 const InterHeader: FC<SelfProps> = ({ form, readonly = false }) => {
@@ -140,7 +140,7 @@ const InterHeader: FC<SelfProps> = ({ form, readonly = false }) => {
       valueType: 'option',
       fixed: 'right',
       render: (_, record, __, action) => {
-        if (readonly) {
+        if (!readonly) {
           return (
             <a
               onClick={() => {

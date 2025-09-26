@@ -118,7 +118,7 @@ const Index: FC<Self> = ({ subStepInfo, callback, currentProjectId, envs }) => {
     {
       key: '3',
       label: renderTab(3),
-      children: <InterBody form={interApiForm} mode={1} readonly={true} />,
+      children: <InterBody form={interApiForm} readonly={true} />,
     },
   ];
 

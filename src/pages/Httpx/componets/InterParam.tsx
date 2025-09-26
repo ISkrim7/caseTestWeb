@@ -17,7 +17,7 @@ import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  readonly: boolean;
+  readonly?: boolean;
 }
 
 const InterParam: FC<SelfProps> = ({ form, readonly = false }) => {
@@ -101,17 +101,19 @@ const InterParam: FC<SelfProps> = ({ form, readonly = false }) => {
       title: 'Opt',
       valueType: 'option',
       render: (_, record, __, action) => {
-        if (readonly) {
-          return (
-            <a
-              onClick={() => {
-                action?.startEditable?.(record.id);
-              }}
-            >
-              编辑
-            </a>
-          );
-        }
+        return (
+          <>
+            {!readonly && (
+              <a
+                onClick={() => {
+                  action?.startEditable?.(record.id);
+                }}
+              >
+                编辑
+              </a>
+            )}
+          </>
+        );
       },
     },
   ];

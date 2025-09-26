@@ -160,7 +160,7 @@ export const removeInterGlobalVariable = async (
   data: string,
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/global/remove_variable', {
+  return request<IResponse<null>>('/api/project/remove_variable', {
     method: 'POST',
     data: { uid: data },
     ...(options || {}),

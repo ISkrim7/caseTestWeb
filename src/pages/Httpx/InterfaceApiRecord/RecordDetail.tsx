@@ -32,10 +32,10 @@ const RecordDetail: FC<IRecordDetailProps> = ({ interfaceAPIRecordInfo }) => {
     <ProCard>
       <Tabs defaultActiveKey={'1'} type="card">
         <Tabs.TabPane key={'2'} tab={'Headers'}>
-          <InterHeader form={interApiForm} mode={1} />
+          <InterHeader form={interApiForm} />
         </Tabs.TabPane>
         <Tabs.TabPane key={'1'} tab={'Params'}>
-          <InterParam form={interApiForm} mode={1} />
+          <InterParam form={interApiForm} />
         </Tabs.TabPane>
         <Tabs.TabPane key={'3'} tab={'Body'}>
           <InterBody form={interApiForm} mode={1} />

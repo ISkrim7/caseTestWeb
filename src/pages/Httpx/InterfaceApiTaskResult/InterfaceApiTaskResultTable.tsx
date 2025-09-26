@@ -10,7 +10,7 @@ import { IInterfaceTaskResult } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, message, Tag } from 'antd';
+import { Button, message, Space, Tag } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
@@ -155,8 +155,10 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
     {
       title: '操作',
       valueType: 'option',
+      fixed: 'right',
+      width: '8%',
       render: (_, record) => (
-        <>
+        <Space>
           {record.status === 'OVER' ? (
             <>
               <a
@@ -169,13 +171,12 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
               >
                 详情
               </a>
-              <Divider type={'vertical'} />
               <a onClick={async () => await removeTaskResult(record.id)}>
                 删除
               </a>
             </>
           ) : null}
-        </>
+        </Space>
       ),
     },
   ];
@@ -221,7 +222,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
           showSizeChanger: true,
         }}
         columns={columns}
-        x={1000}
+        x={1500}
       />
     </>
   );

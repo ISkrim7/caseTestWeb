@@ -73,8 +73,14 @@ const Index = () => {
   });
   // 初始化数据
   const initialData = {
-    data: { text: '根节点' },
-    children: [{ data: { text: '子节点1' } }, { data: { text: '子节点2' } }],
+    data: { text: 'Main' },
+    children: [
+      {
+        data: { text: '标签1' },
+        children: [{ data: { text: '1、aaa  2、bbb' } }],
+      },
+      { data: { text: '标签2' } },
+    ],
   };
 
   // 富文本选择变化事件

@@ -1,6 +1,7 @@
-import { tryInterScript, updateInterApiById } from '@/api/inter';
+import { tryInterScript } from '@/api/inter';
 import AceCodeEditor from '@/components/CodeEditor/AceCodeEditor';
 import MyDrawer from '@/components/MyDrawer';
+import { FormEditableOnValueChange } from '@/pages/Httpx/componets/FormEditableOnValueChange';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
@@ -9,13 +10,12 @@ import {
   Divider,
   FormInstance,
   List,
-  message,
   Popover,
   Space,
   Splitter,
   Typography,
 } from 'antd';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 const { Text, Title, Paragraph } = Typography;
@@ -38,8 +38,8 @@ const ScriptList = [
   },
   {
     label: '删除一个变量',
-    value: 'hub_variables_remove("key")',
-    desc: '删除运行中的变量',
+    value: 'hub_variables_remove("name")',
+    desc: '删除运行中的变量 只能删除hub_variables_set 的变量',
   },
   {
     label: '获取时间戳 （内置）',
@@ -100,10 +100,13 @@ const ScriptList = [
 ];
 
 const InterScript: FC<SelfProps> = ({ form, tag }) => {
+  const timeoutRef = useRef<any>(null);
+
   const [scriptData, setScriptData] = useState<any>();
   const [showButton, setShowButton] = useState(false);
   const [open, setOpen] = useState(false);
   const [tryData, setTryData] = useState<any>();
+  const [isSaved, setIsSaved] = useState(false);
 
   const formSetter = (value: string | null) => {
     form.setFieldsValue({
@@ -114,16 +117,32 @@ const InterScript: FC<SelfProps> = ({ form, tag }) => {
   useEffect(() => {
     const script = form.getFieldValue(tag);
     if (script) {
-      setShowButton(true);
       setScriptData(script);
     }
   }, []);
-  const handleOnChange = (value: any) => {
-    if (value) {
-      setScriptData(value);
+
+  useEffect(() => {
+    if (scriptData) {
       setShowButton(true);
-      formSetter(value);
     }
+  }, [scriptData]);
+  const handleOnChange = (value: string) => {
+    clearTimeout(timeoutRef.current);
+    setScriptData(value);
+    formSetter(value);
+    timeoutRef.current = setTimeout(async () => {
+      await FormEditableOnValueChange(form, tag, false).then(() => {
+        setIsSaved(true);
+        // 2秒后设置回 false
+        setTimeout(() => {
+          setIsSaved(false);
+        }, 2000);
+      });
+    }, 3000);
+  };
+
+  const useDemoScript = (value: string) => {
+    handleOnChange(scriptData + '\n' + value);
   };
 
   const Desc = (
@@ -150,21 +169,6 @@ const InterScript: FC<SelfProps> = ({ form, tag }) => {
       </li>
     </ul>
   );
-
-  const useDemoScript = (value: string) => {
-    setScriptData((prev: string) => {
-      if (prev === undefined) {
-        return value;
-      } else {
-        return prev + '\n' + value;
-      }
-    });
-    setShowButton(true);
-    if (tag === 'before_script') {
-      form.setFieldsValue({ before_script: scriptData });
-    }
-  };
-
   return (
     <>
       <MyDrawer name={'script response'} open={open} setOpen={setOpen}>
@@ -183,62 +187,23 @@ const InterScript: FC<SelfProps> = ({ form, tag }) => {
         extra={
           <Space>
             {showButton && (
-              <>
-                <Button
-                  disabled={false}
-                  type={'primary'}
-                  onClick={async () => {
-                    const { code, data } = await tryInterScript(scriptData);
-                    if (code === 0) {
+              <Button
+                disabled={false}
+                type={'primary'}
+                onClick={async () => {
+                  const { code, data } = await tryInterScript(scriptData);
+                  if (code === 0) {
+                    try {
                       setTryData(JSON.stringify(data, null, 2));
-                      setOpen(true);
+                    } catch (err) {
+                      setTryData(data);
                     }
-                  }}
-                >
-                  Try
-                </Button>
-
-                <Button
-                  disabled={false}
-                  type={'primary'}
-                  onClick={async () => {
-                    const InterfaceId = form.getFieldValue('id');
-                    if (scriptData && InterfaceId) {
-                      const { code, msg } = await updateInterApiById({
-                        id: InterfaceId,
-                        before_script: scriptData,
-                      });
-                      if (code === 0) {
-                        message.success(msg);
-                      }
-                    }
-                  }}
-                >
-                  Save
-                </Button>
-                <Button
-                  disabled={false}
-                  type={'primary'}
-                  onClick={async () => {
-                    const InterfaceId = form.getFieldValue('id');
-                    formSetter(null);
-                    setScriptData('');
-                    if (scriptData && InterfaceId) {
-                      const { code, msg } = await updateInterApiById({
-                        id: InterfaceId,
-                        [tag === 'before_script'
-                          ? 'before_script'
-                          : 'after_script']: null,
-                      });
-                      if (code === 0) {
-                        message.success(msg);
-                      }
-                    }
-                  }}
-                >
-                  Remove
-                </Button>
-              </>
+                    setOpen(true);
+                  }
+                }}
+              >
+                Try
+              </Button>
             )}
           </Space>
         }
@@ -251,6 +216,7 @@ const InterScript: FC<SelfProps> = ({ form, tag }) => {
             max="100%"
           >
             <ProCard style={{ height: '100%' }} bodyStyle={{ padding: 0 }}>
+              {isSaved && <p style={{ color: 'grey' }}>已保存! </p>}
               <AceCodeEditor
                 value={scriptData}
                 onChange={handleOnChange}

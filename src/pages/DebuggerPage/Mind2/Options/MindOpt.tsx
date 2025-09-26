@@ -134,7 +134,11 @@ const MindOpt: FC<ISelfProps> = ({
                 strokeLinecap="square"
               />
             }
-            onClick={() => mindMapRef.current?.renderer.insertChildNode()}
+            onClick={() => {
+              mindMapRef.current?.renderer.insertChildNode(true, [], {
+                text: '子主题222',
+              });
+            }}
           />
         </Tooltip>
         <Tooltip title={'插入子同级别主题'}>
@@ -150,7 +154,10 @@ const MindOpt: FC<ISelfProps> = ({
                 strokeLinecap="square"
               />
             }
-            onClick={() => mindMapRef.current?.renderer.insertNode()}
+            onClick={() => {
+              console.log('===', mindMapRef.current);
+              mindMapRef.current?.renderer.insertNode();
+            }}
           />
         </Tooltip>
         <Divider type="vertical" />

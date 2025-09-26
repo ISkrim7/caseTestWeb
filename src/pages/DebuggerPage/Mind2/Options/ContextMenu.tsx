@@ -32,6 +32,7 @@ const ContextMenu: FC<ISelfProps> = ({
     callback();
   };
   const addChildren = () => {
+    console.log('====', mindMapRef.current);
     mindMapRef.current?.renderer.insertChildNode();
     callback();
   };

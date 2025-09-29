@@ -5,22 +5,18 @@ import ModuleTree from '@/components/LeftComponents/ModuleTree';
 import ProjectSelect from '@/components/LeftComponents/ProjectSelect';
 import { ProCard } from '@ant-design/pro-components';
 import { Space } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
   currentProjectId?: number;
   moduleType: number;
-  setCurrentProjectId: React.Dispatch<React.SetStateAction<number | undefined>>;
-  setCurrentModuleId: React.Dispatch<React.SetStateAction<number | undefined>>;
+  onProjectChange: (projectId: number | undefined) => void;
+  onModuleChange: (moduleId: number) => void;
 }
 
 const Index: FC<SelfProps> = (props) => {
-  const {
-    currentProjectId,
-    moduleType,
-    setCurrentProjectId,
-    setCurrentModuleId,
-  } = props;
+  const { currentProjectId, moduleType, onProjectChange, onModuleChange } =
+    props;
   const [projects, setProjects] = useState<IProject[]>([]);
 
   // 首次进入 获取project Arr  默认选择第一个
@@ -28,7 +24,7 @@ const Index: FC<SelfProps> = (props) => {
     queryProject().then(async ({ data }) => {
       if (data && data.length > 0) {
         setProjects(data);
-        setCurrentProjectId(data[0].id);
+        onProjectChange(data[0].id);
       }
     });
   }, []);
@@ -40,12 +36,13 @@ const Index: FC<SelfProps> = (props) => {
           <ProjectSelect
             projects={projects}
             currentProjectId={currentProjectId}
-            setCurrentProjectId={setCurrentProjectId}
+            onProjectChange={onProjectChange}
+            onModuleChange={onModuleChange}
           />
           <ModuleTree
             moduleType={moduleType}
+            onModuleChange={onModuleChange}
             currentProjectId={currentProjectId}
-            setCurrentModuleId={setCurrentModuleId}
           />
         </Space>
       ) : (

@@ -61,11 +61,11 @@ const Handle: IHandle = {
 interface IProps {
   currentProjectId?: number;
   moduleType: number;
-  setCurrentModuleId: React.Dispatch<React.SetStateAction<number | undefined>>;
+  onModuleChange: (moduleId: number) => void;
 }
 
 const ModuleTree: FC<IProps> = (props) => {
-  const { currentProjectId, moduleType, setCurrentModuleId } = props;
+  const { currentProjectId, moduleType, onModuleChange } = props;
   const { isAdmin } = useAccess();
   const [reload, setReload] = useState(0);
   const [modules, setModules] = useState<IModule[]>([]);
@@ -101,7 +101,7 @@ const ModuleTree: FC<IProps> = (props) => {
   const localStorageFun = () => {
     const storageNum = getLocalStorageModule(moduleType);
     if (storageNum) {
-      setCurrentModuleId(parseInt(storageNum));
+      onModuleChange(parseInt(storageNum));
       setDefaultSelectedKeys([parseInt(storageNum)]);
       setExpandedKeys([parseInt(storageNum)]);
       setAutoExpandParent(true);
@@ -363,7 +363,7 @@ const ModuleTree: FC<IProps> = (props) => {
             autoExpandParent={autoExpandParent}
             defaultSelectedKeys={defaultSelectedKeys}
             onSelect={(keys: React.Key[], info: any) => {
-              setCurrentModuleId(info.node.key);
+              onModuleChange(info.node.key);
               setLocalStorageModule(moduleType, info.node.key);
             }}
             treeData={TreeModule}

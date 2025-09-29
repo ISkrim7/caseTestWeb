@@ -10,6 +10,13 @@ const Index = () => {
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'InterfaceApiCase';
 
+  const onProjectChange = (projectId: number | undefined) => {
+    setCurrentProjectId(projectId);
+  };
+
+  const onModuleChange = (moduleId: number) => {
+    setCurrentModuleId(moduleId);
+  };
   return (
     <ProCard
       bordered={true}
@@ -26,9 +33,9 @@ const Index = () => {
         >
           <LeftComponents
             moduleType={ModuleEnum.API_CASE}
+            onProjectChange={onProjectChange}
+            onModuleChange={onModuleChange}
             currentProjectId={currentProjectId}
-            setCurrentProjectId={setCurrentProjectId}
-            setCurrentModuleId={setCurrentModuleId}
           />
         </Splitter.Panel>
 

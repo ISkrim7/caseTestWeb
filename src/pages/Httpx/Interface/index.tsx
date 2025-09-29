@@ -56,6 +56,14 @@ const Index = () => {
     },
   ];
 
+  const onProjectChange = (projectId: number | undefined) => {
+    setCurrentProjectId(projectId);
+  };
+
+  const onModuleChange = (moduleId: number) => {
+    setCurrentModuleId(moduleId);
+  };
+
   return (
     <ProCard
       bordered={true}
@@ -73,8 +81,8 @@ const Index = () => {
           <LeftComponents
             moduleType={ModuleEnum.API}
             currentProjectId={currentProjectId}
-            setCurrentProjectId={setCurrentProjectId}
-            setCurrentModuleId={setCurrentModuleId}
+            onProjectChange={onProjectChange}
+            onModuleChange={onModuleChange}
           />
         </Splitter.Panel>
         <Splitter.Panel>

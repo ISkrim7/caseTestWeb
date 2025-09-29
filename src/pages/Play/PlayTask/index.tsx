@@ -9,6 +9,14 @@ const Index = () => {
   const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const PerKey = 'PlayTask';
+
+  const onProjectChange = (projectId: number | undefined) => {
+    setCurrentProjectId(projectId);
+  };
+
+  const onModuleChange = (moduleId: number) => {
+    setCurrentModuleId(moduleId);
+  };
   return (
     <ProCard
       bordered={true}
@@ -26,8 +34,8 @@ const Index = () => {
           <LeftComponents
             moduleType={ModuleEnum.UI_TASK}
             currentProjectId={currentProjectId}
-            setCurrentProjectId={setCurrentProjectId}
-            setCurrentModuleId={setCurrentModuleId}
+            onModuleChange={onModuleChange}
+            onProjectChange={onProjectChange}
           />
         </Splitter.Panel>
         <Splitter.Panel>

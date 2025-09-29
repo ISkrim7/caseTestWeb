@@ -4,7 +4,7 @@ import CaseDataTable from '@/pages/CaseHub/CaseDataBase/CaseDataTable';
 import RequirementTable from '@/pages/CaseHub/Requirement/RequirementTable';
 import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
-import { PageContainer } from '@ant-design/pro-layout';
+import { Splitter } from 'antd';
 import { useRef, useState } from 'react';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
@@ -17,6 +17,13 @@ const Index = () => {
   const PerKeyRequirement = 'Requirement';
   const PerKeyCaseDataSource = 'CaseDataSource';
 
+  const onProjectChange = (projectId: number | undefined) => {
+    setCurrentProjectId(projectId);
+  };
+
+  const onModuleChange = (moduleId: number) => {
+    setCurrentModuleId(moduleId);
+  };
   const items = [
     {
       key: '1',
@@ -42,32 +49,34 @@ const Index = () => {
     },
   ];
   return (
-    <PageContainer title={false}>
-      <ProCard
-        style={{ height: '100vh', minHeight: '900px' }}
-        bodyStyle={{ padding: 0 }}
-        bordered={false}
-      >
-        {/*// @ts-ignore*/}
-        <SplitterLayout
-          ref={splitPaneRef}
-          percentage={true}
-          secondaryInitialSize={80}
-          primaryMinSize={15}
-          secondaryMinSize={70}
+    <ProCard
+      style={{ height: '100vh' }}
+      bodyStyle={{ padding: 0 }}
+      bordered={false}
+    >
+      <Splitter>
+        <Splitter.Panel
+          collapsible={true}
+          defaultSize="20%"
+          min="10%"
+          max="30%"
+          style={{ height: '100vh' }}
         >
           <LeftComponents
             moduleType={ModuleEnum.CASE}
             currentProjectId={currentProjectId}
-            setCurrentProjectId={setCurrentProjectId}
-            setCurrentModuleId={setCurrentModuleId}
+            onModuleChange={onModuleChange}
+            onProjectChange={onProjectChange}
           />
+        </Splitter.Panel>
+        <Splitter.Panel>
           <ProCard>
             <MyTabs defaultActiveKey={'1'} items={items} tabPosition={'top'} />
           </ProCard>
-        </SplitterLayout>
-      </ProCard>
-    </PageContainer>
+        </Splitter.Panel>
+      </Splitter>
+      .
+    </ProCard>
   );
 };
 

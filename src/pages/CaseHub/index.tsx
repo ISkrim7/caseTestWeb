@@ -5,12 +5,9 @@ import RequirementTable from '@/pages/CaseHub/Requirement/RequirementTable';
 import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
 import { Splitter } from 'antd';
-import { useRef, useState } from 'react';
-import SplitterLayout from 'react-splitter-layout';
-import 'react-splitter-layout/lib/index.css';
+import { useState } from 'react';
 
 const Index = () => {
-  const splitPaneRef = useRef<SplitterLayout>(null);
   const [currentModuleId, setCurrentModuleId] = useState<number | undefined>();
   const [currentProjectId, setCurrentProjectId] = useState<number>();
 

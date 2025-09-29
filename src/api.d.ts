@@ -39,26 +39,17 @@ export interface ISearch {
 }
 
 export interface IUser {
-  id?: number;
-  uid?: string;
-  username?: string;
-  isAdmin?: boolean;
-  email?: string;
-  phone?: string;
+  id: number;
+  uid: string;
+  username: string;
+  isAdmin: boolean;
+  email: string;
+  phone: string;
   avatar?: string;
   gender?: string;
   tagName?: string;
-  departmentID?: number;
-  departmentName?: string;
-}
-
-export interface IDepartment {
-  adminID?: number;
-  desc?: string;
-  id?: number;
-  name: string;
-  uid?: string;
-  tags?: Array<string>;
+  depart_id?: number;
+  depart_name?: string;
 }
 
 export interface IEnv extends IBaseField {

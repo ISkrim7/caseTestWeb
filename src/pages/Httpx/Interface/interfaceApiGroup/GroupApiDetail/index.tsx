@@ -20,7 +20,7 @@ import {
 } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
-import { useModel, useParams } from '@@/exports';
+import { useLocation, useModel, useParams } from '@@/exports';
 import { LeftOutlined } from '@ant-design/icons';
 import {
   ProCard,
@@ -37,6 +37,8 @@ import { history } from 'umi';
 
 const Index = () => {
   const { groupId } = useParams<{ groupId: string }>();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
   const [groupForm] = Form.useForm<IInterfaceGroup>();
   const [apisContent, setApisContent] = useState<any[]>([]);
   const [currentStatus, setCurrentStatus] = useState(1);
@@ -44,11 +46,35 @@ const Index = () => {
   const [choiceOpen, setChoiceOpen] = useState(false);
   const [stepApiIndex, setStepApiIndex] = useState<number>(0);
   const { initialState } = useModel('@@initialState');
-  const projects = initialState?.projects || [];
+  const [projects, setProjects] = useState(() => {
+    return (
+      initialState?.projects?.map((project) => ({
+        label: project.label || '',
+        value: project.value || 0,
+      })) || []
+    );
+  });
+
+  useEffect(() => {
+    if (!projects.length && initialState?.refreshProjects) {
+      initialState.refreshProjects().then((newProjects) => {
+        setProjects(
+          newProjects.map((project) => ({
+            label: project.label || '',
+            value: project.value || 0,
+          })),
+        );
+      });
+    }
+  }, []);
   const [tryResponses, setTryResponses] = useState<ITryResponseInfo[]>([]);
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
-  const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const [currentModuleId, setCurrentModuleId] = useState<number>();
+  const [currentProjectId, setCurrentProjectId] = useState<number | undefined>(
+    query.get('projectId') ? Number(query.get('projectId')) : undefined,
+  );
+  const [currentModuleId, setCurrentModuleId] = useState<number | undefined>(
+    query.get('moduleId') ? Number(query.get('moduleId')) : undefined,
+  );
   const [reload, setReload] = useState(0);
   const [apiEnvs, setApiEnvs] = useState<
     { label: string; value: number | null }[]
@@ -67,12 +93,34 @@ const Index = () => {
   }, [currentProjectId]);
 
   useEffect(() => {
+    console.log('URL参数:', {
+      projectId: query.get('projectId'),
+      moduleId: query.get('moduleId'),
+    });
+
     if (groupId) {
       getInterfaceGroup(groupId).then(async ({ code, data }) => {
         if (code === 0) {
-          groupForm.setFieldsValue(data);
-          setCurrentProjectId(data.project_id);
-          setCurrentModuleId(data.module_id);
+          // 优先使用URL参数中的值，其次使用接口返回的值
+          const projectId = query.get('projectId')
+            ? Number(query.get('projectId'))
+            : data.project_id;
+          const moduleId = query.get('moduleId')
+            ? Number(query.get('moduleId'))
+            : data.module_id;
+
+          console.log('设置表单值:', {
+            project_id: projectId,
+            module_id: moduleId,
+          });
+
+          groupForm.setFieldsValue({
+            ...data,
+            project_id: projectId,
+            module_id: moduleId,
+          });
+          setCurrentProjectId(projectId);
+          setCurrentModuleId(moduleId);
           setCurrentStatus(1);
         }
       });
@@ -82,6 +130,22 @@ const Index = () => {
         }
       });
     } else {
+      // 新增场景下也设置project_id和module_id
+      const projectId = query.get('projectId')
+        ? Number(query.get('projectId'))
+        : undefined;
+      const moduleId = query.get('moduleId')
+        ? Number(query.get('moduleId'))
+        : undefined;
+
+      if (projectId) {
+        setCurrentProjectId(projectId);
+        groupForm.setFieldsValue({ project_id: projectId });
+      }
+      if (moduleId) {
+        setCurrentModuleId(moduleId);
+        groupForm.setFieldsValue({ module_id: moduleId });
+      }
       setCurrentStatus(2);
     }
   }, [reload, groupId]);
@@ -113,9 +177,15 @@ const Index = () => {
   const saveBaseInfo = async () => {
     const values = await groupForm.validateFields();
     if (groupId) {
+      if (currentProjectId === undefined) {
+        message.error('请先选择项目');
+        return;
+      }
       const { code, msg } = await updateInterfaceGroup({
         ...values,
         id: parseInt(groupId),
+        project_id: currentProjectId,
+        module_id: currentModuleId,
       });
       if (code === 0) {
         message.success(msg);
@@ -123,9 +193,25 @@ const Index = () => {
         setCurrentStatus(1);
       }
     } else {
-      const { code, data } = await insertInterfaceGroup(values);
+      if (currentProjectId === undefined) {
+        message.error('请先选择项目');
+        return;
+      }
+      const { code, data } = await insertInterfaceGroup({
+        ...values,
+        project_id: currentProjectId,
+        module_id: currentModuleId,
+      });
       if (code === 0) {
-        history.push(`/interface/group/detail/groupId=${data.id}`);
+        history.push({
+          pathname: `/interface/group/detail/groupId=${data.id}`,
+          search: `?projectId=${currentProjectId?.toString()}&moduleId=${currentModuleId?.toString()}`,
+        });
+        // 确保跳转后立即设置表单值
+        groupForm.setFieldsValue({
+          project_id: currentProjectId,
+          module_id: currentModuleId,
+        });
       }
     }
   };
@@ -323,8 +409,21 @@ const Index = () => {
               label={'所属项目'}
               name={'project_id'}
               required={true}
+              fieldProps={{
+                showSearch: true,
+                optionFilterProp: 'label',
+                filterOption: (input, option) =>
+                  (option?.label ?? '')
+                    .toLowerCase()
+                    .includes(input.toLowerCase()),
+              }}
               onChange={(value) => {
-                setCurrentProjectId(value as number);
+                if (value !== undefined) {
+                  setCurrentProjectId(Number(value));
+                  // 清空模块ID当项目变化时
+                  setCurrentModuleId(undefined);
+                  groupForm.setFieldsValue({ module_id: undefined });
+                }
               }}
             />
             <ProFormTreeSelect

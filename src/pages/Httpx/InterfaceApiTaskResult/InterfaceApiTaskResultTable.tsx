@@ -125,11 +125,15 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
 
     {
       title: '执行时间',
-      dataIndex: 'runDay',
-      key: 'runDay',
-      valueType: 'dateRange',
+      //dataIndex: 'runDay',
+      //key: 'runDay',
+      //valueType: 'dateRange',
+      dataIndex: 'start_time',
+      valueType: 'dateTime',
+      key: 'start_time',
       sorter: true,
-      render: (_, record) => <Tag color={'blue'}>{record.runDay}</Tag>,
+      //render: (_, record) => <Tag color={'blue'}>{record.runDay}</Tag>,
+      render: (_, record) => <Tag color={'blue'}>{record.start_time}</Tag>,
     },
     {
       title: '用时',

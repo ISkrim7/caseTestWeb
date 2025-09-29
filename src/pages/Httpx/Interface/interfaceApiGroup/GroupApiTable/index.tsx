@@ -38,6 +38,7 @@ const Index: FC<SelfProps> = ({
         const { code, data } = await pageInterfaceGroup({
           ...params,
           module_id: currentModuleId,
+          project_id: currentProjectId,
           module_type: ModuleEnum.API,
         });
         return pageData(code, data);
@@ -48,7 +49,7 @@ const Index: FC<SelfProps> = ({
         setLoading(false);
       }
     },
-    [currentModuleId],
+    [currentModuleId, currentProjectId],
   );
 
   const columns: ProColumns<IInterfaceGroup>[] = [
@@ -94,8 +95,10 @@ const Index: FC<SelfProps> = ({
           <>
             <a
               onClick={() => {
-                //window.open(`/interface/group/detail/groupId=${record.id}`);
-                history.push(`/interface/group/detail/groupId=${record.id}`);
+                history.push({
+                  pathname: `/interface/group/detail/groupId=${record.id}`,
+                  search: `?projectId=${currentProjectId?.toString()}&moduleId=${currentModuleId?.toString()}`,
+                });
               }}
             >
               详情
@@ -143,7 +146,15 @@ const Index: FC<SelfProps> = ({
         <Button
           type={'primary'}
           onClick={() => {
-            history.push('/interface/group/detail');
+            //history.push('/interface/group/detail');
+            console.log('跳转参数:', {
+              projectId: currentProjectId,
+              moduleId: currentModuleId,
+            });
+            history.push({
+              pathname: '/interface/group/detail',
+              search: `?projectId=${currentProjectId?.toString()}&moduleId=${currentModuleId?.toString()}`,
+            });
           }}
         >
           添加

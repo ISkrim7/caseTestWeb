@@ -17,9 +17,10 @@ import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
+  readonly?: boolean;
 }
 
-const InterParam: FC<SelfProps> = ({ form }) => {
+const InterParam: FC<SelfProps> = ({ form, readonly = false }) => {
   const [paramsEditableKeys, setParamsEditableRowKeys] = useState<React.Key[]>(
     [],
   );
@@ -100,15 +101,19 @@ const InterParam: FC<SelfProps> = ({ form }) => {
       title: 'Opt',
       valueType: 'option',
       render: (_, record, __, action) => {
-        return [
-          <a
-            onClick={() => {
-              action?.startEditable?.(record.id);
-            }}
-          >
-            编辑
-          </a>,
-        ];
+        return (
+          <>
+            {!readonly && (
+              <a
+                onClick={() => {
+                  action?.startEditable?.(record.id);
+                }}
+              >
+                编辑
+              </a>
+            )}
+          </>
+        );
       },
     },
   ];
@@ -129,12 +134,14 @@ const InterParam: FC<SelfProps> = ({ form }) => {
           rowKey={'id'}
           toolBarRender={false}
           columns={columns}
-          recordCreatorProps={{
-            newRecordType: 'dataSource',
-            record: () => ({
-              id: Date.now(),
-            }),
-          }}
+          recordCreatorProps={
+            !readonly && {
+              newRecordType: 'dataSource',
+              record: () => ({
+                id: Date.now(),
+              }),
+            }
+          }
           editable={{
             type: 'multiple',
             editableKeys: paramsEditableKeys,

@@ -48,6 +48,11 @@ export default [
         access: 'isAdmin',
         component: '@/pages/User/Admin',
       },
+      {
+        path: '/user/my',
+        name: '我的',
+        component: '@/pages/User/My',
+      },
       // {
       //   path: '/user/department',
       //   name: '部门列表',
@@ -82,25 +87,16 @@ export default [
         component: '@/pages/Project',
       },
       {
-        path: '/project/Env',
-        name: '环境',
-        component: '@/pages/Project/Env',
-      },
-      {
-        path: '/project/DB',
-        name: '数据库',
-        component: '@/pages/Project/Db',
+        path: '/project/detail/projectId=:projectId',
+        name: '项目列表',
+        hideInMenu: true,
+        component: '@/pages/Project/ProjectTab.tsx',
       },
       {
         path: '/project/apsConfig',
         name: '调度任务',
         access: 'isAdmin',
         component: '@/pages/Project/Aps',
-      },
-      {
-        path: '/project/push',
-        name: '推送配置',
-        component: '@/pages/Project/Push',
       },
     ],
   },
@@ -116,15 +112,26 @@ export default [
         name: '测试用例',
         component: '@/pages/CaseHub',
       },
+      {
+        path: '/cases/caseHub/requirementCases/reqId=:reqId&projectId=:projectId&moduleId=:moduleId',
+        name: 'CaseHub',
+        hideInMenu: true,
+        component: '@/pages/CaseHub/CaseInfo',
+      },
     ],
   },
-
   {
     path: '/ui',
     name: 'UI自动化',
     icon: 'RobotOutlined',
     access: 'isAdmin',
     routes: [
+      {
+        path: '/ui/commonStep',
+        name: '公共步骤',
+        component: '@/pages/Play/PlayStep',
+        icon: 'DatabaseOutlined',
+      },
       {
         path: '/ui/cases',
         name: '自动化用例',
@@ -166,6 +173,13 @@ export default [
         name: '用例详情',
         hideInMenu: true,
         component: '@/pages/Play/PlayCase/PlayCaseDetail',
+      },
+      {
+        path: '/ui/group/detail/groupId=:groupId',
+        name: '用例详情',
+        hideInMenu: true,
+        component:
+          '@/pages/Play/PlayStep/PlayStepGroup/PlayStepGroupDetail.tsx',
       },
       {
         path: '/ui/addTask',
@@ -358,7 +372,7 @@ export default [
       {
         path: '/debugger/mind',
         name: 'mind',
-        component: '@/pages/DebuggerPage/Mind',
+        component: '@/pages/DebuggerPage/Mind2',
       },
       {
         path: '/debugger/plist',

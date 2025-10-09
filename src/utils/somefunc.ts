@@ -1,8 +1,6 @@
-import React from 'react';
-import {  IUIEnv } from '@/pages/Play/componets/uiTypes';
+import { IModule, IModuleEnum } from '@/api';
 import { queryTreeModuleByProject } from '@/api/base';
-import { IModule, IModuleEnum, IObjGet } from '@/api';
-import { queryUIEnvs } from '@/api/play/env';
+import React, { useEffect, useState } from 'react';
 
 export const pageData = async (code: number, data: any, setter?: any) => {
   if (code === 0) {
@@ -49,7 +47,6 @@ export const data2LabelValue = (data: any) => {
   }));
 };
 
-
 /**
  * 获取模块
  * @param projectId
@@ -82,33 +79,18 @@ const loopData = (data: IModule[]): IModuleEnum[] => {
   });
 };
 
+export const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-export const queryUIEnvEnum = async (
-  setter: React.Dispatch<React.SetStateAction<IObjGet>>,
-) => {
-  queryUIEnvs().then(async ({ code, data }) => {
-    if (code === 0) {
-      const envOptions = Object.create(null);
-      for (const item of data) {
-        envOptions[item.id] = item.name;
-      }
-      setter(envOptions);
-    }
-  });
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 };
-
-
-export const queryUIEnvList =async (
-  setter: React.Dispatch<React.SetStateAction<{ label: string; value: number | null }[]>>,
-)=>{
-  queryUIEnvs().then(async ({code,data})=>{
-    if (code === 0) {
-      const envs = data.map((item: IUIEnv) => ({
-        label: item.name,
-        value: item.id,
-      }));
-      setter(envs);
-    }
-  })
-}

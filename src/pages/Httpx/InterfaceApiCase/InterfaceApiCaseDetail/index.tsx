@@ -8,7 +8,7 @@ import {
   setApiCase,
 } from '@/api/inter/interCase';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
-import MyDraggable from '@/components/MyDraggable';
+import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
 import ApiCaseBaseForm from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/ApiCaseBaseForm';
@@ -22,9 +22,7 @@ import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
 import {
-  AlignLeftOutlined,
   ArrowRightOutlined,
-  FieldTimeOutlined,
   LeftOutlined,
   PlayCircleOutlined,
 } from '@ant-design/icons';
@@ -113,6 +111,7 @@ const Index = () => {
       setStep(queryApis.length);
       const init = queryApis.map((item, index) => ({
         id: (index + 1).toString(),
+        //id: index,
         api_Id: item.id,
         content: (
           <CollapsibleApiCard
@@ -277,6 +276,7 @@ const Index = () => {
       ...prev,
       {
         id: currStep.toString(),
+        //id: currStep,
         content: (
           <CollapsibleApiCard
             apiEnvs={apiEnvs}
@@ -311,21 +311,21 @@ const Index = () => {
             >
               Add API
             </Button>
-            <Dropdown.Button
-              menu={{
-                items: [
-                  {
-                    key: 'wait',
-                    label: '等待',
-                    icon: <FieldTimeOutlined style={{ color: 'orange' }} />,
-                  },
-                ],
-                onClick: onAddStepClick,
-              }}
-              icon={<AlignLeftOutlined />}
-            >
-              Add Step
-            </Dropdown.Button>
+            {/*<Dropdown.Button*/}
+            {/*  menu={{*/}
+            {/*    items: [*/}
+            {/*      {*/}
+            {/*        key: 'wait',*/}
+            {/*        label: '等待',*/}
+            {/*        icon: <FieldTimeOutlined style={{ color: 'orange' }} />,*/}
+            {/*      },*/}
+            {/*    ],*/}
+            {/*    onClick: onAddStepClick,*/}
+            {/*  }}*/}
+            {/*  icon={<AlignLeftOutlined />}*/}
+            {/*>*/}
+            {/*  Add Step*/}
+            {/*</Dropdown.Button>*/}
           </Space>
         );
       default:
@@ -347,11 +347,16 @@ const Index = () => {
           {apis.length === 0 ? (
             <Empty />
           ) : (
-            <MyDraggable
+            <DnDDraggable
               items={apis}
               setItems={setApis}
-              dragEndFunc={onDragEnd}
+              orderFetch={onDragEnd}
             />
+            // <MyDraggable
+            //   items={apis}
+            //   setItems={setApis}
+            //   dragEndFunc={onDragEnd}
+            // />
           )}
         </>
       ),
@@ -363,7 +368,12 @@ const Index = () => {
       split={'horizontal'}
       extra={<DetailExtra currentStatus={currentStatus} />}
     >
-      <MyDrawer name={''} width={'80%'} open={runOpen} setOpen={setRunOpen}>
+      <MyDrawer
+        name={'测试结果'}
+        width={'80%'}
+        open={runOpen}
+        setOpen={setRunOpen}
+      >
         <InterfaceApiCaseResultDrawer
           openStatus={runOpen}
           caseApiId={caseApiId!}

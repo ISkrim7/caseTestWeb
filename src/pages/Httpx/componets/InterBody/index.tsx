@@ -9,10 +9,11 @@ import { FC, useEffect, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
-  mode: number;
+  readonly?: boolean;
 }
 
 const Index: FC<SelfProps> = (props) => {
+  const { readonly = false } = props;
   const [bodyType, setBodyType] = useState(0);
   useEffect(() => {
     const t = props.form.getFieldValue('body_type');
@@ -47,6 +48,7 @@ const Index: FC<SelfProps> = (props) => {
   return (
     <>
       <Radio.Group
+        disabled={readonly}
         defaultValue={bodyType}
         value={bodyType}
         onChange={onGroupChange}
@@ -57,6 +59,7 @@ const Index: FC<SelfProps> = (props) => {
         <Space>
           <Radio value={1}>raw</Radio>
           <ProFormSelect
+            disabled={readonly}
             hidden={bodyType !== 1}
             noStyle
             onChange={async (value) => {

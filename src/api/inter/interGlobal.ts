@@ -13,7 +13,7 @@ import { request } from '@@/plugin-request/request';
  */
 export const pageInterGlobalVariable = async (data: any, options?: IObjGet) => {
   return request<IResponse<IPage<IInterfaceGlobalVariable>>>(
-    '/api/interface/global/page_variable',
+    '/api/project/page_variable',
     {
       method: 'POST',
       data: data,
@@ -28,7 +28,7 @@ export const pageInterGlobalVariable = async (data: any, options?: IObjGet) => {
  */
 export const queryInterGlobalVariable = async (options?: IObjGet) => {
   return request<IResponse<IInterfaceGlobalVariable[]>>(
-    '/api/interface/global/query_variable',
+    '/api/project/query_variable',
     {
       method: 'GET',
       ...(options || {}),
@@ -94,7 +94,7 @@ export const insertInterGlobalVariable = async (
   options?: IObjGet,
 ) => {
   return request<IResponse<IInterfaceGlobalHeader>>(
-    '/api/interface/global/insert_variable',
+    '/api/project/insert_variable',
     {
       method: 'POST',
       data: data,
@@ -112,7 +112,7 @@ export const updateInterGlobalVariable = async (
   data: IInterfaceGlobalVariable,
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/global/update_variable', {
+  return request<IResponse<null>>('/api/project/update_variable', {
     method: 'POST',
     data: data,
     ...(options || {}),
@@ -160,7 +160,7 @@ export const removeInterGlobalVariable = async (
   data: string,
   options?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/global/remove_variable', {
+  return request<IResponse<null>>('/api/project/remove_variable', {
     method: 'POST',
     data: { uid: data },
     ...(options || {}),

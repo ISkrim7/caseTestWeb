@@ -80,7 +80,17 @@ export interface IProject {
   id: number;
   uid: string;
   title: string;
-  desc?: string | null;
+  description?: string | null;
+}
+
+export interface IUserVar {
+  id: number;
+  uid: string;
+  key: string;
+  value: string;
+  description?: string;
+  user_id: number;
+  user_name: string;
 }
 
 export interface ILoginParams {
@@ -110,7 +120,7 @@ export interface ICaseInfo {
   case_desc: string;
   case_info: ICaseStepInfo[];
   case_mark?: string;
-  case_type: 'COMMENT' | 'SMOKE';
+  case_type: number;
   case_level: 'P1' | 'P2' | 'P3' | 'P4';
   creator: number;
   creatorName: string;
@@ -128,6 +138,7 @@ export interface IModule {
   children_length?: number;
   children?: IModule[];
 }
+
 export interface IModuleEnum {
   title: string;
   value: number;

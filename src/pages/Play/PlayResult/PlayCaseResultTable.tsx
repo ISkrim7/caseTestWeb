@@ -1,4 +1,4 @@
-import { clearUICaseResult, pageDebugResult } from '@/api/play/result';
+import { clearPlayCaseResult, pagePlayCaseResult } from '@/api/play/playCase';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUIResult } from '@/pages/Play/componets/uiTypes';
@@ -21,7 +21,7 @@ const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
 
   const fetchDebugResult = useCallback(
     async (params: any) => {
-      const { code, data } = await pageDebugResult({
+      const { code, data } = await pagePlayCaseResult({
         ...params,
         ui_case_Id: caseId,
       });
@@ -121,7 +121,7 @@ const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
           type={'primary'}
           onClick={async () => {
             if (caseId) {
-              clearUICaseResult({ caseId: caseId }).then(({ code, msg }) => {
+              clearPlayCaseResult({ caseId: caseId }).then(({ code, msg }) => {
                 if (code === 0) {
                   message.success(msg);
                   actionRef.current?.reload();
@@ -130,7 +130,7 @@ const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
             }
           }}
         >
-          Clear All His
+          Clear All
         </Button>
       }
     >
@@ -140,12 +140,6 @@ const PlayCaseResultTable: FC<PlayDebugResultProps> = ({ caseId }) => {
       <MyProTable
         rowKey={'uid'}
         actionRef={actionRef}
-        x={1000}
-        pagination={{
-          showQuickJumper: true,
-          defaultPageSize: 6,
-          showSizeChanger: true,
-        }}
         columns={columns}
         request={fetchDebugResult}
       />

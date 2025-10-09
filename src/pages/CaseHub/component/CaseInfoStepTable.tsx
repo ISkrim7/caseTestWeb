@@ -34,12 +34,18 @@ const CaseInfoStepTable: FC<selfProps> = ({
       dataIndex: 'todo',
       valueType: 'textarea',
       ellipsis: true,
+      fieldProps: {
+        rows: 2,
+      },
     },
     {
       title: '预期结果',
       dataIndex: 'exp',
       valueType: 'textarea',
       ellipsis: true,
+      fieldProps: {
+        rows: 2,
+      },
     },
     {
       title: '操作',
@@ -65,6 +71,7 @@ const CaseInfoStepTable: FC<selfProps> = ({
 
   return (
     <EditableTable
+      border
       title={'执行步骤'}
       columns={caseInfoColumn}
       dataSource={caseStepInfo}

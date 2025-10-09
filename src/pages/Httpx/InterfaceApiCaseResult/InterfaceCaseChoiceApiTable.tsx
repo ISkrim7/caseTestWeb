@@ -21,7 +21,8 @@ interface SelfProps {
   currentCaseApiId?: string;
   currentGroupId?: string;
   currentTaskId?: string;
-  refresh?: () => void;
+  currentStepId?: number;
+  refresh?: (value?: number[]) => void;
 }
 
 const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
@@ -30,6 +31,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
   currentCaseApiId,
   refresh,
   currentTaskId,
+  currentStepId,
 }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number | undefined>(
@@ -133,6 +135,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
 
   const rowSelection: TableRowSelection<IInterfaceAPI> = {
     selectedRowKeys,
+    type: currentStepId ? 'radio' : 'checkbox',
     onChange: (newSelectedRowKeys: React.Key[]) => {
       setSelectedRowKeys(newSelectedRowKeys);
     },
@@ -174,6 +177,8 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
                     message.success(msg);
                     refresh?.();
                   }
+                } else if (currentStepId) {
+                  refresh?.(selectedRowKeys as number[]);
                 }
               }}
             >

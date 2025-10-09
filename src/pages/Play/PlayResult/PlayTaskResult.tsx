@@ -1,4 +1,7 @@
-import { getUITaskResult, queryUIReportByTaskId } from '@/api/play/result';
+import {
+  getPlayTaskResultById,
+  queryPlayCaseReportByTaskId,
+} from '@/api/play/playTask';
 import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUIResult } from '@/pages/Play/componets/uiTypes';
@@ -39,13 +42,15 @@ const PlayTaskResult = () => {
   //查询基本、 查询用例结果
   useEffect(() => {
     if (resultId) {
-      getUITaskResult({ detailId: resultId }).then(async ({ code, data }) => {
-        if (code === 0) {
-          setLoading(false);
-          setBaseInfo(data);
-        }
-      });
-      queryUIReportByTaskId({ baseId: resultId }).then(
+      getPlayTaskResultById({ resultId: resultId }).then(
+        async ({ code, data }) => {
+          if (code === 0) {
+            setLoading(false);
+            setBaseInfo(data);
+          }
+        },
+      );
+      queryPlayCaseReportByTaskId({ resultId: resultId }).then(
         async ({ code, data }) => {
           if (code === 0) {
             setCaseResultSource(data);
@@ -70,17 +75,11 @@ const PlayTaskResult = () => {
 
   const columns: ProColumns<IUIResult>[] = [
     {
-      title: 'id',
-      dataIndex: 'id',
-      valueType: 'text',
-      copyable: true,
-      fixed: 'left',
-    },
-    {
       title: '用例名称',
       dataIndex: 'ui_case_name',
       valueType: 'text',
       fixed: 'left',
+      width: '10%',
       render: (_, record) => {
         return (
           <a
@@ -88,7 +87,7 @@ const PlayTaskResult = () => {
               history.push(`/ui/case/detail/caseId=${record.ui_case_Id}`);
             }}
           >
-            {record.ui_case_name} + {` (${record.ui_case_Id})`}
+            {record.ui_case_name}
           </a>
         );
       },
@@ -97,6 +96,13 @@ const PlayTaskResult = () => {
       title: '用例描述',
       dataIndex: 'ui_case_description',
       valueType: 'textarea',
+      hideInSearch: true,
+      ellipsis: true,
+    },
+    {
+      title: '步长',
+      dataIndex: 'ui_case_step_num',
+      valueType: 'text',
       hideInSearch: true,
       ellipsis: true,
     },
@@ -191,7 +197,7 @@ const PlayTaskResult = () => {
       <ProCard>
         <Spin tip={'努力加载中。。'} size={'large'} spinning={loading}>
           {baseInfo && (
-            <ProCard title={'UI自动化测试报告'}>
+            <ProCard title={`${baseInfo.task_name} 自动化测试报告`}>
               <Row gutter={[8, 8]}>
                 <Col span={17}>
                   <Row gutter={8}>

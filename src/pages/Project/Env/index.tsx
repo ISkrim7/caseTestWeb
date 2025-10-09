@@ -5,13 +5,18 @@ import AddEnv from '@/pages/Project/Env/AddEnv';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { message } from 'antd';
-import { useRef } from 'react';
+import { FC, useRef } from 'react';
 
-const Index = () => {
+interface IProps {
+  projectId?: string;
+}
+
+const Index: FC<IProps> = ({ projectId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发’
   const pageEnvs = async (value: ISearch, sort: any) => {
     const searchData: any = {
       ...value,
+      project_id: projectId,
       sort: sort,
     };
     const { code, data } = await pageEnv(searchData);

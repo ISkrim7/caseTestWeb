@@ -35,6 +35,24 @@ export const pageDebugResult = async (
 };
 
 /**
+ * Case choice UI STEP
+ * @param data
+ * @param options
+ */
+export const executePlayCaseByBack = async (
+  data: {
+    caseId: string;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/play/case/execute_back', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
  * 调试详情
  * @param data
  * @param options

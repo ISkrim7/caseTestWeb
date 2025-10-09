@@ -27,12 +27,14 @@ const EXTRACT_TARGET_OPTION = [
 
 interface ISelfProps {
   form: FormInstance<IInterfaceAPI>;
+  readonly?: boolean;
 }
 
-const InterExtractList: FC<ISelfProps> = ({ form }) => {
+const InterExtractList: FC<ISelfProps> = ({ form, readonly = false }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(0); // 当前正在编辑的行索引
 
   useEffect(() => {
+    console.log('====', readonly);
     const extracts = form.getFieldValue('extracts');
     if (extracts === null || extracts?.length === 0) {
       setEditingIndex(0);
@@ -83,25 +85,27 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
               </Tag>
             }
             extra={
-              <Space>
-                {editingIndex === index ? (
-                  <Tooltip title="保存">
-                    <SaveTwoTone
-                      twoToneColor={'#c7920a'}
-                      disabled={false}
-                      onClick={save}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="编辑">
-                    <EditTwoTone
-                      disabled={false}
-                      onClick={() => handleEdit(index)}
-                    />
-                  </Tooltip>
-                )}
-                {action}
-              </Space>
+              !readonly && (
+                <Space>
+                  {editingIndex === index ? (
+                    <Tooltip title="保存">
+                      <SaveTwoTone
+                        twoToneColor={'#c7920a'}
+                        disabled={false}
+                        onClick={save}
+                      />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="编辑">
+                      <EditTwoTone
+                        disabled={false}
+                        onClick={() => handleEdit(index)}
+                      />
+                    </Tooltip>
+                  )}
+                  {action}
+                </Space>
+              )
             }
           >
             {listDom}
@@ -110,7 +114,6 @@ const InterExtractList: FC<ISelfProps> = ({ form }) => {
         alwaysShowItemLabel
       >
         {(_, index, list) => {
-          console.log('==curr', index);
           return (
             <>
               <ProForm.Group>

@@ -3,22 +3,23 @@ import { FC } from 'react';
 
 interface SelfProps {
   name: string | JSX.Element;
-  open: any;
-  setOpen: any;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   width?: string | null;
   extra?: any;
   onClose?: () => void;
+  height?: string | null;
 }
 
 const Index: FC<SelfProps> = (props) => {
-  const { open, setOpen, name, width, onClose } = props;
+  const { open, setOpen, name, height, width, onClose } = props;
 
   return (
     <Drawer
       styles={{ body: { padding: 0 } }}
       open={open}
       destroyOnClose={true}
-      height={'auto'}
+      height={height || 'auto'}
       width={width || '65%'}
       title={name}
       extra={props.extra}

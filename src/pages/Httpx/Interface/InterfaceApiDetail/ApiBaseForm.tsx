@@ -25,7 +25,7 @@ const ApiBaseForm: FC<IProps> = (props) => {
     setCurrentProjectId,
     currentMode,
   } = props;
-  const { API_LEVEL_SELECT, API_STATUS_SELECT, API_REQUEST_METHOD } = CONFIG;
+  const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
   const { initialState } = useModel('@@initialState');
   const [projects, setProjects] = useState(() => {
     return (

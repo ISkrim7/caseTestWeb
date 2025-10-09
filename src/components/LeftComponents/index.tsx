@@ -12,6 +12,8 @@ interface SelfProps {
   moduleType: number;
   setCurrentProjectId: React.Dispatch<React.SetStateAction<number | undefined>>;
   setCurrentModuleId: React.Dispatch<React.SetStateAction<number | undefined>>;
+  onProjectChange: (projectId: number | undefined) => void;
+  onModuleChange: (moduleId: number) => void;
 }
 
 const Index: FC<SelfProps> = (props) => {
@@ -20,6 +22,8 @@ const Index: FC<SelfProps> = (props) => {
     moduleType,
     setCurrentProjectId,
     setCurrentModuleId,
+    onProjectChange,
+    onModuleChange,
   } = props;
   const [projects, setProjects] = useState<IProject[]>([]);
 
@@ -33,6 +37,7 @@ const Index: FC<SelfProps> = (props) => {
           ? Number(savedProjectId)
           : data[0].id;
         setCurrentProjectId(initialProjectId);
+        onProjectChange(data[0].id);
       }
     });
   }, []);
@@ -45,9 +50,12 @@ const Index: FC<SelfProps> = (props) => {
             projects={projects}
             currentProjectId={currentProjectId}
             setCurrentProjectId={setCurrentProjectId}
+            onProjectChange={onProjectChange}
+            onModuleChange={onModuleChange}
           />
           <ModuleTree
             moduleType={moduleType}
+            onModuleChange={onModuleChange}
             currentProjectId={currentProjectId}
             setCurrentModuleId={setCurrentModuleId}
           />

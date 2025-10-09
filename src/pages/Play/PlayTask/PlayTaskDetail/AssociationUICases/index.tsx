@@ -1,8 +1,8 @@
 import {
-  queryAssociationUICasesByTaskId,
-  removeAssociationUICasesByTaskId,
-  reorderAssociationUICasesByTaskId,
-} from '@/api/play/task';
+  queryAssociationPlayCasesByTaskId,
+  removeAssociationPlayCasesByTaskId,
+  reorderAssociationPlayCasesByTaskId,
+} from '@/api/play/playTask';
 import MyDrawer from '@/components/MyDrawer';
 import { IUICase } from '@/pages/Play/componets/uiTypes';
 import ChoiceUICaseTable from '@/pages/Play/PlayTask/PlayTaskDetail/ChoiceUICaseTable';
@@ -24,9 +24,8 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
   const [refresh, setRefresh] = useState<number>(0);
 
   const queryUICasesByTask = useCallback(async () => {
-    console.log('========', currentTaskId);
     if (currentTaskId) {
-      const { code, data } = await queryAssociationUICasesByTaskId({
+      const { code, data } = await queryAssociationPlayCasesByTaskId({
         taskId: currentTaskId,
       });
       return queryData(code, data);
@@ -35,7 +34,7 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
 
   const removeCase = async (id: number) => {
     if (currentTaskId) {
-      const { code, msg } = await removeAssociationUICasesByTaskId({
+      const { code, msg } = await removeAssociationPlayCasesByTaskId({
         taskId: currentTaskId,
         caseId: id,
       });
@@ -55,8 +54,8 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
     const reorderCaseIds: number[] = newDataSource.map((item) => item.id);
     console.log('排序后的数据', newDataSource);
     if (currentTaskId) {
-      const { code, msg } = await reorderAssociationUICasesByTaskId({
-        taskId: currentTaskId,
+      const { code, msg } = await reorderAssociationPlayCasesByTaskId({
+        taskId: parseInt(currentTaskId),
         caseIdList: reorderCaseIds,
       });
       if (code === 0) {
@@ -110,6 +109,14 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
       },
     },
     {
+      title: '步骤',
+      dataIndex: 'step_num',
+      valueType: 'text',
+      render: (_, record) => {
+        return <Tag>{record.step_num}</Tag>;
+      },
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       valueType: 'select',
@@ -157,7 +164,7 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
       >
         <ChoiceUICaseTable
           currentTaskId={currentTaskId}
-          refresh={handelRefresh}
+          callback={handelRefresh}
         />
       </MyDrawer>
       <DragSortTable

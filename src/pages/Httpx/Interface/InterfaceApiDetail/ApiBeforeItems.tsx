@@ -1,7 +1,7 @@
 import MyTabs from '@/components/MyTabs';
 import InterBeforeParams from '@/pages/Httpx/componets/InterBeforeParams';
-import InterBeforeScript from '@/pages/Httpx/componets/InterBeforeScript';
 import InterBeforeSql from '@/pages/Httpx/componets/InterBeforeSQL';
+import InterScript from '@/pages/Httpx/componets/InterScript';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   CodeOutlined,
@@ -29,7 +29,7 @@ const ApiBeforeItems: FC<ISelfProps> = (props) => {
       key: '2',
       label: '添加脚本',
       icon: <PythonOutlined />,
-      children: <InterBeforeScript form={interApiForm} />,
+      children: <InterScript form={interApiForm} tag={'before_script'} />,
     },
     {
       key: '3',

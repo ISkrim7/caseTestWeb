@@ -17,9 +17,10 @@ import React, { FC, useRef, useState } from 'react';
 
 interface SelfProps {
   form: FormInstance<IInterfaceAPI>;
+  readonly?: boolean;
 }
 
-const InterHeader: FC<SelfProps> = ({ form }) => {
+const InterHeader: FC<SelfProps> = ({ form, readonly = false }) => {
   const [headersEditableKeys, setHeadersEditableRowKeys] =
     useState<React.Key[]>();
   const [headerData, setHeaderData] = useState<
@@ -46,6 +47,7 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
       setHeaderData([]);
     }
   };
+
   const headerColumns: ProColumns<IHeaders>[] = [
     {
       title: 'Key',
@@ -138,15 +140,17 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
       valueType: 'option',
       fixed: 'right',
       render: (_, record, __, action) => {
-        return [
-          <a
-            onClick={() => {
-              action?.startEditable?.(record.id);
-            }}
-          >
-            编辑
-          </a>,
-        ];
+        if (!readonly) {
+          return (
+            <a
+              onClick={() => {
+                action?.startEditable?.(record.id);
+              }}
+            >
+              编辑
+            </a>
+          );
+        }
       },
     },
   ];
@@ -159,13 +163,14 @@ const InterHeader: FC<SelfProps> = ({ form }) => {
           rowKey={'id'}
           toolBarRender={false}
           columns={headerColumns}
-          recordCreatorProps={{
-            newRecordType: 'dataSource',
-            record: () => ({
-              //id: Date.now(),
-              id: Date.now() + Math.random().toString(36).slice(2),
-            }),
-          }}
+          recordCreatorProps={
+            !readonly && {
+              newRecordType: 'dataSource',
+              record: () => ({
+                id: Date.now() + Math.random().toString(36).slice(2),
+              }),
+            }
+          }
           editable={{
             type: 'multiple',
             editableKeys: headersEditableKeys,

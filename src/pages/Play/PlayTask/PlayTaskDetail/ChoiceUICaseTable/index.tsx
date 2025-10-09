@@ -1,6 +1,6 @@
 import { IModuleEnum, IObjGet } from '@/api';
-import { pageUICase } from '@/api/play';
-import { associationUICasesByTaskId } from '@/api/play/task';
+import { pagePlayCase } from '@/api/play/playCase';
+import { insertAssociationPlayCasesByTaskId } from '@/api/play/playTask';
 import { queryProjectEnum } from '@/components/CommonFunc';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUICase } from '@/pages/Play/componets/uiTypes';
@@ -15,10 +15,10 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   currentTaskId?: string;
-  refresh?: () => void;
+  callback: () => void;
 }
 
-const Index: FC<SelfProps> = ({ currentTaskId, refresh }) => {
+const Index: FC<SelfProps> = ({ currentTaskId, callback }) => {
   const [selectProjectId, setSelectProjectId] = useState<number>();
   const [selectModuleId, setSelectModuleId] = useState<number>();
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
@@ -134,7 +134,7 @@ const Index: FC<SelfProps> = ({ currentTaskId, refresh }) => {
   };
 
   const fetchUICases = useCallback(async (params: any, sort: any) => {
-    const { code, data } = await pageUICase({
+    const { code, data } = await pagePlayCase({
       ...params,
       module_type: ModuleEnum.UI_CASE,
       sort: sort,
@@ -159,13 +159,14 @@ const Index: FC<SelfProps> = ({ currentTaskId, refresh }) => {
               type={'primary'}
               onClick={async () => {
                 if (currentTaskId) {
-                  const { code, msg } = await associationUICasesByTaskId({
-                    taskId: currentTaskId,
-                    caseIdList: selectedRowKeys as number[],
-                  });
+                  const { code, msg } =
+                    await insertAssociationPlayCasesByTaskId({
+                      taskId: parseInt(currentTaskId),
+                      caseIdList: selectedRowKeys as number[],
+                    });
                   if (code === 0) {
                     message.success(msg);
-                    refresh?.();
+                    callback();
                   }
                 }
               }}

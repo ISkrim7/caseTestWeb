@@ -1,9 +1,9 @@
 import {
-  addMethod,
-  pageMethods,
-  removeMethod,
-  updateMethod,
-} from '@/api/play/method';
+  addPlayMethod,
+  pagePlayMethods,
+  removePlayMethod,
+  updatePlayMethod,
+} from '@/api/play/playCase';
 import MyProTable from '@/components/Table/MyProTable';
 import { IUIMethod } from '@/pages/Play/componets/uiTypes';
 import { pageData } from '@/utils/somefunc';
@@ -26,7 +26,7 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const pageUIMethod = useCallback(async (values: any, sort: any) => {
-    const { code, data } = await pageMethods({ ...values, sort: sort });
+    const { code, data } = await pagePlayMethods({ ...values, sort: sort });
     return pageData(code, data);
   }, []);
 
@@ -89,7 +89,7 @@ const Index = () => {
         </a>,
         <a
           onClick={async () => {
-            await removeMethod(record.uid).then(({ code, msg }) => {
+            await removePlayMethod(record.uid).then(({ code, msg }) => {
               if (code === 0) {
                 message.success(msg);
               }
@@ -109,14 +109,14 @@ const Index = () => {
     </Button>
   );
   const OnUpdateMethod = async (_: any, values: IUIMethod) => {
-    const { code, msg } = await updateMethod(values);
+    const { code, msg } = await updatePlayMethod(values);
     if (code === 0) {
       actionRef.current?.reload();
       message.success(msg);
     }
   };
   const onMethodFormFinish = async (values: IUIMethod) => {
-    const { code, msg } = await addMethod(values);
+    const { code, msg } = await addPlayMethod(values);
     if (code === 0) {
       message.success(msg);
       actionRef.current?.reload();

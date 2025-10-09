@@ -33,11 +33,6 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
 
   const columns: ProColumns<ITryResponseInfo>[] = [
     {
-      title: '结果uid',
-      dataIndex: 'interfaceID',
-      render: (_, record) => <Tag color={'blue'}>{record.uid}</Tag>,
-    },
-    {
       title: '执行用例',
       dataIndex: 'interfaceName',
       render: (_, record) => <Tag color={'blue'}>{record.interfaceName}</Tag>,
@@ -49,7 +44,7 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
       valueType: 'select',
       valueEnum: { SUCCESS: { text: '成功' }, ERROR: { text: '失败' } },
       render: (_, record) => (
-        <Tag color={record.result === 'SUCCESS' ? 'green' : 'warning'}>
+        <Tag color={record.result === 'SUCCESS' ? 'green' : 'error'}>
           {record.result}
         </Tag>
       ),
@@ -79,7 +74,7 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
     },
   ];
   return (
-    <ProCard bordered={false}>
+    <ProCard bordered={false} bodyStyle={{ padding: 0 }}>
       <MyDrawer name={''} open={open} setOpen={setOpen}>
         <InterfaceApiResponseDetail responses={responseInfo} />
       </MyDrawer>

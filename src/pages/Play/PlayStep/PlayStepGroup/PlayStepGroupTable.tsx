@@ -1,0 +1,132 @@
+import { pagePlayGroupSteps } from '@/api/play/playCase';
+import MyProTable from '@/components/Table/MyProTable';
+import { IUICaseSteps } from '@/pages/Play/componets/uiTypes';
+import PlayStepGroupModalForm from '@/pages/Play/PlayStep/PlayStepGroup/PlayStepGroupModalForm';
+import { ModuleEnum } from '@/utils/config';
+import { pageData } from '@/utils/somefunc';
+import { ActionType } from '@ant-design/pro-components';
+import { ProColumns } from '@ant-design/pro-table/lib/typing';
+import { Divider, Popconfirm, Tag } from 'antd';
+import { FC, useEffect, useRef } from 'react';
+
+interface SelfProps {
+  currentProjectId?: number;
+  currentModuleId?: number;
+  perKey: string;
+}
+
+const PlayStepGroupTable: FC<SelfProps> = (props) => {
+  const { currentProjectId, currentModuleId, perKey } = props;
+  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
+
+  const reload = () => {
+    actionRef.current?.reload();
+  };
+
+  useEffect(() => {
+    reload();
+  }, [currentModuleId, currentProjectId]);
+
+  const fetchStepGroupPage = async (values: any) => {
+    const { code, data } = await pagePlayGroupSteps({
+      ...values,
+      module_id: currentModuleId,
+      module_type: ModuleEnum.UI_STEP,
+      is_group: true,
+    });
+    return pageData(code, data);
+  };
+
+  const columns: ProColumns<IUICaseSteps>[] = [
+    {
+      title: 'uid',
+      dataIndex: 'uid',
+      width: '10%',
+      copyable: true,
+      editable: false,
+      fixed: 'left',
+      render: (_, record) => <Tag color={'blue'}>{record.uid}</Tag>,
+    },
+    {
+      title: '名称',
+      valueType: 'text',
+      dataIndex: 'name',
+      copyable: true,
+      render: (_, record) => <Tag color={'blue'}>{record.name}</Tag>,
+    },
+    {
+      title: '描述',
+      valueType: 'text',
+      dataIndex: 'description',
+      ellipsis: true,
+      search: false,
+    },
+    {
+      title: '步长',
+      valueType: 'text',
+      dataIndex: 'step_num',
+      search: false,
+    },
+    {
+      title: '创建人',
+      dataIndex: 'creatorName',
+      valueType: 'text',
+      editable: false,
+      width: '7%',
+      fixed: 'right',
+      render: (text) => <Tag color={'blue'}>{text}</Tag>,
+    },
+    {
+      title: 'opt',
+      valueType: 'option',
+      fixed: 'right',
+      render: (_, record, __, action) => [
+        <a
+          key={'detail'}
+          onClick={() => {
+            window.open(`/ui/group/detail/groupId=${record.id}`);
+          }}
+        >
+          详情
+        </a>,
+        <Divider type="vertical" />,
+        <a key={'copy'} onClick={() => {}}>
+          复制
+        </a>,
+        <Divider type="vertical" />,
+        <Popconfirm
+          title={'确认删除？'}
+          description={'删除后会影响被关联的用例！'}
+          okText={'确认'}
+          cancelText={'点错了'}
+          onConfirm={() => {}}
+        >
+          <a>删除</a>
+        </Popconfirm>,
+        <Divider type="vertical" />,
+        <a onClick={() => {}}>关联</a>,
+      ],
+    },
+  ];
+
+  return (
+    <MyProTable
+      headerTitle={'步骤组'}
+      actionRef={actionRef}
+      persistenceKey={perKey}
+      rowKey={'id'}
+      x={1000}
+      columns={columns}
+      toolBarRender={() => [
+        <PlayStepGroupModalForm
+          currentProjectId={currentProjectId}
+          currentModuleId={currentModuleId}
+          callBack={reload}
+        />,
+      ]}
+      request={fetchStepGroupPage}
+    />
+  );
+};
+
+export default PlayStepGroupTable;

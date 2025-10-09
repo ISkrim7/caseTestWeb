@@ -19,7 +19,7 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { ProFormSelect } from '@ant-design/pro-form';
-import { Button, Form, message, Tag } from 'antd';
+import { Button, Form, message, Space, Tag } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const InterApiHeaders = () => {
@@ -90,15 +90,16 @@ const InterApiHeaders = () => {
       fixed: 'right',
       width: '10%',
       render: (text, record, _, action) => {
-        return isAdmin
-          ? [
+        return (
+          isAdmin && (
+            <Space>
               <a
                 onClick={async () => {
                   action?.startEditable?.(record.uid);
                 }}
               >
                 编辑
-              </a>,
+              </a>
               <a
                 onClick={async () => {
                   await removeInterGlobalHeader(record.uid).then(
@@ -112,17 +113,10 @@ const InterApiHeaders = () => {
                 }}
               >
                 删除
-              </a>,
-            ]
-          : [
-              <a
-                onClick={async () => {
-                  action?.startEditable?.(record.uid);
-                }}
-              >
-                编辑
-              </a>,
-            ];
+              </a>
+            </Space>
+          )
+        );
       },
     },
   ];

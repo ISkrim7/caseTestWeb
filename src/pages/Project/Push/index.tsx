@@ -5,15 +5,22 @@ import { IPushConfig } from '@/pages/Project/types';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
 import { Divider, Tag } from 'antd';
-import { useCallback, useRef, useState } from 'react';
+import { FC, useCallback, useRef, useState } from 'react';
+interface IProps {
+  projectId?: string;
+}
 
-const Index = () => {
+const Index: FC<IProps> = ({ projectId }) => {
   const actionRef = useRef<ActionType>();
   const [open, setOpen] = useState(false);
   const [currentConfig, setCurrentConfig] = useState<IPushConfig | undefined>();
 
   const pageConfig = useCallback(async (values: any) => {
-    const { code, data } = await pagePushConfig(values);
+    const params = {
+      project_id: projectId,
+      ...values,
+    };
+    const { code, data } = await pagePushConfig(params);
     return pageData(code, data);
   }, []);
 

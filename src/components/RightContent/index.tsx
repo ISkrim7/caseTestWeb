@@ -1,6 +1,13 @@
-import { Space, Switch } from 'antd';
-import { FC, useEffect, useState } from 'react';
-import Avatar from './AvatarDropdown';
+import { history } from '@@/core/history';
+import { useModel } from '@@/exports';
+import {
+  LogoutOutlined,
+  MoonOutlined,
+  SunOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Avatar, Dropdown, MenuProps, Segmented, Space, Spin } from 'antd';
+import { FC } from 'react';
 
 type ThemeType = 'realDark' | 'light';
 
@@ -15,30 +22,95 @@ const GlobalHeaderRight: FC<SelfProps> = ({
   currentTheme,
   toggleTheme,
 }) => {
-  // 根据当前主题初始化 Switch 状态
-  const [switchChecked, setSwitchChecked] = useState<boolean>(
-    currentTheme === 'realDark',
+  const { initialState, setInitialState } = useModel('@@initialState');
+
+  const loading = (
+    <Spin
+      size="small"
+      style={{
+        marginLeft: 8,
+        marginRight: 8,
+      }}
+    />
   );
 
-  // 当外部 currentTheme 变化时同步更新 Switch 状态
-  useEffect(() => {
-    setSwitchChecked(currentTheme === 'realDark');
-  }, [currentTheme]);
+  if (!initialState) {
+    return loading;
+  }
+  const { currentUser } = initialState;
+  if (!currentUser || !currentUser.username) {
+    return loading;
+  }
 
-  const handleThemeChange = (checked: boolean) => {
-    setSwitchChecked(checked);
-    toggleTheme(checked ? 'realDark' : 'light');
+  const handleThemeChange = (value: string) => {
+    toggleTheme(value as ThemeType);
   };
+
+  const items: MenuProps['items'] = [
+    {
+      key: 'center',
+      icon: <UserOutlined />,
+      label: (
+        <a
+          target="_blank"
+          onClick={(e) => {
+            history.push('/user/center');
+            return;
+          }}
+        >
+          个人中心
+        </a>
+      ),
+    },
+    {
+      type: 'divider' as const,
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: (
+        <a
+          target="_blank"
+          onClick={() => {
+            setInitialState((s) => ({ ...s, currentUser: undefined }));
+            history.push('/userLogin');
+            return;
+          }}
+        >
+          登出
+        </a>
+      ),
+    },
+  ];
+
   return (
-    <Space direction={!collapsed ? 'horizontal' : 'vertical'}>
-      <Switch
-        checked={switchChecked}
-        style={{ marginLeft: 10 }}
-        checkedChildren={'🌛'}
-        unCheckedChildren={'🌞'}
+    <Space
+      direction={!collapsed ? 'horizontal' : 'vertical'}
+      align="baseline"
+      // split={<Divider type={collapsed ? 'horizontal' : 'vertical'} />}
+      size={'small'}
+    >
+      <Segmented
+        value={currentTheme}
+        vertical={collapsed}
         onChange={handleThemeChange}
+        size={!collapsed ? 'small' : 'middle'}
+        shape="round"
+        options={[
+          { value: 'light', icon: <SunOutlined /> },
+          { value: 'realDark', icon: <MoonOutlined /> },
+        ]}
       />
-      <Avatar coll={collapsed} />
+      <Dropdown menu={{ items }}>
+        <Avatar
+          size="small"
+          style={{ backgroundColor: '#f56a00' }}
+          src={currentUser.avatar}
+          alt="avatar"
+        >
+          {currentUser.username[0]}
+        </Avatar>
+      </Dropdown>
     </Space>
   );
 };

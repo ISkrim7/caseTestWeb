@@ -11,12 +11,15 @@ interface IProps {
   currentProjectId?: number;
   projects: IProject[];
   setCurrentProjectId: React.Dispatch<React.SetStateAction<number | undefined>>;
+  onProjectChange: (projectId: number | undefined) => void;
+  onModuleChange: (moduleId: number) => void;
 }
 
 const ProjectSelect: FC<IProps> = ({
   currentProjectId,
   projects,
   setCurrentProjectId,
+  onProjectChange,
 }) => {
   return (
     <>
@@ -25,6 +28,7 @@ const ProjectSelect: FC<IProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Title
               level={3}
+              onClick={() => onProjectChange(undefined)}
               style={{
                 marginLeft: 12,
                 marginBottom: 20,
@@ -59,6 +63,7 @@ const ProjectSelect: FC<IProps> = ({
           onChange={(value: number) => {
             setCurrentProjectId(value);
             localStorage.setItem('selectedProjectId', String(value));
+            onProjectChange(value);
           }}
         />
       )}

@@ -1,6 +1,6 @@
 import MyTabs from '@/components/MyTabs';
-import InterAfterScript from '@/pages/Httpx/componets/InterAfterScript';
 import InterAfterSql from '@/pages/Httpx/componets/InterAfterSql'; // 新增
+import InterScript from '@/pages/Httpx/componets/InterScript';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import {
   DatabaseOutlined,
@@ -24,7 +24,7 @@ const ApiAfterItems: FC<SelfProps> = (props) => {
       key: '1',
       label: <Tooltip title="依次执行 设置变量、脚本、SQL">后置脚本</Tooltip>,
       icon: <EditOutlined />,
-      children: <InterAfterScript form={interApiForm} mode={currentMode} />,
+      children: <InterScript form={interApiForm} tag={'after_script'} />,
     },
     {
       key: '2',

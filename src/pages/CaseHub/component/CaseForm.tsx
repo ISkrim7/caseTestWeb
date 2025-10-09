@@ -1,4 +1,5 @@
 import { ICaseInfo, ICaseStepInfo } from '@/api';
+import { insertCase, updateCase } from '@/api/case';
 import CaseInfoStepTable from '@/pages/CaseHub/component/CaseInfoStepTable';
 import {
   ProCard,
@@ -27,24 +28,23 @@ const CaseLevelOptions = [
   { label: 'P4', value: 'P4' },
 ];
 const CaseTypeOptions = [
-  { label: '普通用例', value: 'COMMENT' },
-  { label: '冒烟用例', value: 'SMOKE' },
+  { label: '普通用例', value: 1 },
+  { label: '冒烟用例', value: 0 },
 ];
 
 interface SelfProps {
-  casePartID?: number;
+  currentModuleId?: number;
   projectID?: number;
   setDrawerVisible?: any;
-  actionRef?: any;
+  callback: () => void;
   caseInfo?: ICaseInfo;
   update?: boolean;
 }
 
 const CaseForm: FC<SelfProps> = ({
-  casePartID,
+  callback,
+  currentModuleId,
   projectID,
-  setDrawerVisible,
-  actionRef,
   caseInfo,
   update = false,
 }) => {
@@ -65,20 +65,41 @@ const CaseForm: FC<SelfProps> = ({
   }, [caseInfo]);
 
   const onFinish = async () => {
-    const formValue = await form.validateFields();
+    try {
+      await form.validateFields();
+    } catch (e) {
+      return;
+    }
+
+    const values = form.getFieldsValue(true);
     if (caseStepSource.length === 0) {
       message.error('执行步骤不能为空');
       return;
     }
     const info: ICaseInfo = {
-      ...formValue,
+      ...values,
       case_info: caseStepSource.map((item, index) => ({
         ...item,
         step: index + 1,
       })),
-      projectID: projectID,
-      casePartID: casePartID,
+      project_id: projectID,
+      module_id: currentModuleId,
     };
+    console.log(info);
+
+    if (update) {
+      const { code, data, msg } = await updateCase(info);
+      if (code === 0) {
+        message.success(msg);
+        callback();
+      }
+    } else {
+      const { code, data, msg } = await insertCase(info);
+      if (code === 0) {
+        message.success(msg);
+        callback();
+      }
+    }
   };
 
   return (
@@ -98,29 +119,37 @@ const CaseForm: FC<SelfProps> = ({
             label={'用例描述'}
             placeholder={'请输入用例描述'}
             required={true}
+            fieldProps={{
+              rows: 2,
+            }}
             rules={[{ required: true, message: '描述不能为空' }]}
           />
         </ProCard>
+
+        <CaseInfoStepTable
+          caseStepInfo={caseStepSource}
+          setStepCaseInfo={setCaseStepInfoSource}
+          editableKeys={editableKeys}
+          setEditableRowKeys={setEditableRowKeys}
+        />
         <ProCard>
           <ProForm.Group size={'large'}>
-            <ProForm.Group title={'用例等级'} size={'large'}>
-              <ProFormSelect
-                required={true}
-                width={'lg'}
-                name={'case_level'}
-                options={CaseLevelOptions}
-                initialValue={'P1'}
-              />
-            </ProForm.Group>
-            <ProForm.Group title={'用例类型'} size={'large'}>
-              <ProFormSelect
-                required={true}
-                width={'lg'}
-                name={'case_type'}
-                options={CaseTypeOptions}
-                initialValue={'COMMENT'}
-              />
-            </ProForm.Group>
+            <ProFormSelect
+              label={'用例等级'}
+              required={true}
+              width={'md'}
+              name={'case_level'}
+              options={CaseLevelOptions}
+              initialValue={'P1'}
+            />
+            <ProFormSelect
+              label={'用例类型'}
+              required={true}
+              width={'md'}
+              name={'case_type'}
+              options={CaseTypeOptions}
+              initialValue={'COMMENT'}
+            />
           </ProForm.Group>
         </ProCard>
         <ProCard>
@@ -132,12 +161,6 @@ const CaseForm: FC<SelfProps> = ({
             rules={[{ required: true, message: '前置不能为空' }]}
           />
         </ProCard>
-        <CaseInfoStepTable
-          caseStepInfo={caseStepSource}
-          setStepCaseInfo={setCaseStepInfoSource}
-          editableKeys={editableKeys}
-          setEditableRowKeys={setEditableRowKeys}
-        />
         <ProCard>
           <ProFormTextArea
             style={{ width: '100%' }}

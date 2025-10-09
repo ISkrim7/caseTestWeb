@@ -1,14 +1,18 @@
+import { IUserVar } from '@/api';
+import { queryUserVars } from '@/api/base';
 import {
   queryInterGlobalFunc,
   queryInterGlobalVariable,
 } from '@/api/inter/interGlobal';
+import MyTabs from '@/components/MyTabs';
+import VarModalForm from '@/pages/Httpx/InterfaceConfig/VarModalForm';
 import {
   IInterfaceGlobalFunc,
   IInterfaceGlobalVariable,
 } from '@/pages/Httpx/types';
 import { GoogleSquareFilled, SearchOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
-import { Button, Popover, Select, Space, Tabs, Typography } from 'antd';
+import { Button, Popover, Select, Space, Typography } from 'antd';
 import Title from 'antd/es/typography/Title';
 import React, { FC, useEffect, useState } from 'react';
 
@@ -20,13 +24,17 @@ interface ISelfProps {
 
 const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
   const [open, setOpen] = useState(false);
+  const [currentActiveKey, setCurrentActiveKey] = useState<string>('1');
   const [currentValue, setCurrentValue] = useState<IInterfaceGlobalFunc>();
   const [currentData, setCurrentData] = useState<IInterfaceGlobalVariable>();
+  const [currentMyData, setCurrentMyData] = useState<IUserVar>();
   const [selectValue, setSelectValue] = useState<string>();
   const [funcData, setFuncData] = useState<any[]>([]);
   const [varData, setVarData] = useState<any[]>([]);
-
-  useEffect(() => {
+  const [myData, setMyData] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const fetch_func_data = async () => {
     queryInterGlobalFunc().then(async ({ code, data }) => {
       if (code === 0) {
         const func = data.map((item: IInterfaceGlobalFunc) => {
@@ -42,169 +50,305 @@ const ApiVariableFunc: FC<ISelfProps> = ({ value, index, setValue }) => {
               </span>
             ),
             value: item.value,
+            desc: item.description,
           };
         });
         setFuncData(func);
       }
     });
+  };
+  const fetch_var_data = async () => {
     queryInterGlobalVariable().then(async ({ code, data }) => {
       if (code === 0) {
-        const func = data.map((item: IInterfaceGlobalVariable) => {
+        const var_data = data.map((item: IInterfaceGlobalVariable) => {
           return {
             label: (
               <span
-                onMouseEnter={() => {
+                onMouseEnter={(event) => {
+                  event.stopPropagation();
                   setCurrentData(item);
                 }}
               >
-                <GoogleSquareFilled style={{ color: 'blue' }} />
-                {item.key}
+                <Space>
+                  <GoogleSquareFilled style={{ color: 'blue' }} />
+                  {item.key}
+                </Space>
               </span>
             ),
-            value: `{{${item.key}}}`,
+            value: `{{$g_${item.key}}}`,
           };
         });
-        setVarData(func);
+        setVarData(var_data);
       }
     });
-  }, []);
+  };
+  const fetch_my_var_data = async () => {
+    queryUserVars().then(async ({ code, data }) => {
+      if (code === 0) {
+        const value = data.map((item: IUserVar) => {
+          return {
+            label: (
+              <span
+                onMouseEnter={(event) => {
+                  event.stopPropagation();
+                  setCurrentMyData(item);
+                }}
+              >
+                <Space>
+                  <GoogleSquareFilled style={{ color: 'blue' }} />
+                  {item.key}
+                </Space>
+              </span>
+            ),
+            id: item.id,
+            key: item.key,
+            value: item.value,
+          };
+        });
+        setMyData(value);
+      }
+    });
+  };
+
+  useEffect(() => {
+    Promise.all([
+      fetch_func_data(),
+      fetch_var_data(),
+      fetch_my_var_data(),
+    ]).then(() => {});
+  }, [refresh]);
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
   };
+  const renderContentPanel = (data: any, type: 'func' | 'var' | 'my') => (
+    <ProCard bodyStyle={{ padding: 5 }}>
+      {data && (
+        <Space direction="vertical" size="middle">
+          <Typography.Text type="secondary">
+            {type === 'func' ? '表达式' : '变量名'}
+          </Typography.Text>
+          <Typography.Text code copyable>
+            {type === 'func' ? selectValue : data.key}
+          </Typography.Text>
+          <Typography.Text type="secondary">变量值</Typography.Text>
+          <Typography.Text code ellipsis={{ tooltip: data.value }}>
+            {data.value?.length > 40
+              ? `${data.value.substring(0, 40)}...`
+              : data.value}
+          </Typography.Text>
+          {type === 'func' && (
+            <>
+              <Typography.Text type="secondary">描述</Typography.Text>
+              <Typography.Text>{data.description}</Typography.Text>
+            </>
+          )}
+        </Space>
+      )}
+    </ProCard>
+  );
+  const renderDetailPanel = (data: any, type: 'func' | 'var' | 'my') => (
+    <ProCard bodyStyle={{ padding: 5 }}>
+      {data && (
+        <Space direction="vertical" size="middle">
+          <Typography.Text type="secondary">变量名</Typography.Text>
+          <Typography.Text code>{data.label || data.key}</Typography.Text>
 
-  const Content = (
-    <ProCard split={'horizontal'}>
-      <Tabs defaultActiveKey={'1'}>
-        <Tabs.TabPane key={'1'} tab={'Func'}>
-          <ProCard>
+          <Typography.Text type="secondary">变量值</Typography.Text>
+          <Typography.Text code ellipsis={{ tooltip: data.value }}>
+            {type === 'func'
+              ? data.value
+              : data.value?.length > 15
+              ? `${data.value.substring(0, 15)}...`
+              : data.value}
+          </Typography.Text>
+
+          {type === 'func' && (
+            <>
+              <Typography.Text type="secondary">预览</Typography.Text>
+              <Typography.Text code>{data.demo}</Typography.Text>
+            </>
+          )}
+        </Space>
+      )}
+    </ProCard>
+  );
+  const items = [
+    {
+      key: '1',
+      label: 'Func',
+      children: (
+        <ProCard split={'horizontal'}>
+          <ProCard bodyStyle={{ padding: 5 }}>
             <Select
               allowClear
               showSearch
-              listHeight={180}
               autoFocus
               onChange={(value) => {
                 setSelectValue(value);
               }}
-              style={{ width: 500 }}
+              onClear={() => {
+                setSelectValue(undefined);
+                setCurrentValue(undefined);
+              }}
               options={funcData}
               dropdownRender={(menu) => (
                 <>
                   <ProCard split={'vertical'}>
                     <ProCard bodyStyle={{ padding: 0 }}>{menu}</ProCard>
-                    <ProCard bodyStyle={{ padding: 5 }}>
-                      {currentValue && (
-                        <Space direction="vertical">
-                          <Typography.Text type={'secondary'}>
-                            变量名
-                          </Typography.Text>
-                          <Typography.Text code>
-                            {currentValue.label}
-                          </Typography.Text>
-                          <Typography.Text type={'secondary'}>
-                            变量值
-                          </Typography.Text>
-                          <Typography.Text code>
-                            {currentValue?.value}
-                          </Typography.Text>
-                          <Typography.Text type={'secondary'}>
-                            预览
-                          </Typography.Text>
-                          <Typography.Text code>
-                            {currentValue?.demo}
-                          </Typography.Text>
-                        </Space>
-                      )}
-                    </ProCard>
+                    {renderDetailPanel(currentValue, 'func')}
                   </ProCard>
                 </>
               )}
             />
           </ProCard>
-        </Tabs.TabPane>
-        <Tabs.TabPane key={'2'} tab={'Var'}>
-          <ProCard>
+          {renderContentPanel(currentValue, 'func')}
+        </ProCard>
+      ),
+    },
+    {
+      key: '2',
+      label: 'Var',
+      children: (
+        <ProCard split={'horizontal'} bodyStyle={{ minHeight: 100 }}>
+          <ProCard bodyStyle={{ padding: 5 }}>
             <Select
               allowClear
               showSearch
-              listHeight={180}
               autoFocus
               onChange={(value) => {
                 setSelectValue(value);
               }}
-              style={{ width: 500 }}
+              onClear={() => {
+                setSelectValue(undefined);
+                setCurrentData(undefined);
+              }}
               options={varData}
               dropdownRender={(menu) => (
                 <>
                   <ProCard split={'vertical'}>
                     <ProCard bodyStyle={{ padding: 0 }}>{menu}</ProCard>
-                    <ProCard bodyStyle={{ padding: 5 }}>
-                      {currentData && (
-                        <Space direction="vertical">
-                          <Typography.Text type={'secondary'}>
-                            变量名
-                          </Typography.Text>
-                          <Typography.Text code>
-                            {currentData.key}
-                          </Typography.Text>
-                          <Typography.Text type={'secondary'}>
-                            变量值
-                          </Typography.Text>
-                          <Typography.Text code>
-                            {currentData?.value}
-                          </Typography.Text>
-                        </Space>
-                      )}
-                    </ProCard>
+                    {renderDetailPanel(currentData, 'var')}
                   </ProCard>
                 </>
               )}
             />
           </ProCard>
-        </Tabs.TabPane>
-      </Tabs>
-      <ProCard style={{ marginTop: 200 }}>
-        <Space direction={'horizontal'}>
-          <Button
-            onClick={() => {
-              if (selectValue && index) {
-                setValue?.(index, { value: selectValue });
-              }
-              setOpen(false);
-            }}
-          >
-            添加
-          </Button>
-          <Button
-            onClick={() => {
-              if (selectValue && index) {
-                if (value) {
-                  setValue?.(index, { value: value + selectValue });
-                } else {
-                  setValue?.(index, { value: selectValue });
-                }
-              }
-              setOpen(false);
-            }}
-          >
-            插入
-          </Button>
-        </Space>
+          {renderContentPanel(currentData, 'var')}
+        </ProCard>
+      ),
+    },
+    {
+      key: '3',
+      label: 'My',
+      children: (
+        <ProCard split={'horizontal'} bodyStyle={{ minHeight: 100 }}>
+          <ProCard bodyStyle={{ padding: 5 }}>
+            <Select
+              allowClear
+              showSearch
+              autoFocus
+              onChange={(value) => {
+                console.log('my==', value);
+                setSelectValue(value);
+              }}
+              onSelect={(value) => {
+                console.log('my==', value);
+              }}
+              onClear={() => {
+                setSelectValue(undefined);
+                setCurrentMyData(undefined);
+              }}
+              options={myData}
+              dropdownRender={(menu) => (
+                <>
+                  <ProCard split={'vertical'}>
+                    <ProCard bodyStyle={{ padding: 0 }}>{menu}</ProCard>
+                    {renderDetailPanel(currentMyData, 'my')}
+                  </ProCard>
+                </>
+              )}
+            />
+          </ProCard>
+          {renderContentPanel(currentMyData, 'my')}
+        </ProCard>
+      ),
+    },
+  ];
+  const Content = (
+    <ProCard split="horizontal" style={{ height: 'auto', width: 450 }}>
+      <MyTabs
+        items={items}
+        defaultActiveKey={currentActiveKey}
+        onChangeKey={(key) => setCurrentActiveKey(key)}
+      />
+      <ProCard style={{ marginTop: 20, padding: '10px 0' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          {selectValue && (
+            <Space>
+              <Button
+                onClick={() => {
+                  if (selectValue && index) {
+                    setValue?.(index, { value: selectValue });
+                  }
+                  setOpen(false);
+                }}
+              >
+                添加
+              </Button>
+              <Button
+                onClick={() => {
+                  if (selectValue && index) {
+                    if (value) {
+                      setValue?.(index, { value: value + selectValue });
+                    } else {
+                      setValue?.(index, { value: selectValue });
+                    }
+                  }
+                  setOpen(false);
+                }}
+              >
+                插入
+              </Button>
+            </Space>
+          )}
+          {currentActiveKey === '2' && (
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+            >
+              新增
+            </Button>
+          )}
+        </div>
       </ProCard>
     </ProCard>
   );
 
   return (
     <>
+      <VarModalForm
+        open={isModalOpen}
+        setOpen={setIsModalOpen}
+        callBack={() => setRefresh(!refresh)}
+      />
       <Popover
-        style={{ width: '50px', height: '90px' }}
         content={Content}
         title={<Title level={5}>引用变量</Title>}
         trigger="click"
         open={open}
         onOpenChange={handleOpenChange}
+        style={{ borderRadius: 8 }}
       >
-        <SearchOutlined />
+        <SearchOutlined style={{ color: '#1890ff' }} />
       </Popover>
     </>
   );

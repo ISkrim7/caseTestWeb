@@ -83,9 +83,10 @@ const ExtractOptions = [
 
 interface ISelfProps {
   form: FormInstance<IInterfaceAPI>;
+  readonly?: boolean;
 }
 
-const InterAssertList: FC<ISelfProps> = ({ form }) => {
+const InterAssertList: FC<ISelfProps> = ({ form, readonly = false }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(0); // 当前正在编辑的行索引
   const [showTools, setShowTools] = useState(false);
 
@@ -128,11 +129,15 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
         onAfterRemove={async () => {
           await FormEditableOnValueChange(form, 'asserts');
         }}
-        copyIconProps={{ tooltipText: '复制当前行', Icon: CopyTwoTone }}
-        deleteIconProps={{
-          Icon: DeleteTwoTone,
-          tooltipText: '不需要这行了',
-        }}
+        copyIconProps={
+          !readonly && { tooltipText: '复制当前行', Icon: CopyTwoTone }
+        }
+        deleteIconProps={
+          !readonly && {
+            Icon: DeleteTwoTone,
+            tooltipText: '不需要这行了',
+          }
+        }
         itemRender={({ listDom, action }, { record, index }) => (
           <ProCard
             collapsible={true}
@@ -174,25 +179,27 @@ const InterAssertList: FC<ISelfProps> = ({ form }) => {
               ) : null
             }
             extra={
-              <Space>
-                {editingIndex === index ? (
-                  <Tooltip title="保存">
-                    <SaveTwoTone
-                      twoToneColor={'#c7920a'}
-                      disabled={false}
-                      onClick={save}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="编辑">
-                    <EditTwoTone
-                      disabled={false}
-                      onClick={() => handleEdit(index)}
-                    />
-                  </Tooltip>
-                )}
-                {action}
-              </Space>
+              !readonly && (
+                <Space>
+                  {editingIndex === index ? (
+                    <Tooltip title="保存">
+                      <SaveTwoTone
+                        twoToneColor={'#c7920a'}
+                        disabled={false}
+                        onClick={save}
+                      />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="编辑">
+                      <EditTwoTone
+                        disabled={false}
+                        onClick={() => handleEdit(index)}
+                      />
+                    </Tooltip>
+                  )}
+                  {action}
+                </Space>
+              )
             }
           >
             {listDom}

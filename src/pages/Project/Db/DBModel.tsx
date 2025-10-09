@@ -13,11 +13,13 @@ import { FC, useEffect, useState } from 'react';
 interface IProps {
   callBack: () => void;
   currentDBConfigId?: string;
+  currentProjectId: string;
   open?: boolean;
   setOpen?: (open: boolean) => void;
 }
 
 const DBModel: FC<IProps> = ({
+  currentProjectId,
   callBack,
   currentDBConfigId,
   open,
@@ -48,7 +50,7 @@ const DBModel: FC<IProps> = ({
 
   const save = async () => {
     const values = await form.validateFields();
-    console.log(values);
+    values.project_id = parseInt(currentProjectId);
     if (currentDBConfigId) {
       await updateDBConfig({ ...values, uid: currentDBConfigId }).then(
         ({ code, msg }) => {

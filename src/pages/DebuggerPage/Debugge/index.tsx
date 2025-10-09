@@ -176,11 +176,11 @@ const DynamicSettings = () => {
 
   return (
     <ProCard
-      split="vertical"
+      split="horizontal"
       bordered
       headerBordered
       style={{
-        height: '100vh',
+        height: 'auto',
         overflow: 'hidden',
       }}
     >

@@ -1,4 +1,9 @@
-import { addDepartTags, queryDepartTags } from '@/api/base/depart';
+import {
+  addDepartTags,
+  queryDepartTags,
+  removeDepartTag,
+  updateDepartTag,
+} from '@/api/base/depart';
 import { IDepartTag } from '@/pages/User/Depart/depart';
 import { PlusOutlined } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
@@ -32,6 +37,7 @@ const DepartTags: FC<Props> = ({ depart_id }) => {
   useEffect(() => {
     if (!depart_id) return;
     queryDepartTags(depart_id).then(({ code, data }) => {
+      console.log(data);
       if (code === 0) {
         setDepartTags(data);
       }
@@ -68,103 +74,84 @@ const DepartTags: FC<Props> = ({ depart_id }) => {
     setEditInputValue(e.target.value);
   };
 
-  const handleEditInputConfirm = () => {
-    const newTags = [...departTags];
-    newTags[editInputIndex] = editInputValue;
-    setDepartTags(newTags);
+  const handleEditInputConfirm = async (tagId: number) => {
+    if (!editInputValue || !tagId) return;
+    const { code } = await updateDepartTag({
+      id: tagId,
+      tag_name: editInputValue,
+    });
+    if (code === 0) {
+      setReload(reload + 1);
+    }
     setEditInputIndex(-1);
     setEditInputValue('');
   };
-  const handleClose = (removedTag: IDepartTag) => {
-    const newTags = departTags.filter((tag) => tag !== removedTag);
-    console.log(newTags);
-    setDepartTags(newTags);
+  const handleClose = async (removedTag: IDepartTag) => {
+    const { code, data } = await removeDepartTag(removedTag.id);
+    if (code === 0) {
+      setReload(reload + 1);
+    }
   };
 
   return (
     <ProCard>
       <Flex gap="4px 0" wrap>
-        {departTags?.map((tag, index) => {
-          if (editInputIndex === index) {
-            return <Input />;
-          }
-          const isLongTag = tag.tag_name.length > 20;
-          return (
-            <Tooltip title={tag} key={tag.tag_name}>
+        {departTags &&
+          departTags.map((tag, index) => {
+            if (editInputIndex === index) {
+              return (
+                <Input
+                  style={tagInputStyle}
+                  ref={editInputRef}
+                  key={tag.id}
+                  size="small"
+                  value={editInputValue}
+                  onChange={handleEditInputChange}
+                  onBlur={async () => await handleEditInputConfirm(tag.id)}
+                  onPressEnter={async () =>
+                    await handleEditInputConfirm(tag.id)
+                  }
+                />
+              );
+            }
+            const isLongTag = tag.tag_name.length > 20;
+            const tagEle = (
               <Tag
-                key={tag.tag_name}
-                closable={index !== 0}
+                key={tag.id}
+                color="processing"
+                closable
                 style={{ userSelect: 'none' }}
                 onClose={() => handleClose(tag)}
               >
                 <span
                   onDoubleClick={(e) => {
-                    if (index !== 0) {
-                      // setEditInputIndex(index);
-                      // setEditInputValue(tag.tag_name);
-                      e.preventDefault();
-                    }
+                    console.log('duble');
+                    setEditInputIndex(index);
+                    setEditInputValue(tag.tag_name);
+                    e.preventDefault();
                   }}
                 >
-                  {isLongTag ? `${tag.tag_name.slice(0, 20)}...` : tag}
+                  {isLongTag ? `${tag.tag_name.slice(0, 20)}...` : tag.tag_name}
                 </span>
               </Tag>
-            </Tooltip>
-          );
-        })}
-
-        {/*// {departTags?.map((tag, index) => {*/}
-        {/*//   if (editInputIndex === index) {*/}
-        {/*//     return (*/}
-        {/*//       <Input*/}
-        {/*//         ref={editInputRef}*/}
-        {/*//         style={tagInputStyle}*/}
-        {/*//         key={tag.tag_name}*/}
-        {/*//         size="small"*/}
-        {/*//         value={editInputValue}*/}
-        {/*//         // onChange={handleEditInputChange}*/}
-        {/*//         // onBlur={handleEditInputConfirm}*/}
-        {/*//         // onPressEnter={handleEditInputConfirm}*/}
-        {/*//       />*/}
-        {/*//     );*/}
-        {/*//   }*/}
-        {/*//   const isLongTag = tag.tag_name.length > 20;*/}
-        {/*//   const tagElem = (*/}
-        {/*//     <Tag*/}
-        {/*//       key={tag.tag_name}*/}
-        {/*//       closable={index !== 0}*/}
-        {/*//       style={{ userSelect: 'none' }}*/}
-        {/*//       onClose={() => handleClose(tag)}*/}
-        {/*//     >*/}
-        {/*//     <span*/}
-        {/*//       onDoubleClick={(e) => {*/}
-        {/*//         if (index !== 0) {*/}
-        {/*//           setEditInputIndex(index);*/}
-        {/*//           setEditInputValue(tag.tag_name);*/}
-        {/*//           e.preventDefault();*/}
-        {/*//         }*/}
-        {/*//       }}*/}
-        {/*//     >*/}
-        {/*//       {isLongTag ? `${tag.tag_name.slice(0, 20)}...` : tag}*/}
-        {/*//     </span>*/}
-        {/*//     </Tag>*/}
-        {/*//   );*/}
-        {/*//   return isLongTag ? (*/}
-        {/*//     <Tooltip title={tag} key={tag.tag_name}>*/}
-        {/*//       {tagElem}*/}
-        {/*//     </Tooltip>*/}
-        {/*//   ) : (*/}
-        {/*//     tagElem*/}
-        {/*//   );*/}
-        {/*// })}*/}
+            );
+            return isLongTag ? (
+              <Tooltip title={tag.tag_name} key={tag.id}>
+                {tagEle}
+              </Tooltip>
+            ) : (
+              tagEle
+            );
+          })}
         {inputVisible ? (
           <Input
+            style={tagInputStyle}
             ref={inputRef}
             type="text"
             size="small"
             value={inputValue}
             onChange={handleInputChange}
-            // onBlur={handleInputConfirm}
+            onBlur={handleInputConfirm}
             onPressEnter={handleInputConfirm}
           />
         ) : (

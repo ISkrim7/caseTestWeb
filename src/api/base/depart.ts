@@ -81,6 +81,37 @@ export async function queryDepartTags(depart_id: number, options?: IObjGet) {
 }
 
 /**
+ * removeDepartTag
+ * @param options
+ * @param tag_id
+ */
+export async function removeDepartTag(tag_id: number, options?: IObjGet) {
+  return request<IResponse<null>>('/api/department/removeTag', {
+    method: 'POST',
+    data: {
+      tag_id: tag_id,
+    },
+    ...(options || {}),
+  });
+}
+
+/**
+ * updateDepartTag
+ * @param options
+ * @param data
+ */
+export async function updateDepartTag(
+  data: { id: number; tag_name: string },
+  options?: IObjGet,
+) {
+  return request<IResponse<null>>('/api/department/updateTag', {
+    method: 'POST',
+    data,
+    ...(options || {}),
+  });
+}
+
+/**
  * addDepartTags
  * @param options
  * @param data

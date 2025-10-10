@@ -135,6 +135,7 @@ const Index = () => {
   return (
     <MyProTable
       columns={columns}
+      // @ts-ignore
       expandedRowRender={tagArea}
       x={1000}
       actionRef={actionRef}

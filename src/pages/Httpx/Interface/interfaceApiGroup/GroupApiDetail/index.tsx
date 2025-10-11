@@ -52,6 +52,10 @@ const Index = () => {
   const [apiEnvs, setApiEnvs] = useState<
     { label: string; value: number | null }[]
   >([]);
+
+  const [showTryResponses, setShowTryResponses] = useState<boolean>(false);
+  const [showTryResponsesLoading, setShowTryResponsesLoading] =
+    useState<boolean>(false);
   const handleReload = async () => {
     setReload(reload + 1);
   };
@@ -166,11 +170,12 @@ const Index = () => {
 
   const TryGroup = async () => {
     if (groupId) {
+      setShowTryResponses(true);
+      setShowTryResponsesLoading(true);
       const { code, data, msg } = await tryInterfaceGroup(groupId);
       if (code === 0) {
-        console.log(data);
-        message.success(msg);
         setTryResponses(data);
+        setShowTryResponsesLoading(false);
       }
     }
   };
@@ -239,8 +244,18 @@ const Index = () => {
       <MyDrawer name={''} open={choiceOpen} setOpen={setChoiceOpen}>
         <InterfaceCaseChoiceApiTable
           currentGroupId={groupId}
+          projectId={currentProjectId}
           refresh={handleReload}
         />
+      </MyDrawer>
+      <MyDrawer
+        name={'响应结果'}
+        width={'80%'}
+        loading={showTryResponsesLoading}
+        open={showTryResponses}
+        setOpen={setShowTryResponses}
+      >
+        <InterfaceApiResponseDetail responses={tryResponses} />
       </MyDrawer>
       <ProCard
         extra={<DetailExtra currentStatus={currentStatus}></DetailExtra>}
@@ -295,14 +310,16 @@ const Index = () => {
           </ProFormGroup>
         </ProForm>
       </ProCard>
-      <ProCard extra={<ApisCardExtra current={currentStatus} />}>
+      <ProCard
+        style={{ padding: 0 }}
+        extra={<ApisCardExtra current={currentStatus} />}
+      >
         <DnDDraggable
           items={apisContent}
           setItems={setApisContent}
           orderFetch={onDragEnd}
         />
       </ProCard>
-      {tryResponses && <InterfaceApiResponseDetail responses={tryResponses} />}
     </ProCard>
   );
 };

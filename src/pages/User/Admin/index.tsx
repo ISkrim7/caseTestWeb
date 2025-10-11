@@ -1,16 +1,16 @@
 import { IUser } from '@/api';
 import { pageUsers, removeUser, updateUser } from '@/api/base';
-import { queryDepart } from '@/api/base/depart';
+import { queryDepart, queryDepartTags } from '@/api/base/depart';
 import MyProTable from '@/components/Table/MyProTable';
 import AddUser from '@/components/UserOpt/AddUser';
-import { IDepart } from '@/pages/User/Depart/depart';
+import { IDepart, IDepartTag } from '@/pages/User/Depart/depart';
 import { pageData } from '@/utils/somefunc';
 import {
   ActionType,
   ProColumns,
   ProFormSelect,
 } from '@ant-design/pro-components';
-import { Avatar, message, Space } from 'antd';
+import { Avatar, message, Space, Tag } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Props {
@@ -24,8 +24,25 @@ const Index: React.FC<Props> = ({ projectId }) => {
   const [departmentEnums, setDepartmentEnums] = useState<{
     [key: number]: string;
   }>();
-  const departIdToNameMap = useRef(new Map());
 
+  const [currentDepartId, setCurrentDepartId] = useState<number>();
+  const departIdToNameMap = useRef(new Map());
+  const [tagEnum, setTagEnum] = useState<{ [key: string]: string }>();
+  useEffect(() => {
+    if (currentDepartId) {
+      console.log(currentDepartId);
+      queryDepartTags(currentDepartId).then(async ({ code, data }) => {
+        if (code === 0) {
+          setTagEnum(
+            data.reduce((acc: any, obj: IDepartTag) => {
+              acc[obj.tag_name] = obj.tag_name;
+              return acc;
+            }, {}),
+          );
+        }
+      });
+    }
+  }, [currentDepartId]);
   useEffect(() => {
     queryDepart().then(({ code, data }) => {
       if (code === 0) {
@@ -147,9 +164,9 @@ const Index: React.FC<Props> = ({ projectId }) => {
                 optionFilterProp: 'label',
                 onChange: (value, option) => {
                   console.log(value, option);
+                  setCurrentDepartId(value as number);
                   const depart_name =
                     departIdToNameMap.current.get(value) || '';
-                  console.log('==', depart_name);
                   // 直接设置表单字段值
                   form.setFieldValue('depart_name', depart_name);
                 },
@@ -166,17 +183,16 @@ const Index: React.FC<Props> = ({ projectId }) => {
       hideInSearch: true,
       editable: false, // 不可直接编辑，通过 admin_id 变化自动更新
     },
-    // {
-    //   title: 'tag',
-    //   dataIndex: 'tagName',
-    //   valueType: 'select',
-    //   search: false,
-    //   ellipsis: true, //是否自动缩略
-    //
-    //   render: (text) => {
-    //     return <Tag color={'blue'}>{text}</Tag>;
-    //   },
-    // },
+    {
+      title: 'tag',
+      dataIndex: 'tagName',
+      valueType: 'select',
+      search: false,
+      valueEnum: tagEnum,
+      render: (text) => {
+        return <Tag color={'blue'}>{text}</Tag>;
+      },
+    },
     {
       title: '创建时间',
       key: 'showTime',
@@ -204,7 +220,8 @@ const Index: React.FC<Props> = ({ projectId }) => {
       render: (text, record, _, action) => [
         <a
           key="editable"
-          onClick={() => {
+          onClick={async () => {
+            setCurrentDepartId(record.depart_id);
             action?.startEditable?.(record.uid);
           }}
         >

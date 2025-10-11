@@ -1,5 +1,6 @@
 import { IModuleEnum, IObjGet } from '@/api';
 import {
+  clearResultByTaskId,
   pagePlayTaskResult,
   removePlayTaskResultById,
 } from '@/api/play/playTask';
@@ -10,7 +11,7 @@ import { CONFIG, ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { history } from '@@/core/history';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { message, Space, Tag } from 'antd';
+import { Button, message, Space, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -21,11 +22,14 @@ interface SelfProps {
 const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number>();
+  const [showSearch, setShowSearch] = useState(true);
 
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
-  // 查询所有project 设置枚举
   useEffect(() => {
+    if (taskId) {
+      setShowSearch(false);
+    }
     queryProjectEnum(setProjectEnumMap).then();
   }, []);
 
@@ -77,7 +81,6 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
       fieldProps: {
         onSelect: (value: number) => {
           setSelectProjectId(value);
-          // setSelectModuleId(undefined);
         },
       },
     },
@@ -196,9 +199,23 @@ const PlayTaskResultTable: FC<SelfProps> = ({ taskId }) => {
     },
   ];
 
+  const clearTaskResult = async () => {
+    if (taskId) {
+      const { code } = await clearResultByTaskId(taskId);
+      if (code === 0) {
+        actionRef.current?.reload();
+      }
+    }
+  };
+
   return (
     <MyProTable
-      search={taskId === undefined && false}
+      toolBarRender={() => [
+        <Button hidden={showSearch} type={'primary'} onClick={clearTaskResult}>
+          清空
+        </Button>,
+      ]}
+      search={showSearch}
       actionRef={actionRef}
       rowKey={'id'}
       columns={columns}

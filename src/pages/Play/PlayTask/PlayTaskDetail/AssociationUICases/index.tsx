@@ -156,7 +156,7 @@ const Index: FC<ISelfProps> = ({ currentTaskId }) => {
     setRefresh(refresh + 1);
   };
   return (
-    <ProCard>
+    <ProCard style={{ padding: 0 }}>
       <MyDrawer
         name={'UI Cases'}
         open={choiceUICaseOpen}

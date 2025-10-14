@@ -314,6 +314,7 @@ const Index: FC<SelfProps> = ({
           {
             key: '6',
             label: '压力测试',
+            disabled: true,
             icon: <LineChartOutlined />,
             children: <InterPerf interfaceId={interId} />,
           },

@@ -325,11 +325,6 @@ const Index = () => {
               setItems={setApis}
               orderFetch={onDragEnd}
             />
-            // <MyDraggable
-            //   items={apis}
-            //   setItems={setApis}
-            //   dragEndFunc={onDragEnd}
-            // />
           )}
         </>
       ),

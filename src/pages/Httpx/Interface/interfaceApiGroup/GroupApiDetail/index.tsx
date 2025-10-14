@@ -30,7 +30,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, Form, message } from 'antd';
+import { Button, Divider, Form, message, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
 
@@ -251,11 +251,16 @@ const Index = () => {
       <MyDrawer
         name={'响应结果'}
         width={'80%'}
-        loading={showTryResponsesLoading}
         open={showTryResponses}
         setOpen={setShowTryResponses}
       >
-        <InterfaceApiResponseDetail responses={tryResponses} />
+        <Spin
+          tip={'接口请求中。。'}
+          size={'large'}
+          spinning={showTryResponsesLoading}
+        >
+          <InterfaceApiResponseDetail responses={tryResponses} />
+        </Spin>
       </MyDrawer>
       <ProCard
         extra={<DetailExtra currentStatus={currentStatus}></DetailExtra>}

@@ -63,6 +63,13 @@ const Index: FC<SelfProps> = ({
       key: 'name',
       fixed: 'left',
     },
+
+    {
+      title: '路径',
+      dataIndex: 'url',
+      key: 'url',
+      ellipsis: true,
+    },
     {
       title: '方法',
       dataIndex: 'method',
@@ -152,38 +159,40 @@ const Index: FC<SelfProps> = ({
   ];
 
   return (
-    <MyProTable
-      persistenceKey={perKey}
-      columns={columns}
-      rowKey={'id'}
-      x={1000}
-      actionRef={actionRef}
-      request={fetchInterface}
-      toolBarRender={() => [
-        <Button
-          type={'primary'}
-          onClick={() => {
-            window.open('/interface/interApi/detail');
-          }}
-        >
-          <PlusOutlined />
-          添加接口
-        </Button>,
-        <Button
-          type={'primary'}
-          onClick={async () => {
-            if (currentModuleId) {
-              await outPutInter2Yaml(currentModuleId);
-            } else {
-              message.warning('请选择模块');
-            }
-          }}
-        >
-          <DownOutlined />
-          接口导出
-        </Button>,
-      ]}
-    />
+    <>
+      <MyProTable
+        persistenceKey={perKey}
+        columns={columns}
+        rowKey={'id'}
+        x={1000}
+        actionRef={actionRef}
+        request={fetchInterface}
+        toolBarRender={() => [
+          <Button
+            type={'primary'}
+            onClick={() => {
+              window.open('/interface/interApi/detail');
+            }}
+          >
+            <PlusOutlined />
+            添加接口
+          </Button>,
+          <Button
+            type={'primary'}
+            onClick={async () => {
+              if (currentModuleId) {
+                await outPutInter2Yaml(currentModuleId);
+              } else {
+                message.warning('请选择模块');
+              }
+            }}
+          >
+            <DownOutlined />
+            接口导出
+          </Button>,
+        ]}
+      />
+    </>
   );
 };
 

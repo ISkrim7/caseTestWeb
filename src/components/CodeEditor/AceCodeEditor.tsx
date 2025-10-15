@@ -1,3 +1,4 @@
+import { ProCard } from '@ant-design/pro-components';
 import 'ace-builds/src-noconflict/ace';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/mode-html';
@@ -18,8 +19,6 @@ interface selfProps {
   onChange?: (value: string) => void;
   _mode?: string;
   gutter?: boolean;
-  enableBasicAutocompletion?: boolean;
-  enableLiveAutocompletion?: boolean;
 }
 
 const AceCodeEditor: FC<selfProps> = (props) => {
@@ -38,21 +37,7 @@ const AceCodeEditor: FC<selfProps> = (props) => {
   const editorTheme = currentTheme === 'realDark' ? 'twilight' : 'xcode';
   const [wrapEnabled, setWrapEnabled] = useState(true);
   return (
-    // @param onChange - 当代码内容发生变化时的回调函数
-    // @param showGutter - 是否显示行号
-    // @param showPrintMargin - 是否显示打印边距
-    // @param wrapEnabled - 是否启用代码自动换行
-    // @param highlightActiveLine - 是否高亮当前行
-    // @param editorProps - 编辑器的其他属性设置
-    // @param setOptions - 编辑器的配置选项
-    <ProCard
-      bodyStyle={{ padding: 0 }}
-      // extra={
-      //   // <Space>
-      //   //   <a onClick={() => setWrapEnabled(!wrapEnabled)}>自动换行</a>
-      //   // </Space>
-      // }
-    >
+    <ProCard bodyStyle={{ padding: 0 }}>
       <AceEditor
         style={{ borderRadius: 20 }}
         theme={editorTheme}

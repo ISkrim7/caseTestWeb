@@ -1,5 +1,6 @@
+import { useModel } from '@@/exports';
 import { HolderOutlined } from '@ant-design/icons';
-import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+import { DndContext, useDroppable, type DragEndEvent } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
@@ -21,8 +22,6 @@ const RowContext = React.createContext<{
   setActivatorNodeRef?: (element: HTMLElement | null) => void;
   listeners?: any;
 }>({});
-//const Index: FC<ISelfProps> = (props) => {
-//const { items, setItems, dragEndFunc, disabled = false } = props;
 
 const DragHandle = () => {
   const { setActivatorNodeRef, listeners } = useContext(RowContext);
@@ -73,8 +72,22 @@ const SortableRow: FC<{ id: string; children: React.ReactNode }> = ({
   );
 };
 
-const MyDraggable: FC<ISelfProps> = ({ items, setItems, dragEndFunc }) => {
+const MyDraggable: FC<ISelfProps> = ({
+  items,
+  setItems,
+  dragEndFunc,
+  disabled = false,
+}) => {
+  const { initialState } = useModel('@@initialState');
+  const currentTheme = initialState?.theme || 'light';
+
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: 'droppable',
+    disabled,
+  });
+
   const handleDragEnd = (event: DragEndEvent) => {
+    if (disabled) return;
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = items.findIndex((item) => item.id === active.id);
@@ -85,13 +98,45 @@ const MyDraggable: FC<ISelfProps> = ({ items, setItems, dragEndFunc }) => {
     }
   };
 
+  const getContainerStyle = (): React.CSSProperties => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
+    padding: 10,
+    borderRadius: 10,
+    border: items.length === 0 ? 'none' : '1px solid #e0e0e0',
+    transition: 'background-color 0.3s ease-in-out',
+    background: isOver
+      ? currentTheme === 'realDark'
+        ? '#887b58'
+        : '#d5e85d'
+      : currentTheme === 'realDark'
+      ? '#949494'
+      : '#f6eee3',
+  });
+
+  if (disabled) {
+    return (
+      <div style={getContainerStyle()}>
+        {items.map((item) => (
+          <div
+            key={item.id}
+            style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+          >
+            {item.content}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <SortableContext
-        items={items.map((item) => item.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div ref={setDroppableRef} style={getContainerStyle()}>
+        <SortableContext
+          items={items.map((item) => item.id)}
+          strategy={verticalListSortingStrategy}
+        >
           {items.map((item) => (
             <SortableRow key={item.id} id={item.id}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -100,57 +145,10 @@ const MyDraggable: FC<ISelfProps> = ({ items, setItems, dragEndFunc }) => {
               </div>
             </SortableRow>
           ))}
-        </div>
-      </SortableContext>
+        </SortableContext>
+      </div>
     </DndContext>
-
-    // return (
-    //   // @ts-ignore
-    //   <DragDropContext onDragEnd={onDragEnd}>
-    //     <Droppable droppableId="droppable" direction="vertical">
-    //       {(provided, snapshot) => (
-    //         <div
-    //           key={`${editorTheme}-${items}`} // 关键修复：添加key强制重新渲染
-    //           ref={provided.innerRef}
-    //           {...provided.droppableProps}
-    //           style={{
-    //             background: snapshot.isDraggingOver
-    //               ? currentTheme === 'realDark'
-    //                 ? '#887b58'
-    //                 : '#d5e85d'
-    //               : currentTheme === 'realDark'
-    //                 ? '#949494'
-    //                 : '#f6eee3',
-    //             padding: '10px',
-    //             borderRadius: '10px',
-    //             border: items.length === 0 ? 0 : '1px solid #e0e0e0',
-    //             // transition: 'background-color 0.2s ease',
-    //             transition: 'background-color 0.3s ease-in-out',
-    //           }}
-    //         >
-    //           {items.map((item, index) => (
-    //             <Draggable key={item.id} draggableId={item.id} index={index}>
-    //               {(provided) => (
-    //                 <div
-    //                   key={item.id}
-    //                   ref={provided.innerRef}
-    //                   {...provided.draggableProps}
-    //                   {...provided.dragHandleProps}
-    //                   style={{
-    //                     ...provided.draggableProps.style,
-    //                   }}
-    //                 >
-    //                   {item.content}
-    //                 </div>
-    //               )}
-    //             </Draggable>
-    //           ))}
-    //           {provided.placeholder}
-    //         </div>
-    //       )}
-    //     </Droppable>
-    //   </DragDropContext>
   );
 };
 
-export default Index;
+export default MyDraggable;

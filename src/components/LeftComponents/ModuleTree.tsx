@@ -42,7 +42,6 @@ type HandleAction = {
   title: string;
   key: number;
 };
-// 定义 Handle 类型
 type IHandle = {
   AddRoot: HandleAction;
   AddChild: HandleAction;
@@ -50,7 +49,6 @@ type IHandle = {
   RemoveModule: HandleAction;
 };
 
-// 修正 Handle 对象
 const Handle: IHandle = {
   AddRoot: { title: '新增模块', key: 1 },
   AddChild: { title: '新增子模块', key: 2 },
@@ -81,9 +79,7 @@ const ModuleTree: FC<IProps> = (props) => {
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<React.Key[]>(
     [],
   );
-  /**
-   * 查询module
-   */
+
   useEffect(() => {
     if (currentProjectId) {
       queryTreeModuleByProject(currentProjectId, moduleType).then(
@@ -108,9 +104,6 @@ const ModuleTree: FC<IProps> = (props) => {
     }
   };
 
-  /**
-   * 数渲染
-   */
   const TreeModule = useMemo(() => {
     const loop: any = (data: IModule[]) =>
       data.map((item: IModule) => {
@@ -147,19 +140,12 @@ const ModuleTree: FC<IProps> = (props) => {
     return loop(modules);
   }, [modules, searchValue]);
 
-  /**
-   * 刷新
-   */
   const handleReload = async () => {
     setReload(reload + 1);
   };
 
-  /**
-   * 拖拽排序
-   * @param info 拖拽信息
-   */
   const onDrop: TreeProps['onDrop'] = async (info) => {
-    // 计算新的排序位置
+    // 保留优化的拖拽排序逻辑
     const dragKey = info.dragNode.key;
     const dropKey = info.node.key;
     const dropToGap = info.dropToGap;
@@ -167,14 +153,10 @@ const ModuleTree: FC<IProps> = (props) => {
     const dropPosition =
       info.dropPosition - Number(dropPos[dropPos.length - 1]);
 
-    // 确定目标父模块ID
     const targetId = dropToGap ? null : dropKey;
-
-    // 确定新的排序位置
-    let new_order = 1; // 默认值设为1
+    let new_order = 1;
 
     if (dropToGap) {
-      // 从modules中查找对应节点的order值
       const getNodeOrder = (key: React.Key) => {
         const module = modules.find((m) => m.key === key);
         return module ? module.order : 1;
@@ -184,24 +166,19 @@ const ModuleTree: FC<IProps> = (props) => {
       const dropNodeOrder = getNodeOrder(info.node.key);
 
       if (dropPosition > 0) {
-        // 拖拽到节点下方
         new_order = dropNodeOrder + 1;
       } else {
-        // 拖拽到节点上方
         new_order = Math.max(1, dropNodeOrder - 1);
       }
 
-      // 确保拖动节点的顺序确实改变了
       if (new_order === dragNodeOrder) {
         new_order += 1;
       }
     } else {
-      // 作为子节点时，获取父节点的子节点数量作为顺序
       const childrenCount = info.node.children?.length || 0;
       new_order = childrenCount + 1;
     }
 
-    // 调用新的拖动排序API
     const { code } = await dropModule({
       id: dragKey,
       targetId: targetId,
@@ -212,6 +189,7 @@ const ModuleTree: FC<IProps> = (props) => {
       await handleReload();
     }
   };
+
   const menuItem = (node: IModule): MenuProps['items'] => {
     return [
       {
@@ -224,11 +202,10 @@ const ModuleTree: FC<IProps> = (props) => {
         },
         icon: <EditOutlined />,
       },
-      // 仅管理员显示删除选项
+      // 保留管理员权限检查
       ...(isAdmin
         ? [
             {
-              //{
               key: '2',
               label: <Text strong={true}>删除</Text>,
               onClick: async () => {
@@ -251,7 +228,6 @@ const ModuleTree: FC<IProps> = (props) => {
                 });
               },
               icon: <DeleteOutlined />,
-              //},
             },
           ]
         : []),
@@ -273,32 +249,31 @@ const ModuleTree: FC<IProps> = (props) => {
         <Text type={'secondary'} strong>
           {tree.title}
         </Text>
-        {/* 移除isAdmin整体判断，保留内部删除权限判断 */}
-        {/*{isAdmin && (*/}
-        <>
-          {currentModule && currentModule.key === tree.key ? (
-            <Space style={{ float: 'right' }}>
-              <PlusOutlined
-                onClick={async (event) => {
-                  event.stopPropagation();
-                  setCurrentModule(tree);
-                  setHandleModule(Handle.AddChild);
-                  setOpen(true);
-                }}
-              />
-              <Dropdown
-                menu={{ items: menuItem(tree) }}
-                trigger={['click', 'hover']}
-                placement="bottomRight"
-              >
-                <Text onClick={(e) => e.preventDefault()}>
-                  <MoreOutlined />
-                </Text>
-              </Dropdown>
-            </Space>
-          ) : null}
-        </>
-        {/*)}*/}
+        {isAdmin && (
+          <>
+            {currentModule && currentModule.key === tree.key && (
+              <Space style={{ float: 'right' }}>
+                <PlusOutlined
+                  onClick={async (event) => {
+                    event.stopPropagation();
+                    setCurrentModule(tree);
+                    setHandleModule(Handle.AddChild);
+                    setOpen(true);
+                  }}
+                />
+                <Dropdown
+                  menu={{ items: menuItem(tree) }}
+                  trigger={['click', 'hover']}
+                  placement="bottomRight"
+                >
+                  <Text onClick={(e) => e.preventDefault()}>
+                    <MoreOutlined />
+                  </Text>
+                </Dropdown>
+              </Space>
+            )}
+          </>
+        )}
       </div>
     );
   };
@@ -317,7 +292,6 @@ const ModuleTree: FC<IProps> = (props) => {
         (item, i, self): item is React.Key =>
           !!(item && self.indexOf(item) === i),
       );
-    console.log(newExpandedKeys);
     setExpandedKeys(newExpandedKeys);
     setAutoExpandParent(true);
   };
@@ -387,32 +361,31 @@ const ModuleTree: FC<IProps> = (props) => {
             placeholder="模块查询"
             width={'100%'}
             suffix={
-              //isAdmin && (
-              <Tooltip title={'点击可新建根模块。子模块需要在树上新建'}>
-                <a
-                  onClick={() => {
-                    setHandleModule(Handle.AddRoot);
-                    setCurrentModule(null);
-                    setOpen(true);
-                  }}
-                >
-                  <PlusOutlined style={{ color: 'black' }} />
-                </a>
-              </Tooltip>
-              //)
+              isAdmin && (
+                <Tooltip title={'点击可新建根模块。子模块需要在树上新建'}>
+                  <a
+                    onClick={() => {
+                      setHandleModule(Handle.AddRoot);
+                      setCurrentModule(null);
+                      setOpen(true);
+                    }}
+                  >
+                    <PlusOutlined style={{ color: 'black' }} />
+                  </a>
+                </Tooltip>
+              )
             }
             onChange={OnSearchChange}
           />
           <Tree
             showLine
-            //draggable={isAdmin} //admin 可拖动
-            draggable
-            blockNode //是否节点占据一行
+            draggable={isAdmin}
+            blockNode
             onExpand={(newExpandedKeys: React.Key[]) => {
               setExpandedKeys(newExpandedKeys);
               setAutoExpandParent(false);
             }}
-            onDrop={onDrop} //拖拽结束触发
+            onDrop={onDrop}
             expandedKeys={expandedKeys}
             autoExpandParent={autoExpandParent}
             defaultSelectedKeys={defaultSelectedKeys}

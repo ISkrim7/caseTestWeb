@@ -3,24 +3,29 @@ import { data2LabelValue } from '@/utils/somefunc';
 import { CloseOutlined, ProjectTwoTone } from '@ant-design/icons';
 import { ProCard } from '@ant-design/pro-components';
 import { Button, Select, Typography } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 const { Title } = Typography;
 
 interface IProps {
   currentProjectId?: number;
   projects: IProject[];
-  setCurrentProjectId: React.Dispatch<React.SetStateAction<number | undefined>>;
   onProjectChange: (projectId: number | undefined) => void;
-  onModuleChange: (moduleId: number) => void;
+  onModuleChange?: (moduleId: number) => void; // 可选属性
 }
 
 const ProjectSelect: FC<IProps> = ({
   currentProjectId,
   projects,
-  setCurrentProjectId,
   onProjectChange,
+  onModuleChange, // 添加缺失的解构
 }) => {
+  const handleClearProject = () => {
+    onProjectChange(undefined);
+    localStorage.removeItem('selectedProjectId');
+    onModuleChange?.(0); // 可选重置模块选择
+  };
+
   return (
     <>
       {currentProjectId ? (
@@ -28,12 +33,13 @@ const ProjectSelect: FC<IProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Title
               level={3}
-              onClick={() => onProjectChange(undefined)}
               style={{
                 marginLeft: 12,
                 marginBottom: 20,
                 marginRight: 8,
+                cursor: 'pointer',
               }}
+              onClick={handleClearProject} // 改为直接使用函数
             >
               <ProjectTwoTone style={{ marginRight: 10 }} />
               {projects.find((item) => item.id === currentProjectId)?.title}
@@ -41,10 +47,7 @@ const ProjectSelect: FC<IProps> = ({
             <Button
               type="text"
               icon={<CloseOutlined />}
-              onClick={() => {
-                setCurrentProjectId(undefined);
-                localStorage.removeItem('selectedProjectId');
-              }}
+              onClick={handleClearProject}
               style={{ color: '#ff4d4f' }}
             >
               选择项目
@@ -61,9 +64,8 @@ const ProjectSelect: FC<IProps> = ({
           placeholder={'请选择项目'}
           options={data2LabelValue(projects)}
           onChange={(value: number) => {
-            setCurrentProjectId(value);
-            localStorage.setItem('selectedProjectId', String(value));
             onProjectChange(value);
+            localStorage.setItem('selectedProjectId', String(value));
           }}
         />
       )}

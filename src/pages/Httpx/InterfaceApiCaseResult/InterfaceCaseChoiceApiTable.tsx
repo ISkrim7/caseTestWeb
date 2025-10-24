@@ -1,7 +1,8 @@
 import { IModuleEnum, IObjGet } from '@/api';
 import { pageInterApi } from '@/api/inter';
 import {
-  selectCommonApis2Case,
+  associationApis,
+  selectCommonAPI2ConditionAPI,
   selectCommonApisCopy2Case,
 } from '@/api/inter/interCase';
 import { addInterfaceGroupApis } from '@/api/inter/interGroup';
@@ -22,6 +23,7 @@ interface SelfProps {
   currentGroupId?: string;
   currentTaskId?: string;
   currentStepId?: number;
+  condition_id?: number;
   refresh?: (value?: number[]) => void;
 }
 
@@ -32,6 +34,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
   refresh,
   currentTaskId,
   currentStepId,
+  condition_id,
 }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number | undefined>(
@@ -146,10 +149,21 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
             <Button
               type={'primary'}
               onClick={async () => {
+                if (condition_id) {
+                  const { code, msg } = await selectCommonAPI2ConditionAPI({
+                    condition_id: condition_id,
+                    interface_id_list: selectedRowKeys as number[],
+                  });
+                  if (code === 0) {
+                    message.success(msg);
+                    refresh?.();
+                  }
+                  return;
+                }
                 if (currentCaseApiId) {
-                  const { code, msg } = await selectCommonApis2Case({
-                    caseId: currentCaseApiId,
-                    commonApis: selectedRowKeys as number[],
+                  const { code, msg } = await associationApis({
+                    interface_case_id: currentCaseApiId,
+                    interface_id_list: selectedRowKeys as number[],
                   });
                   if (code === 0) {
                     message.success(msg);

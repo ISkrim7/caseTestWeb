@@ -178,7 +178,7 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
   return (
     <div>
       {responses?.map((item: any, index: number) => {
-        if (item.groupId) {
+        if (item.is_group) {
           return (
             <ProCard
               key={index}
@@ -189,16 +189,34 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
               title={
                 <>
                   <Tag color={'blue'}>组</Tag>
-                  <Tag
-                    color={
-                      item.result?.toLowerCase() === 'error'
-                        ? '#f50'
-                        : '#87d068'
-                    }
-                  >
+                  <Tag color={'green'}>{`API (${item.groupAPINums})`}</Tag>
+                  <Tag color={item.result === false ? '#f50' : '#87d068'}>
                     {item.groupName}
                   </Tag>
-                  <Text type={'secondary'}>{setDesc(item.groupDesc)}</Text>
+                </>
+              }
+              headerBordered
+              collapsible
+              defaultCollapsed
+            >
+              <InterfaceApiResponseDetail responses={item.data} />
+            </ProCard>
+          );
+        } else if (item.is_condition) {
+          return (
+            <ProCard
+              key={index}
+              bodyStyle={{ padding: 10 }}
+              extra={tabExtra(item)}
+              bordered
+              style={{ borderRadius: '5px', marginTop: 5 }}
+              title={
+                <>
+                  <Tag color={'blue'}>IF</Tag>
+                  <Tag color={'green'}>{`API (${item.conditionAPINums})`}</Tag>
+                  <Tag color={item.result === false ? '#f50' : '#87d068'}>
+                    {item.conditionName}
+                  </Tag>
                 </>
               }
               headerBordered

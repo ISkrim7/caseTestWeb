@@ -30,7 +30,10 @@ const Index: FC<SelfProps> = (props) => {
   }, []);
 
   return (
-    <ProCard style={{ height: 'auto' }} bodyStyle={{ padding: 5 }}>
+    <ProCard
+      style={{ height: 'auto', width: '100%' }}
+      bodyStyle={{ padding: 5 }}
+    >
       {projects.length > 0 ? (
         <Space direction={'vertical'}>
           <ProjectSelect

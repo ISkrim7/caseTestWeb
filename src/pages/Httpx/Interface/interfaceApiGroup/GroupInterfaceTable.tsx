@@ -1,11 +1,13 @@
 import { queryInterfaceGroupApis } from '@/api/inter/interGroup';
+import MyDrawer from '@/components/MyDrawer';
 import MyProTable from '@/components/Table/MyProTable';
+import InterfaceApiDetail from '@/pages/Httpx/Interface/InterfaceApiDetail';
 import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { queryData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Tag } from 'antd';
-import { FC, useCallback, useRef } from 'react';
+import { FC, useCallback, useRef, useState } from 'react';
 
 interface SelfProps {
   groupId: number;
@@ -14,6 +16,10 @@ interface SelfProps {
 const GroupInterfaceTable: FC<SelfProps> = (props) => {
   const { groupId } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
+
+  const [showAPIDetail, setShowAPIDetail] = useState(false);
+  const [currentApiId, setCurrentApiId] = useState<number>();
+
   const fetchInterface = useCallback(async () => {
     if (groupId) {
       const { code, data } = await queryInterfaceGroupApis(groupId);
@@ -30,9 +36,10 @@ const GroupInterfaceTable: FC<SelfProps> = (props) => {
       render: (_, record) => {
         return (
           <a
-            onClick={() =>
-              window.open(`/interface/interApi/detail/interId=${record.id}`)
-            }
+            onClick={() => {
+              setCurrentApiId(record.id);
+              setShowAPIDetail(true);
+            }}
           >
             {record.uid}
           </a>
@@ -78,6 +85,14 @@ const GroupInterfaceTable: FC<SelfProps> = (props) => {
 
   return (
     <>
+      <MyDrawer
+        width={'75%'}
+        name={''}
+        open={showAPIDetail}
+        setOpen={setShowAPIDetail}
+      >
+        <InterfaceApiDetail interfaceId={currentApiId} callback={() => {}} />;
+      </MyDrawer>
       <MyProTable
         columns={columns}
         search={false}

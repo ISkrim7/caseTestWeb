@@ -1,27 +1,35 @@
 import { IModuleEnum } from '@/api';
 import {
   baseInfoApiCase,
+  initAPICondition,
   insertApiCase,
-  queryApisByCaseId,
-  reorderApis2Case,
+  queryContentsByCaseId,
+  reorderCaseContents,
   runApiCaseBack,
   setApiCase,
 } from '@/api/inter/interCase';
-import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
 import ApiCaseBaseForm from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/ApiCaseBaseForm';
-import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
+import CaseContentCollapsible from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CaseContentCollapsible';
 import InterfaceApiCaseVars from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/InterfaceApiCaseVars';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
-import { IInterfaceAPI } from '@/pages/Httpx/types';
+import { IInterfaceCaseContent } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
-import { ArrowRightOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import {
+  AlignLeftOutlined,
+  ArrowRightOutlined,
+  BranchesOutlined,
+  FieldTimeOutlined,
+  PlayCircleOutlined,
+  SelectOutlined,
+  UngroupOutlined,
+} from '@ant-design/icons';
 import { ProCard, ProForm } from '@ant-design/pro-components';
 import {
   Button,
@@ -32,38 +40,36 @@ import {
   Form,
   MenuProps,
   message,
-  Space,
   Tabs,
   TabsProps,
 } from 'antd';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
 
 const Index = () => {
   const { caseApiId } = useParams<{ caseApiId: string }>();
   const [baseForm] = Form.useForm();
-  const topRef = useRef<HTMLElement>(null);
-  const [apis, setApis] = useState<any[]>([]);
-  const [step, setStep] = useState<number>(0);
+  const [caseContentElement, setCaseContentElement] = useState<any[]>([]);
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
-  const [apiModuleEnum, setAPIModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentStatus, setCurrentStatus] = useState(1);
-  const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
+
+  const [caseContents, setCaseContents] = useState<IInterfaceCaseContent[]>([]);
+  const [caseContentsStepLength, setCaseContentsStepLength] =
+    useState<number>(0);
+
   const [editCase, setEditCase] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
   const [choiceOpen, setChoiceOpen] = useState(false);
   const [choiceGroupOpen, setChoiceGroupOpen] = useState(false);
-  const [addButtonDisabled, setAddButtonDisabled] = useState<boolean>(false);
-  const [apiEnvs, setApiEnvs] = useState<
-    { label: string; value: number | null }[]
-  >([]);
+  const [reloadResult, setReloadResult] = useState(0);
+
   useEffect(() => {
     if (caseApiId) {
       Promise.all([
         baseInfoApiCase(caseApiId),
-        queryApisByCaseId(caseApiId),
+        queryContentsByCaseId(caseApiId),
       ]).then(([baseInfo, apisInfo]) => {
         if (baseInfo.code === 0) {
           baseForm.setFieldsValue(baseInfo.data);
@@ -71,7 +77,7 @@ const Index = () => {
           setCurrentModuleId(baseInfo.data.module_id);
         }
         if (apisInfo.code === 0) {
-          setQueryApis(apisInfo.data);
+          setCaseContents(apisInfo.data);
         }
       });
     } else {
@@ -83,48 +89,37 @@ const Index = () => {
     if (currentProjectId) {
       Promise.all([
         fetchModulesEnum(currentProjectId, ModuleEnum.API_CASE, setModuleEnum),
-        fetchModulesEnum(currentProjectId, ModuleEnum.API, setAPIModuleEnum),
-        queryEnvByProjectIdFormApi(currentProjectId, setApiEnvs, true),
       ]).then();
     }
   }, [currentProjectId]);
 
   useEffect(() => {
-    if (queryApis && apiModuleEnum && apiEnvs) {
-      setStep(queryApis.length);
-      const init = queryApis.map((item, index) => ({
+    if (caseContents) {
+      setCaseContentsStepLength(caseContents.length);
+      const init = caseContents.map((item, index) => ({
         id: index,
         api_Id: item.id,
         content: (
-          <CollapsibleApiCard
-            apiEnvs={apiEnvs}
-            apiModule={apiModuleEnum}
+          <CaseContentCollapsible
             moduleId={currentModuleId}
             projectId={currentProjectId}
             step={index + 1}
             collapsible={true}
-            refresh={refresh}
-            interfaceApiInfo={item}
-            caseApiId={caseApiId}
+            callback={refresh}
+            caseContent={item}
+            caseId={parseInt(caseApiId!)}
           />
         ),
       }));
-      setApis(init);
+      setCaseContentElement(init);
     }
-  }, [queryApis, apiEnvs, apiModuleEnum, caseApiId]); // 确保所有相关变量在依赖数组中
+  }, [caseContents]); // 确保所有相关变量在依赖数组中
 
-  // 使用 useEffect 确保在 apis 更新后执行滚动操作
-  useEffect(() => {
-    if (apis.length > 0) {
-      topRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [apis]); // 监听 apis 更新
-
+  // 使用 useEffect 确保在 caseContentElement 更新后执行滚动操作
   const refresh = async () => {
     setEditCase(editCase + 1);
     setChoiceOpen(false);
     setChoiceGroupOpen(false);
-    setAddButtonDisabled(false);
   };
 
   /**
@@ -155,6 +150,7 @@ const Index = () => {
       if (key === '1') {
         runApiCaseBack(caseApiId).then(async ({ code }) => {
           if (code === 0) {
+            setReloadResult(reloadResult + 1);
             message.success('后台运行中。。');
           }
         });
@@ -162,11 +158,6 @@ const Index = () => {
         setRunOpen(true);
       }
     }
-  };
-
-  const onAddStepClick: MenuProps['onClick'] = (e) => {
-    const { key } = e;
-    console.log(key);
   };
 
   const DetailExtra: FC<{ currentStatus: number }> = ({ currentStatus }) => {
@@ -229,77 +220,70 @@ const Index = () => {
     }
   };
   const onDragEnd = (reorderedUIContents: any[]) => {
-    setApis(reorderedUIContents);
+    setCaseContentElement(reorderedUIContents);
     if (caseApiId) {
       const reorderData = reorderedUIContents.map((item) => item.api_Id);
-      reorderApis2Case({ caseId: caseApiId, apiIds: reorderData }).then(
-        async ({ code }) => {
-          if (code === 0) {
-            console.log('reorder success');
-            await refresh();
-          }
-        },
-      );
+      reorderCaseContents({
+        case_id: caseApiId,
+        content_step_order: reorderData,
+      }).then(async ({ code }) => {
+        if (code === 0) {
+          console.log('reorder success');
+          await refresh();
+        }
+      });
     }
-  };
-  const AddEmptyApiForm = async () => {
-    setAddButtonDisabled(true);
-    const currStep = step + 1;
-    setStep(currStep);
-    setApis((prev) => [
-      ...prev,
-      {
-        id: currStep,
-        content: (
-          <CollapsibleApiCard
-            apiEnvs={apiEnvs}
-            top={topRef}
-            step={currStep}
-            collapsible={false}
-            refresh={refresh}
-            caseApiId={caseApiId}
-            moduleId={currentModuleId}
-            projectId={currentProjectId}
-          />
-        ),
-      },
-    ]);
   };
 
   const ApisCardExtra: FC<{ current: number }> = ({ current }) => {
     switch (current) {
       case 1:
         return (
-          <Space>
-            <Button type={'primary'} onClick={() => setChoiceGroupOpen(true)}>
-              Choice Group
-            </Button>
-            <Button type={'primary'} onClick={() => setChoiceOpen(true)}>
-              Choice API
-            </Button>
-            <Button
-              type={'primary'}
-              disabled={addButtonDisabled}
-              onClick={AddEmptyApiForm}
-            >
-              Add API
-            </Button>
-            {/*<Dropdown.Button*/}
-            {/*  menu={{*/}
-            {/*    items: [*/}
-            {/*      {*/}
-            {/*        key: 'wait',*/}
-            {/*        label: '等待',*/}
-            {/*        icon: <FieldTimeOutlined style={{ color: 'orange' }} />,*/}
-            {/*      },*/}
-            {/*    ],*/}
-            {/*    onClick: onAddStepClick,*/}
-            {/*  }}*/}
-            {/*  icon={<AlignLeftOutlined />}*/}
-            {/*>*/}
-            {/*  Add Step*/}
-            {/*</Dropdown.Button>*/}
-          </Space>
+          <Dropdown.Button
+            type={'primary'}
+            menu={{
+              items: [
+                {
+                  key: 'choice_group',
+                  label: '选择公共组',
+                  icon: <UngroupOutlined style={{ color: 'blue' }} />,
+                  onClick: () => setChoiceGroupOpen(true),
+                },
+                {
+                  key: 'choice_api',
+                  label: '选择公共接口',
+                  icon: <SelectOutlined style={{ color: 'blue' }} />,
+                  onClick: () => setChoiceOpen(true),
+                },
+                {
+                  type: 'divider',
+                },
+                {
+                  key: 'add_condition',
+                  label: '添加条件',
+                  icon: <BranchesOutlined style={{ color: 'orange' }} />,
+                  onClick: async () => {
+                    if (caseApiId) {
+                      const { code } = await initAPICondition({
+                        interface_case_id: parseInt(caseApiId),
+                      });
+                      if (code === 0) {
+                        await refresh();
+                      }
+                    }
+                  },
+                },
+                {
+                  key: 'wait',
+                  label: '等待',
+                  icon: <FieldTimeOutlined style={{ color: 'orange' }} />,
+                },
+              ],
+            }}
+            icon={<AlignLeftOutlined />}
+          >
+            添加
+          </Dropdown.Button>
         );
       default:
         return null;
@@ -314,15 +298,15 @@ const Index = () => {
     },
     {
       key: '2',
-      label: `API (${apis.length})`,
+      label: `STEP (${caseContentsStepLength})`,
       children: (
         <>
-          {apis.length === 0 ? (
+          {caseContentElement.length === 0 ? (
             <Empty />
           ) : (
             <DnDDraggable
-              items={apis}
-              setItems={setApis}
+              items={caseContentElement}
+              setItems={setCaseContentElement}
               orderFetch={onDragEnd}
             />
           )}
@@ -332,10 +316,7 @@ const Index = () => {
   ];
 
   return (
-    <ProCard
-      split={'horizontal'}
-      extra={<DetailExtra currentStatus={currentStatus} />}
-    >
+    <>
       <MyDrawer
         name={'测试结果'}
         width={'80%'}
@@ -361,31 +342,41 @@ const Index = () => {
           refresh={refresh}
         />
       </MyDrawer>
-      <ProCard>
-        <ProForm
-          disabled={currentStatus === 1}
-          form={baseForm}
-          submitter={false}
-        >
-          <ApiCaseBaseForm
-            setCurrentProjectId={setCurrentProjectId}
-            setCurrentModuleId={setCurrentModuleId}
-            moduleEnum={moduleEnum}
+      <ProCard
+        split={'horizontal'}
+        extra={<DetailExtra currentStatus={currentStatus} />}
+      >
+        <ProCard>
+          <ProForm
+            disabled={currentStatus === 1}
+            form={baseForm}
+            submitter={false}
+          >
+            <ApiCaseBaseForm
+              setCurrentProjectId={setCurrentProjectId}
+              setCurrentModuleId={setCurrentModuleId}
+              moduleEnum={moduleEnum}
+            />
+          </ProForm>
+        </ProCard>
+        <ProCard extra={<ApisCardExtra current={currentStatus} />}>
+          <Tabs
+            defaultActiveKey={'2'}
+            defaultValue={'2'}
+            size={'large'}
+            type={'card'}
+            items={APIStepItems}
           />
-        </ProForm>
+        </ProCard>
+        {caseApiId ? (
+          <InterfaceApiCaseResultTable
+            apiCaseId={caseApiId}
+            reload={reloadResult}
+          />
+        ) : null}
+        <FloatButton.BackTop />
       </ProCard>
-      <ProCard extra={<ApisCardExtra current={currentStatus} />}>
-        <Tabs
-          defaultActiveKey={'2'}
-          defaultValue={'2'}
-          size={'large'}
-          type={'card'}
-          items={APIStepItems}
-        />
-      </ProCard>
-      {caseApiId ? <InterfaceApiCaseResultTable apiCaseId={caseApiId} /> : null}
-      <FloatButton.BackTop />
-    </ProCard>
+    </>
   );
 };
 

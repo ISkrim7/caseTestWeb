@@ -10,27 +10,20 @@ import {
 import React, { FC } from 'react';
 
 interface IProps {
-  addFromCase: boolean;
-  addFromGroup: boolean;
+  hidden: boolean;
   currentMode: number;
   setCurrentProjectId: React.Dispatch<React.SetStateAction<number | undefined>>;
   moduleEnum: IModuleEnum[];
 }
 
 const ApiBaseForm: FC<IProps> = (props) => {
-  const {
-    addFromCase,
-    addFromGroup,
-    moduleEnum,
-    setCurrentProjectId,
-    currentMode,
-  } = props;
+  const { hidden, moduleEnum, setCurrentProjectId, currentMode } = props;
   const { API_LEVEL_SELECT, API_STATUS_SELECT } = CONFIG;
   const { initialState } = useModel('@@initialState');
   const projects = initialState?.projects || [];
 
   return (
-    <ProCard hidden={addFromCase || addFromGroup}>
+    <ProCard hidden={hidden}>
       <ProForm.Group>
         <ProFormSelect
           disabled={currentMode === 1}

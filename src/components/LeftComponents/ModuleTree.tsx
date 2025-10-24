@@ -326,7 +326,7 @@ const ModuleTree: FC<IProps> = (props) => {
       />
 
       {modules.length > 0 ? (
-        <Space direction={'vertical'} size={'middle'}>
+        <Space direction={'vertical'} size={'middle'} style={{ width: '100%' }}>
           <Search
             enterButton
             variant={'filled'}
@@ -352,6 +352,7 @@ const ModuleTree: FC<IProps> = (props) => {
           />
           <Tree
             showLine
+            style={{ width: 'auto' }}
             draggable={isAdmin} //admin 可拖动
             blockNode //是否节点占据一行
             onExpand={(newExpandedKeys: React.Key[]) => {

@@ -10,7 +10,7 @@ import {
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
-import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
+import GroupApiCollapsibleCard from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiCollapsibleCard';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
 import {
@@ -41,13 +41,11 @@ const Index = () => {
   const [currentStatus, setCurrentStatus] = useState(1);
   const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
   const [choiceOpen, setChoiceOpen] = useState(false);
-  const [stepApiIndex, setStepApiIndex] = useState<number>(0);
   const { initialState } = useModel('@@initialState');
   const projects = initialState?.projects || [];
   const [tryResponses, setTryResponses] = useState<ITryResponseInfo[]>([]);
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
-  const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [reload, setReload] = useState(0);
   const [apiEnvs, setApiEnvs] = useState<
     { label: string; value: number | null }[]
@@ -75,7 +73,6 @@ const Index = () => {
         if (code === 0) {
           groupForm.setFieldsValue(data);
           setCurrentProjectId(data.project_id);
-          setCurrentModuleId(data.module_id);
           setCurrentStatus(1);
         }
       });
@@ -91,22 +88,15 @@ const Index = () => {
 
   useEffect(() => {
     if (queryApis && moduleEnum && apiEnvs) {
-      setStepApiIndex(queryApis.length);
       setApisContent(
         queryApis.map((item, index) => ({
           id: (index + 1).toString(),
           api_Id: item.id,
           content: (
-            <CollapsibleApiCard
+            <GroupApiCollapsibleCard
               step={index + 1}
-              apiEnvs={apiEnvs}
-              apiModule={moduleEnum}
-              collapsible={true}
-              refresh={handleReload}
               interfaceApiInfo={item}
-              groupId={groupId}
-              moduleId={currentModuleId}
-              projectId={currentProjectId}
+              groupId={groupId!}
             />
           ),
         })),
@@ -146,33 +136,11 @@ const Index = () => {
     }
   };
 
-  const AddEmptyApiForm = () => {
-    const currStep = stepApiIndex + 1;
-    setStepApiIndex(currStep);
-    setApisContent((prev) => [
-      ...prev,
-      {
-        id: currStep.toString(),
-        content: (
-          <CollapsibleApiCard
-            apiEnvs={apiEnvs}
-            step={currStep}
-            collapsible={false}
-            refresh={handleReload}
-            projectId={currentProjectId}
-            moduleId={currentModuleId}
-            groupId={groupId}
-          />
-        ),
-      },
-    ]);
-  };
-
   const TryGroup = async () => {
     if (groupId) {
       setShowTryResponses(true);
       setShowTryResponsesLoading(true);
-      const { code, data, msg } = await tryInterfaceGroup(groupId);
+      const { code, data } = await tryInterfaceGroup(groupId);
       if (code === 0) {
         setTryResponses(data);
         setShowTryResponsesLoading(false);
@@ -229,9 +197,6 @@ const Index = () => {
               Choice API
             </Button>
             <Divider type={'vertical'} />
-            <Button type={'primary'} onClick={AddEmptyApiForm}>
-              Add API
-            </Button>
           </>
         );
       default:

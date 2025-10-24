@@ -9,12 +9,13 @@ import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/I
 import { IInterfaceCaseResult } from '@/pages/Httpx/types';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
-import { Button, Divider, message, Space, Tag } from 'antd';
-import { FC, useCallback, useRef, useState } from 'react';
+import { Button, message, Space, Tag } from 'antd';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   apiCaseId?: number | string;
   taskResultId?: number | string;
+  reload?: number;
 }
 
 const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
@@ -22,6 +23,22 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
   const { apiCaseId, taskResultId } = props;
   const [open, setOpen] = useState(false);
   const [currentCaseResultId, setCurrentCaseResultId] = useState<number>();
+  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [failOnly, setFailOnly] = useState(false);
+
+  useEffect(() => {
+    if (failOnly) {
+      setDataSource(dataSource.filter((item) => item.result === 'ERROR'));
+    } else {
+      actionRef.current?.reload();
+    }
+  }, [failOnly]);
+
+  useEffect(() => {
+    if (props.reload) {
+      actionRef.current?.reload();
+    }
+  }, [props.reload]);
 
   const fetchResults = useCallback(
     async (params: any, sort: any) => {
@@ -34,18 +51,12 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
         ? taskResultId
         : undefined;
       const { code, data } = await pageInterCaseResult(searchData);
+      setDataSource(data.items);
       return pageData(code, data);
     },
     [apiCaseId, taskResultId],
   );
   const columns: ProColumns<IInterfaceCaseResult>[] = [
-    {
-      title: '结果ID',
-      dataIndex: 'uid',
-      key: 'uid',
-      width: '6%',
-      render: (_, record) => <Tag color={'blue'}>{record.uid}</Tag>,
-    },
     {
       title: '执行用例',
       dataIndex: 'interfaceCaseName',
@@ -89,10 +100,10 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
 
     {
       title: '执行时间',
-      dataIndex: 'startTime',
-      valueType: 'date',
+      dataIndex: 'create_time',
+      valueType: 'dateTime',
       key: 'startTime',
-      render: (_, record) => <Tag color={'blue'}>{record.startTime}</Tag>,
+      render: (_, record) => <Tag color={'blue'}>{record.create_time}</Tag>,
     },
     {
       title: '执行人',
@@ -106,7 +117,7 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
       render: (_, record) => (
         <>
           {record.status === 'OVER' ? (
-            <>
+            <Space>
               <a
                 onClick={() => {
                   setCurrentCaseResultId(record.id);
@@ -115,9 +126,12 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
               >
                 详情
               </a>
-              <Divider type={'vertical'} />
-              <a onClick={async () => removeCaseResult(record.uid)}>删除</a>
-            </>
+              {!taskResultId ? (
+                <a onClick={async () => await removeCaseResult(record.uid)}>
+                  删除
+                </a>
+              ) : null}
+            </Space>
           ) : null}
         </>
       ),
@@ -140,40 +154,46 @@ const InterfaceApiCaseResultTable: FC<SelfProps> = (props) => {
     }
   };
 
+  const toolBar = (
+    <>
+      {taskResultId ? (
+        <Button type={'primary'} onClick={() => setFailOnly(!failOnly)}>
+          只看失败
+        </Button>
+      ) : (
+        <Space>
+          <Button type={'primary'} onClick={removeCaseResults}>
+            Clear All
+          </Button>
+        </Space>
+      )}
+    </>
+  );
   return (
-    <ProCard
-      title={taskResultId ? '' : '调试历史'}
-      bordered={true}
-      style={{ marginTop: taskResultId ? 0 : 200, height: 'auto' }}
-      extra={
-        taskResultId ? null : (
-          <Space>
-            <Button type={'primary'} onClick={removeCaseResults}>
-              Clear All
-            </Button>
-          </Space>
-        )
-      }
-    >
+    <>
       <MyDrawer name={''} width={'80%'} open={open} setOpen={setOpen}>
         <InterfaceApiCaseResultDrawer
           currentCaseResultId={currentCaseResultId}
         />
       </MyDrawer>
-      <MyProTable
-        rowKey={'uid'}
-        actionRef={actionRef}
-        request={fetchResults}
-        search={false}
-        pagination={{
-          showQuickJumper: true,
-          defaultPageSize: 6,
-          showSizeChanger: true,
-        }}
-        columns={columns}
-        x={1000}
-      />
-    </ProCard>
+      <ProCard
+        title={taskResultId ? '' : '调试历史'}
+        bordered={true}
+        hoverable={true}
+        style={{ marginTop: taskResultId ? 0 : 200, height: 'auto' }}
+      >
+        <MyProTable
+          toolBarRender={() => [toolBar]}
+          rowKey={'uid'}
+          dataSource={dataSource}
+          actionRef={actionRef}
+          request={fetchResults}
+          search={false}
+          columns={columns}
+          x={1000}
+        />
+      </ProCard>
+    </>
   );
 };
 

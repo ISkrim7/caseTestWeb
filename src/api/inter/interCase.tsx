@@ -2,6 +2,8 @@ import { IObjGet, IPage, IResponse, ISearch } from '@/api';
 import {
   IInterfaceAPI,
   IInterfaceAPICase,
+  IInterfaceCaseCondition,
+  IInterfaceCaseContent,
   IInterfaceCaseResult,
   IInterfaceResultByCase,
   ITryResponseInfo,
@@ -95,11 +97,11 @@ export const addApi2Case = async (
  * @param data
  * @param opt
  */
-export const selectCommonApis2Case = async (
-  data: { caseId: number | string; commonApis: number[] },
+export const associationApis = async (
+  data: { interface_case_id: number | string; interface_id_list: number[] },
   opt?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/case/selectApis', {
+  return request<IResponse<null>>('/api/interface/case/associationApis', {
     method: 'POST',
     data: data,
     ...(opt || {}),
@@ -128,10 +130,10 @@ export const selectCommonApisCopy2Case = async (
  * @param opt
  */
 export const selectCommonGroups2Case = async (
-  data: { caseId: number | string; groupIds: number[] },
+  data: { interface_case_id: number | string; api_group_id_list: number[] },
   opt?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/case/selectGroups', {
+  return request<IResponse<null>>('/api/interface/case/associationApiGroups', {
     method: 'POST',
     data: data,
     ...(opt || {}),
@@ -139,29 +141,174 @@ export const selectCommonGroups2Case = async (
 };
 
 /**
- * 获取apis
+ * 选择公共Group 给 API
  * @param data
  * @param opt
  */
-export const queryApisByCaseId = async (
+export const selectCommonGroups2ConditionAPI = async (
+  data: { condition_api_id: number | string; group_id_list: number[] },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>('/api/interface/case/condition/addGroups', {
+    method: 'POST',
+    data: data,
+    ...(opt || {}),
+  });
+};
+/**
+ * 选择公共api 给 API
+ * @param data
+ * @param opt
+ */
+export const selectCommonAPI2ConditionAPI = async (
+  data: { condition_id: number | string; interface_id_list: number[] },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>(
+    '/api/interface/case/conditionContent/associationAPI',
+    {
+      method: 'POST',
+      data: data,
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 重新排序
+ * @param data
+ * @param opt
+ */
+export const reorderAssociationAPI = async (
+  data: { condition_id: number | string; interface_id_list: number[] },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>(
+    '/api/interface/case/conditionContent/reorderAssociationAPI',
+    {
+      method: 'POST',
+      data: data,
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 解除关联
+ * @param data
+ * @param opt
+ */
+export const removerAssociationAPI = async (
+  data: { condition_id: number; interface_id: number },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<null>>(
+    '/api/interface/case/conditionContent/removeAssociationAPI',
+    {
+      method: 'POST',
+      data: data,
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 获取Case Contents
+ * @param data
+ * @param opt
+ */
+export const queryContentsByCaseId = async (
   data: string | number,
   opt?: IObjGet,
 ) => {
-  return request<IResponse<IInterfaceAPI[]>>('/api/interface/case/query/apis', {
-    method: 'GET',
-    params: { caseId: data },
-    ...(opt || {}),
-  });
+  return request<IResponse<IInterfaceCaseContent[]>>(
+    '/api/interface/case/queryContents',
+    {
+      method: 'GET',
+      params: { caseId: data },
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 获取条件 APIs
+ * @param data
+ * @param opt
+ */
+export const queryConditionAPI = async (
+  data: string | number,
+  opt?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceAPI[]>>(
+    '/api/interface/case/conditionContent/queryConditionAPI',
+    {
+      method: 'GET',
+      params: { content_condition_id: data },
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 更新条件
+ * @param data
+ * @param opt
+ */
+export const updateConditionContentInfo = async (data: any, opt?: IObjGet) => {
+  return request<IResponse<IInterfaceCaseCondition>>(
+    '/api/interface/case/updateConditionContent',
+    {
+      method: 'POST',
+      data,
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 更新条件
+ * @param data
+ * @param opt
+ */
+export const associationConditionAPIs = async (
+  data: { condition_id: number; interface_id_list: number[] },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<number>>(
+    '/api/interface/case/conditionContent/associationAPI',
+    {
+      method: 'POST',
+      data,
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * 获取条件
+ * @param data
+ * @param opt
+ */
+export const getConditionContentInfo = async (data: number, opt?: IObjGet) => {
+  return request<IResponse<IInterfaceCaseCondition>>(
+    '/api/interface/case/getConditionContent',
+    {
+      method: 'GET',
+      params: { condition_id: data },
+      ...(opt || {}),
+    },
+  );
 };
 
 /**
  * 重新排序
  */
-export const reorderApis2Case = async (
-  data: { caseId: number | string; apiIds: number[] },
+export const reorderCaseContents = async (
+  data: { case_id: number | string; content_step_order: number[] },
   opt?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/case/reorder/apis', {
+  return request<IResponse<null>>('/api/interface/case/reorderContents', {
     method: 'POST',
     data: data,
     ...(opt || {}),
@@ -171,11 +318,11 @@ export const reorderApis2Case = async (
 /**
  * 删除用例api
  */
-export const removeApi2Case = async (
-  data: { caseId: number | string; apiId?: number },
+export const removeCaseContentStep = async (
+  data: { case_id: number; content_step_id?: number },
   opt?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/case/remove/api', {
+  return request<IResponse<null>>('/api/interface/case/removeContentStep', {
     method: 'POST',
     data: data,
     ...(opt || {}),
@@ -226,11 +373,11 @@ export const copyApiCase = async (data: string | number, opt?: IObjGet) => {
 /**
  * 复制用例中api
  */
-export const copyApi2Case = async (
-  data: { caseId: number | string; apiId: number | string },
+export const copyCaseContentStep = async (
+  data: { case_id: number | string; content_id: number | string },
   opt?: IObjGet,
 ) => {
-  return request<IResponse<null>>('/api/interface/case/copyApi', {
+  return request<IResponse<null>>('/api/interface/case/copyContentStep', {
     method: 'POST',
     data: data,
     ...(opt || {}),
@@ -245,6 +392,23 @@ export const caseAPIResultDetail = async (data: string, opt?: IObjGet) => {
     `/api/interface/result/case/detail/${data}`,
     {
       method: 'GET',
+      ...(opt || {}),
+    },
+  );
+};
+
+/**
+ * case步骤开关
+ */
+export const switchCaseContent = async (
+  data: { id: number; enable: boolean },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceCaseContent>>(
+    '/api/interface/case/switchCaseContent',
+    {
+      method: 'POST',
+      data: data,
       ...(opt || {}),
     },
   );
@@ -413,4 +577,18 @@ export const queryVarsByCaseId = async (data: string, options?: IObjGet) => {
     data: { case_id: data },
     ...(options || {}),
   });
+};
+
+export const initAPICondition = async (
+  data: { interface_case_id: number },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IUIVars[]>>(
+    '/api/interface/case/associationCondition',
+    {
+      method: 'POST',
+      data,
+      ...(options || {}),
+    },
+  );
 };

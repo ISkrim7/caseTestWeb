@@ -5,8 +5,6 @@ import {
   tryInterApi,
   updateInterApiById,
 } from '@/api/inter';
-import { addApi2Case } from '@/api/inter/interCase';
-import { addInterfaceGroupApi } from '@/api/inter/interGroup';
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import MyDrawer from '@/components/MyDrawer';
 import MyTabs from '@/components/MyTabs';
@@ -41,59 +39,39 @@ import {
   FloatButton,
   Form,
   message,
+  Space,
   Spin,
   TabsProps,
   Tooltip,
 } from 'antd';
-import React, { Dispatch, FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { history, useParams } from 'umi';
 
 interface SelfProps {
-  addFromCase: boolean;
-  addFromGroup: boolean;
-  projectId?: number;
-  moduleId?: number;
-  setTitle?: Dispatch<React.SetStateAction<string>>;
-  setSubCardTitle?: Dispatch<React.SetStateAction<string>>;
-  caseApiId?: string;
-  groupId?: string;
-  interfaceApiInfo?: IInterfaceAPI;
-  refresh: () => void;
-  apiEnvs?: { label: string; value: number | null }[];
-  apiModule?: IModuleEnum[];
+  interfaceId?: number;
+  callback: () => void;
 }
 
-const Index: FC<SelfProps> = ({
-  addFromCase = false,
-  addFromGroup = false,
-  setTitle,
-  setSubCardTitle,
-  caseApiId,
-  groupId,
-  projectId,
-  moduleId,
-  refresh,
-  interfaceApiInfo,
-  apiEnvs,
-  apiModule,
-}) => {
+const Index: FC<SelfProps> = ({ interfaceId, callback }) => {
   const { interId } = useParams<{ interId: string }>();
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
   // 1详情 2新增 3 修改
   const [currentMode, setCurrentMode] = useState(1);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [envs, setEnvs] = useState<{ label: string; value: number | null }[]>(
-    apiEnvs || [],
+    [],
   );
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [tryLoading, setTryLoading] = useState(false);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
   const [currentInterAPIId, setCurrentInterAPIId] = useState<number>();
   const [openDoc, setOpenDoc] = useState(false);
+  const [hiddenBaseInfo, setHiddenBaseInfo] = useState(false);
 
-  // 初始化接口详情和项目列表
+  //路由用例详情打开
   useEffect(() => {
     if (interId) {
+      setHiddenBaseInfo(false);
       setCurrentMode(1);
       fetchInterfaceDetails(interId).then();
     } else {
@@ -101,32 +79,24 @@ const Index: FC<SelfProps> = ({
     }
   }, [interId]);
 
-  // 根据当前项目ID获取环境和用例部分
+  //用例详情Drawer打开
   useEffect(() => {
-    if (apiEnvs && apiModule) {
-      setEnvs(apiEnvs);
-      setModuleEnum(apiModule);
+    // 如果存在接口API信息，则设置当前模式、表单值、数据长度和当前接口API ID
+    if (interfaceId) {
+      setCurrentInterAPIId(interfaceId);
+      setHiddenBaseInfo(true); //不展示基础信息
+      setCurrentMode(1); // 设置当前模式为查看模式
+      fetchInterfaceDetails(interfaceId).then(); //请求接口信息
     }
-    if (currentProjectId && !apiEnvs && !apiModule) {
+  }, [interfaceId]);
+
+  // 根据API 所属项目 查询 ENV Module
+  useEffect(() => {
+    if (currentProjectId) {
       queryEnvByProjectIdFormApi(currentProjectId, setEnvs, true).then();
       fetchModulesEnum(currentProjectId, ModuleEnum.API, setModuleEnum).then();
     }
-  }, [currentProjectId, apiEnvs, apiModule]);
-
-  // 根据接口API信息 form Case 设置表单值
-  useEffect(() => {
-    // 如果存在接口API信息，则设置当前模式、表单值、数据长度和当前接口API ID
-    if (interfaceApiInfo) {
-      setCurrentMode(1); // 设置当前模式为查看模式
-      interApiForm.setFieldsValue(interfaceApiInfo); // 设置表单值
-      setCurrentInterAPIId(interfaceApiInfo.id); // 设置当前接口API ID
-      setCurrentProjectId(interfaceApiInfo.project_id);
-    }
-    if (projectId && moduleId) {
-      interApiForm.setFieldValue('project_id', projectId);
-      interApiForm.setFieldValue('module_id', moduleId);
-    }
-  }, [interfaceApiInfo, projectId, moduleId]);
+  }, [currentProjectId]);
 
   /**
    * 对用例的新增与修改
@@ -137,48 +107,28 @@ const Index: FC<SelfProps> = ({
   const SaveOrUpdate = async () => {
     await interApiForm.validateFields();
     const values = interApiForm.getFieldsValue(true);
-    // 从用例中新增私有的API
-    values.is_common = addFromCase || addFromGroup ? 0 : 1;
-    let successHandler = ({
-      code,
-      msg,
-    }: {
-      code: number;
-      msg: string;
-      data: any;
-    }) => {
+    values.is_common = 1;
+    if (interId !== undefined || values.id !== undefined) {
+      //修改
+      const { code, msg, data } = await updateInterApiById(values);
       if (code === 0) {
         message.success(msg);
         setCurrentMode(1);
         return true;
       }
-      return false;
-    };
-    if (interId !== undefined || values.id !== undefined) {
-      //修改
-      const { code, msg, data } = await updateInterApiById(values);
-      if (successHandler({ code, msg, data })) {
-        return;
-      }
     } else {
       //新增
       const { code, msg, data } = await insertInterApi(values);
-      if (!successHandler({ code, msg, data })) {
-        return;
-      }
-      // 添加到Case中
-      if (caseApiId && data) {
-        await addApi2Case({ caseId: caseApiId, apiId: data.id });
-        refresh();
-      } else if (groupId && data) {
-        await addInterfaceGroupApi({ groupId: groupId, apiId: data.id });
-        refresh();
-      } else {
+      if (code === 0) {
         history.push(`/interface/interApi/detail/interId=${data.id}`);
       }
     }
   };
 
+  /**
+   * 查询接口喜信息
+   * @param id
+   */
   const fetchInterfaceDetails = async (id: string | number) => {
     const { code, data } = await detailInterApiById({ interfaceId: id });
     if (code === 0) {
@@ -186,6 +136,11 @@ const Index: FC<SelfProps> = ({
       setCurrentProjectId(data.project_id);
     }
   };
+
+  /**
+   * 接口 try
+   * @constructor
+   */
   const TryClick = async () => {
     setTryLoading(true);
     const interfaceId = interId || currentInterAPIId;
@@ -203,13 +158,11 @@ const Index: FC<SelfProps> = ({
 
   const DetailExtra: FC<{ currentMode: number }> = ({ currentMode }) => {
     switch (currentMode) {
-      //用例详情下 group详情下、公共api不展示编辑按钮
+      //用例详情 展示编辑按钮
       case 1:
         return (
           <>
-            {interId ||
-            ((caseApiId !== undefined || groupId !== undefined) &&
-              interfaceApiInfo?.is_common === 0) ? (
+            {interId ? (
               <>
                 <Button
                   type={'primary'}
@@ -223,14 +176,10 @@ const Index: FC<SelfProps> = ({
             ) : null}
           </>
         );
+      //新增模式 显示保存按钮
       case 2:
         return (
           <>
-            {caseApiId && (
-              <Button onClick={refresh} type={'primary'}>
-                Cancel
-              </Button>
-            )}
             <Button
               onClick={SaveOrUpdate}
               style={{ marginLeft: 10 }}
@@ -241,9 +190,10 @@ const Index: FC<SelfProps> = ({
             </Button>
           </>
         );
+      //编辑
       case 3:
         return (
-          <>
+          <Space>
             <Button onClick={SaveOrUpdate} type={'primary'}>
               <SaveOutlined />
               Save
@@ -251,7 +201,7 @@ const Index: FC<SelfProps> = ({
             <Button style={{ marginLeft: 5 }} onClick={() => setCurrentMode(1)}>
               Cancel
             </Button>
-          </>
+          </Space>
         );
       default:
         return null;
@@ -273,11 +223,7 @@ const Index: FC<SelfProps> = ({
         <ApiDetailForm
           interApiForm={interApiForm}
           envs={envs}
-          setTitle={setTitle}
-          interfaceApiInfo={
-            interApiForm.getFieldsValue(true) || interfaceApiInfo
-          }
-          setSubCardTitle={setSubCardTitle}
+          interfaceApiInfo={interApiForm.getFieldsValue(true)}
           currentMode={currentMode}
         />
       ),
@@ -323,11 +269,7 @@ const Index: FC<SelfProps> = ({
   ];
 
   return (
-    <ProCard
-      bordered
-      split={'horizontal'}
-      extra={<DetailExtra currentMode={currentMode} />}
-    >
+    <>
       <MyDrawer
         name={'API Doc'}
         width={'40%'}
@@ -336,48 +278,51 @@ const Index: FC<SelfProps> = ({
       >
         <InterDoc />
       </MyDrawer>
-      <ProForm form={interApiForm} submitter={false}>
-        <ApiBaseForm
-          addFromCase={addFromCase}
-          addFromGroup={addFromGroup}
-          currentMode={currentMode}
-          setCurrentProjectId={setCurrentProjectId}
-          moduleEnum={moduleEnum}
-        />
-        <ProCard>
-          <MyTabs
-            defaultActiveKey={'2'}
-            items={TabItems}
-            tabBarExtraContent={
-              <Button
-                size={'middle'}
-                loading={tryLoading}
-                type={'primary'}
-                color={'danger'}
-                disabled={currentMode !== 1}
-                onClick={TryClick}
-              >
-                <SendOutlined />
-                Try
-              </Button>
-            }
+      <ProCard
+        bordered
+        split={'horizontal'}
+        extra={<DetailExtra currentMode={currentMode} />}
+      >
+        <ProForm form={interApiForm} submitter={false}>
+          <ApiBaseForm
+            hidden={hiddenBaseInfo}
+            currentMode={currentMode}
+            setCurrentProjectId={setCurrentProjectId}
+            moduleEnum={moduleEnum}
           />
-        </ProCard>
-      </ProForm>
-      <ProCard>
+          <ProCard>
+            <MyTabs
+              defaultActiveKey={'2'}
+              items={TabItems}
+              tabBarExtraContent={
+                <Button
+                  size={'middle'}
+                  loading={tryLoading}
+                  type={'primary'}
+                  color={'danger'}
+                  disabled={currentMode !== 1}
+                  onClick={TryClick}
+                >
+                  <SendOutlined />
+                  Try
+                </Button>
+              }
+            />
+          </ProCard>
+        </ProForm>
         <Spin tip={'接口请求中。。'} size={'large'} spinning={tryLoading}>
-          {responseInfo ? (
+          {responseInfo && (
             <InterfaceApiResponseDetail responses={responseInfo} />
-          ) : null}
+          )}
         </Spin>
+        <FloatButton
+          icon={<QuestionCircleOutlined />}
+          type="primary"
+          onClick={() => setOpenDoc(true)}
+          style={{ insetInlineEnd: 24 }}
+        />
       </ProCard>
-      <FloatButton
-        icon={<QuestionCircleOutlined />}
-        type="primary"
-        onClick={() => setOpenDoc(true)}
-        style={{ insetInlineEnd: 24 }}
-      />
-    </ProCard>
+    </>
   );
 };
 

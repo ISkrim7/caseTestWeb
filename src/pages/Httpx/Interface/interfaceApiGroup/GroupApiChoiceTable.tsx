@@ -1,5 +1,8 @@
 import { IModuleEnum, IObjGet } from '@/api';
-import { selectCommonGroups2Case } from '@/api/inter/interCase';
+import {
+  selectCommonGroups2Case,
+  selectCommonGroups2ConditionAPI,
+} from '@/api/inter/interCase';
 import { pageInterfaceGroup } from '@/api/inter/interGroup';
 import { queryProjectEnum } from '@/components/CommonFunc';
 import MyProTable from '@/components/Table/MyProTable';
@@ -15,11 +18,12 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 interface SelfProps {
   projectId?: number;
   currentCaseId: string;
+  condition_api_id?: number;
   refresh?: () => void;
 }
 
 const GroupApiChoiceTable: FC<SelfProps> = (props) => {
-  const { currentCaseId, refresh, projectId } = props;
+  const { currentCaseId, refresh, condition_api_id, projectId } = props;
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [selectProjectId, setSelectProjectId] = useState<number | undefined>(
     projectId,
@@ -119,10 +123,21 @@ const GroupApiChoiceTable: FC<SelfProps> = (props) => {
           <Button
             type={'primary'}
             onClick={async () => {
+              if (condition_api_id) {
+                const { code, msg } = await selectCommonGroups2ConditionAPI({
+                  condition_api_id: condition_api_id,
+                  group_id_list: selectedRowKeys as number[],
+                });
+                if (code === 0) {
+                  message.success(msg);
+                  refresh?.();
+                }
+                return;
+              }
               if (currentCaseId) {
                 const { code, msg } = await selectCommonGroups2Case({
-                  caseId: currentCaseId,
-                  groupIds: selectedRowKeys as number[],
+                  interface_case_id: currentCaseId,
+                  api_group_id_list: selectedRowKeys as number[],
                 });
                 if (code === 0) {
                   message.success(msg);

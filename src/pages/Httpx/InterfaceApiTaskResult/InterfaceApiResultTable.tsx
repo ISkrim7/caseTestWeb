@@ -5,8 +5,8 @@ import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/Inter
 import { ITryResponseInfo } from '@/pages/Httpx/types';
 import { pageData } from '@/utils/somefunc';
 import { ActionType, ProCard, ProColumns } from '@ant-design/pro-components';
-import { Tag } from 'antd';
-import { FC, useCallback, useRef, useState } from 'react';
+import { Button, Tag } from 'antd';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 interface SelfProps {
   taskResultId?: number | string;
@@ -16,6 +16,16 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [open, setOpen] = useState(false);
   const [responseInfo, setResponseInfo] = useState<ITryResponseInfo[]>();
+  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [failOnly, setFailOnly] = useState(false);
+
+  useEffect(() => {
+    if (failOnly) {
+      setDataSource(dataSource.filter((item) => item.result === 'ERROR'));
+    } else {
+      actionRef.current?.reload();
+    }
+  }, [failOnly]);
 
   const fetchResults = useCallback(
     async (params: any, sort: any) => {
@@ -26,6 +36,7 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
         sort: sort,
       };
       const { code, data } = await pageInterApiResult(searchData);
+      setDataSource(data.items);
       return pageData(code, data);
     },
     [taskResultId],
@@ -79,15 +90,16 @@ const InterfaceApiResultTable: FC<SelfProps> = ({ taskResultId }) => {
         <InterfaceApiResponseDetail responses={responseInfo} />
       </MyDrawer>
       <MyProTable
+        toolBarRender={() => [
+          <Button type={'primary'} onClick={() => setFailOnly(!failOnly)}>
+            只看失败
+          </Button>,
+        ]}
         rowKey={'uid'}
+        dataSource={dataSource}
         actionRef={actionRef}
         request={fetchResults}
         search={false}
-        pagination={{
-          showQuickJumper: true,
-          defaultPageSize: 6,
-          showSizeChanger: true,
-        }}
         columns={columns}
         x={1000}
       />

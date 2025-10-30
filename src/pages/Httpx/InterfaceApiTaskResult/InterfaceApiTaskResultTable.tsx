@@ -20,14 +20,14 @@ interface SelfProps {
 
 const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
-  const [isFormTaskDetail, setIsFromTaskDetail] = useState(false);
+  const [showSearch, setShowSearch] = useState(true);
   const [projectEnumMap, setProjectEnumMap] = useState<IObjGet>({});
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [selectProjectId, setSelectProjectId] = useState<number>();
   const [selectModuleId, setSelectModuleId] = useState<number>();
   useEffect(() => {
     if (apiCaseTaskId) {
-      setIsFromTaskDetail(true);
+      setShowSearch(false);
     } else {
       queryProjectEnum(setProjectEnumMap).then();
     }
@@ -116,7 +116,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
       title: '进度',
       key: 'progress',
       hideInSearch: true,
-      hideInTable: !isFormTaskDetail,
+      hideInTable: showSearch,
       dataIndex: 'progress',
       valueType: (item) => ({
         type: 'progress',
@@ -203,7 +203,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
   };
   const RemoveAllButton = (
     <>
-      {isFormTaskDetail ? (
+      {showSearch ? (
         <Button type={'primary'} onClick={removeTaskResults}>
           Remove All
         </Button>
@@ -219,7 +219,7 @@ const InterfaceApiTaskResultTable: FC<SelfProps> = ({ apiCaseTaskId }) => {
         rowKey={'uid'}
         actionRef={actionRef}
         request={fetchResults}
-        search={!isFormTaskDetail}
+        search={showSearch}
         toolBarRender={() => [RemoveAllButton]}
         pagination={{
           showQuickJumper: true,

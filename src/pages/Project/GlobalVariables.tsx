@@ -60,6 +60,7 @@ const GlobalVariables: FC<IProps> = ({ projectId }) => {
     },
     {
       title: 'creatorName',
+      editable: false,
       dataIndex: 'creatorName',
       render: (text) => {
         return <Tag color={'blue'}>{text}</Tag>;

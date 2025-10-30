@@ -46,6 +46,26 @@ export const pageInterApi = async (data: any, options?: IObjGet) => {
 };
 
 /**
+ * page api
+ * @param data
+ * @param options
+ */
+export const copyApiTo = async (
+  data: {
+    inter_id: number;
+    module_id: number;
+    project_id: number;
+  },
+  options?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceAPI>>('/api/interface/copy2Module', {
+    method: 'POST',
+    data: data,
+    ...(options || {}),
+  });
+};
+
+/**
  * 接口导出
  * @param moduleId
  * @param opt

@@ -43,6 +43,7 @@ import {
   FloatButton,
   Form,
   message,
+  Space,
   Spin,
   TabsProps,
   Tooltip,
@@ -64,6 +65,9 @@ interface SelfProps {
   refresh: () => void;
   apiEnvs?: { label: string; value: number | null }[];
   apiModule?: IModuleEnum[];
+  interfaceId?: number;
+  callback?: () => void;
+  hiddenBaseInfo?: boolean;
 }
 
 const Index: FC<SelfProps> = ({
@@ -79,6 +83,9 @@ const Index: FC<SelfProps> = ({
   interfaceApiInfo,
   apiEnvs,
   apiModule,
+  interfaceId,
+  callback,
+  hiddenBaseInfo = false,
 }) => {
   const { interId } = useParams<{ interId: string }>();
   const [interApiForm] = Form.useForm<IInterfaceAPI>();
@@ -111,6 +118,7 @@ const Index: FC<SelfProps> = ({
         interApiForm.setFieldValue('module_id', parseInt(moduleId));
       }
 
+      // 路由用例详情打开
       if (interId) {
         setCurrentMode(1);
         await fetchInterfaceDetails(interId);
@@ -121,6 +129,15 @@ const Index: FC<SelfProps> = ({
 
     initialize();
   }, [interId]);
+
+  // 用例详情Drawer打开
+  useEffect(() => {
+    if (interfaceId) {
+      setCurrentInterAPIId(interfaceId);
+      setCurrentMode(1); // 设置当前模式为查看模式
+      fetchInterfaceDetails(interfaceId).then(); //请求接口信息
+    }
+  }, [interfaceId]);
 
   // 根据当前项目ID获取环境和用例部分
   useEffect(() => {
@@ -175,10 +192,12 @@ const Index: FC<SelfProps> = ({
       }
       return false;
     };
+
     if (interId !== undefined || values.id !== undefined) {
       //修改
       const { code, msg, data } = await updateInterApiById(values);
       if (successHandler({ code, msg, data })) {
+        if (callback) callback();
         return;
       }
     } else {
@@ -190,10 +209,10 @@ const Index: FC<SelfProps> = ({
       // 添加到Case中
       if (caseApiId && data) {
         await addApi2Case({ caseId: caseApiId, apiId: data.id });
-        refresh();
+        if (refresh) refresh();
       } else if (groupId && data) {
         await addInterfaceGroupApi({ groupId: groupId, apiId: data.id });
-        refresh();
+        if (refresh) refresh();
       } else {
         history.push(`/interface/interApi/detail/interId=${data.id}`);
       }
@@ -207,6 +226,7 @@ const Index: FC<SelfProps> = ({
       setCurrentProjectId(data.project_id);
     }
   };
+
   const TryClick = async () => {
     setTryLoading(true);
     const interfaceId = interId || currentInterAPIId;
@@ -227,7 +247,7 @@ const Index: FC<SelfProps> = ({
       //用例详情下 group详情下、公共api不展示编辑按钮
       case 1:
         return (
-          <>
+          <Space>
             {/* 新增返回按钮 */}
             <Button
               onClick={() => history.back()}
@@ -250,11 +270,11 @@ const Index: FC<SelfProps> = ({
                 </Button>
               </>
             ) : null}
-          </>
+          </Space>
         );
       case 2:
         return (
-          <>
+          <Space>
             {caseApiId && (
               <Button onClick={refresh} type={'primary'}>
                 Cancel
@@ -268,11 +288,11 @@ const Index: FC<SelfProps> = ({
               <SaveOutlined />
               Save
             </Button>
-          </>
+          </Space>
         );
       case 3:
         return (
-          <>
+          <Space>
             <Button onClick={SaveOrUpdate} type={'primary'}>
               <SaveOutlined />
               Save
@@ -280,7 +300,7 @@ const Index: FC<SelfProps> = ({
             <Button style={{ marginLeft: 5 }} onClick={() => setCurrentMode(1)}>
               Cancel
             </Button>
-          </>
+          </Space>
         );
       default:
         return null;
@@ -338,20 +358,24 @@ const Index: FC<SelfProps> = ({
         <ApiAfterItems interApiForm={interApiForm} currentMode={currentMode} />
       ),
     },
-    ...(interId
+    ...(interId || interfaceId
       ? [
           {
             key: '6',
             label: '压力测试',
             icon: <LineChartOutlined />,
-            children: <InterPerf interfaceId={interId} />,
+            children: <InterPerf interfaceId={interId || interfaceId} />,
           },
-          {
-            key: '8',
-            label: 'Mock管理',
-            icon: <CodeOutlined />,
-            children: <MockRuleList interfaceId={interId} />,
-          },
+          ...(interId
+            ? [
+                {
+                  key: '8',
+                  label: 'Mock管理',
+                  icon: <CodeOutlined />,
+                  children: <MockRuleList interfaceId={interId} />,
+                },
+              ]
+            : []),
         ]
       : []),
   ];
@@ -377,6 +401,7 @@ const Index: FC<SelfProps> = ({
           currentMode={currentMode}
           setCurrentProjectId={setCurrentProjectId}
           moduleEnum={moduleEnum}
+          hidden={hiddenBaseInfo}
         />
         <ProCard>
           <MyTabs

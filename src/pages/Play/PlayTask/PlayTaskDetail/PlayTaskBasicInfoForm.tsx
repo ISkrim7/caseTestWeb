@@ -132,6 +132,8 @@ const PlayTaskBasicInfoForm: FC<Props> = ({ taskId }) => {
   return (
     <ProCard
       title={'基本信息'}
+      collapsible
+      style={{ padding: 40 }}
       extra={<TaskButtonExtra currentStatus={currentMode} />}
     >
       <ProForm form={tasKForm} disabled={currentMode === 1} submitter={false}>

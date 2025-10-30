@@ -1,4 +1,5 @@
 import { IObjGet, IPage, IResponse, ISearch } from '@/api';
+import { IInterfaceTaskResult } from '@/pages/Httpx/types';
 import { IPlayTaskResult, IUITask } from '@/pages/Play/componets/uiTypes';
 import { request } from '@@/plugin-request';
 
@@ -180,6 +181,25 @@ export const removePlayTaskResultById = async (
     params,
     ...(options || {}),
   });
+};
+
+/**
+ * 移除任务结果详情
+ * @param taskId
+ * @param options
+ */
+export const clearResultByTaskId = async (
+  taskId: string | number,
+  options?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceTaskResult>>(
+    '/api/play/task/clearTaskResult',
+    {
+      method: 'GET',
+      params: { taskId },
+      ...(options || {}),
+    },
+  );
 };
 
 /**

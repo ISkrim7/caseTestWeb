@@ -11,7 +11,7 @@ const Index = () => {
   return (
     <ProCard split={'horizontal'}>
       <PlayTaskBasicInfoForm taskId={taskId} />
-      <ProCard style={{ marginTop: 20 }}>
+      <ProCard style={{ marginTop: 20, padding: 0 }}>
         {taskId ? (
           <AssociationUICases currentTaskId={taskId} />
         ) : (
@@ -20,7 +20,7 @@ const Index = () => {
       </ProCard>
 
       {taskId && (
-        <ProCard style={{ marginTop: 20 }}>
+        <ProCard style={{ marginTop: 50, padding: 0 }}>
           <PlayTaskResultTable taskId={taskId} />
         </ProCard>
       )}

@@ -86,6 +86,7 @@ const Index: FC<SelfProps> = ({
       title: '自动执行',
       dataIndex: 'is_auto',
       key: 'is_auto',
+      hideInSearch: true,
       valueType: 'switch',
       render: (_, record) => (
         <Switch

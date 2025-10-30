@@ -42,6 +42,7 @@ type HandleAction = {
   title: string;
   key: number;
 };
+// 定义 Handle 类型
 type IHandle = {
   AddRoot: HandleAction;
   AddChild: HandleAction;
@@ -49,6 +50,7 @@ type IHandle = {
   RemoveModule: HandleAction;
 };
 
+// 修正 Handle 对象
 const Handle: IHandle = {
   AddRoot: { title: '新增模块', key: 1 },
   AddChild: { title: '新增子模块', key: 2 },
@@ -79,7 +81,9 @@ const ModuleTree: FC<IProps> = (props) => {
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState<React.Key[]>(
     [],
   );
-
+  /**
+   * 查询module
+   */
   useEffect(() => {
     if (currentProjectId) {
       queryTreeModuleByProject(currentProjectId, moduleType).then(
@@ -104,6 +108,9 @@ const ModuleTree: FC<IProps> = (props) => {
     }
   };
 
+  /**
+   * 数渲染
+   */
   const TreeModule = useMemo(() => {
     const loop: any = (data: IModule[]) =>
       data.map((item: IModule) => {
@@ -140,10 +147,17 @@ const ModuleTree: FC<IProps> = (props) => {
     return loop(modules);
   }, [modules, searchValue]);
 
+  /**
+   * 刷新
+   */
   const handleReload = async () => {
     setReload(reload + 1);
   };
 
+  /**
+   * 拖拽
+   * @param info
+   */
   const onDrop: TreeProps['onDrop'] = async (info) => {
     // 保留优化的拖拽排序逻辑
     const dragKey = info.dragNode.key;
@@ -184,12 +198,10 @@ const ModuleTree: FC<IProps> = (props) => {
       targetId: targetId,
       new_order: new_order,
     });
-
     if (code === 0) {
       await handleReload();
     }
   };
-
   const menuItem = (node: IModule): MenuProps['items'] => {
     return [
       {
@@ -353,7 +365,7 @@ const ModuleTree: FC<IProps> = (props) => {
       />
 
       {modules.length > 0 ? (
-        <Space direction={'vertical'} size={'middle'}>
+        <Space direction={'vertical'} size={'middle'} style={{ width: '100%' }}>
           <Search
             enterButton
             variant={'filled'}
@@ -379,13 +391,14 @@ const ModuleTree: FC<IProps> = (props) => {
           />
           <Tree
             showLine
-            draggable={isAdmin}
-            blockNode
+            style={{ width: 'auto' }}
+            draggable={isAdmin} //admin 可拖动
+            blockNode //是否节点占据一行
             onExpand={(newExpandedKeys: React.Key[]) => {
               setExpandedKeys(newExpandedKeys);
               setAutoExpandParent(false);
             }}
-            onDrop={onDrop}
+            onDrop={onDrop} //拖拽结束触发
             expandedKeys={expandedKeys}
             autoExpandParent={autoExpandParent}
             defaultSelectedKeys={defaultSelectedKeys}

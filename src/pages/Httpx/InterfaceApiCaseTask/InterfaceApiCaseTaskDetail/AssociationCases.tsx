@@ -156,6 +156,7 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
     <>
       <MyDrawer
         name={''}
+        width={'75%'}
         open={choiceApiCaseOpen}
         setOpen={setChoiceApiCaseOpen}
       >
@@ -168,7 +169,7 @@ const AssociationCases: FC<IInterfaceApiCaseTaskDetailProps> = ({
       <DragSortTable
         toolBarRender={() => [
           <Button type={'primary'} onClick={() => setChoiceApiCaseOpen(true)}>
-            Choice Api Cases
+            Choice Cases
           </Button>,
         ]}
         actionRef={actionRef}

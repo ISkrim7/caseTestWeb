@@ -1,5 +1,5 @@
 import { Drawer } from 'antd';
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 interface SelfProps {
   name: string | JSX.Element;
@@ -9,13 +9,16 @@ interface SelfProps {
   extra?: any;
   onClose?: () => void;
   height?: string | null;
+  loading?: boolean;
 }
 
 const Index: FC<SelfProps> = (props) => {
-  const { open, setOpen, name, height, width, onClose } = props;
+  const { open, setOpen, loading, name, height, width, onClose } = props;
 
   return (
     <Drawer
+      autoFocus
+      loading={loading}
       styles={{ body: { padding: 0 } }}
       open={open}
       destroyOnClose={true}

@@ -70,21 +70,28 @@ const Index = () => {
       style={{ height: 'auto' }}
       bodyStyle={{ height: 'auto', padding: 0 }}
     >
-      <Splitter>
+      <Splitter layout="horizontal">
         <Splitter.Panel
           key={`left-panel-${currentModuleId}`}
           collapsible={true}
-          defaultSize="20%"
+          defaultSize="10%"
           min="10%"
           max="30%"
           style={{ height: '100vh' }}
         >
-          <LeftComponents
-            moduleType={ModuleEnum.API}
-            currentProjectId={currentProjectId}
-            onProjectChange={onProjectChange}
-            onModuleChange={onModuleChange}
-          />
+          <Splitter layout="vertical">
+            <Splitter.Panel>
+              <LeftComponents
+                moduleType={ModuleEnum.API}
+                currentProjectId={currentProjectId}
+                onProjectChange={onProjectChange}
+                onModuleChange={onModuleChange}
+              />
+            </Splitter.Panel>
+            <Splitter.Panel>
+              <ProCard title="视图"></ProCard>
+            </Splitter.Panel>
+          </Splitter>
         </Splitter.Panel>
         <Splitter.Panel key="right-panel">
           <ProCard

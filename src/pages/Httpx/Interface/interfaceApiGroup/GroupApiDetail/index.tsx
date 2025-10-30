@@ -10,7 +10,7 @@ import {
 import { queryEnvByProjectIdFormApi } from '@/components/CommonFunc';
 import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
-import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
+import GroupApiCollapsibleCard from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiCollapsibleCard';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
 import InterfaceApiResponseDetail from '@/pages/Httpx/InterfaceApiResponse/InterfaceApiResponseDetail';
 import {
@@ -31,7 +31,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, Form, message, Modal } from 'antd';
+import { Button, Divider, Form, message, Modal, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
 
@@ -67,6 +67,7 @@ const Index = () => {
       });
     }
   }, []);
+
   const [tryResponses, setTryResponses] = useState<ITryResponseInfo[]>([]);
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number | undefined>(
@@ -79,6 +80,11 @@ const Index = () => {
   const [apiEnvs, setApiEnvs] = useState<
     { label: string; value: number | null }[]
   >([]);
+
+  const [showTryResponses, setShowTryResponses] = useState<boolean>(false);
+  const [showTryResponsesLoading, setShowTryResponsesLoading] =
+    useState<boolean>(false);
+
   const handleReload = async () => {
     setReload(reload + 1);
   };
@@ -158,22 +164,17 @@ const Index = () => {
           id: (index + 1).toString(),
           api_Id: item.id,
           content: (
-            <CollapsibleApiCard
+            <GroupApiCollapsibleCard
               step={index + 1}
-              apiEnvs={apiEnvs}
-              apiModule={moduleEnum}
-              collapsible={true}
-              refresh={handleReload}
               interfaceApiInfo={item}
-              groupId={groupId}
-              moduleId={currentModuleId}
-              projectId={currentProjectId}
+              groupId={groupId!}
             />
           ),
         })),
       );
     }
   }, [queryApis, moduleEnum, apiEnvs]);
+
   const saveBaseInfo = async () => {
     const values = await groupForm.validateFields();
     if (groupId) {
@@ -215,19 +216,6 @@ const Index = () => {
       }
     }
   };
-  const onDragEnd1 = (reorderedAPIContents: any[]) => {
-    setApisContent(reorderedAPIContents);
-    if (groupId) {
-      const reorderData = reorderedAPIContents.map((item) => item.api_Id);
-      reorderInterfaceGroupApis({ groupId: groupId, apiIds: reorderData }).then(
-        async ({ code }) => {
-          if (code === 0) {
-            console.log('reorder success');
-          }
-        },
-      );
-    }
-  };
 
   const [originalApisContent, setOriginalApisContent] = useState<any[]>([]);
   useEffect(() => {
@@ -238,16 +226,10 @@ const Index = () => {
           id: (index + 1).toString(),
           api_Id: item.id,
           content: (
-            <CollapsibleApiCard
+            <GroupApiCollapsibleCard
               step={index + 1}
-              apiEnvs={apiEnvs}
-              apiModule={moduleEnum}
-              collapsible={true}
-              refresh={handleReload}
               interfaceApiInfo={item}
-              groupId={groupId}
-              moduleId={currentModuleId}
-              projectId={currentProjectId}
+              groupId={groupId!}
             />
           ),
         })),
@@ -255,6 +237,7 @@ const Index = () => {
       setOriginalApisContent([...apisContent]); // 保存原始顺序
     }
   }, [queryApis, moduleEnum, apiEnvs]);
+
   const onDragEnd = async (reorderedAPIContents: any[]) => {
     Modal.confirm({
       title: '确认排序',
@@ -292,28 +275,21 @@ const Index = () => {
       ...prev,
       {
         id: currStep.toString(),
-        content: (
-          <CollapsibleApiCard
-            apiEnvs={apiEnvs}
-            step={currStep}
-            collapsible={false}
-            refresh={handleReload}
-            projectId={currentProjectId}
-            moduleId={currentModuleId}
-            groupId={groupId}
-          />
-        ),
+        content: <GroupApiCollapsibleCard step={currStep} groupId={groupId!} />,
       },
     ]);
   };
 
   const TryGroup = async () => {
     if (groupId) {
+      setShowTryResponses(true);
+      setShowTryResponsesLoading(true);
       const { code, data, msg } = await tryInterfaceGroup(groupId);
       if (code === 0) {
         console.log(data);
         message.success(msg);
         setTryResponses(data);
+        setShowTryResponsesLoading(false);
       }
     }
   };
@@ -390,8 +366,23 @@ const Index = () => {
       <MyDrawer name={''} open={choiceOpen} setOpen={setChoiceOpen}>
         <InterfaceCaseChoiceApiTable
           currentGroupId={groupId}
+          projectId={currentProjectId}
           refresh={handleReload}
         />
+      </MyDrawer>
+      <MyDrawer
+        name={'响应结果'}
+        width={'80%'}
+        open={showTryResponses}
+        setOpen={setShowTryResponses}
+      >
+        <Spin
+          tip={'接口请求中。。'}
+          size={'large'}
+          spinning={showTryResponsesLoading}
+        >
+          <InterfaceApiResponseDetail responses={tryResponses} />
+        </Spin>
       </MyDrawer>
       <ProCard
         extra={<DetailExtra currentStatus={currentStatus}></DetailExtra>}
@@ -459,14 +450,16 @@ const Index = () => {
           </ProFormGroup>
         </ProForm>
       </ProCard>
-      <ProCard extra={<ApisCardExtra current={currentStatus} />}>
+      <ProCard
+        style={{ padding: 0 }}
+        extra={<ApisCardExtra current={currentStatus} />}
+      >
         <DnDDraggable
           items={apisContent}
           setItems={setApisContent}
           orderFetch={onDragEnd}
         />
       </ProCard>
-      {tryResponses && <InterfaceApiResponseDetail responses={tryResponses} />}
     </ProCard>
   );
 };

@@ -24,6 +24,12 @@ export const ModuleEnum = {
 };
 
 export const CONFIG: IObjGet = {
+  InterfaceCaseContentType: {
+    1: { text: 'API', color: 'volcano' },
+    2: { text: 'GROUP', color: 'cyan' },
+    3: { text: 'IF', color: 'purple' },
+    4: { text: 'SCRIPT' },
+  },
   EXTRACT_TARGET_ENUM: {
     6: { text: 'Response.json' },
     8: { text: 'Response.text' },
@@ -70,6 +76,17 @@ export const CONFIG: IObjGet = {
     { label: '正常', value: 'NORMAL' },
     { label: '关闭', value: 'CLOSE' },
   ],
+  API_METHOD_ENUM: {
+    GET: { text: 'GET', color: '#67C23A' },
+    POST: { text: 'POST', color: '#e77316' },
+    PUT: { text: 'PUT', color: '#e77316' },
+    DELETE: { text: 'DELETE', color: '#fd3131' },
+    // PATCH: 'PATCH',
+    // HEAD: 'HEAD',
+    // OPTIONS: 'OPTIONS',
+    // TRACE: 'TRACE',
+    // CONNECT: 'CONNECT',
+  },
   API_LEVEL_ENUM: {
     P1: {
       text: 'P1',

@@ -33,6 +33,27 @@ export interface IInterfaceAPIRecord extends IBaseField {
   response: any;
 }
 
+export interface IInterfaceCaseContent {
+  id: number;
+  content_type: number;
+  target_id: number;
+
+  content_name?: string | undefined;
+  content_desc?: string | undefined;
+
+  enable?: boolean;
+  api_wait_time?: number;
+  api_script_text?: string;
+}
+
+export interface IInterfaceCaseCondition {
+  id: number;
+  uid: string;
+  condition_key: string;
+  condition_value: string;
+  condition_operator: number;
+}
+
 export interface IInterfaceAPI extends IBaseField {
   name: string;
   description: string;
@@ -70,6 +91,9 @@ export interface IInterfaceAPI extends IBaseField {
   is_group: number;
   group_id: number;
   response: any;
+
+  is_condition: boolean;
+  condition_id?: number;
 
   // 兼容UI
   interface_a_or_b?: number | null;

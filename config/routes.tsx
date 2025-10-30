@@ -40,13 +40,17 @@ export default [
     path: '/user',
     name: '用户管理',
     icon: 'user',
-    access: 'isAdmin',
     routes: [
       {
         path: '/user/admin',
         name: '用户表',
         access: 'isAdmin',
         component: '@/pages/User/Admin',
+      },
+      {
+        path: '/user/depart',
+        name: '部门管理',
+        component: '@/pages/User/Depart',
       },
       {
         path: '/user/my',
@@ -209,7 +213,7 @@ export default [
     routes: [
       {
         path: '/interface/interApi/api',
-        name: '公共接口&组',
+        name: 'API管理',
         component: '@/pages/Httpx/Interface',
       },
 

@@ -1,5 +1,6 @@
 import { IUser } from '@/api';
 import { registerUser } from '@/api/base';
+import { queryDepart, queryDepartTags } from '@/api/base/depart';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   ModalForm,
@@ -7,14 +8,101 @@ import {
   ProFormText,
 } from '@ant-design/pro-components';
 import { Button, message } from 'antd';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface selfProps {
   reload: Function | undefined;
 }
 
+// 定义类型
+interface IDepart {
+  id: number;
+  name: string;
+}
+
+interface ITag {
+  id: number;
+  tag_name: string;
+}
+
+interface SelectOption {
+  label: string;
+  value: number | string;
+}
+
+// 自定义 Hook 用于部门数据
+const useDepartments = () => {
+  const [departments, setDepartments] = useState<SelectOption[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchDepartments = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await queryDepart();
+      const options = data.map((item: IDepart) => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setDepartments(options);
+    } catch (error) {
+      console.error('Failed to fetch departments:', error);
+      setDepartments([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDepartments();
+  }, [fetchDepartments]);
+
+  return { departments, loading, refetch: fetchDepartments };
+};
+
+// 自定义 Hook 用于标签数据
+const useTags = (departId?: number) => {
+  const [tags, setTags] = useState<SelectOption[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchTags = useCallback(async (id: number) => {
+    setLoading(true);
+    try {
+      const { data } = await queryDepartTags(id);
+      const options = data.map((item: ITag) => ({
+        label: item.tag_name,
+        value: item.tag_name,
+      }));
+      setTags(options);
+    } catch (error) {
+      console.error('Failed to fetch tags:', error);
+      setTags([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (departId) {
+      fetchTags(departId);
+    } else {
+      setTags([]);
+    }
+  }, [departId, fetchTags]);
+
+  return { tags, loading };
+};
 const Index: React.FC<selfProps> = (props) => {
   let { reload } = props;
+
+  const [currentDepart, setCurrentDepart] = useState<number>();
+
+  const { departments, loading: departLoading } = useDepartments();
+  const { tags, loading: tagsLoading } = useTags(currentDepart);
+
+  const handleDepartChange = useCallback((value: number) => {
+    console.log('Selected department:', value);
+    setCurrentDepart(value);
+  }, []);
 
   return (
     <ModalForm<IUser>
@@ -56,48 +144,42 @@ const Index: React.FC<selfProps> = (props) => {
           0: '女',
         }}
       />
-      {/*<ProFormSelect*/}
-      {/*  showSearch*/}
-      {/*  name="departmentID"*/}
-      {/*  label="部门"*/}
-      {/*  placeholder="input department"*/}
-      {/*  request={async () => {*/}
-      {/*    let data: any;*/}
-      {/*    ({ data } = await departmentQuery('GET'));*/}
-      {/*    const res: RequestOptionsType[] = [];*/}
-      {/*    data.forEach((item: IDepartment) => {*/}
-      {/*      res.push({*/}
-      {/*        label: item.name,*/}
-      {/*        value: item.id,*/}
-      {/*      });*/}
-      {/*    });*/}
-      {/*    return res;*/}
-      {/*  }}*/}
-      {/*/>*/}
-      {/*<ProFormSelect*/}
-      {/*  name="tagName"*/}
-      {/*  label="标签"*/}
-      {/*  placeholder="select tag"*/}
-      {/*  required={false}*/}
-      {/*  dependencies={['departmentID']}*/}
-      {/*  request={async (params) => {*/}
-      {/*    const res: RequestOptionsType[] = [];*/}
-      {/*    if (params.departmentID) {*/}
-      {/*      const form = {*/}
-      {/*        id: params.departmentID,*/}
-      {/*      };*/}
-      {/*      let { data } = await userTagQuery(form);*/}
-      {/*      data.forEach((item: any) => {*/}
-      {/*        res.push({*/}
-      {/*          label: item.name,*/}
-      {/*          value: item.name,*/}
-      {/*        });*/}
-      {/*      });*/}
-      {/*    }*/}
-
-      {/*    return res;*/}
-      {/*  }}*/}
-      {/*/>*/}
+      <ProFormSelect
+        name="depart_id"
+        label="部门"
+        placeholder="input department"
+        options={departments}
+        onChange={handleDepartChange}
+        fieldProps={{
+          allowClear: true,
+        }}
+        transform={(value) => {
+          if (value) {
+            const selectedDept = departments.find(
+              (item) => item.value === value,
+            );
+            if (selectedDept) {
+              // 同时设置 depart_id 和 depart_name
+              return {
+                depart_id: value,
+                depart_name: selectedDept.label,
+              };
+            }
+          }
+          return { depart_id: value };
+        }}
+      />
+      <ProFormSelect name="depart_name" hidden={true} />
+      <ProFormSelect
+        name="tagName"
+        label="标签"
+        placeholder="select tag"
+        options={tags}
+        disabled={!currentDepart}
+        fieldProps={{
+          allowClear: true,
+        }}
+      />
     </ModalForm>
   );
 };

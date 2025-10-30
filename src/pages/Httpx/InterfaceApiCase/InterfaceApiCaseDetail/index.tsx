@@ -1,9 +1,13 @@
 import { IModuleEnum } from '@/api';
 import {
+  addCaseContent,
   baseInfoApiCase,
+  initAPICondition,
   insertApiCase,
   queryApisByCaseId,
+  queryContentsByCaseId,
   reorderApis2Case,
+  reorderCaseContents,
   runApiCaseBack,
   setApiCase,
 } from '@/api/inter/interCase';
@@ -12,19 +16,26 @@ import DnDDraggable from '@/components/DnDDraggable';
 import MyDrawer from '@/components/MyDrawer';
 import GroupApiChoiceTable from '@/pages/Httpx/Interface/interfaceApiGroup/GroupApiChoiceTable';
 import ApiCaseBaseForm from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/ApiCaseBaseForm';
+import CaseContentCollapsible from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CaseContentCollapsible';
 import CollapsibleApiCard from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/CollapsibleApiCard';
 import InterfaceApiCaseVars from '@/pages/Httpx/InterfaceApiCase/InterfaceApiCaseDetail/InterfaceApiCaseVars';
 import InterfaceApiCaseResultDrawer from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultDrawer';
 import InterfaceApiCaseResultTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceApiCaseResultTable';
 import InterfaceCaseChoiceApiTable from '@/pages/Httpx/InterfaceApiCaseResult/InterfaceCaseChoiceApiTable';
-import { IInterfaceAPI } from '@/pages/Httpx/types';
+import { IInterfaceAPI, IInterfaceCaseContent } from '@/pages/Httpx/types';
 import { ModuleEnum } from '@/utils/config';
 import { fetchModulesEnum } from '@/utils/somefunc';
 import { useParams } from '@@/exports';
 import {
+  AlignLeftOutlined,
   ArrowRightOutlined,
+  BranchesOutlined,
+  FieldTimeOutlined,
   LeftOutlined,
   PlayCircleOutlined,
+  PythonOutlined,
+  SelectOutlined,
+  UngroupOutlined,
 } from '@ant-design/icons';
 import { ProCard, ProForm } from '@ant-design/pro-components';
 import {
@@ -47,22 +58,33 @@ const Index = () => {
   const { caseApiId } = useParams<{ caseApiId: string }>();
   const [baseForm] = Form.useForm();
   const topRef = useRef<HTMLElement>(null);
+
+  // 老代码状态
   const [apis, setApis] = useState<any[]>([]);
   const [step, setStep] = useState<number>(0);
-  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [apiModuleEnum, setAPIModuleEnum] = useState<IModuleEnum[]>([]);
+  const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
+  const [apiEnvs, setApiEnvs] = useState<
+    { label: string; value: number | null }[]
+  >([]);
+  const [addButtonDisabled, setAddButtonDisabled] = useState<boolean>(false);
+
+  // 新代码状态
+  const [caseContentElement, setCaseContentElement] = useState<any[]>([]);
+  const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<number>();
   const [currentModuleId, setCurrentModuleId] = useState<number>();
   const [currentStatus, setCurrentStatus] = useState(1);
-  const [queryApis, setQueryApis] = useState<IInterfaceAPI[]>([]);
+  const [caseContents, setCaseContents] = useState<IInterfaceCaseContent[]>([]);
+  const [caseContentsStepLength, setCaseContentsStepLength] =
+    useState<number>(0);
   const [editCase, setEditCase] = useState<number>(0);
   const [runOpen, setRunOpen] = useState(false);
   const [choiceOpen, setChoiceOpen] = useState(false);
   const [choiceGroupOpen, setChoiceGroupOpen] = useState(false);
-  const [addButtonDisabled, setAddButtonDisabled] = useState<boolean>(false);
-  const [apiEnvs, setApiEnvs] = useState<
-    { label: string; value: number | null }[]
-  >([]);
+  const [reloadResult, setReloadResult] = useState(0);
+
+  // 初始化
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const projectId = searchParams.get('projectId');
@@ -77,11 +99,13 @@ const Index = () => {
       baseForm.setFieldValue('module_id', parseInt(moduleId));
       setCurrentModuleId(parseInt(moduleId));
     }
+
     if (caseApiId) {
       Promise.all([
         baseInfoApiCase(caseApiId),
         queryApisByCaseId(caseApiId),
-      ]).then(([baseInfo, apisInfo]) => {
+        queryContentsByCaseId(caseApiId),
+      ]).then(([baseInfo, apisInfo, contentsInfo]) => {
         if (baseInfo.code === 0) {
           baseForm.setFieldsValue(baseInfo.data);
           setCurrentProjectId(baseInfo.data.project_id);
@@ -90,12 +114,16 @@ const Index = () => {
         if (apisInfo.code === 0) {
           setQueryApis(apisInfo.data);
         }
+        if (contentsInfo.code === 0) {
+          setCaseContents(contentsInfo.data);
+        }
       });
     } else {
       setCurrentStatus(2);
     }
   }, [editCase, caseApiId]);
 
+  // 获取环境和模块数据
   useEffect(() => {
     if (currentProjectId) {
       Promise.all([
@@ -106,12 +134,12 @@ const Index = () => {
     }
   }, [currentProjectId]);
 
+  // 初始化API卡片（老代码功能）
   useEffect(() => {
     if (queryApis && apiModuleEnum && apiEnvs) {
       setStep(queryApis.length);
       const init = queryApis.map((item, index) => ({
         id: (index + 1).toString(),
-        //id: index,
         api_Id: item.id,
         content: (
           <CollapsibleApiCard
@@ -129,14 +157,37 @@ const Index = () => {
       }));
       setApis(init);
     }
-  }, [queryApis, apiEnvs, apiModuleEnum, caseApiId]); // 确保所有相关变量在依赖数组中
+  }, [queryApis, apiEnvs, apiModuleEnum, caseApiId]);
 
-  // 使用 useEffect 确保在 apis 更新后执行滚动操作
+  // 初始化步骤内容（新代码功能）
   useEffect(() => {
-    if (apis.length > 0) {
+    if (caseContents) {
+      setCaseContentsStepLength(caseContents.length);
+      const init = caseContents.map((item, index) => ({
+        id: index,
+        api_Id: item.id,
+        content: (
+          <CaseContentCollapsible
+            moduleId={currentModuleId}
+            projectId={currentProjectId}
+            step={index + 1}
+            collapsible={true}
+            callback={refresh}
+            caseContent={item}
+            caseId={parseInt(caseApiId!)}
+          />
+        ),
+      }));
+      setCaseContentElement(init);
+    }
+  }, [caseContents]);
+
+  // 滚动到顶部
+  useEffect(() => {
+    if (apis.length > 0 || caseContentElement.length > 0) {
       topRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [apis]); // 监听 apis 更新
+  }, [apis, caseContentElement]);
 
   const refresh = async () => {
     setEditCase(editCase + 1);
@@ -173,6 +224,7 @@ const Index = () => {
       if (key === '1') {
         runApiCaseBack(caseApiId).then(async ({ code }) => {
           if (code === 0) {
+            setReloadResult(reloadResult + 1);
             message.success('后台运行中。。');
           }
         });
@@ -182,17 +234,12 @@ const Index = () => {
     }
   };
 
-  const onAddStepClick: MenuProps['onClick'] = (e) => {
-    const { key } = e;
-    console.log(key);
-  };
-
   const DetailExtra: FC<{ currentStatus: number }> = ({ currentStatus }) => {
     switch (currentStatus) {
       case 1:
         return (
           <div style={{ display: 'flex' }}>
-            {/* 新增返回按钮 */}
+            {/* 保留老代码的返回按钮 */}
             <Button
               onClick={() => history.back()}
               icon={<LeftOutlined />}
@@ -254,7 +301,9 @@ const Index = () => {
         return null;
     }
   };
-  const onDragEnd = (reorderedUIContents: any[]) => {
+
+  // 老代码的拖拽排序
+  const onApiDragEnd = (reorderedUIContents: any[]) => {
     setApis(reorderedUIContents);
     if (caseApiId) {
       const reorderData = reorderedUIContents.map((item) => item.api_Id);
@@ -268,6 +317,25 @@ const Index = () => {
       );
     }
   };
+
+  // 新代码的拖拽排序
+  const onContentDragEnd = (reorderedUIContents: any[]) => {
+    setCaseContentElement(reorderedUIContents);
+    if (caseApiId) {
+      const reorderData = reorderedUIContents.map((item) => item.api_Id);
+      reorderCaseContents({
+        case_id: caseApiId,
+        content_step_order: reorderData,
+      }).then(async ({ code }) => {
+        if (code === 0) {
+          console.log('reorder success');
+          await refresh();
+        }
+      });
+    }
+  };
+
+  // 老代码的添加空API表单
   const AddEmptyApiForm = async () => {
     setAddButtonDisabled(true);
     const currStep = step + 1;
@@ -276,7 +344,6 @@ const Index = () => {
       ...prev,
       {
         id: currStep.toString(),
-        //id: currStep,
         content: (
           <CollapsibleApiCard
             apiEnvs={apiEnvs}
@@ -298,6 +365,7 @@ const Index = () => {
       case 1:
         return (
           <Space>
+            {/* 保留老代码的按钮 */}
             <Button type={'primary'} onClick={() => setChoiceGroupOpen(true)}>
               Choice Group
             </Button>
@@ -311,21 +379,80 @@ const Index = () => {
             >
               Add API
             </Button>
-            {/*<Dropdown.Button*/}
-            {/*  menu={{*/}
-            {/*    items: [*/}
-            {/*      {*/}
-            {/*        key: 'wait',*/}
-            {/*        label: '等待',*/}
-            {/*        icon: <FieldTimeOutlined style={{ color: 'orange' }} />,*/}
-            {/*      },*/}
-            {/*    ],*/}
-            {/*    onClick: onAddStepClick,*/}
-            {/*  }}*/}
-            {/*  icon={<AlignLeftOutlined />}*/}
-            {/*>*/}
-            {/*  Add Step*/}
-            {/*</Dropdown.Button>*/}
+
+            {/* 新代码的下拉菜单 */}
+            <Dropdown.Button
+              type={'primary'}
+              menu={{
+                items: [
+                  {
+                    key: 'choice_group',
+                    label: '选择公共组',
+                    icon: <UngroupOutlined style={{ color: 'blue' }} />,
+                    onClick: () => setChoiceGroupOpen(true),
+                  },
+                  {
+                    key: 'choice_api',
+                    label: '选择公共接口',
+                    icon: <SelectOutlined style={{ color: 'blue' }} />,
+                    onClick: () => setChoiceOpen(true),
+                  },
+                  {
+                    type: 'divider',
+                  },
+                  {
+                    key: 'add_condition',
+                    label: '添加条件',
+                    icon: <BranchesOutlined style={{ color: 'orange' }} />,
+                    onClick: async () => {
+                      if (caseApiId) {
+                        const { code } = await initAPICondition({
+                          interface_case_id: parseInt(caseApiId),
+                        });
+                        if (code === 0) {
+                          await refresh();
+                        }
+                      }
+                    },
+                  },
+                  {
+                    key: 'wait',
+                    label: '等待',
+                    icon: <FieldTimeOutlined style={{ color: 'orange' }} />,
+                    onClick: async () => {
+                      if (caseApiId) {
+                        const { code } = await addCaseContent({
+                          case_id: parseInt(caseApiId),
+                          content_type: 6,
+                        });
+                        if (code === 0) {
+                          await refresh();
+                        }
+                      }
+                    },
+                  },
+                  {
+                    key: 'add_script',
+                    label: '添加脚本',
+                    icon: <PythonOutlined style={{ color: 'orange' }} />,
+                    onClick: async () => {
+                      if (caseApiId) {
+                        const { code } = await addCaseContent({
+                          case_id: parseInt(caseApiId),
+                          content_type: 4,
+                        });
+                        if (code === 0) {
+                          await refresh();
+                        }
+                      }
+                    },
+                  },
+                ],
+              }}
+              icon={<AlignLeftOutlined />}
+            >
+              添加
+            </Dropdown.Button>
           </Space>
         );
       default:
@@ -350,13 +477,25 @@ const Index = () => {
             <DnDDraggable
               items={apis}
               setItems={setApis}
-              orderFetch={onDragEnd}
+              orderFetch={onApiDragEnd}
             />
-            // <MyDraggable
-            //   items={apis}
-            //   setItems={setApis}
-            //   dragEndFunc={onDragEnd}
-            // />
+          )}
+        </>
+      ),
+    },
+    {
+      key: '3',
+      label: `STEP (${caseContentsStepLength})`,
+      children: (
+        <>
+          {caseContentElement.length === 0 ? (
+            <Empty />
+          ) : (
+            <DnDDraggable
+              items={caseContentElement}
+              setItems={setCaseContentElement}
+              orderFetch={onContentDragEnd}
+            />
           )}
         </>
       ),
@@ -415,7 +554,12 @@ const Index = () => {
           items={APIStepItems}
         />
       </ProCard>
-      {caseApiId ? <InterfaceApiCaseResultTable apiCaseId={caseApiId} /> : null}
+      {caseApiId ? (
+        <InterfaceApiCaseResultTable
+          apiCaseId={caseApiId}
+          reload={reloadResult}
+        />
+      ) : null}
       <FloatButton.BackTop />
     </ProCard>
   );

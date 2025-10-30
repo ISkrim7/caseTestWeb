@@ -40,18 +40,17 @@ export interface ISearch {
 }
 
 export interface IUser {
-  id?: number;
-  uid?: string;
-  username?: string;
-  isAdmin?: boolean;
-  email?: string;
-  phone?: string;
+  id: number;
+  uid: string;
+  username: string;
+  isAdmin: boolean;
+  email: string;
+  phone: string;
   avatar?: string;
   gender?: string;
   tagName?: string;
-  departmentID?: number;
-  departmentName?: string;
-  access?: string[] | Record<string, boolean>;
+  depart_id?: number;
+  depart_name?: string;
 }
 
 export interface IDepartment {

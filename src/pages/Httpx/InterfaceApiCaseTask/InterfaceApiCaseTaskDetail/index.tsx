@@ -145,6 +145,30 @@ const Index = () => {
     }
   };
 
+  const TabItem = [
+    {
+      key: '1',
+      label: '关联接口',
+      children: (
+        <AssociationApis
+          currentTaskId={taskId}
+          currentProjectId={currentProjectId}
+        />
+      ),
+    },
+    {
+      key: '2',
+      label: '关联用例',
+      children: (
+        <AssociationCases
+          currentTaskId={taskId}
+          reload={refresh}
+          currentProjectId={currentProjectId}
+        />
+      ),
+    },
+  ];
+
   return (
     <ProCard split={'horizontal'}>
       <ProCard
@@ -286,10 +310,10 @@ const Index = () => {
       {taskId ? (
         <>
           <ProCard
-            title={'关联APIS'}
+            title={'关联接口与用例'}
             headerBordered
             boxShadow
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 20, padding: 0 }}
           >
             <Tabs defaultActiveKey="2" size={'large'}>
               <Tabs.TabPane tab={'单API用例表'} key="1">

@@ -71,12 +71,20 @@ const DBModel: FC<IProps> = ({
 
   const test = async () => {
     const values = await form.validateFields();
+    // 添加 project_id 到测试连接请求
+    values.project_id = parseInt(currentProjectId);
     const { code } = await testDBConfig(values);
     if (code === 0) {
       setCanSave(true);
       message.success('connect success');
     }
   };
+
+  const handleFormChange = () => {
+    // 在表单发生变化时，设置 canSave 为 true，以显示保存按钮
+    setCanSave(true);
+  };
+
   return (
     <ProCard>
       <ModalForm
@@ -120,6 +128,7 @@ const DBModel: FC<IProps> = ({
             ];
           },
         }}
+        onValuesChange={handleFormChange}
       >
         <ProFormSelect
           label={'类型'}

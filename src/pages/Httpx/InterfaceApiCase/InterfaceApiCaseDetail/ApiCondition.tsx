@@ -29,16 +29,19 @@ interface SelfProps {
   case_id: number;
   caseContent: IInterfaceCaseContent;
   projectId?: number;
-  setKey: React.Dispatch<React.SetStateAction<string>>;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  setOperator: React.Dispatch<React.SetStateAction<string>>;
+  setKey: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setOperator: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-const OperatorOption: Record<number, string> = {
+const OperatorOption: { [key: number]: string } = {
   1: '等于',
   2: '不等于',
+  3: '为空',
+  4: '不为空',
+  5: '大于',
+  6: '小与',
 };
-
 const ApiCondition: FC<SelfProps> = ({
   projectId,
   setValue,
@@ -54,6 +57,7 @@ const ApiCondition: FC<SelfProps> = ({
   const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
   const [showAPIDetail, setShowAPIDetail] = useState(false);
   const [currentApiId, setCurrentApiId] = useState<number>();
+  const [showValueInput, setShowValueInput] = useState(true);
   const refresh = () => {
     actionRef.current?.reload();
     setChoiceGroupOpen(false);
@@ -73,7 +77,11 @@ const ApiCondition: FC<SelfProps> = ({
           setKey(data.condition_key);
           setValue(data.condition_value);
           setOperator(OperatorOption[data.condition_operator]);
+
           conditionForm.setFieldsValue(data);
+          if (data.condition_operator === 3 || data.condition_operator === 4) {
+            setShowValueInput(false);
+          }
         }
       },
     );
@@ -226,24 +234,34 @@ const ApiCondition: FC<SelfProps> = ({
           rules={[{ required: true, message: '条件不能为空 !' }]}
           onChange={(_: any, option: any) => {
             setOperator(option.label);
+            if (option.value === 3 || option.value === 4) {
+              setShowValueInput(false);
+            } else {
+              setShowValueInput(true);
+            }
           }}
           options={[
             { label: '等于', value: 1 },
             { label: '不等于', value: 2 },
+            { label: '为空', value: 3 },
+            { label: '不为空', value: 4 },
+            { label: '大于', value: 5 },
+            { label: '小于', value: 6 },
           ]}
         />
-        <ProFormText
-          noStyle
-          placeholder={'输入比较值'}
-          name={'condition_value'}
-          rules={[{ required: true, message: '比较值不能为空 !' }]}
-          required={true}
-          fieldProps={{
-            onChange: (e: any) => {
-              setValue(e.target.value);
-            },
-          }}
-        />
+        {showValueInput && (
+          <ProFormText
+            noStyle
+            placeholder={'输入比较值'}
+            name={'condition_value'}
+            rules={[{ required: true, message: '比较值不能为空 !' }]}
+            fieldProps={{
+              onChange: (e: any) => {
+                setValue(e.target.value);
+              },
+            }}
+          />
+        )}
       </Space>
     </ProForm>
   );

@@ -400,12 +400,18 @@ export const caseAPIResultDetail = async (data: string, opt?: IObjGet) => {
 /**
  * case步骤开关
  */
-export const switchCaseContent = async (
-  data: { id: number; enable: boolean },
+export const updateCaseContent = async (
+  data: {
+    id: number;
+    enable?: boolean;
+    content_name?: string;
+    api_wait_time?: number;
+    api_script_text?: string;
+  },
   opt?: IObjGet,
 ) => {
   return request<IResponse<IInterfaceCaseContent>>(
-    '/api/interface/case/switchCaseContent',
+    '/api/interface/case/updateCaseContent',
     {
       method: 'POST',
       data: data,
@@ -414,6 +420,22 @@ export const switchCaseContent = async (
   );
 };
 
+/**
+ * add case步骤
+ */
+export const addCaseContent = async (
+  data: { case_id: number; content_type: number },
+  opt?: IObjGet,
+) => {
+  return request<IResponse<IInterfaceCaseContent>>(
+    '/api/interface/case/addCaseContent',
+    {
+      method: 'POST',
+      data: data,
+      ...(opt || {}),
+    },
+  );
+};
 /**
  * 删除case result
  */

@@ -35,11 +35,15 @@ export interface IInterfaceAPIRecord extends IBaseField {
 
 export interface IInterfaceCaseContent {
   id: number;
-  content_name?: string | undefined;
-  content_desc?: string | undefined;
   content_type: number;
   target_id: number;
-  enable: boolean;
+
+  content_name?: string | undefined;
+  content_desc?: string | undefined;
+
+  enable?: boolean;
+  api_wait_time?: number;
+  api_script_text?: string;
 }
 
 export interface IInterfaceCaseCondition {

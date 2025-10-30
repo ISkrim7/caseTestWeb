@@ -1,5 +1,6 @@
 import { IModuleEnum } from '@/api';
 import {
+  addCaseContent,
   baseInfoApiCase,
   initAPICondition,
   insertApiCase,
@@ -27,6 +28,7 @@ import {
   BranchesOutlined,
   FieldTimeOutlined,
   PlayCircleOutlined,
+  PythonOutlined,
   SelectOutlined,
   UngroupOutlined,
 } from '@ant-design/icons';
@@ -277,6 +279,33 @@ const Index = () => {
                   key: 'wait',
                   label: '等待',
                   icon: <FieldTimeOutlined style={{ color: 'orange' }} />,
+                  onClick: async () => {
+                    if (caseApiId) {
+                      const { code } = await addCaseContent({
+                        case_id: parseInt(caseApiId),
+                        content_type: 6,
+                      });
+                      if (code === 0) {
+                        await refresh();
+                      }
+                    }
+                  },
+                },
+                {
+                  key: 'add_script',
+                  label: '添加脚本',
+                  icon: <PythonOutlined style={{ color: 'orange' }} />,
+                  onClick: async () => {
+                    if (caseApiId) {
+                      const { code } = await addCaseContent({
+                        case_id: parseInt(caseApiId),
+                        content_type: 4,
+                      });
+                      if (code === 0) {
+                        await refresh();
+                      }
+                    }
+                  },
                 },
               ],
             }}

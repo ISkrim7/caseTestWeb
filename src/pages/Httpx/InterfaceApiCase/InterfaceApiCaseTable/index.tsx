@@ -58,7 +58,7 @@ const Index: FC<SelfProps> = ({
       width: '15%',
     },
     {
-      title: 'API数量',
+      title: '步骤数量',
       dataIndex: 'apiNum',
       valueType: 'text',
       width: '10%',

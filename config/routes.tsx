@@ -190,7 +190,7 @@ export default [
     routes: [
       {
         path: '/interface/interApi/api',
-        name: '公共接口&组',
+        name: 'API管理',
         component: '@/pages/Httpx/Interface',
       },
 

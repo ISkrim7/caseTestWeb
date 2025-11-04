@@ -12,7 +12,7 @@ const { Text } = Typography;
 interface SelfProps {
   step: number;
   groupId: string;
-  interfaceApiInfo: IInterfaceAPI;
+  interfaceApiInfo?: IInterfaceAPI;
 }
 
 const GroupApiCollapsibleCard: FC<SelfProps> = ({
@@ -21,6 +21,10 @@ const GroupApiCollapsibleCard: FC<SelfProps> = ({
   groupId,
 }) => {
   const [showAPIDetail, setShowAPIDetail] = useState(false);
+  // 添加空值检查
+  if (!interfaceApiInfo?.id) {
+    return null; // 或者显示加载状态
+  }
 
   const removeAssociation = async () => {
     const { code, msg } = await removeInterfaceGroupApis({
@@ -65,9 +69,17 @@ const GroupApiCollapsibleCard: FC<SelfProps> = ({
         open={showAPIDetail}
         setOpen={setShowAPIDetail}
       >
+        {/*<InterfaceApiDetail*/}
+        {/*  interfaceId={interfaceApiInfo?.id}*/}
+        {/*  callback={() => {}}*/}
+        {/*/>*/}
+        {/* 确保传递正确的参数 */}
         <InterfaceApiDetail
-          interfaceId={interfaceApiInfo?.id}
+          interfaceId={interfaceApiInfo.id}
           callback={() => {}}
+          addFromCase={false} // 添加缺失的属性
+          addFromGroup={true} // 添加缺失的属性
+          refresh={() => {}} // 添加缺失的属性
         />
       </MyDrawer>
     </>

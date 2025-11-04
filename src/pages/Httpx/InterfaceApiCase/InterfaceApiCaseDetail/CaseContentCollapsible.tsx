@@ -1,3 +1,4 @@
+import { IModuleEnum } from '@/api';
 import {
   copyCaseContentStep,
   removeCaseContentStep,
@@ -51,6 +52,8 @@ interface SelfProps {
   caseId: number;
   collapsible: boolean;
   callback?: () => void;
+  apiEnvs?: { label: string; value: number | null }[];
+  apiModule?: IModuleEnum[];
 }
 
 const CaseContentCollapsible: FC<SelfProps> = (props) => {
@@ -406,6 +409,9 @@ const CaseContentCollapsible: FC<SelfProps> = (props) => {
         setOpen={setShowAPIDetail}
       >
         <InterfaceApiDetail
+          addFromCase={false}
+          addFromGroup={false}
+          refresh={() => {}}
           interfaceId={caseContent.target_id}
           callback={() => {}}
         />

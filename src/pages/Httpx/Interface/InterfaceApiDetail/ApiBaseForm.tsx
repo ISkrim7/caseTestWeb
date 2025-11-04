@@ -14,6 +14,8 @@ interface IProps {
   currentMode: number;
   setCurrentProjectId: React.Dispatch<React.SetStateAction<number | undefined>>;
   moduleEnum: IModuleEnum[];
+  addFromCase?: boolean;
+  addFromGroup?: boolean;
 }
 
 const ApiBaseForm: FC<IProps> = (props) => {

@@ -5,7 +5,7 @@ import InterfaceApiTableNoModule from '@/pages/Httpx/Interface/InterfaceApiTable
 import InterfaceApiUpload from '@/pages/Httpx/Interface/InterfaceApiUpload';
 import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
-import { Splitter, TabsProps } from 'antd';
+import { TabsProps } from 'antd';
 import { useState } from 'react';
 
 const Index = () => {
@@ -27,7 +27,6 @@ const Index = () => {
         />
       ),
     },
-
     {
       key: 'group',
       label: 'Group API',
@@ -67,42 +66,75 @@ const Index = () => {
   return (
     <ProCard
       bordered={true}
-      style={{ height: 'auto' }}
-      bodyStyle={{ height: 'auto', padding: 0 }}
+      style={{ height: '100vh' }}
+      bodyStyle={{ height: '100%', padding: 0 }}
     >
-      <Splitter layout="horizontal">
-        <Splitter.Panel
-          key={`left-panel-${currentModuleId}`}
-          collapsible={true}
-          defaultSize="10%"
-          min="10%"
-          max="30%"
-          style={{ height: '100vh' }}
+      <div style={{ display: 'flex', height: '100%' }}>
+        {/* 左侧固定面板 */}
+        <div
+          style={{
+            width: '20%',
+            minWidth: '200px',
+            maxWidth: '35%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
         >
-          <Splitter layout="vertical">
-            <Splitter.Panel>
-              <LeftComponents
-                moduleType={ModuleEnum.API}
-                currentProjectId={currentProjectId}
-                onProjectChange={onProjectChange}
-                onModuleChange={onModuleChange}
-              />
-            </Splitter.Panel>
-            <Splitter.Panel>
-              <ProCard title="视图"></ProCard>
-            </Splitter.Panel>
-          </Splitter>
-        </Splitter.Panel>
-        <Splitter.Panel key="right-panel">
+          {/* 上半部分：LeftComponents - 占80%高度 */}
+          <div
+            style={{
+              height: '80%',
+              minHeight: '150px',
+              padding: '12px',
+              overflow: 'auto',
+              wordBreak: 'break-word',
+            }}
+          >
+            <LeftComponents
+              moduleType={ModuleEnum.API}
+              currentProjectId={currentProjectId}
+              onProjectChange={onProjectChange}
+              onModuleChange={onModuleChange}
+            />
+          </div>
+
+          {/* 下半部分：视图 - 占20%高度 */}
+          <div
+            style={{
+              height: '20%',
+              minHeight: '100px',
+              overflow: 'auto',
+            }}
+          >
+            <ProCard
+              title="视图"
+              style={{ height: '100%' }}
+              bodyStyle={{ padding: '12px' }}
+            >
+              {/* 视图内容 */}
+            </ProCard>
+          </div>
+        </div>
+
+        {/* 右侧面板 */}
+        <div
+          style={{
+            flex: 1,
+            minWidth: '50%',
+            height: '100%',
+          }}
+        >
           <ProCard
-            bodyStyle={{ padding: 0 }}
+            style={{ height: '100%' }}
+            bodyStyle={{ padding: 0, height: '100%' }}
             tabs={{
               type: 'card',
               items: TabItems,
             }}
           />
-        </Splitter.Panel>
-      </Splitter>
+        </div>
+      </div>
     </ProCard>
   );
 };

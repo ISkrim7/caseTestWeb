@@ -364,7 +364,10 @@ const Index: FC<SelfProps> = ({
             key: '6',
             label: '压力测试',
             icon: <LineChartOutlined />,
-            children: <InterPerf interfaceId={interId || interfaceId} />,
+            children:
+              interId || interfaceId ? (
+                <InterPerf interfaceId={String(interId || interfaceId)} />
+              ) : null, // 添加空值检查
           },
           ...(interId
             ? [

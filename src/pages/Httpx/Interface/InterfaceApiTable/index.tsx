@@ -14,10 +14,10 @@ import { fetchModulesEnum, pageData } from '@/utils/somefunc';
 import { useModel } from '@@/exports';
 import {
   CopyOutlined,
-  DashOutlined,
   DeleteOutlined,
   DeliveredProcedureOutlined,
   DownOutlined,
+  EllipsisOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
 import {
@@ -34,8 +34,8 @@ import {
   message,
   Modal,
   Popconfirm,
-  Space,
   Tag,
+  Tooltip,
 } from 'antd';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
@@ -52,17 +52,15 @@ const Index: FC<SelfProps> = ({
   perKey,
 }) => {
   const [copyForm] = Form.useForm();
-  const actionRef = useRef<ActionType>(); //Table action 的引用，便于自定义触发
+  const actionRef = useRef<ActionType>();
   const [openModal, setOpenModal] = useState(false);
   const { initialState } = useModel('@@initialState');
   const projects = initialState?.projects || [];
   const [copyProjectId, setCopyProjectId] = useState<number>();
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentApiId, setCurrentApiId] = useState<number>();
-  // 1copy 2move
   const [copyOrMove, setCopyOrMove] = useState(1);
 
-  // 根据当前项目ID获取环境和用例部分
   useEffect(() => {
     if (copyProjectId) {
       fetchModulesEnum(copyProjectId, ModuleEnum.API, setModuleEnum).then();
@@ -79,7 +77,6 @@ const Index: FC<SelfProps> = ({
         ...params,
         module_id: currentModuleId,
         module_type: ModuleEnum.API,
-        //只查询公共api
         is_common: 1,
         sort: sort,
       });
@@ -93,8 +90,8 @@ const Index: FC<SelfProps> = ({
       title: '接口编号',
       dataIndex: 'uid',
       key: 'uid',
-      fixed: 'left',
-      width: '12%',
+      width: 120,
+      ellipsis: true,
       copyable: true,
       render: (_, record) => {
         return <Tag color={'blue'}>{record.uid}</Tag>;
@@ -104,26 +101,41 @@ const Index: FC<SelfProps> = ({
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      fixed: 'left',
+      width: 200,
+      ellipsis: {
+        showTitle: true,
+      },
+      render: (text) => (
+        <Tooltip title={text} placement="topLeft">
+          <span>{text}</span>
+        </Tooltip>
+      ),
     },
-    // 保留新代码的路径列
     {
       title: '路径',
       dataIndex: 'url',
       key: 'url',
-      ellipsis: true,
+      width: 300,
+      ellipsis: {
+        showTitle: true,
+      },
+      render: (text) => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ fontFamily: 'monospace' }}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '方法',
       dataIndex: 'method',
       valueType: 'select',
       key: 'method',
+      width: 80,
       valueEnum: CONFIG.API_METHOD_ENUM,
       filters: true,
-      search: true, // 保留新代码的搜索功能
+      search: true,
       onFilter: true,
       render: (_, record) => {
-        // 使用新代码的颜色配置
         return (
           <Tag color={CONFIG.API_METHOD_ENUM[record.method].color}>
             {record.method}
@@ -135,6 +147,7 @@ const Index: FC<SelfProps> = ({
       title: '优先级',
       dataIndex: 'level',
       key: 'level',
+      width: 80,
       valueType: 'select',
       valueEnum: CONFIG.API_LEVEL_ENUM,
       search: false,
@@ -149,6 +162,7 @@ const Index: FC<SelfProps> = ({
       dataIndex: 'status',
       valueType: 'select',
       key: 'status',
+      width: 100,
       search: false,
       filters: true,
       onFilter: true,
@@ -161,45 +175,55 @@ const Index: FC<SelfProps> = ({
       title: '创建人',
       dataIndex: 'creatorName',
       key: 'creatorName',
+      width: 100,
+      ellipsis: true,
       render: (_, record) => {
-        return <Tag color={'orange'}>{record.creatorName}</Tag>;
+        return (
+          <Tooltip title={record.creatorName}>
+            <Tag color={'orange'}>{record.creatorName}</Tag>
+          </Tooltip>
+        );
       },
     },
     {
       title: '操作',
       valueType: 'option',
       key: 'option',
-      width: '14%', // 使用老代码的宽度
-      fixed: 'right',
+      width: 200,
       render: (_, record) => [
-        // 保留老代码的详情链接（带URL参数）
         <a
+          key="detail"
           onClick={() => {
             history.push({
               pathname: `/interface/interApi/detail/interId=${record.id}`,
               search: `?projectId=${currentProjectId?.toString()}&moduleId=${currentModuleId?.toString()}`,
             });
           }}
+          style={{ marginRight: 8 }}
         >
           详情
         </a>,
-        // 保留新代码的下拉菜单功能
+
+        <a
+          key="copy"
+          onClick={async () => {
+            const { code } = await copyInterApiById(record.id);
+            if (code === 0) {
+              message.success('复制成功');
+              actionRef.current?.reload();
+            }
+          }}
+          style={{ marginRight: 8 }}
+        >
+          复制
+        </a>,
+
         <Dropdown
+          key="more"
           menu={{
             items: [
               {
-                key: '1',
-                label: '复制接口',
-                icon: <CopyOutlined />,
-                onClick: async () => {
-                  const { code } = await copyInterApiById(record.id);
-                  if (code === 0) {
-                    actionRef.current?.reload();
-                  }
-                },
-              },
-              {
-                key: '3',
+                key: 'copy-to',
                 label: '复制至',
                 icon: <CopyOutlined />,
                 onClick: () => {
@@ -209,7 +233,7 @@ const Index: FC<SelfProps> = ({
                 },
               },
               {
-                key: '2',
+                key: 'move-to',
                 label: '移动至',
                 icon: <DeliveredProcedureOutlined />,
                 onClick: () => {
@@ -222,8 +246,7 @@ const Index: FC<SelfProps> = ({
                 type: 'divider',
               },
               {
-                key: '4',
-                icon: <DeleteOutlined />,
+                key: 'delete',
                 label: (
                   <Popconfirm
                     title={'确认删除？'}
@@ -232,22 +255,24 @@ const Index: FC<SelfProps> = ({
                     onConfirm={async () => {
                       const { code } = await removeInterApiById(record.id);
                       if (code === 0) {
+                        message.success('删除成功');
                         actionRef.current?.reload();
                       }
                     }}
                   >
-                    <a>删除</a>
+                    <span style={{ color: '#ff4d4f' }}>删除</span>
                   </Popconfirm>
                 ),
+                icon: <DeleteOutlined />,
               },
             ],
           }}
         >
-          <a onClick={(e) => e.preventDefault()}>
-            <Space>
-              <DashOutlined />
-            </Space>
-          </a>
+          <Tooltip title="更多操作（复制至、移动至、删除）">
+            <a style={{ color: '#1890ff', fontWeight: 500 }}>
+              <EllipsisOutlined /> 更多
+            </a>
+          </Tooltip>
         </Dropdown>,
       ],
     },
@@ -275,7 +300,7 @@ const Index: FC<SelfProps> = ({
                 module_id: values.module_id,
               });
             } else {
-              return; // 无效的操作类型
+              return;
             }
             if (response?.code === 0) {
               message.success(response.msg);
@@ -284,7 +309,6 @@ const Index: FC<SelfProps> = ({
               actionRef.current?.reload();
             }
           } catch (error) {
-            // 表单验证失败或其他错误处理
             console.error('操作失败:', error);
           }
         }}
@@ -322,9 +346,15 @@ const Index: FC<SelfProps> = ({
         persistenceKey={perKey}
         columns={columns}
         rowKey={'id'}
-        x={1500} // 使用新代码的宽度
         actionRef={actionRef}
         request={fetchInterface}
+        // 如果 MyProTable 支持分页配置，可以这样设置
+        // pagination={{
+        //   showSizeChanger: true,
+        //   showQuickJumper: true,
+        //   pageSizeOptions: ['10', '20', '50', '100'],
+        //   defaultPageSize: 20,
+        // }}
         toolBarRender={() => [
           <Button
             type={'primary'}
@@ -333,7 +363,6 @@ const Index: FC<SelfProps> = ({
                 message.warning('请左侧树列表选择所属模块');
                 return;
               }
-              // 使用老代码的路由跳转（带URL参数）
               history.push({
                 pathname: '/interface/interApi/detail',
                 search: `?projectId=${currentProjectId?.toString()}&moduleId=${currentModuleId?.toString()}`,

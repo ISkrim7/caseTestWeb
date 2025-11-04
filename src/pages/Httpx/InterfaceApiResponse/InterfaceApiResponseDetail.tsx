@@ -389,24 +389,22 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
         const uniqueKey = item.groupId
           ? `group-${item.groupId}`
           : `api-${item.interfaceId || index}`;
-        if (item.groupId) {
+        if (item.is_group || item.groupId) {
           return (
             <ProCard
-              //key={index}
-              key={uniqueKey} // 使用组合key
+              key={uniqueKey}
               bodyStyle={{ padding: 10 }}
               extra={tabExtra(item)}
               bordered
-              //style={{ borderRadius: '5px', marginTop: 5 }}
               /*
               title={
                 <>
                   <Tag color={'blue'}>组</Tag>
                   <Tag
                     color={
-                      //item.result?.toLowerCase() === 'error'
-                      //calculateGroupStatus(item.data) === 'ERROR'
-                      getGroupStatus(item.data) === 'ERROR' ? '#f50' : '#87d068'
+                      (item.result === true || getGroupStatus(item.data) === 'SUCCESS')
+                        ? '#87d068'
+                        : '#f50'
                     }
                   >
                     {item.groupName}
@@ -522,7 +520,7 @@ const InterfaceApiResponseDetail: FC<SelfProps> = ({ responses }) => {
                   <Tooltip title={item.interfaceName}>
                     <Tag
                       color={
-                        item.result?.toLowerCase() === 'error'
+                        String(item.result || '').toLowerCase() === 'error'
                           ? '#f50'
                           : '#87d068'
                       }

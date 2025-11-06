@@ -35,12 +35,13 @@ const Index: FC<SelfProps> = ({
       const { code, data } = await pageApiTask({
         ...params,
         module_id: currentModuleId,
+        project_id: currentProjectId,
         module_type: ModuleEnum.API_TASK,
         sort: sort,
       });
       return pageData(code, data);
     },
-    [currentModuleId],
+    [currentModuleId, currentProjectId],
   );
 
   const setTaskAuto = async (auto: boolean, taskId: number) => {

@@ -2,7 +2,6 @@ import LeftComponents from '@/components/LeftComponents';
 import InterfaceApiCaseTaskTable from '@/pages/Httpx/InterfaceApiCaseTask/InterfaceApiCaseTaskTable';
 import { ModuleEnum } from '@/utils/config';
 import { ProCard } from '@ant-design/pro-components';
-import { Splitter } from 'antd';
 import { useState } from 'react';
 
 const Index = () => {
@@ -20,15 +19,20 @@ const Index = () => {
     <ProCard
       bordered={true}
       style={{ height: '100vh' }}
-      bodyStyle={{ height: 'auto', padding: 0 }}
+      bodyStyle={{ height: '100%', padding: 0 }}
     >
-      <Splitter>
-        <Splitter.Panel
-          collapsible={true}
-          defaultSize="10%"
-          min="10%"
-          max="30%"
-          style={{ height: '100vh' }}
+      <div style={{ display: 'flex', height: '100%' }}>
+        {/* 左侧固定面板 */}
+        <div
+          style={{
+            width: '20%',
+            minWidth: '200px',
+            maxWidth: '35%',
+            height: '100%',
+            padding: '12px',
+            overflow: 'auto',
+            wordBreak: 'break-word',
+          }}
         >
           <LeftComponents
             moduleType={ModuleEnum.API_TASK}
@@ -36,15 +40,24 @@ const Index = () => {
             onProjectChange={onProjectChange}
             onModuleChange={onModuleChange}
           />
-        </Splitter.Panel>
-        <Splitter.Panel>
+        </div>
+
+        {/* 右侧面板 */}
+        <div
+          style={{
+            flex: 1,
+            minWidth: '50%',
+            height: '100%',
+            overflow: 'auto',
+          }}
+        >
           <InterfaceApiCaseTaskTable
             currentModuleId={currentModuleId}
             currentProjectId={currentProjectId}
             perKey={PerKey}
           />
-        </Splitter.Panel>
-      </Splitter>
+        </div>
+      </div>
     </ProCard>
   );
 };

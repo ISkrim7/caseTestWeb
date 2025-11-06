@@ -296,7 +296,14 @@ const ApiCondition: FC<SelfProps> = ({
         open={showAPIDetail}
         setOpen={setShowAPIDetail}
       >
-        <InterfaceApiDetail interfaceId={currentApiId} callback={() => {}} />;
+        <InterfaceApiDetail
+          interfaceId={currentApiId}
+          callback={() => {}}
+          addFromCase={true}
+          addFromGroup={false}
+          refresh={() => {}}
+        />
+        ;
       </MyDrawer>
       <MyDrawer name={''} open={choiceGroupOpen} setOpen={setChoiceGroupOpen}>
         <GroupApiChoiceTable

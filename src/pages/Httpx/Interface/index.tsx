@@ -100,21 +100,21 @@ const Index = () => {
           </div>
 
           {/* 下半部分：视图 - 占20%高度 */}
-          <div
-            style={{
-              height: '20%',
-              minHeight: '100px',
-              overflow: 'auto',
-            }}
-          >
-            <ProCard
-              title="视图"
-              style={{ height: '100%' }}
-              bodyStyle={{ padding: '12px' }}
-            >
-              {/* 视图内容 */}
-            </ProCard>
-          </div>
+          {/*<div*/}
+          {/*  style={{*/}
+          {/*    height: '20%',*/}
+          {/*    minHeight: '100px',*/}
+          {/*    overflow: 'auto',*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <ProCard*/}
+          {/*    title="视图"*/}
+          {/*    style={{ height: '100%' }}*/}
+          {/*    bodyStyle={{ padding: '12px' }}*/}
+          {/*  >*/}
+          {/*    /!* 视图内容 *!/*/}
+          {/*  </ProCard>*/}
+          {/*</div>*/}
         </div>
 
         {/* 右侧面板 */}
@@ -123,6 +123,7 @@ const Index = () => {
             flex: 1,
             minWidth: '50%',
             height: '100%',
+            overflow: 'auto',
           }}
         >
           <ProCard

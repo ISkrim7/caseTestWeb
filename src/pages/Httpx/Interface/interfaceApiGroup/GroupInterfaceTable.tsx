@@ -93,7 +93,14 @@ const GroupInterfaceTable: FC<SelfProps> = (props) => {
         open={showAPIDetail}
         setOpen={setShowAPIDetail}
       >
-        <InterfaceApiDetail interfaceId={currentApiId} callback={() => {}} />;
+        <InterfaceApiDetail
+          interfaceId={currentApiId}
+          callback={() => {}}
+          addFromCase={false}
+          addFromGroup={true}
+          refresh={() => {}}
+        />
+        ;
       </MyDrawer>
       <MyProTable
         columns={columns}

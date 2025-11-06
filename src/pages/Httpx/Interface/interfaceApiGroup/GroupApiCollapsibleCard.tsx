@@ -13,12 +13,14 @@ interface SelfProps {
   step: number;
   groupId: string;
   interfaceApiInfo?: IInterfaceAPI;
+  refresh?: () => void;
 }
 
 const GroupApiCollapsibleCard: FC<SelfProps> = ({
   step,
   interfaceApiInfo,
   groupId,
+  refresh,
 }) => {
   const [showAPIDetail, setShowAPIDetail] = useState(false);
   // 添加空值检查
@@ -33,6 +35,7 @@ const GroupApiCollapsibleCard: FC<SelfProps> = ({
     });
     if (code === 0) {
       message.success(msg);
+      refresh?.();
     }
   };
 

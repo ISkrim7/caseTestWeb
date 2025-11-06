@@ -31,7 +31,7 @@ import {
   ProFormTextArea,
   ProFormTreeSelect,
 } from '@ant-design/pro-components';
-import { Button, Divider, Form, message, Modal, Spin } from 'antd';
+import { Button, Form, message, Modal, Spin } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { history } from 'umi';
 
@@ -168,6 +168,7 @@ const Index = () => {
               step={index + 1}
               interfaceApiInfo={item}
               groupId={groupId!}
+              refresh={handleReload}
             />
           ),
         })),
@@ -230,6 +231,7 @@ const Index = () => {
               step={index + 1}
               interfaceApiInfo={item}
               groupId={groupId!}
+              refresh={handleReload}
             />
           ),
         })),
@@ -350,10 +352,10 @@ const Index = () => {
             <Button type={'primary'} onClick={() => setChoiceOpen(true)}>
               Choice API
             </Button>
-            <Divider type={'vertical'} />
+            {/* Add API功能已禁用 - <Divider type={'vertical'} />
             <Button type={'primary'} onClick={AddEmptyApiForm}>
               Add API
-            </Button>
+            </Button> */}
           </>
         );
       default:

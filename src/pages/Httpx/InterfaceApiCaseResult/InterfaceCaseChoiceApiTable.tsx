@@ -3,7 +3,6 @@ import { pageInterApi } from '@/api/inter';
 import {
   associationApis,
   selectCommonAPI2ConditionAPI,
-  selectCommonApisCopy2Case,
 } from '@/api/inter/interCase';
 import { addInterfaceGroupApis } from '@/api/inter/interGroup';
 import { associationApisByTaskId } from '@/api/inter/interTask';
@@ -198,7 +197,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
             >
               引用添加
             </Button>
-            {currentCaseApiId &&
+            {/* 复制添加功能已禁用 - {currentCaseApiId &&
               currentGroupId === undefined &&
               currentTaskId === undefined && (
                 <Button
@@ -216,7 +215,7 @@ const InterfaceCaseChoiceApiTable: FC<SelfProps> = ({
                 >
                   复制添加
                 </Button>
-              )}
+              )} */}
           </Space>
         );
       }}

@@ -2,6 +2,7 @@ import {
   copyApiCase,
   pageInterApiCase,
   removeApiCase,
+  runApiCaseBack,
 } from '@/api/inter/interCase';
 import MyProTable from '@/components/Table/MyProTable';
 import { IInterfaceAPICase } from '@/pages/Httpx/types';
@@ -127,7 +128,18 @@ const Index: FC<SelfProps> = ({
               详情
             </a>
             <Divider type={'vertical'} />
-            <a>执行</a>
+            <a
+              onClick={async () => {
+                const { code } = await runApiCaseBack(record.id);
+                if (code === 0) {
+                  message.success('用例已开始后台执行');
+                } else {
+                  message.error('执行失败');
+                }
+              }}
+            >
+              执行
+            </a>
             <Divider type={'vertical'} />
             <a
               onClick={async () => {

@@ -44,6 +44,7 @@ import {
   Form,
   MenuProps,
   message,
+  Modal,
   Space,
   Tabs,
   TabsProps,
@@ -261,19 +262,35 @@ const Index = () => {
   };
 
   const onDragEnd = (reorderedUIContents: any[]) => {
+    const originalOrder = [...caseContentElement];
     setCaseContentElement(reorderedUIContents);
-    if (caseApiId) {
-      const reorderData = reorderedUIContents.map((item) => item.api_Id);
-      reorderCaseContents({
-        case_id: caseApiId,
-        content_step_order: reorderData,
-      }).then(async ({ code }) => {
-        if (code === 0) {
-          console.log('reorder success');
-          await refresh();
+
+    Modal.confirm({
+      title: '确认步骤排序',
+      content: '确定要保存当前的步骤顺序吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        if (caseApiId) {
+          const reorderData = reorderedUIContents.map((item) => item.api_Id);
+          const { code } = await reorderCaseContents({
+            case_id: caseApiId,
+            content_step_order: reorderData,
+          });
+          if (code === 0) {
+            message.success('步骤顺序已保存');
+            await refresh();
+          } else {
+            message.error('保存失败，已恢复原顺序');
+            setCaseContentElement(originalOrder);
+          }
         }
-      });
-    }
+      },
+      onCancel: () => {
+        setCaseContentElement(originalOrder);
+        message.info('已取消排序更改');
+      },
+    });
   };
 
   const ApisCardExtra: FC<{ current: number }> = ({ current }) => {

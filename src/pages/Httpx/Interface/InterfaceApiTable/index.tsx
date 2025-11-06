@@ -90,7 +90,7 @@ const Index: FC<SelfProps> = ({
       title: '接口编号',
       dataIndex: 'uid',
       key: 'uid',
-      width: 120,
+      width: 95,
       ellipsis: true,
       copyable: true,
       render: (_, record) => {

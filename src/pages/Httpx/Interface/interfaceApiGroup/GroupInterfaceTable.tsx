@@ -6,7 +6,7 @@ import { IInterfaceAPI } from '@/pages/Httpx/types';
 import { CONFIG } from '@/utils/config';
 import { queryData } from '@/utils/somefunc';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Tag } from 'antd';
+import { Tag, Tooltip } from 'antd';
 import { FC, useCallback, useRef, useState } from 'react';
 import { history } from 'umi';
 
@@ -53,26 +53,58 @@ const GroupInterfaceTable: FC<SelfProps> = (props) => {
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
-      width: '15%',
+      width: '25%',
     },
+    // {
+    //   title: '优先级',
+    //   dataIndex: 'level',
+    //   valueType: 'select',
+    //   valueEnum: CONFIG.API_LEVEL_ENUM,
+    //   width: '10%',
+    //   render: (_, record) => {
+    //     return <Tag color={'blue'}>{record.level}</Tag>;
+    //   },
+    // },
+    // {
+    //   title: '状态',
+    //   dataIndex: 'status',
+    //   valueType: 'select',
+    //   width: '10%',
+    //   valueEnum: CONFIG.API_STATUS_ENUM,
+    //   render: (_, record) => {
+    //     return CONFIG.API_STATUS_ENUM[record.status].tag;
+    //   },
+    // },
     {
-      title: '优先级',
-      dataIndex: 'level',
-      valueType: 'select',
-      valueEnum: CONFIG.API_LEVEL_ENUM,
-      width: '10%',
-      render: (_, record) => {
-        return <Tag color={'blue'}>{record.level}</Tag>;
+      title: '路径',
+      dataIndex: 'url',
+      key: 'url',
+      width: 300,
+      ellipsis: {
+        showTitle: true,
       },
+      render: (text) => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ fontFamily: 'monospace' }}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
-      title: '状态',
-      dataIndex: 'status',
+      title: '方法',
+      dataIndex: 'method',
       valueType: 'select',
-      width: '10%',
-      valueEnum: CONFIG.API_STATUS_ENUM,
+      key: 'method',
+      width: 80,
+      valueEnum: CONFIG.API_METHOD_ENUM,
+      filters: true,
+      search: true,
+      onFilter: true,
       render: (_, record) => {
-        return CONFIG.API_STATUS_ENUM[record.status].tag;
+        return (
+          <Tag color={CONFIG.API_METHOD_ENUM[record.method].color}>
+            {record.method}
+          </Tag>
+        );
       },
     },
     {

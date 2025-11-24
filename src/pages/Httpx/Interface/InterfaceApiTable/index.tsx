@@ -55,11 +55,31 @@ const Index: FC<SelfProps> = ({
   const actionRef = useRef<ActionType>();
   const [openModal, setOpenModal] = useState(false);
   const { initialState } = useModel('@@initialState');
-  const projects = initialState?.projects || [];
+  const [projects, setProjects] = useState(() => {
+    return (
+      initialState?.projects?.map((project) => ({
+        label: project.label || '',
+        value: project.value || 0,
+      })) || []
+    );
+  });
   const [copyProjectId, setCopyProjectId] = useState<number>();
   const [moduleEnum, setModuleEnum] = useState<IModuleEnum[]>([]);
   const [currentApiId, setCurrentApiId] = useState<number>();
   const [copyOrMove, setCopyOrMove] = useState(1);
+
+  useEffect(() => {
+    if (!projects.length && initialState?.refreshProjects) {
+      initialState.refreshProjects().then((newProjects) => {
+        setProjects(
+          newProjects.map((project) => ({
+            label: project.label || '',
+            value: project.value || 0,
+          })),
+        );
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (copyProjectId) {
